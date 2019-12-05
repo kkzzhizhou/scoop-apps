@@ -1,0 +1,42 @@
+{
+    "description": "AdoptOpenJDK 13 JRE with Oracle HotSpot JVM",
+    "homepage": "https://adoptopenjdk.net",
+    "version": "13.0.1-9",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk13-binaries/releases/download/jdk-13.0.1%2B9/OpenJDK13U-jre_x64_windows_hotspot_13.0.1_9.zip",
+            "hash": "fd3fc1085f29bab990b31bd96c38cfca439de317e97340351e88f7c77a7e070b"
+        },
+        "32bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk13-binaries/releases/download/jdk-13.0.1%2B9/OpenJDK13U-jre_x86-32_windows_hotspot_13.0.1_9.zip",
+            "hash": "7b45a7d67b4d71133091f3713a016ec93686fec3b0174cbaf7a2c71906905e36"
+        }
+    },
+    "extract_dir": "jdk-13.0.1+9-jre",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptopenjdk.net/v2/info/releases/openjdk13?openjdk_impl=hotspot&os=windows&arch=x64&release=latest&type=jre",
+        "jp": "$.binaries[0].binary_link",
+        "re": "https://github.com/(?<url>.*?(?<tag>jdk-(?<major>(?<jdk>[\\d]+)[\\d.]*)(?:\\%2B|\\+)(?<build>[\\d]+)))/",
+        "replace": "${major}-${build}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchJdkU-jre_x64_windows_hotspot_$matchMajor_$matchBuild.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchJdkU-jre_x86-32_windows_hotspot_$matchMajor_$matchBuild.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk-$matchMajor+$matchBuild-jre"
+    }
+}

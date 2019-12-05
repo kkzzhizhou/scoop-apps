@@ -1,0 +1,52 @@
+{
+    "homepage": "https://xdebug.org/",
+    "description": "An extension for PHP to assist with debugging and development. (Non-Thread Safe)",
+    "license": {
+        "identifier": "Xdebug-1.01",
+        "url": "https://xdebug.org/license.php"
+    },
+    "version": "2.8.1-7.3",
+    "architecture": {
+        "64bit": {
+            "url": "https://xdebug.org/files/php_xdebug-2.8.1-7.3-vc15-nts-x86_64.dll#/php_xdebug.dll",
+            "hash": "cd26a63dd21558efd67ef4dfead0f397435b0feb3caee17e91162a586359ea21"
+        },
+        "32bit": {
+            "url": "https://xdebug.org/files/php_xdebug-2.8.1-7.3-vc15-nts.dll#/php_xdebug.dll",
+            "hash": "4a95c75f56a72a4dcd4a5cea4c70b3a5c3703d75c0baa2bb9cfa191544d017d5"
+        }
+    },
+    "post_install": [
+        "$phpconfd = \"$persist_dir\\..\\php-nts\\cli\\conf.d\"",
+        "$ini = \"zend_extension=$dir\\php_xdebug.dll`n[xdebug]`nxdebug.remote_enable=on`nxdebug.remote_autostart=on`nxdebug.remote_connect_back=on\"",
+        "if(!(test-path $phpconfd\\xdebug.ini)) {",
+        "    Write-Output \"Enabling extension $(Convert-Path $phpconfd)\\xdebug.ini\"",
+        "    Add-Content -Value $ini -Path \"$phpconfd\\xdebug.ini\"",
+        "} else {",
+        "    Write-Host -f Yellow \"PHP was not installed through scoop, you have to activate php_xdebug.dll manually! Add the following:`n\"",
+        "    Write-Host -f Cyan \"$ini`n`n\"",
+        "}"
+    ],
+    "notes": [
+        "Xdebug is already enabled if PHP was installed through scoop!",
+        "Otherwise add '$dir\\php_xdebug.dll' to your php.ini"
+    ],
+    "checkver": {
+        "url": "https://xdebug.org/download.php",
+        "re": "php_xdebug-([\\d.]+-7.3)-vc15-nts-x86_64.dll"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://xdebug.org/files/php_xdebug-$version-vc15-nts-x86_64.dll#/php_xdebug.dll"
+            },
+            "32bit": {
+                "url": "https://xdebug.org/files/php_xdebug-$version-vc15-nts.dll#/php_xdebug.dll"
+            }
+        },
+        "hash": {
+            "url": "https://xdebug.org/download.php",
+            "regex": "$basename.+?([a-fA-F0-9]{64})"
+        }
+    }
+}

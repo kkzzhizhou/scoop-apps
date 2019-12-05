@@ -1,0 +1,42 @@
+{
+    "homepage": "http://strawberryperl.com",
+    "description": "Strawberry Perl with extra PDL related modules and external libraries.",
+    "version": "5.30.1.1",
+    "license": "Artistic-1.0-Perl|GPL-1.0-only",
+    "architecture": {
+        "32bit": {
+            "url": "http://strawberryperl.com/download/5.30.1.1/strawberry-perl-5.30.1.1-32bit-PDL.zip",
+            "hash": "sha1:31cf4cc0fc4d68355bc01494cbe8c917b2c86590"
+        },
+        "64bit": {
+            "url": "http://strawberryperl.com/download/5.30.1.1/strawberry-perl-5.30.1.1-64bit-PDL.zip",
+            "hash": "sha1:7fa0fa9f7171fbc2001ba2971db8f20a39021f4b"
+        }
+    },
+    "post_install": [
+        "# enable standard idiomatic access to user's home directory",
+        "## remove HomeDir section from portable.perl (disables Portable.pm override of File::HomeDir)",
+        "## NOTE: conversion to byte[] avoids adding an extra trailing newline to the output file",
+        "[System.IO.File]::WriteAllBytes(\"$dir\\portable.perl\", ([byte[]][char[]]((Get-Content -Raw \"$dir\\portable.perl\") -replace \"(?ms)^HomeDir:.*?^(?=\\S)\",\"\")))"
+    ],
+    "env_add_path": [
+        "perl\\site\\bin",
+        "perl\\bin",
+        "c\\bin"
+    ],
+    "checkver": "Strawberry Perl ([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "http://strawberryperl.com/download/$version/strawberry-perl-$version-32bit-PDL.zip"
+            },
+            "64bit": {
+                "url": "http://strawberryperl.com/download/$version/strawberry-perl-$version-64bit-PDL.zip"
+            }
+        },
+        "hash": {
+            "url": "http://strawberryperl.com/releases.html",
+            "find": "(?sm)$basename\" onclick.*?PDL.*?$sha1"
+        }
+    }
+}

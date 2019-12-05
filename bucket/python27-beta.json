@@ -1,0 +1,65 @@
+{
+    "homepage": "https://www.python.org/",
+    "license": "Python-2.0",
+    "version": "2.7.17rc1",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.python.org/ftp/python/2.7.17/python-2.7.17rc1.amd64.msi",
+            "hash": "md5:bfb09ad672204c1c0814576c23dbde3a"
+        },
+        "32bit": {
+            "url": "https://www.python.org/ftp/python/2.7.17/python-2.7.17rc1.msi",
+            "hash": "md5:a725483bf69ffca9431869a9910528b4"
+        }
+    },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python2"
+        ],
+        "Lib\\idlelib\\idle.bat",
+        [
+            "Lib\\idlelib\\idle.bat",
+            "idle2"
+        ]
+    ],
+    "env_add_path": "scripts",
+    "post_install": [
+        "python2 -m ensurepip",
+        "",
+        "$create_reg = {",
+        "    param($path, $value)",
+        "",
+        "    $reg_base = \"Registry::HKEY_CURRENT_USER\\Software\"",
+        "",
+        "    new-item -path \"$reg_base\\$path\" -force | out-null",
+        "    new-itemproperty -path \"$reg_base\\$path\" `",
+        "        -name \"(Default)\" -value \"$value\" -force | out-null",
+        "}",
+        "",
+        "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\InstallPath\", `",
+        "    \"$dir\")",
+        "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\PythonPath\", `",
+        "    \"$dir;$dir\\Lib\\;$dir\\DLLs\\\")"
+    ],
+    "checkver": {
+        "url": "https://www.python.org/downloads/windows/",
+        "re": "python-(2[\\d.]+[abcr]{1,2}[\\d]+)-"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.python.org/ftp/python/$matchHead/python-$version.amd64.msi"
+            },
+            "32bit": {
+                "url": "https://www.python.org/ftp/python/$matchHead/python-$version.msi"
+            }
+        },
+        "hash": {
+            "url": "https://www.python.org/downloads/release/python-$cleanVersion/",
+            "find": "$basename[\\S\\s]+?([A-Fa-f0-9]{32})"
+        }
+    }
+}

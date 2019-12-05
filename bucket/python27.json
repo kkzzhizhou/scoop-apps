@@ -1,0 +1,65 @@
+{
+    "homepage": "https://www.python.org/",
+    "license": "Python-2.0",
+    "version": "2.7.17",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.python.org/ftp/python/2.7.17/python-2.7.17.amd64.msi",
+            "hash": "md5:55040ce1c1ab34c32e71efe9533656b8"
+        },
+        "32bit": {
+            "url": "https://www.python.org/ftp/python/2.7.17/python-2.7.17.msi",
+            "hash": "md5:4cc27e99ad41cd3e0f2a50d9b6a34f79"
+        }
+    },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python2"
+        ],
+        "Lib\\idlelib\\idle.bat",
+        [
+            "Lib\\idlelib\\idle.bat",
+            "idle2"
+        ]
+    ],
+    "env_add_path": "scripts",
+    "post_install": [
+        "python2 -m ensurepip",
+        "",
+        "$create_reg = {",
+        "    param($path, $value)",
+        "",
+        "    $reg_base = \"Registry::HKEY_CURRENT_USER\\Software\"",
+        "",
+        "    new-item -path \"$reg_base\\$path\" -force | out-null",
+        "    new-itemproperty -path \"$reg_base\\$path\" `",
+        "        -name \"(Default)\" -value \"$value\" -force | out-null",
+        "}",
+        "",
+        "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\InstallPath\", `",
+        "    \"$dir\")",
+        "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\PythonPath\", `",
+        "    \"$dir;$dir\\Lib\\;$dir\\DLLs\\\")"
+    ],
+    "checkver": {
+        "url": "https://www.python.org/downloads/windows/",
+        "re": "Python (2\\.7\\.[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version.amd64.msi"
+            },
+            "32bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version.msi"
+            }
+        },
+        "hash": {
+            "url": "https://www.python.org/downloads/release/python-$cleanVersion/",
+            "find": "$basename[\\S\\s]+?([A-Fa-f0-9]{32})"
+        }
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "version": "3.57.1437",
+    "description": "Unreal Commander. Easy to use file manager.",
+    "homepage": "https://x-diesel.com/",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "http://x-diesel.biz/download/evolution/uncomsetup3.57x64(build1437).exe",
+            "hash": "edddac190eb348d0c3e80a90b1524b1824089e699cccea65a511e6fc1afd8ea3"
+        },
+        "32bit": {
+            "url": "http://x-diesel.biz/download/evolution/uncomsetup3.57x32(build1437).exe",
+            "hash": "fd8023e04c7b90a47ce172c6c64dfef16e4a6292da55b45b662ea910a25a0eff"
+        }
+    },
+    "pre_install": [
+        "$file = 'Uncom.ini'",
+        "if (-not (Test-Path \"$persist_dir\\$file\" -Type Leaf)) {",
+        "    Write-Host 'No previous configuration found. Creating.' -f Yellow",
+        "    $content = Get-Content \"$dir\\$file\"",
+        "    $content = $content -replace '^ViewStyle=.*$', 'ViewStyle=Hard day''s light (by Max Diesel)'",
+        "    $content = $content -replace '^FirstRun=\\d+$', 'FirstRun=0'",
+        "    $content = $content -replace '^ToolbarGraphicsLibrary=.*$', 'ToolbarGraphicsLibrary=Everaldo Coelho''s theme.tgl'",
+        "    $content = $content -replace '^iniDirType=\\d+$', 'iniDirType=0'",
+        "    $content = $content -replace '^NewBuildInform=\\d+$', 'NewBuildInform=0'",
+        "    $content = $content -replace '^NewVersionCheckType=\\d+$', 'NewVersionCheckType=1'",
+        "",
+        "    $split = $content.IndexOf('[Settings]')",
+        "    $first = $content[0..$split]",
+        "    $second = $content[($split+1)..($content.Length-1)]",
+        "    $first += 'windowskin=Amakrits'",
+        "    $new = $first + $second",
+        "    Set-Content \"$dir\\$file\" $new -Encoding Ascii -Force",
+        "}",
+        "    # Precreate configurations, which does not exists",
+        "$file = 'Uncom.bar'",
+        "if (-not (Test-Path \"$persist_dir\\$file\")) {",
+        "    Invoke-Webrequest 'https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Uncom.bar' -o \"$dir\\$file\"",
+        "}",
+        "@('license.key', 'UncomFTP.ini') | ForEach-Object {",
+        "    if (-not (Test-Path \"$persist_dir\\$_\" -Type Leaf)) {",
+        "        Write-Host 'File' $_ 'does not exists. Creating.' -f Yellow",
+        "        Set-Content \"$dir\\$_\" '' -Encoding Ascii",
+        "    }",
+        "}"
+    ],
+    "innosetup": true,
+    "persist": [
+        "license.key",
+        "UncomFTP.ini",
+        "Uncom.bar",
+        "Uncom.ini"
+    ],
+    "bin": "Uncom.exe",
+    "shortcuts": [
+        [
+            "Uncom.exe",
+            "Unreal Commander"
+        ]
+    ],
+    "checkver": {
+        "url": "https://x-diesel.com/",
+        "regex": "Unreal Commander v(?<pure>[\\d\\.]+) \\(build (?<build>\\d+)\\)",
+        "replace": "${pure}.${build}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://x-diesel.biz/download/evolution/uncomsetup$majorVersion.$minorVersionx64(build$patchVersion).exe"
+            },
+            "32bit": {
+                "url": "http://x-diesel.biz/download/evolution/uncomsetup$majorVersion.$minorVersionx32(build$patchVersion).exe"
+            }
+        }
+    }
+}

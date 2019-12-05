@@ -1,0 +1,50 @@
+{
+    "version": "441.41",
+    "description": "NVIDIA display driver.",
+    "homepage": "https://www.nvidia.com/Download/index.aspx",
+    "license": "Freeware",
+    "notes": "This is only an installer for the NVIDIA display driver. Running `scoop uninstall nvidia-display-driver` will only unregister it from Scoop.",
+    "architecture": {
+        "64bit": {
+            "url": "https://us.download.nvidia.com/Windows/441.41/441.41-desktop-win10-64bit-international-whql.exe#/dl.7z",
+            "hash": "3f30c38f083834ae2f5867f4ca6cc7487b1b1c145305943cc81391aa02641d88"
+        }
+    },
+    "installer": {
+        "script": [
+            "New-Item \"$dir\\extract\" -ItemType Directory | Out-Null",
+            "Move-Item \"$dir\\*\" -Destination \"$dir\\extract\"",
+            "New-Item \"$dir\\setup\" -ItemType Directory | Out-Null",
+            "# Move everything we want",
+            "Move-Item \"$dir\\extract\\Display.Driver\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\Display.Optimus\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\HDAudio\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\NV3DVision\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\NV3DVisionUSB.Driver\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\NVI2\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\PhysX\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\*.txt\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\setup.*\" -Destination \"$dir\\setup\"",
+            "# The installer will not run without these legal files",
+            "New-Item \"$dir\\setup\\GFExperience\" -ItemType Directory | Out-Null",
+            "Move-Item \"$dir\\extract\\GFExperience\\PrivacyPolicy\" -Destination \"$dir\\setup\\GFExperience\"",
+            "Move-Item \"$dir\\extract\\GFExperience\\EULA.html\" -Destination \"$dir\\setup\\GFExperience\"",
+            "Move-Item \"$dir\\extract\\GFExperience\\FunctionalConsent*\" -Destination \"$dir\\setup\\GFExperience\"",
+            "",
+            "Start-Process -Wait \"$dir\\setup\\setup.exe\" \"-s -noreboot\" -Verb RunAs",
+            "Remove-Item -Recurse \"$dir\\extract\"",
+            "Remove-Item -Recurse \"$dir\\setup\""
+        ]
+    },
+    "checkver": {
+        "url": "https://www.nvidia.com/Download/processFind.aspx?psid=95&pfid=694&osid=19&lid=1",
+        "regex": ">([\\d.]{6})<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://us.download.nvidia.com/Windows/$version/$version-desktop-win10-64bit-international-whql.exe#/dl.7z"
+            }
+        }
+    }
+}

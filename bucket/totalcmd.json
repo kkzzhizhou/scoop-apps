@@ -1,0 +1,70 @@
+{
+    "version": "9.21a",
+    "license": "Shareware",
+    "homepage": "https://www.ghisler.com",
+    "description": "Total Commander is a Shareware file manager for Windows® 95/98/ME/NT/2000/XP/Vista/7/8/8.1/10, and Windows® 3.1.",
+    "url": "https://totalcommander.ch/win/tcmd921ax32_64.exe",
+    "hash": "5330b7a45e9881d885067bf7dfefa37f4502088d9fd259bf1f2cc3fbdd9e304b",
+    "bin": [
+        "TOTALCMD64.EXE",
+        "TOTALCMD.EXE"
+    ],
+    "shortcuts": [
+        [
+            "TOTALCMD64.EXE",
+            "Total Commander x64"
+        ],
+        [
+            "TOTALCMD.EXE",
+            "Total Commander"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\$fname\" \"$dir\\_tmp\"",
+        "Expand-7zipArchive \"$dir\\_tmp\\INSTALL.CAB\" \"$dir\" -Removal",
+        "Move-Item \"$dir\\e\\*\" \"$dir\"",
+        "Remove-Item -Recurse \"$dir\\d\", \"$dir\\e\", \"$dir\\_tmp\", \"$dir\\$fname\"",
+        "if (!(Test-Path \"$persist_dir\\wincmd.ini\")) {",
+        "New-Item -Path \"$dir\\wincmd.ini\", \"$dir\\usercmd.ini\", \"$dir\\wcx_ftp.ini\", \"$dir\\contplug.ini\", \"$dir\\fsplugin.ini\", \"$dir\\lsplugin.ini\", \"$dir\\pkplugin.ini\", \"$dir\\tcwebdav.ini\", \"$dir\\visualdirsize.ini\", \"$dir\\putty.ini\" -ItemType \"file\" -ErrorAction SilentlyContinue | Out-Null",
+        "New-Item -Path \"$dir\\DATAS\", \"$dir\\PLUGINS\", \"$dir\\APPS\" -ItemType \"directory\" -ErrorAction SilentlyContinue | Out-Null",
+        "}"
+    ],
+    "persist": [
+        "DATAS",
+        "PLUGINS",
+        "APPS",
+        "wincmd.ini",
+        "usercmd.ini",
+        "wcx_ftp.ini",
+        "contplug.ini",
+        "fsplugin.ini",
+        "lsplugin.ini",
+        "pkplugin.ini",
+        "tcwebdav.ini",
+        "visualdirsize.ini",
+		"putty.ini"
+    ], 
+    "post_install": [
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "Copy-Item \"$bucketdir\\..\\scripts\\totalcmd\\usercmd.ini\" -Destination \"$dir\\usercmd.ini\"",
+        "Copy-Item \"$bucketdir\\..\\scripts\\totalcmd\\TOTALCMD.EXE\" -Destination \"$dir\\TOTALCMD.EXE\"",
+        "Copy-Item \"$bucketdir\\..\\scripts\\totalcmd\\TOTALCMD64.EXE\" -Destination \"$dir\\TOTALCMD64.EXE\"",
+        "Copy-Item -Recurse \"$bucketdir\\..\\scripts\\totalcmd\\DATAS\" -Destination \"$dir\" -ErrorAction SilentlyContinue",
+        "(gc \"$bucketdir\\..\\scripts\\totalcmd\\wincmd.ini\") | % {$_ -replace \"%TCDIR%\",\"$dir\"} | out-file -Force -enc oem \"$dir\\wincmd.ini\""
+    ],
+    "suggest":{
+        "Apps": [
+            "scoop-ques/beyondcompare",
+            "extras/everything",
+            "extras/cmder",
+            "extras/notepadplusplus"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.ghisler.com/download.htm",
+        "re": "Download version\\s+([\\d\\.\\a-z]+) of Total Commander"
+    },
+    "autoupdate": {
+        "url": "http://totalcommander.ch/win/tcmd$cleanVersionx32_64.exe"
+    }
+}

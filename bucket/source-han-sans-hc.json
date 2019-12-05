@@ -1,0 +1,33 @@
+{
+    "version": "2.001",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/adobe-fonts/source-han-sans/",
+    "url": "https://github.com/adobe-fonts/source-han-sans/raw/release/OTF/SourceHanSansHC.zip",
+    "hash": "792c1b5d31ef357aab07aa57eaf597562ba280624a5e610c4182299805c09da3",
+    "checkver": {
+        "url": "https://github.com/adobe-fonts/source-han-sans/releases",
+        "regex": "source-han-sans/tree/([\\d.]+)R"
+    },
+    "autoupdate": {
+        "url": "https://github.com/adobe-fonts/source-han-sans/raw/release/OTF/SourceHanSansHC.zip"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'SourceHanSansHC\\*.otf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'SourceHanSansHC\\*.otf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font family 'Source Han Sans HC' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

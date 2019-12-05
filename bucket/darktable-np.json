@@ -1,0 +1,41 @@
+{
+    "##": "The installer is created by NSIS, but it cannot be extracted by 7-zip. See https://github.com/lukesampson/scoop-extras/issues/1831 for details.",
+    "homepage": "https://www.darktable.org/",
+    "description": "Open source photography workflow application and raw developer. A virtual lighttable and darkroom for photographers",
+    "license": "GPL-3.0-only",
+    "version": "2.6.3",
+    "url": "https://github.com/darktable-org/darktable/releases/download/release-2.6.3/darktable-2.6.3-win64.exe#/installer.exe",
+    "hash": "716bde75c7b1ba6d57344747773a7dde3a88b707bcceb8090062b02eed863bae",
+    "installer": {
+        "script": [
+            "$proc = Start-Process \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Verb RunAs -Passthru",
+            "do {Start-Sleep -Milliseconds 200} until ($proc.HasExited)"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$proc = Start-Process \"$dir\\Uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -Passthru",
+            "$ProcessActive1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "$ProcessActive2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "do {",
+            "    Start-Sleep -Milliseconds 200",
+            "    $ProcessActive1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "    $ProcessActive2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "} until (($ProcessActive1 -eq $null) -And ($ProcessActive2 -eq $null))"
+        ]
+    },
+    "bin": [
+        "bin\\darktable.exe",
+        "bin\\darktable-cli.exe"
+    ],
+    "checkver": {
+        "github": "https://github.com/darktable-org/darktable",
+        "regex": "tree/release-([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/darktable-org/darktable/releases/download/release-$version/darktable-$version-win64.exe#/installer.exe",
+        "hash": {
+            "url": "https://github.com/darktable-org/darktable/releases/latest"
+        }
+    }
+}

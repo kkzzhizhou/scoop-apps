@@ -1,0 +1,47 @@
+{
+    "homepage": "https://www.virtualbox.org/wiki/Download_Old_Builds_5_2",
+    "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
+    "license": "GPL-2.0-only",
+    "version": "5.2.34",
+    "url": "http://download.virtualbox.org/virtualbox/5.2.34/VirtualBox-5.2.34-133893-Win.exe#/VBox52Setup.exe",
+    "hash": "7ffa09158ee402e586b58a1215d7de65fd8a395d329ece61038b0ad94f59aa28",
+    "installer": {
+        "script": "Start-Process cmd -Verb Runas \"/c $dir\\VBox52Setup.exe --msiparams INSTALLDIR=$dir VBOX_START=0 REBOOT=ReallySuppress --silent\" -Wait -WindowStyle hidden"
+    },
+    "post_install": "remove-item \"$dir\\VBox52Setup.exe\"",
+    "uninstaller": {
+        "script": [
+            "$id = wmic product where \"\"\"name like 'Oracle VM VirtualBox%'\"\"\" get IdentifyingNumber | find /i \"\"\"-\"\"\"",
+            "Start-Process cmd -Verb Runas \"/c msiexec /x $id /qn\" -Wait -WindowStyle hidden"
+        ]
+    },
+    "bin": [
+        "VBoxBalloonCtrl.exe",
+        "VBoxBugReport.exe",
+        "VBoxDTrace.exe",
+        "VBoxExtPackHelperApp.exe",
+        "VBoxHeadless.exe",
+        "vbox-img.exe",
+        "VBoxManage.exe",
+        "VBoxNetDHCP.exe",
+        "VBoxNetNAT.exe",
+        "VBoxSDL.exe",
+        "VBoxSVC.exe",
+        "VBoxTestOGL.exe",
+        "VBoxWebSrv.exe",
+        "VirtualBox.exe"
+    ],
+    "shortcuts": [
+        [
+            "VirtualBox.exe",
+            "VirtualBox"
+        ]
+    ],
+    "checkver": "VirtualBox-(?<version>[\\d.]+)-(?<revision>\\d+)-Win.exe",
+    "autoupdate": {
+        "url": "http://download.virtualbox.org/virtualbox/$version/VirtualBox-$version-$matchRevision-Win.exe#/VBox52Setup.exe",
+        "hash": {
+            "url": "https://www.virtualbox.org/download/hashes/$version/SHA256SUMS"
+        }
+    }
+}
