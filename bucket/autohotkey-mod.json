@@ -1,0 +1,109 @@
+{
+    "version": "1.1.32.00",
+    "description": "The ultimate automation scripting language for Windows.",
+    "homepage": "https://www.autohotkey.com/",
+    "depends": "sudo",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/Lexikos/AutoHotkey_L/releases/download/v1.1.32.00/AutoHotkey_1.1.32.00_setup.exe#/dl.7z",
+                "https://github.com/mercury233/compile-ahk/releases/download/v0.9.2/Compile_AHK.7z#/Compile",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/autohotkey/assoc.reg",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/autohotkey/unassoc.reg"
+            ],
+            "hash": [
+                "ce505d272f8d36c5599ac81f005e1d2d586eeaaa778c779ad858e44fdadfdb0d",
+                "C51206D1EAE5EECAF7B478905D87751CA86CDE565DD5D70CF122EEDE2B0CB1C8",
+                "4044671277BA66111FC7899345ED7C6203C1C6D0355E4FA08C29F3DA0ED3A21F",
+                "48161DB2D14EA582043E40F1CA768FAFB8918927C9E13485F8DA3BBB9259F994"
+            ],
+            "installer": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/S /x64 /uiAccess=0 /IsHostApp=1 /D=$dir\" -Verb RunAs",
+                "keep": "true"
+            },
+            "post_install": [
+                "Expand-7zipArchive \"$dir\\Compile\" \"$dir\\Compiler\"",
+                "Remove-Item -Recurse \"$dir\\Compile\"",
+                "if (Test-Path(\"$dir\\assoc.reg\")) {",
+                "    $path = \"$dir\" -Replace '\\\\', '\\\\'",
+                "    $content = Get-Content \"$dir\\assoc.reg\"",
+                "    $content = $content -Replace '\\$Path', $path",
+                "    $content = $content -Replace 'AutoHotkey.exe','AutoHotkeyU64.exe'",
+                "    Set-Content \"$dir\\assoc.reg\" $content -Encoding ASCII",
+                "}",
+                "sudo regedit /s $dir\\assoc.reg",
+                "ie4uinit.exe -show"
+            ],
+            "uninstaller": {
+                "script": [
+                    "Start-Process -Wait \"$dir\\setup.exe\" \"/Uninstall\" -Verb RunAs",
+                    "sudo regedit /s $dir\\unassoc.reg",
+                    "ie4uinit.exe -show"
+                ]
+            },
+            "bin": [
+                [
+                    "autohotkeyu64.exe",
+                    "autohotkey"
+                ],
+                "compiler/ahk2exe.exe"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://github.com/Lexikos/AutoHotkey_L/releases/download/v1.1.32.00/AutoHotkey_1.1.32.00_setup.exe#/dl.7z",
+                "https://github.com/mercury233/compile-ahk/releases/download/v0.9.2/Compile_AHK.7z",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/autohotkey/assoc.reg",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/autohotkey/unassoc.reg"
+            ],
+            "hash": [
+                "ce505d272f8d36c5599ac81f005e1d2d586eeaaa778c779ad858e44fdadfdb0d",
+                "C51206D1EAE5EECAF7B478905D87751CA86CDE565DD5D70CF122EEDE2B0CB1C8",
+                "4044671277BA66111FC7899345ED7C6203C1C6D0355E4FA08C29F3DA0ED3A21F",
+                "48161DB2D14EA582043E40F1CA768FAFB8918927C9E13485F8DA3BBB9259F994"
+            ],
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\Compile_AHK.7z\" \"$dir\\Compiler\" $false",
+                "Remove-Item -Recurse \"$dir\\Compile_AHK.7z\""
+            ],
+            "uninstaller": {
+                "script": [
+                    "sudo regedit /s $dir\\unassoc.reg",
+                    "ie4uinit.exe -show"
+                ]
+            },
+            "post_install": [
+                "if (Test-Path(\"$dir\\assoc.reg\")) {",
+                "    $path = \"$dir\" -Replace '\\\\', '\\\\'",
+                "    $content = Get-Content \"$dir\\assoc.reg\"",
+                "    $content = $content -Replace '\\$Path', $path",
+                "    $content = $content -Replace 'AutoHotkey.exe','AutoHotkeyU32.exe'",
+                "    Set-Content \"$dir\\assoc.reg\" $content -Encoding ASCII",
+                "}",
+                "sudo regedit /s $dir\\assoc.reg",
+                "ie4uinit.exe -show"
+            ],
+            "bin": [
+                [
+                    "autohotkeyu32.exe",
+                    "autohotkey"
+                ],
+                "compiler/ahk2exe.exe"
+            ]
+        }
+    },
+    "checkver": {
+        "github": "https://github.com/lexikos/autohotkey_l"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/dl.7z"
+            }
+        }
+    }
+}

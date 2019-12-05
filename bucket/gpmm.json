@@ -1,0 +1,42 @@
+{
+    "homepage": "https://play.google.com/music/listen#/manager",
+    "description": "Use Google Play Music Manager to upload your favorite songs from your computer to your Google Play library",
+    "version": "nightly",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://play.google.com/about/play-terms/index.html"
+    },
+    "##": "Have to use URL shortener since actual URL exceeds filename character limit?",
+    "url": "https://shorturl.at/alE27#/dl.exe",
+    "pre_install": [
+        "# Unable to find directory switch for installer, symlink to the scoop app directory before running installer",
+        "$fold = \"$env:LOCALAPPDATA\\Programs\\Google\\MusicManager\"",
+        "if (Test-Path $fold) {",
+        "    cmd /C rmdir /Q /S $fold",
+        "}",
+        "New-Item -Path $fold -ItemType SymbolicLink -Value $dir"
+    ],
+    "post_install": [
+        "# Kill MusicManager.exe since it automatically runs after installation and remove pre_install symlink",
+        "Stop-Process -Name MusicManager -Force",
+        "cmd /C rmdir /Q $env:LOCALAPPDATA\\Programs\\Google\\MusicManager",
+        "Remove-Item -LiteralPath \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Music Manager\" -Force -Recurse"
+    ],
+    "installer": {
+        "args": [
+            "/silent",
+            "/install"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item -LiteralPath $env:LOCALAPPDATA\\Google\\MusicManager -Force -Recurse"
+    },
+    "shortcuts": [
+        [
+            "MusicManager.exe",
+            "Google Play Music Manager",
+            "",
+            "WindowsIcon.ico"
+        ]
+    ]
+}

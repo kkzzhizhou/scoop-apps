@@ -1,0 +1,42 @@
+{
+    "##": "The (outdated?) source code for the NSIS installer is at https://github.com/bigtweekx/h2pc_installer",
+    "homepage": "https://cartographer.online/",
+    "description": "Full Halo 2 Vista game + Project Cartographer mod (2.8GB download, 4.8GB extracted)",
+    "version": "0.4.0.4",
+    "url": "http://www.h2pcmt.com/Cartographer/Installer/h2pc_installer.zip",
+    "hash": "6bbbb099753aa713f3a7c7fe8155014c9843946801f3faa32eb9ec95e28117d6",
+    "shortcuts": [
+        [
+            "halo2.exe",
+            "Halo 2 Project Cartographer",
+            "-novsync"
+        ]
+    ],
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\h2pc_data.bin\" \"$dir\" -Removal",
+        "\"$dir\\temp\\vcredist_2013_x86.exe /q /norestart\"",
+        "\"$dir\\temp\\directx.exe /q /T:'$dir\\temp\\directx'\"",
+        "\"$dir\\temp\\directx\\DXSETUP.exe /silent\"",
+        "(New-Object System.Net.WebClient).DownloadFile(\"https://cartographer.online/latest/xlive.dll\", \"$dir\\xlive.dll\")",
+        "Remove-Item -LiteralPath \"$dir\\h2pc_setup_1.7.exe\" -Force",
+        "Remove-Item -LiteralPath \"$dir\\temp\" -Force -Recurse"
+    ],
+    "checkver": {
+        "url": "https://www.halo2vista.com/update/",
+        "re": "<h3>Release: v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "http://www.h2pcmt.com/Cartographer/Installer/h2pc_installer.zip",
+        "hash": {
+            "url": "$baseurl/checksums/h2pc_installer.zip.sha256"
+        }
+    },
+    "notes": [
+        "The following dependencies were also installed (if missing):",
+        "- DirectX 9.0C",
+        "- Microsoft Visual C++ 2013 Redistributable (x86) - 12.0.40660",
+        "and will not be uninstalled when running scoop uninstall",
+        "",
+        "Windows 10 users should disable fullscreen optimizations for halo2.exe and run it in compatibility mode for Vista (Service Pack 2)"
+    ]
+}
