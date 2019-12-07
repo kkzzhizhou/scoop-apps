@@ -1,0 +1,35 @@
+{
+    "homepage": "https://github.com/felixse/FluentTerminal",
+    "description": "A Terminal Emulator based on UWP and web technologies.",
+    "license": "GPL-3.0-only",
+    "version": "0.6.1.0",
+    "url": "https://github.com/felixse/FluentTerminal/releases/download/0.6.1.0/FluentTerminal.Package_0.6.1.0_Test.zip",
+    "hash": "343344a1becb633c68448f39e76603cf0c8f323ce4e38ddeface379f057c73d9",
+    "depends": "main/sudo",
+    "pre_install": [
+        "$thumb='8A5DE5B20B663BD6A99B44C5BA278289521F419F'",
+        "$store='TrustedPeople'",
+        "if (Get-ChildItem -Path Cert:\\LocalMachine\\$store | Where-Object {$_.Thumbprint -eq $thumb}) { return }",
+        "sudo certutil -addstore $store ${dir}\\FluentTerminal.Package_${version}_x86_x64.cer",
+        "gpupdate \/force",
+        "sudo reg add 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock' \/t REG_DWORD \/f \/v 'AllowAllTrustedApps' \/d '1'"
+    ],
+    "post_install": [
+        "& \"$dir\\Install.ps1\" -ForceContextMenu -Force"
+    ],
+    "uninstaller": {
+        "script": [
+            "$store='TrustedPeople'",
+            "sudo certutil -delstore $store ${dir}\\FluentTerminal.Package_${version}_x86_x64.cer",
+            "New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT",
+            "sudo reg delete 'HKCR\\Directory\\Background\\shell\\Open Fluent Terminal here' \/f",
+            "sudo powershell \/c 'Get-AppxPackage -Name *FluentTerminal* | Remove-AppxPackage -AllUsers'"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/felixse/FluentTerminal"
+    },
+    "autoupdate": {
+        "url": "https://github.com/felixse/FluentTerminal/releases/download/$version/FluentTerminal.Package_$version_Test.zip"
+    }
+}
