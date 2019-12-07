@@ -3,7 +3,13 @@
     "description": "NVIDIA display driver.",
     "homepage": "https://www.nvidia.com/Download/index.aspx",
     "license": "Freeware",
-    "notes": "This is only an installer for the NVIDIA display driver. Running `scoop uninstall nvidia-display-driver` will only unregister it from Scoop.",
+    "notes": [
+        "This is only an installer for the NVIDIA display driver. Running `scoop uninstall nvidia-display-driver` will only unregister it from Scoop.",
+        "The NVIDIA display driver installer installs and enables the NVIDIA Display Container LS service, which is required for the NVIDIA Control Panel application but also contains telemetry components.",
+        "To disable this functionality and prevent it from being re-enabled on future updates, disable the service using the following commands:",
+        "$ Stop-Service NVDisplay.ContainerLocalSystem",
+        "$ Set-Service NVDisplay.ContainerLocalSystem -StartupType Disabled"
+    ],
     "architecture": {
         "64bit": {
             "url": "https://us.download.nvidia.com/Windows/441.41/441.41-desktop-win10-64bit-international-whql.exe#/dl.7z",
@@ -12,6 +18,8 @@
     },
     "installer": {
         "script": [
+            "$service_disabled = (Get-WMIObject win32_service -Filter \"name='NVDisplay.ContainerLocalSystem'\" -ComputerName '.').StartMode -eq 'Disabled'",
+            "",
             "New-Item \"$dir\\extract\" -ItemType Directory | Out-Null",
             "Move-Item \"$dir\\*\" -Destination \"$dir\\extract\"",
             "New-Item \"$dir\\setup\" -ItemType Directory | Out-Null",
@@ -29,7 +37,12 @@
             "Move-Item \"$dir\\extract\\GFExperience\\EULA.html\" -Destination \"$dir\\setup\\GFExperience\"",
             "Move-Item \"$dir\\extract\\GFExperience\\FunctionalConsent*\" -Destination \"$dir\\setup\\GFExperience\"",
             "",
-            "Start-Process -Wait \"$dir\\setup\\setup.exe\" \"-s -noreboot\" -Verb RunAs",
+            "if ($service_disabled) {",
+            "    Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\setup\\setup.exe`\" -s -noreboot && sc config NVDisplay.ContainerLocalSystem start= disabled && sc stop NVDisplay.ContainerLocalSystem\" -Verb RunAs",
+            "} else {",
+            "    Start-Process -Wait \"$dir\\setup\\setup.exe\" \"-s -noreboot\" -Verb RunAs",
+            "}",
+            "",
             "Remove-Item -Recurse \"$dir\\extract\"",
             "Remove-Item -Recurse \"$dir\\setup\""
         ]
