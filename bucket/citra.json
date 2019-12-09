@@ -6,6 +6,16 @@
     "url": "https://github.com/citra-emu/citra-nightly/releases/download/nightly-1390/citra-windows-mingw-20191201-4efb9c6.7z",
     "hash": "de99e54c8f1be09a44993423f3d04f0e2ca0686e0cdfb4cb0ac0af10d40814ed",
     "extract_dir": "nightly-mingw",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\user\")) {",
+        "   New-Item -Path \"$persist_dir\" -Name \"user\" -ItemType \"directory\" | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Citra\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Citra\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\Citra\" -Recurse",
+        "   }",
+        "}"
+    ],
     "bin": [
         "citra.exe",
         "citra-qt.exe",
@@ -17,6 +27,7 @@
             "Citra"
         ]
     ],
+    "persist": "user",
     "checkver": {
         "github": "https://github.com/citra-emu/citra-nightly",
         "regex": "download/nightly-(?<build>[\\d]+)/citra-windows-mingw-(?<date>[\\d]+)-(?<random>[a-fA-F\\d]+).7z",
