@@ -1,0 +1,71 @@
+{
+    "version": "5.19.815.2595",
+    "description": "Notepad like text editor based on the Scintilla source code.",
+    "homepage": "https://www.rizonesoft.com/downloads/notepad3/",
+    "license": "BSD-3-Clause",
+    "url": [
+        "https://github.com/rizonesoft/Notepad3/releases/download/RELEASE_5.19.815.2595/Notepad3_5.19.815.2595.zip",
+        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/notepad3/replace-windows-notepad.reg",
+        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/notepad3/restore-windows-notepad.reg"
+    ],
+    "hash": [
+        "f837f7f054f9b681dd9d79d61661c04d3f2ed580b959a0ae3606cc6800b37958",
+        "306BF331581183459A4FE241C1B046EE393866155C4A69F0D4A9DCF4903AF634",
+        "6A3BA3F05705B0D326892D2553A4658826E7E3CC1D96B5B1C39346C2DE962EF6"
+    ],
+    "bin": [
+        "Notepad3.exe",
+        "minipath.exe"
+    ],
+    "shortcuts": [
+        [
+            "Notepad3.exe",
+            "Notepad3"
+        ],
+        [
+            "minipath.exe",
+            "minipath"
+        ]
+    ],
+    "persist": [
+        "Favorites",
+        "minipath.ini",
+        "Notepad3.ini"
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Expand-ZipArchive \"$dir\\Notepad3_${version}_x64.zip\""
+            },
+            "uninstaller": {
+                "script": "sudo regedit /s $dir\\restore-windows-notepad.reg"
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Expand-ZipArchive \"$dir\\Notepad3_${version}_x86.zip\""
+            },
+            "uninstaller": {
+                "script": "sudo regedit /s $dir\\restore-windows-notepad.reg"
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\Notepad3_${version}_x*.zip\"",
+        "if (Test-Path(\"$dir\\replace-windows-notepad.reg\")) {",
+        "    $notepad3 = \"$dir\\Notepad3.exe\" -Replace '\\\\', '\\\\'",
+        "    $content = Get-Content \"$dir\\replace-windows-notepad.reg\"",
+        "    $content = $content -Replace '\\$notepad3', $notepad3",
+        "    Set-Content \"$dir\\replace-windows-notepad.reg\" $content -Encoding ASCII",
+        "}",
+        "sudo regedit /s $dir\\replace-windows-notepad.reg"
+
+    ],
+    "checkver": {
+        "github": "https://github.com/rizonesoft/Notepad3",
+        "regex": "/releases/tag/RELEASE_([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/rizonesoft/Notepad3/releases/download/RELEASE_$version/Notepad3_$version.zip"
+    }
+}
