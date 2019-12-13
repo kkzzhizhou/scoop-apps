@@ -1,0 +1,48 @@
+{
+    "homepage": "https://www.netsarang.com/zh/Xftp/",
+    "description": "业界最强大的SSH客户机",
+    "version": "6.0.0181",
+    "depends": "bluelifehostseditor",
+    "url": [
+        "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-6.0.0181r.exe#/setup.exe",
+        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/Xftp/register.reg"
+    ],
+    "hash": [
+        "sha1:e2f70ecce718d6e05b6ed0fa73129f329beea057",
+        "E7DA680B2C9F99A1B042EF96D621C3E85E1C2867D07BF0FB42E764D2543F75C1"
+    ],
+    "pre_install": [
+        "sudo hostseditor.exe /a transact.netsarang.com",
+        "sudo hostseditor.exe /a update.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.co.kr",
+        "sudo hostseditor.exe /a sales.netsarang.com",
+        "sudo hostseditor.exe /a active.netsarang.com",
+        "sudo hostseditor.exe /a up.netsarang.com"
+    ],
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" \"/b$dir /S /v/qn\" -Verb RunAs",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\Xftp` 6.msi`\" INSTALLDIR=`\"$dir`\" /qb\" -Verb RunAs"
+        ],
+        "keep": true
+    },
+    "post_install":[
+        "sudo regedit /s $dir\\register.reg"
+    ],
+    "uninstaller": {
+        "script":[
+            "Start-Process -Wait msiexec \"/x `\"$dir\\Xftp` 6.msi`\" /qb\" -Verb RunAs"
+        ]
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/zapps/rss?path=/Xftp",
+        "re": "/Xftp/Xftp-(.*)r.exe"
+    },
+    "autoupdate": {
+        "url": "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-$versionr.exe#/setup.exe",
+        "hash": {
+            "mode": "sourceforge"
+        }
+    }
+}
