@@ -1,0 +1,74 @@
+{
+    "homepage": "https://www.python.org/",
+    "description": "A programming language that lets you work quickly and integrate systems more effectively.",
+    "license": "Python-2.0",
+    "version": "3.8.1",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.python.org/ftp/python/3.8.1/python-3.8.1-amd64.exe",
+            "hash": "md5:3e4c42f5ff8fcdbe6a828c912b7afdb1"
+        },
+        "32bit": {
+            "url": "https://www.python.org/ftp/python/3.8.1/python-3.8.1.exe",
+            "hash": "md5:2d4c7de97d6fcd8231fc3decbf8abf79"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\_tmp\"",
+            "@('launcher.msi', 'path.msi', 'pip.msi') | ForEach-Object {",
+            "    Remove-Item \"$dir\\_tmp\\AttachedContainer\\$_\"",
+            "}",
+            "(Get-ChildItem \"$dir\\_tmp\\AttachedContainer\\*.msi\").FullName | ForEach-Object { Expand-MsiArchive $_ \"$dir\" }",
+            "Remove-Item \"$dir\\_tmp\", \"$dir\\$fname\" -Force -Recurse",
+            "& \"$dir\\python.exe\" -E -s -m ensurepip -U --default-pip | Out-Null",
+            "if ($global) {",
+            "    $pathext = (env 'PATHEXT' $true) -replace ';.PYW?', ''",
+            "    env 'PATHEXT' $true \"$pathext;.PY;.PYW\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($global) {",
+            "    $pathext = (env 'PATHEXT' $true) -replace ';.PYW?', ''",
+            "    env 'PATHEXT' $true \"$pathext\"",
+            "}"
+        ]
+    },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python3"
+        ],
+        "Lib\\idlelib\\idle.bat",
+        [
+            "Lib\\idlelib\\idle.bat",
+            "idle3"
+        ]
+    ],
+    "env_add_path": [
+        "Scripts",
+        "."
+    ],
+    "checkver": {
+        "url": "https://www.python.org/downloads/windows/",
+        "re": "Latest Python 3 Release - Python ([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version-amd64.exe"
+            },
+            "32bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version.exe"
+            }
+        },
+        "hash": {
+            "url": "https://www.python.org/downloads/release/python-$cleanVersion/",
+            "find": "(?sm)$basename.*?$md5"
+        }
+    }
+}

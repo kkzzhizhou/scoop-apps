@@ -1,0 +1,52 @@
+{
+    "version": "1.3.2",
+    "description": "Open Source Continuous File Synchronization.",
+    "homepage": "https://syncthing.net/",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.3.2/syncthing-windows-amd64-v1.3.2.zip",
+            "hash": "8f0b7e9e06cead65d9fda0b7838c0ab978909c84d53dcd81a7c043969a8208e1",
+            "extract_dir": "syncthing-windows-amd64-v1.3.2"
+        },
+        "32bit": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.3.2/syncthing-windows-386-v1.3.2.zip",
+            "hash": "4ed2ac43475da82959998b71fccaa83f0ae493c03e99655ad8e4c4738b749ba1",
+            "extract_dir": "syncthing-windows-386-v1.3.2"
+        }
+    },
+    "bin": [
+        [
+            "syncthing.exe",
+            "syncthing",
+            "-home \"$dir\\config\""
+        ]
+    ],
+    "persist": "config",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config\") -and (Test-Path \"$Env:LocalAppdata\\Syncthing\")) {",
+        "    Write-Host -F yellow \"Copying old '$Env:LocalAppdata\\Syncthing' to '$persist_dir\\config'\"",
+        "    New-Item \"$dir\\config\" -ItemType 'Directory' -Force | Out-Null",
+        "    Copy-Item \"$Env:LocalAppdata\\Syncthing\\*\" \"$dir\\config\" -Exclude LOCK -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/syncthing/syncthing"
+    },
+    "notes": "To start syncthing automatically, use a method described at https://github.com/syncthing/docs/blob/master/users/autostart.rst#windows",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-amd64-v$version.zip",
+                "extract_dir": "syncthing-windows-amd64-v$version"
+            },
+            "32bit": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-386-v$version.zip",
+                "extract_dir": "syncthing-windows-386-v$version"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/sha256sum.txt.asc"
+        }
+    }
+}
