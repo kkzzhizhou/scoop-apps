@@ -1,13 +1,23 @@
 {
     "version": "9.22a",
-    "license": "Shareware",
+    "description": "Total Commander. File manager",
     "homepage": "https://www.ghisler.com",
-    "description": "Total Commander is a Shareware file manager for Windows® 95/98/ME/NT/2000/XP/Vista/7/8/8.1/10, and Windows® 3.1.",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.ghisler.com/privacypolicy.htm"
+    },
+    "notes": "e143436e2f9183a650424d635b535e51",
     "architecture": {
         "64bit": {
-            "url": "http://totalcommander.ch/win/tcmd922ax64.exe",
+            "url": "https://totalcommander.ch/win/tcmd922ax64.exe#/cosi.7z",
             "hash": "9a01bcdd67d99e31cbe6512161829c86fddb25496d6d98b4f140923ad856af1f",
-            "bin": "TOTALCMD64.EXE",
+            "bin": [
+                "TOTALCMD64.EXE",
+                [
+                    "TOTALCMD64.EXE",
+                    "TOTALCMD"
+                ]
+            ],
             "shortcuts": [
                 [
                     "TOTALCMD64.EXE",
@@ -16,7 +26,7 @@
             ]
         },
         "32bit": {
-            "url": "http://totalcommander.ch/win/tcmd922ax32.exe",
+            "url": "https://totalcommander.ch/win/tcmd922ax32.exe#/cosi.7z",
             "hash": "61bc3c7463b12b2c973afb0bb02ab106221f6fbd48b6de824eaca29b9be7dbdf",
             "bin": "TOTALCMD.EXE",
             "shortcuts": [
@@ -27,33 +37,44 @@
             ]
         }
     },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\$fname\" \"$dir\\_tmp\"",
-        "Expand-7zipArchive \"$dir\\_tmp\\INSTALL.CAB\" \"$dir\" -Removal",
-        "Move-Item \"$dir\\e\\*\" \"$dir\"",
-        "Remove-Item -Recurse \"$dir\\d\", \"$dir\\e\", \"$dir\\_tmp\", \"$dir\\$fname\"",
-        "\"[Configuration]`r`nUseIniInProgramDir=7\" | Out-File -Encoding ASCII \"$dir\\wincmd.ini\"",
-        "ForEach ($emptyFile in $manifest.persist) {New-Item \"$dir\\$emptyFile\" -ItemType file -ErrorAction SilentlyContinue | Out-Null}"
-    ],
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\INSTALL.CAB\" \"$dir\\cosi\" -Removal",
+            "Get-ChildItem \"$dir\" -Exclude cosi | Remove-Item -Force -Recurse",
+            "Move-Item \"$dir\\cosi\\*\" \"$dir\"",
+            "Remove-Item \"$dir\\*\" -Include 'cosi', 'd', 'e' -Force -Recurse",
+            "    # Creating default settings",
+            "function CreateFile([String] $file, [String] $content = $null) {",
+            "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+            "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+            "        Set-Content \"$dir\\$file\" $content -Encoding Ascii",
+            "    }",
+            "}",
+            "CreateFile 'DEFAULT.BAR'",
+            "CreateFile 'default.br2'",
+            "CreateFile 'wcx_ftp.ini'",
+            "CreateFile 'wincmd.ini' @('[Configuration]', 'UseIniInProgramDir=7')",
+            "CreateFile 'wincmd.key'"
+        ]
+    },
     "persist": [
         "DEFAULT.BAR",
         "default.br2",
-        "usercmd.ini",
         "wcx_ftp.ini",
         "wincmd.ini",
         "wincmd.key"
     ],
     "checkver": {
         "url": "https://www.ghisler.com/download.htm",
-        "regex": "Download\\s+version\\s+([\\d\\.\\a-z]+) of Total Commander"
+        "regex": "Download\\s+version ([\\w+.]+) of Total Commander"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://totalcommander.ch/win/tcmd$cleanVersionx64.exe"
+                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx64.exe#/cosi.7z"
             },
             "32bit": {
-                "url": "http://totalcommander.ch/win/tcmd$cleanVersionx32.exe"
+                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx32.exe#/cosi.7z"
             }
         }
     }
