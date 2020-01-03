@@ -1,16 +1,77 @@
 {
-    "homepage": "https://code.visualstudio.com/",
-    "description": "Visual Studio Code is a lightweight but powerful source code editor (Insiders Edition).",
     "version": "nightly",
+    "description": "Microsoft Visual Studio Code - Insiders. New type of tool that combines the simplicity of a code editor with what developers need for core edit-build-debug cycle.",
+    "homepage": "https://code.visualstudio.com/insiders/",
     "license": {
         "identifier": "Freeware",
-        "url": "https://code.visualstudio.com/License/"
+        "url": "https://code.visualstudio.com/license/insiders"
     },
-    "notes": "Add Visual Studio Code as a context menu option by running: \"$dir\\vscode-install-context.reg\"",
+    "notes": [
+        "When there is vscode update available run 'scoop update vscode-insiders -kf'",
+        "When installed from elevated prompt, context menus will be created.",
+        "    Otherwise, you could create it on your own using install-context.reg file in '$dir' folder"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://vscode-update.azurewebsites.net/latest/win32-x64-archive/insider#/cosi.zip",
+                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-install-context.reg",
+                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-uninstall-context.reg"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://vscode-update.azurewebsites.net/latest/win32-archive/insider#/cosi.zip",
+                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-install-context.reg",
+                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-uninstall-context.reg"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "$PORT = \"$dir\\data\"",
+            "$REG_INSTALL = \"$dir\\vscode-install-context.reg\"",
+            "$REG_UNINSTALL = \"$dir\\vscode-uninstall-context.reg\"",
+            "$CODEPATH = \"$dir\\Code - Insiders.exe\".Replace('\\', '\\\\')",
+            "    # Create data folder",
+            "if (-not (Test-Path \"$persist_dir\\data\")) { ",
+            "    Write-Host 'No user data folder exists' -f Yellow",
+            "    @('tmp', 'user-data', 'extensions') | ForEach-Object { New-Item \"$PORT\\$_\" -Force -Type Directory | Out-Null }",
+            "}",
+            "    # Create install context file",
+            "$content = Get-Content $REG_INSTALL",
+            "$content = $content -replace '\\$code', $CODEPATH",
+            "$content = $content -replace '&Code', 'Code &Insiders'",
+            "Set-Content $REG_INSTALL $content -Encoding Ascii",
+            "    # Create uninstall context file",
+            "$content = Get-Content $REG_UNINSTALL",
+            "$content = $content -replace '&Code', 'Code &Insiders'",
+            "Set-Content $REG_UNINSTALL $content -Encoding Ascii",
+            "    # Apply context automatically",
+            "if (is_admin) {",
+            "    regedit /s $REG_INSTALL",
+            "}"
+        ]
+    },
+    "post_install": [
+        "    # Reflect storage change to support correct last opened editor.",
+        "$file = \"$dir\\data\\user-data\\storage.json\"",
+        "if (Test-Path $file) {",
+        "    $cont = (Get-Content $file) -replace 'nightly-\\d+', 'current'",
+        "    Set-Content $file $cont -Encoding Ascii",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "    # Uninstall context menu",
+            "if (is_admin) { regedit /s \"$dir\\vscode-uninstall-context.reg\" }"
+        ]
+    },
     "bin": [
+        "bin\\code-insiders.cmd",
         [
             "bin\\code-insiders.cmd",
-            "code-insiders"
+            "codei"
         ]
     ],
     "shortcuts": [
@@ -19,40 +80,5 @@
             "Visual Studio Code - Insiders"
         ]
     ],
-    "post_install": [
-        "if (Test-Path \"$dir\\vscode-install-context.reg\") {",
-        "  $codepath = \"$dir\\Code - Insiders.exe\".Replace('\\', '\\\\')",
-        "  $content = Get-Content \"$dir\\vscode-install-context.reg\"",
-        "  $content = $content.Replace('$code', $codepath)",
-        "  $content = $content.Replace('&Code', 'Code &Insiders')",
-        "  if ($global) {",
-        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "  }",
-        "  $content | Set-Content -Path \"$dir\\vscode-install-context.reg\"",
-        "}",
-        "if (Test-Path \"$dir\\vscode-uninstall-context.reg\") {",
-        "  $content = Get-Content \"$dir\\vscode-uninstall-context.reg\"",
-        "  $content = $content.Replace('&Code', 'Code &Insiders')",
-        "  if ($global) {",
-        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "  }",
-        "  $content | Set-Content -Path \"$dir\\vscode-uninstall-context.reg\"",
-        "}"
-    ],
-    "architecture": {
-        "64bit": {
-            "url": [
-                "https://vscode-update.azurewebsites.net/latest/win32-x64-archive/insider#/dl.7z",
-                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-install-context.reg",
-                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-uninstall-context.reg"
-            ]
-        },
-        "32bit": {
-            "url": [
-                "https://vscode-update.azurewebsites.net/latest/win32-archive/insider#/dl.7z",
-                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-install-context.reg",
-                "https://raw.githubusercontent.com/lukesampson/scoop-extras/master/scripts/vscode-uninstall-context.reg"
-            ]
-        }
-    }
+    "persist": "data"
 }
