@@ -2,6 +2,10 @@
     "version": "5.63.7540",
     "description": "CCleaner Professional. The number-one tool for cleaning PC. Protects privacy and makes computer faster and more secure!",
     "homepage": "https://www.ccleaner.com/ccleaner",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.ccleaner.com/legal/end-user-license-agreement"
+    },
     "url": [
         "https://download.ccleaner.com/ccsetup563.exe#/cosi.7z",
         "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/ccl.dll#/branding.dll",
@@ -12,22 +16,14 @@
         "26d6cd545f57071e3a01e5e39e68fde63af8e086bd39eff2b746633006d71511",
         "d5142f288ee9e334671c807931ace52c31eaa0fa254ffe31979fad0b6ba5c2cd"
     ],
-    "installer": {
-        "script": [
-            "    # Create portable.dat (everytime, no need to check)",
-            "Set-Content \"$dir\\portable.dat\" '#PORTABLE#' -Encoding Ascii",
-            "    # Create ccleaner.ini",
-            "$file = 'ccleaner.ini'",
-            "if (-not (Test-Path \"$persist_dir\\$file\")) {",
-            "    Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-            "    $CONT = @('[Options]', 'HelpImproveCCleaner=0', 'PrefsPrivacyShowOffers1stParty=0', 'PrefsPrivacyShareData1stParty=0')",
-            "    Set-Content \"$dir\\$file\" ($CONT -join \"`r`n\") -Encoding Ascii",
-            "}",
-            "    # Remove irrelevant files",
-            "    # gci because rm does not support placeholders as expected",
-            "@('$*', 'uninst.exe', 'CCUpdate.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -Recurse }"
-        ]
-    },
+    "pre_install": [
+        "Set-Content \"$dir\\portable.dat\" '#PORTABLE#' -Encoding Ascii",
+        "if (-not (Test-Path \"$persist_dir\\ccleaner.ini\")) {",
+        "    $CONT = @('[Options]', 'HelpImproveCCleaner=0', 'PrefsPrivacyShowOffers1stParty=0', 'PrefsPrivacyShareData1stParty=0')",
+        "    Set-Content \"$dir\\ccleaner.ini\" $CONT -Encoding Ascii",
+        "}",
+        "@('$*', 'uninst.exe', 'CCUpdate.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -Recurse }"
+    ],
     "architecture": {
         "64bit": {
             "bin": [
