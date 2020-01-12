@@ -8,13 +8,10 @@
         "vcredist2012"
     ],
     "url": [
-        "https://downloads.sourceforge.net/project/zapps/Xshell/Xshell-6.0.0184r.exe#/setup.exe",
-        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/script/xshell/register.reg"
+        "https://downloads.sourceforge.net/project/zapps/Xshell/Xshell-6.0.0184r.exe#/setup.exe"
     ],
     "hash": [
-        "sha1:e0c5cba6a7f49be2433f82ed32e8ab0d990bb3ac",
-        "E7DA680B2C9F99A1B042EF96D621C3E85E1C2867D07BF0FB42E764D2543F75C1"
-    ],
+        "sha1:e0c5cba6a7f49be2433f82ed32e8ab0d990bb3ac"    ],
     "pre_install": [
         "sudo hostseditor.exe /a transact.netsarang.com",
         "sudo hostseditor.exe /a update.netsarang.com",
@@ -32,6 +29,12 @@
         "keep": true
     },
     "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = bucketdir($bucket)",
+        "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+        "(gc \"$bucketdir\\..\\scripts\\xshell\\assoc.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\assoc.reg\"",
+        "(gc \"$bucketdir\\..\\scripts\\xshell\\unassoc.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\unassoc.reg\"",
+        "cp \"$bucketdir\\..\\scripts\\xshell\\xshell-uninstall.reg\" \"$dir\"",
         "sudo regedit /s $dir\\register.reg",
         "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse",
         "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse",
