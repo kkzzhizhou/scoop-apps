@@ -5,15 +5,14 @@
     "depends": [
         "bluelifehostseditor",
         "vcredist2008",
-        "vcredist2012"
+        "vcredist2012",
+        "sudo"
     ],
     "url": [
-        "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-6.0.0178r.exe#/setup.exe",
-        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/xftp/register.reg"
+        "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-6.0.0178r.exe#/setup.exe"
     ],
     "hash": [
-        "sha1:1484dc08feb3d2c46323ec3abc59e659aaeae784",
-        "d5eaeb4f6efcd29e984eb9fc885e619d2f03c8ff8bfbd67a5c5a3a1a309ae5fc"
+        "sha1:1484dc08feb3d2c46323ec3abc59e659aaeae784"
     ],
     "pre_install": [
         "sudo hostseditor.exe /a transact.netsarang.com",
@@ -32,6 +31,10 @@
         "keep": true
     },
     "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = bucketdir($bucket)",
+        "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+        "(gc \"$bucketdir\\..\\scripts\\xftp\\register.reg.templ\") | out-file -enc oem \"$dir\\register.reg\"",
         "sudo regedit /s $dir\\register.reg",
         "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse",
         "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse",
