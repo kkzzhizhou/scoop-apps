@@ -1,4 +1,10 @@
 {
+    "##": [
+        "What are these?",
+        "    - builder_config.ini",
+        "    - ceip.ini",
+        "    - Winpeshl.ini"
+    ],
     "version": "11.6",
     "description": "MiniTool Partition Wizard Free. All-in-one partition manager with user-friendly interface",
     "homepage": "https://www.partitionwizard.com/free-partition-manager.html",
@@ -6,26 +12,23 @@
         "identifier": "Proprietary",
         "url": "https://www.minitool.com/help-pw/eula.html#end-user-license-agreement-1461"
     },
-    "url": "https://cdn2.minitool.com/download-center/release/products/pw/current-release/pw11-free-offline.exe",
-    "hash": "25da58cef11dd2f9c414d28886499419e45fd669ec1c2f179bd2f9d3028964bc",
-    "innosetup": true,
     "architecture": {
         "64bit": {
-            "installer": {
-                "script": [
-                    "Get-ChildItem $dir '*,1.*' -Recurse | Remove-Item -Force",
-                    "Get-ChildItem $dir '*,2.*' -Recurse | Rename-Item -NewName { ($_.Basename -replace ',2$') + $_.Extension}"
-                ]
-            }
+            "url": "https://www.partitionwizard.com/download/v11.6-portable/11x64.zip",
+            "hash": "562d9f57917e6e9a22a5f2ce0b3f1f25c32b17318eaef8b7da48bcfd339706b0"
         },
         "32bit": {
-            "installer": {
-                "script": [
-                    "Get-ChildItem $dir '*,2.*' -Recurse | Remove-Item -Force",
-                    "Get-ChildItem $dir '*,1.*' -Recurse | Rename-Item -NewName { ($_.Basename -replace ',1$') + $_.Extension}"
-                ]
-            }
+            "url": "https://www.partitionwizard.com/download/v11.6-portable/11x86.zip",
+            "hash": "5e8a142a7b41bf0fd5d6ed2f7a4dc39c3cb8971c9bd9a28078d5a15b15c78585"
         }
+    },
+    "pre_install": [
+        "if (-not (Test-Path \"$persist_dir\\log.txt\")) { New-Item \"$dir\\log.txt\" | Out-Null }",
+        "if (Test-Path \"$persist_dir\\lang.ini\") { Copy-Item \"$persist_dir\\lang.ini\" $dir -Force }",
+        "Remove-Item \"$dir\\unins*\""
+    ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\lang.ini\" $persist_dir -ErrorAction SilentlyContinue"
     },
     "shortcuts": [
         [
@@ -33,11 +36,22 @@
             "MiniTool Partition Wizard Free"
         ]
     ],
+    "persist": [
+        "log.txt",
+        "partitionwizard.exe.ini"
+    ],
     "checkver": {
         "url": "https://www.partitionwizard.com/upgrade-history.html",
         "regex": "V([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://cdn2.minitool.com/download-center/release/products/pw/current-release/pw11-free-offline.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://www.partitionwizard.com/download/v$version-portable/$majorVersionx64.zip"
+            },
+            "32bit": {
+                "url": "https://www.partitionwizard.com/download/v$version-portable/$majorVersionx86.zip"
+            }
+        }
     }
 }
