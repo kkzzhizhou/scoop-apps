@@ -1,7 +1,8 @@
 {
     "homepage": "https://tortoisesvn.net",
-    "description": "An Apache™ Subversion (SVN)® client, implemented as a Windows shell extension.",
+    "description": "An Apacheâ„¢ Subversion (SVN)Â® client, implemented as a Windows shell extension.",
     "version": "1.13.1.28686",
+    "depends": "sudo",
     "license": "GPL-2.0-only",
     "architecture": {
         "64bit": {
@@ -62,12 +63,19 @@
         "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
         "(gc \"$bucketdir\\..\\scripts\\tortoisesvn\\tortoisesvn-install.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\tortoisesvn-install.reg\"",
         "(gc \"$bucketdir\\..\\scripts\\tortoisesvn\\tortoisesvn-install-tools.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\tortoisesvn-install-tools.reg\"",
-        "cp \"$bucketdir\\..\\scripts\\tortoisesvn\\tortoisesvn-uninstall.reg\" \"$dir\""
+        "cp \"$bucketdir\\..\\scripts\\tortoisesvn\\tortoisesvn-uninstall.reg\" \"$dir\"",
+        "sudo regedit /s $dir\\tortoisesvn-install.reg",
+        "sudo regedit /s $dir\\tortoisesvn-install-tools.reg",
+        "ie4uinit.exe -show"
     ],
+    "uninstaller": {
+        "script": [
+            "sudo regedit /s $dir\\tortoisesvn-uninstall.reg",
+            "ie4uinit.exe -show"
+        ]
+    },
     "notes": [
-        "To add TortoiseSVN as a context menu option, run '$dir\\tortoisesvn-install.reg'",
-        "For file associations, run '$dir\\tortoisesvn-install-tools.reg'",
-        "Before uninstalling TortoiseSVN, run '$dir\\tortoisesvn-uninstall.reg' "
+        "modified by zzz,enjoy."
     ],
     "checkver": {
         "url": "https://tortoisesvn.net/downloads.html",
