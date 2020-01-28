@@ -1,0 +1,56 @@
+{
+    "version": "2019.2.EAP3-71010",
+    "description": "TeamCity Early Access Program (Kanpur). Powerful Continuous Integration out of the box by JetBrains.",
+    "homepage": "https://www.jetbrains.com/teamcity/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.jetbrains.com/legal/agreements/user_eap.html"
+    },
+    "url": "https://download.jetbrains.com/teamcity/eap/TeamCity-71010.exe#/cosi.7z",
+    "hash": "fd51c7f25169049ee203786b4948d45a0dd851097258610bd77dae6f05b8f4b0",
+    "notes": [
+        "EAP releases come with 60 day evaluation license with unlimited agents.",
+        "TeamCity could be executed from anywhere using 'teamcity' command.",
+        "Run 'teamcity --help' to get more info."
+    ],
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$*\" -Recurse",
+            "    # Create custom shim like script",
+            "$ver_path = \"$dir\\bin\"",
+            "$cont = @(",
+            "    \"Push-Location \"\"$ver_path\"\"\"",
+            "    '& .\\teamcity-server.bat @args'",
+            "    'Pop-Location'",
+            ")",
+            "Set-Content \"$dir\\teamcity.ps1\" $cont -Encoding Ascii"
+        ]
+    },
+    "bin": [
+        "teamcity.ps1",
+        [
+            "teamcity.ps1",
+            "teamcity-eap"
+        ],
+        [
+            "teamcity.ps1",
+            "teamcity-server"
+        ],
+        [
+            "teamcity.ps1",
+            "teamcity-server-eap"
+        ]
+    ],
+    "persist": "conf",
+    "checkver": {
+        "url": "https://confluence.jetbrains.com/display/TW/ChangeLog",
+        "regex": ">Kanpur\\s+([\\d.]+)\\s+EAP(?<eap>\\d+)\\s+\\(build\\s+(?<build>[\\d.]+)\\)\\s+Release\\s+Notes</a>",
+        "replace": "$1.EAP${eap}-${build}"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/teamcity/eap/TeamCity-$preReleaseVersion.exe#/cosi.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

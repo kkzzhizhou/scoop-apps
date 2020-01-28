@@ -1,0 +1,37 @@
+{
+    "homepage": "http://tanukifont.com/tanuki-permanent-marker/",
+    "description": "CJK font that imitates the strokes of permanent marker pen.",
+    "version": "1.21",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://tanukifont.com/fonts-user-policy/"
+    },
+    "url": "https://tanukifont.com/download/TanukiMagic_1_21.zip",
+    "hash": "2e167e22c9cfa71d5ff3fdf8f69a1001021cc5118f5884d0179d4c144378ee67",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'Tanuki Permanent Marker' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "regex": "TanukiMagic_([\\d]+)_([\\d]+).zip",
+        "replace": "${1}.${2}"
+    },
+    "autoupdate": {
+        "url": "https://tanukifont.com/download/TanukiMagic_$majorVersion_$minorVersion.zip"
+    }
+}

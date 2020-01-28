@@ -1,0 +1,31 @@
+{
+    "version": "1911.21",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/adam7/delugia-code",
+    "url": "https://github.com/adam7/delugia-code/releases/download/v1911.21/Delugia.Nerd.Font.Complete.ttf",
+    "hash": "B4C92DE38BCB22BEEC08FE7A825FCE5447692DDB64B38F6A7DEEB87822E1B27B",
+    "checkver": "github",
+    "depends": "sudo",
+    "autoupdate": {
+        "url": "https://github.com/adam7/delugia-code/releases/download/v$version/Delugia.Nerd.Font.Complete.ttf"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The '$app' font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

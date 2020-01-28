@@ -1,0 +1,34 @@
+{
+    "version": "006.01",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://mojikiban.ipa.go.jp/1300.html#LicenseEng"
+    },
+    "homepage": "https://mojikiban.ipa.go.jp/1300.html",
+    "description": "Free CJK font maintained by Japanese government agency. It covers a large set of characters.",
+    "url": "https://mojikiban.ipa.go.jp/OSCDL/IPAmjMincho/ipamjm00601.zip",
+    "hash": "35494e0f2896f38b3f7369a8421a895cea6440a42c0a66ac95eab47d6ed25b68",
+    "checkver": {
+        "regex": "Ver\\.([\\d.]+)</h2>"
+    },
+    "autoupdate": {
+        "url": "https://mojikiban.ipa.go.jp/OSCDL/IPAmjMincho/ipamjm$cleanVersion.zip"
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'IPAmj Mincho' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}
