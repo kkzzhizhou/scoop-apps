@@ -1,32 +1,39 @@
 {
-    "##": "The installer is created by NSIS, but it cannot be extracted by 7-zip. See https://github.com/lukesampson/scoop-extras/issues/1831 for details.",
-    "homepage": "https://www.darktable.org/",
-    "description": "Open source photography workflow application and raw developer. A virtual lighttable and darkroom for photographers",
-    "license": "GPL-3.0-only",
+    "##": "The installer is created by NSIS, but it cannot be extracted by 7-Zip. See https://github.com/lukesampson/scoop-extras/issues/1831 for details.",
     "version": "3.0.0",
+    "description": "Photography workflow application and raw developer.",
+    "homepage": "https://www.darktable.org/",
+    "license": "GPL-3.0-only",
     "url": "https://github.com/darktable-org/darktable/releases/download/release-3.0.0/darktable-3.0.0-win64.exe#/installer.exe",
     "hash": "d3b33eb2a732e9d460dc6ab1ffed9dfc5e033f0a7b68a6e1f365d53a0ec76bdd",
     "installer": {
         "script": [
-            "$proc = Start-Process \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Verb RunAs -Passthru",
-            "do {Start-Sleep -Milliseconds 200} until ($proc.HasExited)"
+            "$process = Start-Process \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Verb RunAs -PassThru",
+            "do { Start-Sleep -Milliseconds 200 } until ($process.HasExited)",
+            "Remove-Item -Recurse \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Programs\\darktable\""
         ]
     },
     "uninstaller": {
         "script": [
-            "$proc = Start-Process \"$dir\\Uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -Passthru",
-            "$ProcessActive1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
-            "$ProcessActive2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "Start-Process \"$dir\\Uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -PassThru | Out-Null",
+            "$activeProcess1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "$activeProcess2 = Get-Process Un_A -ErrorAction SilentlyContinue",
             "do {",
             "    Start-Sleep -Milliseconds 200",
-            "    $ProcessActive1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
-            "    $ProcessActive2 = Get-Process Un_A -ErrorAction SilentlyContinue",
-            "} until (($ProcessActive1 -eq $null) -And ($ProcessActive2 -eq $null))"
+            "    $activeProcess1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "    $activeProcess2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "} until (($activeProcess1 -eq $null) -And ($activeProcess2 -eq $null))"
         ]
     },
     "bin": [
         "bin\\darktable.exe",
         "bin\\darktable-cli.exe"
+    ],
+    "shortcuts": [
+        [
+            "bin\\darktable.exe",
+            "darktable"
+        ]
     ],
     "checkver": {
         "github": "https://github.com/darktable-org/darktable",
