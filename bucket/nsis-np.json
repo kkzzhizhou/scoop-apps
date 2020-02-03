@@ -1,28 +1,39 @@
 {
+    "version": "3.05",
+    "description": "Script-driven installer authoring tool.",
     "homepage": "http://nsis.sourceforge.net/",
     "license": "http://nsis.sourceforge.net/License",
-    "version": "3.05",
-    "url": "https://sourceforge.net/projects/nsis/files/NSIS%203/3.05/nsis-3.05-setup.exe",
-    "bin": [
-        "makensis.exe",
-        "nsis.exe"
-    ],
+    "url": "https://sourceforge.net/projects/nsis/files/NSIS%203/3.05/nsis-3.05-setup.exe#/setup.exe",
     "hash": "sha1:efc378e5a9242cfae47c072d96a8882ef33718d5",
     "installer": {
-        "args": [
-            "/S",
-            "/D=$dir"
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+            "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\NSIS.lnk\""
         ]
     },
     "uninstaller": {
-        "file": "uninst-nsis.exe",
-        "args": "/S"
+        "script": "Invoke-ExternalCommand \"$dir\\uninst-nsis.exe\" -ArgumentList @('/S') -RunAs | Out-Null"
     },
+    "bin": [
+        "makensis.exe",
+        "makensisw.exe",
+        "NSIS.exe"
+    ],
+    "shortcuts": [
+        [
+            "makensisw.exe",
+            "MakeNSISW"
+        ],
+        [
+            "NSIS.exe",
+            "NSIS"
+        ]
+    ],
     "checkver": {
         "url": "http://nsis.sourceforge.net/Main_Page",
-        "re": "http://nsis\\.sourceforge\\.net/Docs/AppendixF\\.html#v([\\d\\.]+)"
+        "regex": "http://nsis\\.sourceforge\\.net/Docs/AppendixF\\.html#v([\\d\\.]+)"
     },
     "autoupdate": {
-        "url": "https://sourceforge.net/projects/nsis/files/NSIS%203/$version/nsis-$version-setup.exe"
+        "url": "https://sourceforge.net/projects/nsis/files/NSIS%203/$version/nsis-$version-setup.exe#/setup.exe"
     }
 }

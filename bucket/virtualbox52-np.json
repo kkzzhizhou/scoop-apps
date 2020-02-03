@@ -1,18 +1,22 @@
 {
-    "homepage": "https://www.virtualbox.org/wiki/Download_Old_Builds_5_2",
-    "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
-    "license": "GPL-2.0-only",
     "version": "5.2.36",
+    "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
+    "homepage": "https://www.virtualbox.org/wiki/Download_Old_Builds_5_2",
+    "license": "GPL-2.0-only",
     "url": "http://download.virtualbox.org/virtualbox/5.2.36/VirtualBox-5.2.36-135684-Win.exe#/VBox52Setup.exe",
     "hash": "17f562098dbda89891bb569d827c68c8c87a9e9f6691fd85c49252b0bebfe87f",
     "installer": {
-        "script": "Start-Process cmd -Verb Runas \"/c $dir\\VBox52Setup.exe --msiparams INSTALLDIR=$dir VBOX_START=0 REBOOT=ReallySuppress --silent\" -Wait -WindowStyle hidden"
+        "script": [
+            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\VBox52Setup.exe`\" --msiparams INSTALLDIR=`\"$dir`\" VBOX_START=0 REBOOT=ReallySuppress --silent && icacls `\"$dir`\" /grant Everyone:F /T\" -Verb RunAs",
+            "Remove-Item \"$dir\\VBox52Setup.exe\"",
+            "Remove-Item \"$env:HOMEDRIVE\\Users\\Public\\Desktop\\Oracle VM VirtualBox.lnk\"",
+            "Remove-Item -Recurse \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Oracle VM VirtualBox\""
+        ]
     },
-    "post_install": "remove-item \"$dir\\VBox52Setup.exe\"",
     "uninstaller": {
         "script": [
             "$id = wmic product where \"\"\"name like 'Oracle VM VirtualBox%'\"\"\" get IdentifyingNumber | find /i \"\"\"-\"\"\"",
-            "Start-Process cmd -Verb Runas \"/c msiexec /x $id /qn\" -Wait -WindowStyle hidden"
+            "Start-Process -Wait -WindowStyle Hidden cmd \"/c msiexec /x $id /qn && icacls `\"$dir`\" /grant Everyone:F /T\" -Verb RunAs"
         ]
     },
     "bin": [
