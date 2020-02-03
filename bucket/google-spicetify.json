@@ -1,0 +1,71 @@
+{
+    "version": "2b9479",
+    "description": "Google-style theme for Spicetify.",
+    "homepage": "https://github.com/khanhas/google-spicetify",
+    "license": "GPL-3.0-only",
+    "depends": "spicetify-cli",
+    "url": "https://github.com/khanhas/google-spicetify/archive/master.zip",
+    "hash": "e57f263335f3977a03d3bd40c27552a2e6dded92fa63ef2a7a8fd33d70bd3731",
+    "notes": [
+        "Run the following commands to apply this theme:",
+        "spicetify config current_theme google-spicetify",
+        "spicetify apply",
+        "Run the following commands to change the color scheme:",
+        "spicetify config color_scheme <Base|Dark|Gow|Spotify>",
+        "spicetify apply"
+    ],
+    "installer": {
+        "script": [
+            "$spotify_path = scoop which Spotify",
+            "",
+            "if (-not $spotify_path) {",
+            "    $spotify_path = \"$env:APPDATA\\Spotify\\Spotify.exe\"",
+            "",
+            "    if (-not (Test-Path $spotify_path)) {",
+            "        Write-Host \"Spotify must be installed to install $app.\" -Foreground Red",
+            "        exit 1",
+            "    }",
+            "}",
+            "",
+            "Remove-Item -ErrorAction Ignore -Recurse \"$env:USERPROFILE\\.spicetify\\Themes\\google-spicetify\"",
+            "Copy-Item -Recurse \"$dir\\google-spicetify-master\" -Destination \"$env:USERPROFILE\\.spicetify\\Themes\\google-spicetify\"",
+            "",
+            "if (-not (Test-Path \"$env:APPDATA\\Spotify\\prefs\")) {",
+            "    # spicetify-cli refuses to apply without a backup, and spicetify-cli needs a prefs file so it can tell which version of Spotify is currently installed",
+            "    $spotify_version = (Select-String -Path $spotify_path -Pattern '\\d\\.\\d\\.\\d+\\.\\d+\\.[a-z1-9]+' | Select-Object -First 1).Matches[0].Groups[0].Value",
+            "    New-Item -ItemType Directory -Force -Path \"$env:APPDATA\\Spotify\" | Out-Null",
+            "    Set-Content \"$env:APPDATA\\Spotify\\prefs\" \"app.last-launched-version=`\"$spotify_version`\"\"",
+            "}",
+            "",
+            "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
+            "",
+            "spicetify config spotify_path \"$(Resolve-Path(Split-Path $spotify_path))\"",
+            "spicetify restore | Out-Null # If a backup has already been made, restore it first",
+            "spicetify backup apply | Out-Null",
+            "",
+            "if (-not $spotify_running) {",
+            "    ($job = Start-Job {",
+            "        while ($spotify_process -eq $null) {",
+            "            Start-Sleep -Milliseconds 250",
+            "            $spotify_process = Get-Process | Where-Object { $_.name -eq 'Spotify' }",
+            "        }",
+            "",
+            "        $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
+            "    }) | Out-Null",
+            "",
+            "    $job | Wait-Job -Timeout 5",
+            "    $job.StopJob()",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": "Get-ChildItem \"$dir\" | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\Themes\\$($_.Name)\" }"
+    },
+    "checkver": {
+        "url": "https://github.com/khanhas/google-spicetify",
+        "regex": "/commit/([a-z0-9]{6})"
+    },
+    "autoupdate": {
+        "url": "https://github.com/khanhas/google-spicetify/archive/master.zip"
+    }
+}

@@ -1,6 +1,39 @@
-﻿{
-    "version":  "0.7.6",
-    "url":  "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.7.6/Clash.for.Windows-0.7.6-win.7z",
-    "homepage":  "https://github.com/Fndroid/clash_for_windows_pkg",
-    "shortcuts":  [["Clash for Windows.exe", "Clash"]]
+{
+    "homepage": "https://github.com/Fndroid/clash_for_windows_pkg",
+    "description": "A Windows GUI based on Clash https://docs.cfw.lbyczf.com/",
+    "version": "0.8.10",
+    "license": "MIT",
+    "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.8.10/Clash.for.Windows.Setup.0.8.10.exe#/clash.7z",
+    "hash": "79d31258c8a35d3327059272f5b9da5a88ccdd33d9b2264043e7b4adb985bcee",
+    "shortcuts": [
+        [
+            "Clash for Windows.exe",
+            "Clash"
+        ]
+    ],
+    "pre_install": [
+        "Remove-Item -Recurse \"$dir\\Uninstall Clash for Windows.exe\"",
+        "Get-ChildItem -Path \"$dir\\`$PLUGINSDIR\" -Depth \"2\" -Include \"*.7z\" | Move-Item -Destination \"$dir\\`$PLUGINSDIR\"",
+        "Expand-7zipArchive -Path \"$dir\\`$PLUGINSDIR\\app-64.7z\" -DestinationPath \"$dir\"",
+        "Remove-Item -Recurse \"$dir\\`$PLUGINSDIR\"",
+        "if (-not (Test-Path \"$persist_dir\\resources\\static\\files\")) {",
+        "    mkdir -p \"$persist_dir\\resources\\static\\files\"",
+        "}",
+        "if (-not (Test-Path \"$persist_dir\\resources\\static\\files\\config.yml\")) {",
+        "    Write-Host 'File config.yml does not exists. Creating.' -f Yellow",
+        "    Copy-Item \"$dir\\resources\\static\\files\\default\\config.yml\" -Destination \"$persist_dir\\resources\\static\\files\\config.yml\" -Force",
+        "}"
+    ],
+    "persist": [
+        "resources\\static\\files\\profiles",
+        "resources\\static\\files\\config.yml"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/$version/Clash.for.Windows.Setup.$version.exe#/clash.7z",
+        "hash": {
+            "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/$version/sha256sum",
+            "regex": "exe: $sha256"
+        }
+    }
 }

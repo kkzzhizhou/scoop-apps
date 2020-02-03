@@ -1,0 +1,49 @@
+{
+    "version": "3.24.52",
+    "description": "Tool for the customization of functions on Corsair peripherals and components.",
+    "homepage": "https://www.corsair.com/us/en/icue",
+    "license": "Freeware",
+    "url": "http://downloads.corsair.com/Files/CUE/iCUESetup_3.24.52_release.msi#/setup.msi_",
+    "hash": "e87dd9de5bfbd645fea5650a5e4847df17a1bc231289ec70b1faabbd852fa834",
+    "notes": [
+        "Run the following PowerShell command as administrator to disable the Corsair Service from starting automatically:",
+        "Set-Service -Name CorsairService -StartupType Manual"
+    ],
+    "installer": {
+        "script": [
+            "# if (!(is_admin)) {",
+            "#     error \"Administrator rights are required to install $app.\"",
+            "#     exit 1",
+            "# }",
+            "",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\setup.msi_`\" /qn INSTALLFOLDER=`\"$dir`\"\" -Verb RunAs",
+            "Remove-Item \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Corsair\\iCUE.lnk\"",
+            "# If the Corsair directory is empty, delete it",
+            "Remove-Item -ErrorAction Ignore \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Corsair\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# if (!(is_admin)) {",
+            "#     error \"Administrator rights are required to uninstall $app.\"",
+            "#     exit 1",
+            "# }",
+            "",
+            "Start-Process -Wait msiexec \"/x `\"$dir\\setup.msi_`\" /qn\" -Verb RunAs"
+        ]
+    },
+    "bin": "iCUE.exe",
+    "shortcuts": [
+        [
+            "iCUE.exe",
+            "iCUE"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.corsair.com/us/en/downloads",
+        "regex": "\"CORSAIR iCUE ([\\w.]+)"
+    },
+    "autoupdate": {
+        "url": "http://downloads.corsair.com/Files/CUE/iCUESetup_$version_release.msi#/setup.msi_"
+    }
+}
