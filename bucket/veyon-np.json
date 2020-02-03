@@ -1,21 +1,22 @@
 {
-    "homepage": "https://veyon.io/",
-    "description": "Computer monitoring / classroom management software.",
     "version": "4.3.2.0",
+    "description": "Computer monitoring and classroom management software.",
+    "homepage": "https://veyon.io/",
     "license": "GPL-2.0-or-later",
     "architecture": {
-        "32bit": {
-            "url": "https://github.com/veyon/veyon/releases/download/v4.3.2/veyon-4.3.2.0-win32-setup.exe#/installer.exe",
-            "hash": "134c8129f2392cf0c74543242d0d810b5679a469a947d97597ffa90637da9976"
-        },
         "64bit": {
             "url": "https://github.com/veyon/veyon/releases/download/v4.3.2/veyon-4.3.2.0-win64-setup.exe#/installer.exe",
             "hash": "083ca0f8eb858f9123ecfa4903f80a4136790b8a1e1c3e72bb654345c166ae60"
+        },
+        "32bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.3.2/veyon-4.3.2.0-win32-setup.exe#/installer.exe",
+            "hash": "134c8129f2392cf0c74543242d0d810b5679a469a947d97597ffa90637da9976"
         }
     },
     "installer": {
         "script": [
             "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+            "Remove-Item -Recurse \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Veyon\"",
             "Remove-Item \"$dir\\installer.exe\""
         ]
     },
@@ -23,17 +24,18 @@
         "script": "Start-Process \"$dir\\uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -Wait | Out-Null"
     },
     "bin": [
+        "veyon-cli.exe",
+        "veyon-configurator.exe",
+        "veyon-master.exe"
+    ],
+    "shortcuts": [
         [
-            "veyon-cli.exe",
-            "veyon-cli"
+            "veyon-configurator.exe",
+            "Veyon Configurator"
         ],
         [
             "veyon-master.exe",
-            "veyon-master"
-        ],
-        [
-            "veyon-configurator.exe",
-            "veyon-configurator"
+            "Veyon Master"
         ]
     ],
     "checkver": {
@@ -42,11 +44,11 @@
     },
     "autoupdate": {
         "architecture": {
-            "32bit": {
-                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win32-setup.exe#/installer.exe"
-            },
             "64bit": {
                 "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win64-setup.exe#/installer.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win32-setup.exe#/installer.exe"
             }
         }
     }

@@ -1,22 +1,33 @@
 {
-    "homepage": "http://www.moonsoftware.com/shell_tools",
-    "description": "It adds some new useful commands like Resize image*, Install/Uninstall/Load/Unload font, Copy size, Copy path, Show hidden files, Show file extensions, File note, Refresh icons etc to right-click menus in Windows Explorer.",
     "version": "2.0.1",
+    "description": "Collection of Windows shell extensions.",
+    "homepage": "http://www.moonsoftware.com/shell_tools",
     "license": "Freeware",
+    "suggest": "imagemagick",
     "url": "http://www.moonsoftware.com/files/ShellTools_201.exe#/ShellTools.exe",
     "hash": "4d43a8d9f81cda86bb15734c931760a9d1f70c9847151b51932be585a24948d6",
     "installer": {
-        "script": "Start-Process cmd -Verb Runas \"/c $dir\\ShellTools.exe /qb /i APPDIR=$dir\" -Wait -WindowStyle hidden"
+        "script": [
+            "Start-Process -Wait -WindowStyle Hidden \"$dir\\ShellTools.exe\" \"/i APPDIR=`\"$dir`\" /qb\"",
+            "Remove-Item \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Programs\\ShellTools options.lnk\""
+        ]
     },
     "uninstaller": {
         "script": [
             "$id = wmic product where \"\"\"name = 'ShellTools'\"\"\" get IdentifyingNumber | find /i \"\"\"-\"\"\"",
-            "Start-Process cmd -Verb Runas \"/c msiexec /x $id /qn\" -Wait -WindowStyle hidden"
+            "Start-Process -Wait msiexec \"/x $id /qn\" -Verb RunAs"
         ]
     },
+    "bin": "ShellToolsConfig.exe",
+    "shortcuts": [
+        [
+            "ShellToolsConfig.exe",
+            "ShellTools"
+        ]
+    ],
     "checkver": {
         "url": "http://www.moonsoftware.com/downloads",
-        "re": "ShellTools\\s+([\\d.]+)"
+        "regex": "ShellTools\\s+([\\d.]+)"
     },
     "autoupdate": {
         "url": "http://www.moonsoftware.com/files/ShellTools_$cleanVersion.exe#/ShellTools.exe"
