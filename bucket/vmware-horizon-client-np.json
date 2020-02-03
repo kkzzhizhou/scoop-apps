@@ -2,38 +2,37 @@
     "version": "5.3.0-15208953",
     "description": "VMware Horizon Client for Windows allows you to connect to your VMware Horizon virtual desktop.",
     "homepage": "https://www.vmware.com/products/horizon.html",
+    "license": "Proprietary",
     "architecture": {
         "64bit": {
             "url": "https://download3.vmware.com/software/view/viewclients/CART20FQ4/VMware-Horizon-Client-5.3.0-15208953.exe#/VMware-Horizon-Client-Setup.exe",
-            "hash": "8111abba91659b5023285f7968904e63e1eac50147acc6f7699556679d7d25cb",
-            "installer": {
-                "script": [
-                    "# Installer script run in elevated 'cmd' shell, and sets filesystem permissions on",
-                    "# INSTALLDIR for administrators. When scoop tries to create 'manifest.json' file in a",
-                    "# non-elevated shell, this causes an error. Set INSTALLDIR to a subdirectory of scoop",
-                    "# $dir, so filesystem permissions on the current directory aren't changed.",
-                    "Start-Process cmd -Verb RunAs \"/c $dir\\VMware-Horizon-Client-Setup.exe /install /norestart /silent INSTALLDIR=\"\"$dir\\files\"\" AUTO_UPDATE_ENABLED=0\" -Wait -WindowStyle Hidden"
-                ]
-            },
-            "uninstaller": {
-                "script": [
-                    "# Ensure the INSTALLDIR subdirectory is removed in the elevated shell after successful uninstall.",
-                    "Start-Process cmd -Verb RunAs \"/c $dir\\VMware-Horizon-Client-Setup.exe /uninstall /norestart /silent && rmdir \"\"$dir\\files\"\"\" -Wait -WindowStyle Hidden"
-                ]
-            },
-            "shortcuts": [
-                [
-                    "files\\vmware-view.exe",
-                    "VMware Horizon Client"
-                ]
-            ]
+            "hash": "8111abba91659b5023285f7968904e63e1eac50147acc6f7699556679d7d25cb"
         }
     },
+    "installer": {
+        "script": [
+            "Start-Process -Wait -WindowStyle Hidden cmd \"/c `\"$dir\\VMware-Horizon-Client-Setup.exe`\" /install /norestart /silent INSTALLDIR=`\"$dir\\install`\" AUTO_UPDATE_ENABLED=0\" -Verb RunAs"
+        ]
+    },
+    "uninstaller": {
+        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c `\"$dir\\VMware-Horizon-Client-Setup.exe`\" /uninstall /norestart /silent && rmdir `\"$dir\\install`\"\" -Verb RunAs"
+    },
+    "bin": "install\\vmware-view.exe",
+    "shortcuts": [
+        [
+            "install\\vmware-view.exe",
+            "VMware Horizon Client"
+        ]
+    ],
     "checkver": {
         "url": "https://my.vmware.com/web/vmware/details?productId=863&downloadGroup=CART20FQ4_WIN_530",
         "regex": "(?<downloadgroup>CART[\\d]+FQ[\\d])/VMware-Horizon-Client-(?<version>[\\d.]+-[\\d]+).exe"
     },
     "autoupdate": {
-        "url": "https://download3.vmware.com/software/view/viewclients/$matchDownloadgroup/VMware-Horizon-Client-$version.exe#/VMware-Horizon-Client-Setup.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://download3.vmware.com/software/view/viewclients/$matchDownloadgroup/VMware-Horizon-Client-$version.exe#/VMware-Horizon-Client-Setup.exe"
+            }
+        }
     }
 }
