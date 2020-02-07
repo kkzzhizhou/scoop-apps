@@ -1,0 +1,66 @@
+{
+    "homepage": "https://www.netsarang.com/zh/Xftp/",
+    "description": "业界最强大的SSH客户机",
+    "version": "6.0.0178",
+    "depends": [
+        "bluelifehostseditor",
+        "vcredist2008",
+        "vcredist2012",
+        "sudo"
+    ],
+    "url": [
+        "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-6.0.0178r.exe#/setup.exe"
+    ],
+    "hash": [
+        "sha1:1484dc08feb3d2c46323ec3abc59e659aaeae784"
+    ],
+    "pre_install": [
+        "sudo hostseditor.exe /a transact.netsarang.com",
+        "sudo hostseditor.exe /a update.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.co.kr",
+        "sudo hostseditor.exe /a sales.netsarang.com",
+        "sudo hostseditor.exe /a active.netsarang.com",
+        "sudo hostseditor.exe /a up.netsarang.com"
+    ],
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" \"/b$dir /S /v/qn\" -Verb RunAs",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\Xftp` 6.msi`\" INSTALLDIR=`\"$dir`\" /qb\" -Verb RunAs"
+        ],
+        "keep": true
+    },
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = bucketdir($bucket)",
+        "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+        "(gc \"$bucketdir\\..\\scripts\\xftp\\register.reg.templ\") | out-file -enc oem \"$dir\\register.reg\"",
+        "sudo regedit /s $dir\\register.reg",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse",
+        "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse",
+        "ie4uinit.exe -show"
+    ],
+    "uninstaller": {
+        "script": "Start-Process -Wait msiexec \"/x `\"$dir\\Xftp` 6.msi`\" /qb\" -Verb RunAs"
+    },
+    "shortcuts": [
+        [
+            "Xftp.exe",
+            "Xftp"
+        ],
+        [
+            "Xagent.exe",
+            "Xagent"
+        ]
+    ],
+    "checkver": {
+        "url": "https://sourceforge.net/projects/zapps/rss?path=/Xftp",
+        "re": "/Xftp/Xftp-(.*)r.exe"
+    },
+    "autoupdate": {
+        "url": "https://downloads.sourceforge.net/project/zapps/Xftp/Xftp-$versionr.exe#/setup.exe",
+        "hash": {
+            "mode": "sourceforge"
+        }
+    }
+}
