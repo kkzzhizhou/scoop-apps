@@ -9,9 +9,13 @@
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $iceCream = Join-Path $env:LOCALAPPDATA 'Icecream'",
-            "    $toDelete = @((Join-Path $env:USERPROFILE '.Icecream PDF Editor'), (Join-Path $iceCream 'Icecream PDF Editor'))",
-            "    if ((Get-ChildItem $iceCream -ErrorAction SilentlyContinue).Count -eq 0) { $toDelete += $iceCream }",
+            "    $localIcecream = Join-Path $env:LOCALAPPDATA 'Icecream'",
+            "    $appdataIcecream = Join-Path $env:APPDATA 'Icecream'",
+            "    $toDelete = @((Join-Path $env:USERPROFILE '.Icecream PDF Editor'), (Join-Path $localIcecream 'Icecream PDF Editor'))",
+            "    $toDelete += Join-Path $appdataIcecream 'Icecream PDF Editor'",
+            "    $appdataIcecream, $localIcecream | ForEach-Object {",
+            "        if ((Get-ChildItem $_ -ErrorAction SilentlyContinue).Count -eq 0) { $toDelete += $_ }",
+            "    }",
             "    Remove-Item $toDelete -ErrorAction SilentlyContinue -Recurse",
             "}"
         ]
