@@ -4,12 +4,22 @@
     "homepage": "https://fman.io",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://fman.io/buy"
+        "url": "https://fman.io/legal"
     },
-    "url": "https://download.fman.io/1.7.0/fmanSetup.exe",
+    "url": "https://download.fman.io/1.7.0/fmanSetup.exe#/setup.exe",
     "hash": "185af83cb9b3ecc0f8f9e428e01d1850aeab6cbfcad227fcfea53aa4563dad90",
     "installer": {
-        "args": "/S"
+        "script": [
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' | Out-Null",
+            "",
+            "while ($true) {",
+            "    if (Get-Process -Name fman -ErrorAction SilentlyContinue) { Stop-Process -Name fman -Force }",
+            "    if (!(Get-Process -Name setup -ErrorAction SilentlyContinue)) { break }",
+            "    Start-Sleep -Seconds 1",
+            "}",
+            "",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
     },
     "uninstaller": {
         "script": [
@@ -22,6 +32,6 @@
         "regex": "Version ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://download.fman.io/$version/fmanSetup.exe"
+        "url": "https://download.fman.io/$version/fmanSetup.exe#/setup.exe"
     }
 }
