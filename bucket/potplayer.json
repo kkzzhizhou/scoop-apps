@@ -10,6 +10,58 @@
         "64bit": {
             "url": "https://t1.daumcdn.net/potplayer/PotPlayer/Version/Latest/PotPlayerSetup.exe#/cosi.7z",
             "hash": "f6eede668ce79c348fb652677319486fed7ce8f8f7c3c9db89bb02e79da917f5",
+            "pre_install": [
+                "$setFiles = @('PotPlayerMini64.ini', 'PotPlayer64.ini')",
+                "$CONT = @(",
+                "    '[Settings]'",
+                "    'AutoAddPL=1'",
+                "    'AutoDetectTimePL=1'",
+                "    'AutoDownloadFile=0'",
+                "    'AutoPlayOnStart=1'",
+                "    'AutoUpdateStart=0'",
+                "    'AppendFilePL=1'",
+                "    'CheckAutoUpdate=0'",
+                "    'DropMousePos=1'",
+                "    'FastAutoUpdate=0'",
+                "    'MediaKeyGlobal=1'",
+                "    'nVideoRen2=15'",
+                "    'RememberPosition=1'",
+                "    'RememberPositionAudio=1'",
+                "    'SavePlayPosPL=1'",
+                "    'ScreenFitMode=2'",
+                "    'SkinPopupMenuStyle=2'",
+                "    ''",
+                "    '[MainShortCutList]'",
+                "    '0=74,4,10069,0'",
+                "    '1=72,6,10863,0'",
+                "    '2='",
+                ")",
+                "$finalFile = $CONT -join \"`r`n\"",
+                "    # Set Configs for all executables",
+                "foreach ($f in $setFiles) {",
+                "    if (-not (Test-Path \"$persist_dir\\$f\")) {",
+                "        Write-Host 'File' $f 'does not exists. Creating' -f Yellow",
+                "        Set-Content \"$dir\\$f\" $finalFile -Encoding Ascii",
+                "    }",
+                "}"
+            ],
+            "persist": [
+                "Capture",
+                "Playlist",
+                "PotPlayer64.ini",
+                "PotPlayerMini64.ini"
+            ],
+            "installer": {
+                "script": [
+                    "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+                    "$dir\\PotPlayerMini64.exe /RegisterDef"
+                ]
+            },
+            "uninstaller":{
+                "script": [
+                    "$dir\\PotPlayerMini64.exe /Unregister"
+                ]
+            },
             "shortcuts": [
                 [
                     "PotPlayer64.exe",
@@ -36,55 +88,8 @@
             ]
         }
     },
-    "installer": {
-        "script": [
-            "Remove-Item \"$dir\\`$*\" -Force -Recurse",
-            "$setFiles = @('PotPlayerMini64.ini', 'PotPlayerMini.ini', 'PotPlayer64.ini', 'PotPlayer.ini')",
-            "$CONT = @(",
-            "    '[Settings]'",
-            "    'AutoAddPL=1'",
-            "    'AutoDetectTimePL=1'",
-            "    'AutoDownloadFile=0'",
-            "    'AutoPlayOnStart=1'",
-            "    'AutoUpdateStart=0'",
-            "    'AppendFilePL=1'",
-            "    'CheckAutoUpdate=0'",
-            "    'DropMousePos=1'",
-            "    'FastAutoUpdate=0'",
-            "    'MediaKeyGlobal=1'",
-            "    'nVideoRen2=15'",
-            "    'RememberPosition=1'",
-            "    'RememberPositionAudio=1'",
-            "    'SavePlayPosPL=1'",
-            "    'ScreenFitMode=2'",
-            "    'SkinPopupMenuStyle=2'",
-            "    ''",
-            "    '[MainShortCutList]'",
-            "    '0=74,4,10069,0'",
-            "    '1=72,6,10863,0'",
-            "    '2='",
-            ")",
-            "$finalFile = $CONT -join \"`r`n\"",
-            "    # Set Configs for all executables",
-            "foreach ($f in $setFiles) {",
-            "    if (-not (Test-Path \"$persist_dir\\$f\")) {",
-            "        Write-Host 'File' $f 'does not exists. Creating' -f Yellow",
-            "        Set-Content \"$dir\\$f\" $finalFile -Encoding Ascii",
-            "    }",
-            "}",
-            "# File Association"
-        ]
-    },
-    "persist": [
-        "Capture",
-        "Playlist",
-        "PotPlayer.ini",
-        "PotPlayer64.ini",
-        "PotPlayerMini.ini",
-        "PotPlayerMini64.ini"
-    ],
     "checkver": {
-        "url": "https://potplayer.daum.net/update.html?lang=en&bit",
+        "url": "https://potplayer.daum.net/update.html?lang=cn&bit",
         "regex": "\\[(\\d+)\\]"
     },
     "autoupdate": {
