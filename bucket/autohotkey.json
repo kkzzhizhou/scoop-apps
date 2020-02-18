@@ -3,10 +3,38 @@
     "description": "The ultimate automation scripting language for Windows.",
     "homepage": "https://www.autohotkey.com/",
     "license": "GPL-2.0-or-later",
+    "depends": "sudo",
     "architecture": {
         "64bit": {
             "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v1.1.32.00/AutoHotkey_1.1.32.00_setup.exe#/dl.7z",
             "hash": "ce505d272f8d36c5599ac81f005e1d2d586eeaaa778c779ad858e44fdadfdb0d",
+            "installer": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/S /x64 /uiAccess=0 /IsHostApp=1 /D=$dir\" -Verb RunAs",
+                "keep": true
+            },
+            "post_install": [
+                "$null, $bucket = find_manifest($app)",
+                "$bucketdir = Find-BucketDirectory($bucket)",
+                "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+                "(gc \"$bucketdir\\..\\scripts\\autohotkey\\autohotkey-install.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\autohotkey-install.reg\"",
+                "(gc \"$bucketdir\\..\\scripts\\autohotkey\\autohotkey-uninstall.reg.templ\") | % {$_ -replace \"%TSVNHOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\autohotkey-uninstall.reg\"",
+                "if (Test-Path(\"$dir\\autohotkey-install.reg\")) {",
+                "    $path = \"$dir\" -Replace '\\\\', '\\\\'",
+                "    $content = Get-Content \"$dir\\autohotkey-install.reg\"",
+                "    $content = $content -Replace '\\$Path', $path",
+                "    $content = $content -Replace 'AutoHotkey.exe','AutoHotkeyU64.exe'",
+                "    Set-Content \"$dir\\autohotkey-install.reg\" $content -Encoding ASCII",
+                "}",
+                "sudo regedit /s $dir\\autohotkey-install.reg",
+                "ie4uinit.exe -show"
+            ],
+            "uninstaller": {
+                "script": [
+                    "Start-Process -Wait \"$dir\\setup.exe\" \"/Uninstall\" -Verb RunAs",
+                    "sudo regedit /s $dir\\autohotkey-uninstall.reg",
+                    "ie4uinit.exe -show"
+                ]
+            },
             "bin": [
                 [
                     "autohotkeyu64.exe",
