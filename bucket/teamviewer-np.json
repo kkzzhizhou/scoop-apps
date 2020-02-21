@@ -18,8 +18,9 @@
     "uninstaller": {
         "script": [
             "taskkill /F /IM teamviewer.exe /FI 'status eq running'",
-            "$pg_x86 = (Get-Item Env:programfiles`(x86`)).Value",
-            "Invoke-ExternalCommand \"$pg_x86\\TeamViewer\\uninstall.exe\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null"
+            "$uninstall = \"$env:ProgramFiles\\TeamViewer\\uninstall.exe\"",
+            "if (-not (Test-Path $uninstall)) { $uninstall = \"${env:ProgramFiles(x86)}\\TeamViewer\\uninstall.exe\" }",
+            "Invoke-ExternalCommand \"$uninstall\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null"
         ]
     },
     "checkver": {
