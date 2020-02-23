@@ -1,29 +1,22 @@
 {
-    "homepage": "https://multimc.org/",
-    "description": "A custom launcher for Minecraft that allows you to easily manage multiple installations of Minecraft at once",
-    "license": "Apache-2.0",
     "version": "0.6.8",
+    "description": "Launcher for Minecraft that allows for multiple, cleanly separated instances of Minecraft.",
+    "homepage": "https://multimc.org/",
+    "license": "Apache-2.0",
     "url": "https://github.com/MultiMC/MultiMC5/releases/download/0.6.8/mmc-stable-win32.zip",
     "hash": "72be9de2f41483d9f43c942e481960d1de8f0b5835c8d2bef8154a4dc74c1932",
     "extract_dir": "MultiMC",
+    "pre_install": [
+        "if (-not (Test-Path \"$dir\\accounts.json\")) { New-Item \"$dir\\accounts.json\" -ItemType File | Out-Null }",
+        "if (-not (Test-Path \"$dir\\multimc.cfg\")) { New-Item \"$dir\\multimc.cfg\" -ItemType File -Value \"Analytics=false`r`nAutoUpdate=false`r`nIconTheme=pe_colored`r`nLaunchMaximized=true\" | Out-Null }",
+        "if (-not (Test-Path \"$dir\\notifications.json\")) { New-Item \"$dir\\notifications.json\" -ItemType File | Out-Null }"
+    ],
     "bin": "MultiMC.exe",
     "shortcuts": [
         [
             "MultiMC.exe",
             "MultiMC"
         ]
-    ],
-    "pre_install": [
-        "function CreateFile([String] $file, [String] $content = $null) {",
-        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
-        "        New-Item -Force -Path \"$persist_dir\\$file\" -ItemType file -Value $content | Out-Null",
-        "    }",
-        "    # Create symbolic link directly",
-        "    New-Item -ItemType SymbolicLink -Path \"$dir\\$file\" -Target \"$persist_dir\\$file\" | Out-Null",
-        "}",
-        "CreateFile 'accounts.json'",
-        "CreateFile 'multimc.cfg' 'UpdateChannel=stable'",
-        "CreateFile 'notifications.json'"
     ],
     "persist": [
         "accounts",
@@ -32,11 +25,11 @@
         "libraries",
         "meta",
         "themes",
-        "translations"
+        "translations",
+        "accounts.json",
+        "multimc.cfg",
+        "notifications.json"
     ],
-    "suggest": {
-        "MCEdit": "dorado/mcedit"
-    },
     "checkver": {
         "github": "https://github.com/MultiMC/MultiMC5"
     },
