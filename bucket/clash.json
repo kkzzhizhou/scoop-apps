@@ -1,29 +1,39 @@
 {
-    "homepage": "https://github.com/Dreamacro/clash/",
-    "description": "A rule-based tunnel in Go.",
-    "version": "0.17.1",
+    "homepage": "https://github.com/Fndroid/clash_for_windows_pkg",
+    "description": "A Windows GUI based on Clash https://docs.cfw.lbyczf.com/",
+    "version": "0.8.11",
     "license": "MIT",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/Dreamacro/clash/releases/download/v0.17.1/clash-windows-amd64-v0.17.1.zip",
-            "hash": "1bfb44794ad5fe051936609ed72aa2491047548b3247fd832eab017c33687203"
-        },
-        "32bit": {
-            "url": "https://github.com/Dreamacro/clash/releases/download/v0.17.1/clash-windows-386-v0.17.1.zip",
-            "hash": "f722681340606a8496d8875aa5a86c4bc054bd5407349862d511cda68089ba12"
-        }
-    },
-    "pre_install": "Rename-Item @(Get-ChildItem $dir\\clash-*.exe)[0] $dir\\clash.exe",
-    "bin": "clash.exe",
+    "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/0.8.11/Clash.for.Windows.Setup.0.8.11.exe#/clash.7z",
+    "hash": "adfd32723ac93f840b330495b7acace19c552efceda230ad9d197561eebe5f9d",
+    "shortcuts": [
+        [
+            "Clash for Windows.exe",
+            "Clash"
+        ]
+    ],
+    "pre_install": [
+        "Remove-Item -Recurse \"$dir\\Uninstall Clash for Windows.exe\"",
+        "Get-ChildItem -Path \"$dir\\`$PLUGINSDIR\" -Depth \"2\" -Include \"*.7z\" | Move-Item -Destination \"$dir\\`$PLUGINSDIR\"",
+        "Expand-7zipArchive -Path \"$dir\\`$PLUGINSDIR\\app-64.7z\" -DestinationPath \"$dir\"",
+        "Remove-Item -Recurse \"$dir\\`$PLUGINSDIR\"",
+        "if (-not (Test-Path \"$persist_dir\\resources\\static\\files\")) {",
+        "    mkdir -p \"$persist_dir\\resources\\static\\files\"",
+        "}",
+        "if (-not (Test-Path \"$persist_dir\\resources\\static\\files\\config.yml\")) {",
+        "    Write-Host 'File config.yml does not exists. Creating.' -f Yellow",
+        "    Copy-Item \"$dir\\resources\\static\\files\\default\\config.yml\" -Destination \"$persist_dir\\resources\\static\\files\\config.yml\" -Force",
+        "}"
+    ],
+    "persist": [
+        "resources\\static\\files\\profiles",
+        "resources\\static\\files\\config.yml"
+    ],
     "checkver": "github",
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/Dreamacro/clash/releases/download/v$version/clash-windows-amd64-v$version.zip"
-            },
-            "32bit": {
-                "url": "https://github.com/Dreamacro/clash/releases/download/v$version/clash-windows-386-v$version.zip"
-            }
+        "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/$version/Clash.for.Windows.Setup.$version.exe#/clash.7z",
+        "hash": {
+            "url": "https://github.com/Fndroid/clash_for_windows_pkg/releases/download/$version/sha256sum",
+            "regex": "exe: $sha256"
         }
     }
 }
