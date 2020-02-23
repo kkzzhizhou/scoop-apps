@@ -1,53 +1,62 @@
 {
     "version": "2019.10",
-    "homepage": "https://www.anaconda.com/",
-    "description": "The most popular Python distribution for data science",
+    "description": "The most popular Python distribution for data science.",
     "license": "BSD-3-Clause",
-    "architecture": {
-        "64bit": {
-            "url": "https://repo.continuum.io/archive/Anaconda3-2019.10-Windows-x86_64.exe",
-            "hash": "md5:fafcdbf5feb6dc3081bf07cbb8af1dbe"
-        },
-        "32bit": {
-            "url": "https://repo.continuum.io/archive/Anaconda3-2019.10-Windows-x86.exe",
-            "hash": "md5:0e71632df6a17f625c1103b34f66e8ba"
-        }
+    "homepage": "https://www.anaconda.com/",
+    "checkver": {
+        "url": "https://repo.continuum.io/archive",
+        "re": "Anaconda3-([\\d.]+)-Windows"
     },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python3"
+        ]
+    ],
+    "pre_install": "Write-Host 'Installing Anaconda 3. This can take up to 30 minutes on an HDD.' -ForegroundColor Magenta",
     "installer": {
-        "script": [
-            "# Running installer",
-            "Start-Process \"$dir\\$fname\" \"/S /InstallationType=JustMe /RegisterPython=1 /NoRegistry=1 /AddToPath=0 /D=$dir\" -PassThru -NoNewWindow | Wait-Process",
-            "# Creating conda-hook ps1 shim",
-            "Write-Output 'if (!$env:_CONDA_ROOT){ & \"$PSScriptRoot\\..\\shell\\condabin\\conda-hook.ps1\" }' | Out-File \"$dir\\condabin\\conda.ps1\" -Encoding ASCII",
-            "write-output '& \"$env:ComSpec\" /c \"$PSScriptRoot\\conda.bat\" @args' | Out-File \"$dir\\condabin\\conda.ps1\" -Encoding ASCII -Append"
+        "args": [
+            "/S",
+            "/InstallationType=JustMe",
+            "/RegisterPython=1",
+            "/AddToPath=0",
+            "/D=$dir"
         ]
     },
     "uninstaller": {
         "file": "Uninstall-Anaconda3.exe",
         "args": "/S"
     },
-    "env_add_path": "condabin",
-    "checkver": {
-        "url": "https://repo.continuum.io/archive",
-        "re": "Anaconda3-([\\d.]+)-Windows"
+    "persist": "envs",
+    "env_add_path": "Scripts",
+    "architecture": {
+        "64bit": {
+            "url": "https://repo.continuum.io/archive/Anaconda3-2019.10-Windows-x86_64.exe",
+            "hash": "9e632439ed40620b8518f11469ded7316eccb489d0dfc41770f72ca2b2202dd9"
+        },
+        "32bit": {
+            "url": "https://repo.continuum.io/archive/Anaconda3-2019.10-Windows-x86.exe",
+            "hash": "05e6738919673a6d57b5895b8b4df0b7e3f4d7ed0e30faf9c9f1b7d3399e9f52"
+        }
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://repo.continuum.io/archive/Anaconda3-$version-Windows-x86_64.exe"
+                "url": "https://repo.continuum.io/archive/Anaconda3-$version-Windows-x86_64.exe",
+                "hash": {
+                    "url": "http://docs.anaconda.com/anaconda/install/hashes/Anaconda3-$version-Windows-x86_64.exe-hash/",
+                    "find": "([A-Fa-f\\d]{64})"
+                }
             },
             "32bit": {
-                "url": "https://repo.continuum.io/archive/Anaconda3-$version-Windows-x86.exe"
+                "url": "https://repo.continuum.io/archive/Anaconda3-$version-Windows-x86.exe",
+                "hash": {
+                    "url": "http://docs.anaconda.com/anaconda/install/hashes/Anaconda3-$version-Windows-x86.exe-hash/",
+                    "find": "([A-Fa-f\\d]{64})"
+                }
             }
-        },
-        "hash": {
-            "url": "$baseurl",
-            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
         }
-    },
-    "notes": [
-        "The deafult (base) env is not exposed, you'll need to run 'conda activate base' to activate it.",
-        "Conda envs are not persisted, better to setup envs_dirs to use '~/.conda/envs' first.",
-        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs"
-    ]
+    }
 }
