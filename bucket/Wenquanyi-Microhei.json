@@ -1,0 +1,34 @@
+{
+    "homepage": "http://wenq.org/",
+    "description": "CJK sans-serif font derived from Droid Sans.",
+    "version": "0.2.0-beta",
+    "license": "GPL-2.0-or-later",
+    "url": "https://dl.sourceforge.net/projects/wqy/files/wqy-microhei/0.2.0-beta/wqy-microhei-0.2.0-beta.tar.gz",
+    "hash": "sha1:28023041b22b6368bcfae076de68109b81e77976",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'wqy-microhei\\*.ttc' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'wqy-microhei\\*.ttc' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'WenQuanYi Microhei' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/wqy/files/wqy-microhei/",
+        "regex": "<tr title=\\\"([\\w.-]+)\\\""
+    },
+    "autoupdate": {
+        "url": "https://dl.sourceforge.net/projects/wqy/files/wqy-microhei/$version/wqy-microhei-$version.tar.gz"
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "version": "4.59.3378",
+    "description": "Privacy Eraser. Clean Internet history, browsing history and past computer activities.",
+    "homepage": "https://www.cybertronsoft.com/products/privacy-eraser/",
+    "license": "Freeware",
+    "url": "https://www.cybertronsoft.com/download/privacy-eraser-portable.zip",
+    "hash": "ce3c8d971bcf86d6602dedcc0c136c20e2c7b2af39ac0280a7a1a0de321768b3",
+    "pre_install": [
+        "$file = 'Config.xml'",
+        "if (-not (Test-Path \"$persist_dir\\$file\")) {",
+        "    Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+        "    $delimeter = \"`r`n\"",
+        "    $entryTemplate = '        <Item id=\"%%key%%\" value=\"%%value%%\"/>'",
+        "    $start = @('<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>', '<PrivacyEraser>', '    <Settings>')",
+        "    $end = @('    </Settings>', '</PrivacyEraser>')",
+        "    $ents = $()",
+        "    $entries = @{",
+        "        'SET_LOAD_AT_WINDOWS_STARTUP'         = 'False'",
+        "        'SET_AUTO_CLEAN_AT_WINDOWS_STARTUP'   = 'False'",
+        "        'SET_AUTOMATICALLY_CHECK_FOR_UPDATES' = 'False'",
+        "    }",
+        "    foreach ($entry in $entries.Keys) {",
+        "        $ents += , ($entryTemplate -replace '%%key%%', $entry) -replace '%%value%%', $entries.Item($entry)",
+        "    }",
+        "        # Create file string",
+        "    $finalFile  = $start -join $delimeter",
+        "    $finalFile += $delimeter",
+        "    $finalFile += $ents -join $delimeter",
+        "    $finalFile += $delimeter",
+        "    $finalFile += $end -join $delimeter",
+        "        # Set File",
+        "    Set-Content \"$dir\\$file\" $finalFile -Encoding Ascii",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "shortcuts": [
+                [
+                    "PrivacyEraser64.exe",
+                    "Privacy Eraser"
+                ]
+            ]
+        },
+        "32bit": {
+            "shortcuts": [
+                [
+                    "PrivacyEraser.exe",
+                    "Privacy Eraser"
+                ]
+            ]
+        }
+    },
+    "persist": [
+        "Registry Backups",
+        "Config.xml"
+    ],
+    "checkver": {
+        "url": "https://www.cybertronsoft.com/products/privacy-eraser/whats-new",
+        "regex": "Privacy Eraser Free v([\\d.]+) Build (?<build>[\\d]+) Released",
+        "replace": "${1}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://www.cybertronsoft.com/download/privacy-eraser-portable.zip"
+    }
+}

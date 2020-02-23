@@ -1,0 +1,36 @@
+{
+    "version": "1.0.2",
+    "description": "JetBrains Mono. A typeface for developers.",
+    "homepage": "https://www.jetbrains.com/lp/mono/",
+    "license": "Apache-2.0",
+    "url": "https://download.jetbrains.com/fonts/JetBrainsMono-1.0.2.zip",
+    "hash": "59f9b9762d5625eb438eedf034dbbcdcf09ed18ded994540b466872840229762",
+    "extract_dir": "JetBrainsMono-1.0.2\\ttf",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The '$($app.Replace('-NF', ''))' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "/fonts/JetBrainsMono-([\\d.]+)\\.zip",
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/fonts/JetBrainsMono-$version.zip",
+        "hash": {
+            "url": "$url.sha256"
+        },
+        "extract_dir": "JetBrainsMono-$version\\ttf"
+    }
+}
