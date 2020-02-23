@@ -6,27 +6,49 @@
         "identifier": "EULA",
         "url": "https://music.163.com/html/web2/service.html"
     },
-    "url": "https://d1.music.126.net/dmusic/obj/w5zCg8OCw6fCn2vDicOl/809710492/7805/2019112318441/cloudmusicsetup2.7.1.198242.exe#/dl.7z",
-    "hash": "md5:991ae324e2ff261295f5fb4caeff55d9",
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+    "url": [
+        "https://d1.music.126.net/dmusic/obj/w5zCg8OCw6fCn2vDicOl/809710492/7805/2019112318441/cloudmusicsetup2.7.1.198242.exe#/dl.7z",
+        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/neteasemusic/assoc.reg",
+        "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/neteasemusic/unassoc.reg"
+    ],
+    "hash": [
+        "md5:991ae324e2ff261295f5fb4caeff55d9",
+        "539AA11538E94F01A1D5D33332CFE84BB3C67FE82B65308A14516A435F2B1F6F",
+        "3992018A410B8713E2F3AD211FBB1D1579B912C4FC15F0FE99ACAE96E129A9CD"
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "if (Test-Path(\"$dir\\assoc.reg\")) {",
+        "    $path = \"$dir\" -Replace '\\\\', '\\\\'",
+        "    $content = Get-Content \"$dir\\assoc.reg\"",
+        "    $content = $content -Replace '\\$Path', $path",
+        "    Set-Content \"$dir\\assoc.reg\" $content -Encoding ASCII",
+        "}",
+        "sudo regedit /s $dir\\assoc.reg",
+        "ie4uinit.exe -show"
+    ],
+    "uninstaller": {
+        "script": [
+            "sudo regedit /s $dir\\unassoc.reg",
+            "ie4uinit.exe -show"
+        ]
+    },
     "bin": "cloudmusic.exe",
     "shortcuts": [
         [
             "cloudmusic.exe",
-            "Netease Cloud Music"
+            "网易云音乐"
         ]
     ],
     "checkver": {
         "url": "https://h404bi.azurewebsites.net/ncmversion.php",
-        "jp": "$.updateFiles[0].url",
-        "regex": "https://d1.music.126.net/dmusic/obj/(?<dir1>[\\d\\w]{20})/(?<dir2>\\d{9})/(?<dir3>[\\d\\w]{4})/(?<dir4>\\d{12,13})/cloudmusicsetup([\\d.]+)\\.exe"
+        "regex": "dmusic/(?<randompath>[\\w/]+)/cloudmusicsetup(?<version>[\\d.]+).exe"
     },
     "autoupdate": {
-        "url": "https://d1.music.126.net/dmusic/obj/$matchDir1/$matchDir2/$matchDir3/$matchDir4/cloudmusicsetup$version.exe#/dl.7z",
+        "url": "https://d1.music.126.net/dmusic/$matchRandompath/cloudmusicsetup$version.exe#/dl.7z",
         "hash": {
             "url": "https://h404bi.azurewebsites.net/ncmversion.php",
-            "jp": "$.updateFiles[0].hash"
+            "regex": "$md5"
         }
-    },
-    "notes": "We don't persist your CloudMusic data, they are still storaged in '%LOCALAPPDATA%\\Netease\\CloudMusic'."
+    }
 }
