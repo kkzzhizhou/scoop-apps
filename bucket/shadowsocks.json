@@ -1,19 +1,9 @@
 {
-    "description": "A secure socks5 proxy, designed to protect your Internet traffic.",
-    "version": "4.1.9.2",
+    "version": "4.1.4",
     "homepage": "https://github.com/shadowsocks/shadowsocks-windows",
     "license": "GPL-3.0-only",
-    "url": "https://github.com/shadowsocks/shadowsocks-windows/releases/download/4.1.9.2/Shadowsocks-4.1.9.2.zip",
-    "hash": "sha512:204436b1b6447cd5e287ac95e4621d9ff5febcbbdc3dfaf0572b757ee0e5797f0701a44e38d3e0b3731404411be35c5eddfd96ee39b115f2eefbaf78c14cc023",
-    "pre_install": [
-        "function CreateFile ($name, $value = $null) {",
-        "    if (!(Test-Path \"$persist_dir\\$name\")) {",
-        "        Set-Content \"$dir\\$name\" $value -Encoding Ascii",
-        "    }",
-        "}",
-        "'gui-config.json', 'statistics-config.json' | ForEach-Object { CreateFile $_ '{}' }",
-        "'pac.txt', 'user-rule.txt' | ForEach-Object { CreateFile $_ }"
-    ],
+    "url": "https://github.com/shadowsocks/shadowsocks-windows/releases/download/4.1.4/Shadowsocks-4.1.4.zip",
+    "hash": "4acb4274db08c54c943eef6f456c6913557163d203cbd8be63a6780e5dcf7a42",
     "bin": "Shadowsocks.exe",
     "shortcuts": [
         [
@@ -23,16 +13,27 @@
     ],
     "persist": [
         "gui-config.json",
-        "statistics-config.json",
         "pac.txt",
         "user-rule.txt"
     ],
-    "checkver": "github",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\gui-config.json\")) {",
+        "   Write-Host -ForegroundColor Red \"Create empty config file for shadowsocks\"",
+        "   New-Item -Force -Path \"$persist_dir\\gui-config.json\" -ItemType file -Value \"{}\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\pac.txt\")) {",
+            "   Write-Host -ForegroundColor Red \"Create empty config file for shadowsocks\"",
+            "   New-Item -Force -Path \"$persist_dir\\pac.txt\" -ItemType file -Value \"{}\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\user-rule.txt\")) {",
+            "   Write-Host -ForegroundColor Red \"Create empty config file for shadowsocks\"",
+            "   New-Item -Force -Path \"$persist_dir\\user-rule.txt\" -ItemType file -Value \"{}\" | Out-Null",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/shadowsocks/shadowsocks-windows"
+    },
     "autoupdate": {
-        "url": "https://github.com/shadowsocks/shadowsocks-windows/releases/download/$version/Shadowsocks-$version.zip",
-        "hash": {
-            "url": "https://github.com/shadowsocks/shadowsocks-windows/releases/tag/$version",
-            "regex": "(?sm)$basename.*?$sha512"
-        }
+        "url": "https://github.com/shadowsocks/shadowsocks-windows/releases/download/$version/Shadowsocks-$version.zip"
     }
 }
