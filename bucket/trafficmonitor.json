@@ -1,8 +1,8 @@
 {
     "homepage": "https://github.com/zhongyang219/TrafficMonitor",
-    "description": "TrafficMonitor is a network monitoring suspension window software in Windows platform. It can display the current network speed, CPU and memory usage. It also support the functions of display in the taskbar, change skin and historical traffic statistics.",
-    "license": "MIT",
+    "description": "TrafficMonitor is a network monitoring suspension window software in Windows platform.",
     "version": "1.77",
+    "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
             "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V1.77/TrafficMonitor_V1.77_x64.7z",
@@ -14,7 +14,24 @@
         }
     },
     "extract_dir": "TrafficMonitor",
-    "bin": "TrafficMonitor.exe",
+    "shortcuts": [
+        [
+            "TrafficMonitor.exe",
+            "TrafficMonitor"
+        ]
+    ],
+    "pre_install": [
+        "function CreateFile([String] $file, [String] $content = $null) {",
+        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+        "        New-Item -Force -Path \"$persist_dir\\$file\" -ItemType file -Value $content | Out-Null",
+        "    }",
+        "    # Create symbolic link directly",
+        "    New-Item -ItemType SymbolicLink -Path \"$dir\\$file\" -Target \"$persist_dir\\$file\" | Out-Null",
+        "}",
+        "CreateFile 'config.ini' '[general]\ncheck_update_when_start=false'",
+        "CreateFile 'global_cfg.ini' '[config]\nportable_mode=true'",
+        "CreateFile 'history_traffic.dat'"
+    ],
     "checkver": "github",
     "autoupdate": {
         "architecture": {
@@ -25,11 +42,5 @@
                 "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V$version/TrafficMonitor_V$version_x86.7z"
             }
         }
-    },
-    "shortcuts": [
-        [
-            "TrafficMonitor.exe",
-            "TrafficMonitor"
-        ]
-    ]
+    }
 }
