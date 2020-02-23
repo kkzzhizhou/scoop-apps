@@ -1,21 +1,48 @@
 {
-    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer",
-    "description": "Process Explorer shows you information about which handles and DLLs processes have opened or loaded.",
     "version": "16.31",
+    "description": "Process Explorer. Find out what files, registry keys and other objects processes have open, which DLLs they have loaded, and more.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
     "url": "https://download.sysinternals.com/files/ProcessExplorer.zip",
     "hash": "5818f8df2afdde87163f26900dc4086998bd37792c040654bc61c44ebac38626",
-    "bin": "procexp64.exe",
-    "checkver": {
-        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/process-explorer",
-        "regex": "Process Explorer v(\\d+\\.\\d+)"
+    "pre_install": [
+        "$sysint = 'HKCU:\\Software\\Sysinternals'",
+        "$fin = \"$sysint\\Process Explorer\"",
+        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
+        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+    ],
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "procexp64.exe",
+                [
+                    "procexp64.exe",
+                    "procexp"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "procexp64.exe",
+                    "SysInternals\\ProcessExplorer"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "procexp.exe",
+            "shortcuts": [
+                [
+                    "procexp.exe",
+                    "SysInternals\\ProcessExplorer"
+                ]
+            ]
+        }
     },
+    "checkver": "Process Explorer\\s+v([\\d.]+)</h1",
     "autoupdate": {
         "url": "https://download.sysinternals.com/files/ProcessExplorer.zip"
-    },
-    "shortcuts": [
-        [
-            "procexp64.exe",
-            "Process Explorer"
-        ]
-    ]
+    }
 }
