@@ -1,0 +1,46 @@
+{
+    "version": "8.7.1.0",
+    "description": "Autodesk Sketchbook. Digital painting, drawing, sketching, and illustrated art creating",
+    "homepage": "https://sketchbook.com",
+    "license": "Proprietary",
+    "suggest": {
+        "vcredist": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://update.sketchbook.com/win64/SketchBook_8.7.1.0_Win64.exe#/cosi.7z",
+            "hash": "md5:9e0b4836354cf1c17f44f90245b8f8bb"
+        }
+    },
+    "pre_install": "if ((get_config 'MSIEXTRACT_USE_LESSMSI' $false) -eq $false) { throw '''MSIEXTRACT_USE_LESSMSI'' config is required' }",
+    "installer": {
+        "script": [
+            "$dest = \"$dir\\cosi\"",
+            "(Get-ChildItem $dir 'Sketchbook*msi').FullName | Expand-MsiArchive -DestinationPath $dest -ExtractDir 'Program Files\\Autodesk\\SketchBook' -Removal",
+            "$toDelete = Get-ChildItem $dir -Exclude 'cosi'",
+            "Move-Item \"$dest\\*\" $dir",
+            "$toDelete + $dest | Remove-Item -Recurse"
+        ]
+    },
+    "shortcuts": [
+        [
+            "SketchBook.exe",
+            "Autodesk SketchBook"
+        ]
+    ],
+    "checkver": {
+        "url": "http://update.sketchbook.com/sbp_desktop_update.xml",
+        "xpath": "/update/version/win_x64/@value"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://update.sketchbook.com/win64/SketchBook_$version_Win64.exe#/cosi.7z",
+                "hash": {
+                    "url": "http://update.sketchbook.com/sbp_desktop_update.xml",
+                    "xpath": "/update/version/win_x64/fileHash/@value"
+                }
+            }
+        }
+    }
+}
