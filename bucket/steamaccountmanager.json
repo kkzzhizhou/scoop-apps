@@ -1,16 +1,20 @@
 {
-    "version": "1.4.0.5",
+    "version": "1.4.1.0",
     "description": "Steam Account Manager. Easily log in and switch between Steam accounts.",
     "homepage": "https://github.com/rex706/SAM",
-    "url": "https://github.com/rex706/SAM/releases/download/v1.4.0.5/SAM_1.4.0.5.zip",
-    "hash": "e3ee522534435ed1c49272e56605c9faa0f1d3750bd94863204225e2e2f6087b",
+    "url": "https://github.com/rex706/SAM/releases/download/v1.4.1.0/SAM.exe",
+    "hash": "f6b20181ae00407f7edfdb846a9019220b1935d4fd39b7aa04399b814f938724",
     "pre_install": [
         "$file = 'SAMSettings.ini'",
         "if (-not (Test-Path \"$persist_dir\\$file\")) {",
         "    Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-        "    Set-Content \"$dir\\$file\" '' -Encoding Ascii",
-        "}"
+        "    Set-Content \"$dir\\$file\" '[Settings]', 'CheckForUpdates=False' -Encoding Ascii",
+        "}",
+        "if (Join-Path $persist_dir 'info.dat' | Test-Path) { Copy-Item \"$persist_dir\\info.dat\" $dir }"
     ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\info.dat\" $persist_dir -ErrorAction SilentlyContinue -Force"
+    },
     "shortcuts": [
         [
             "SAM.exe",
@@ -20,6 +24,6 @@
     "persist": "SAMSettings.ini",
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/rex706/SAM/releases/download/v$version/SAM_$version.zip"
+        "url": "https://github.com/rex706/SAM/releases/download/v$version/SAM.exe"
     }
 }
