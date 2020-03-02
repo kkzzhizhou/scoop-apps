@@ -1,8 +1,12 @@
 {
     "version": "4.7.12.1",
+    "description": "A cross-platform, Python-agnostic binary package manager.",
     "homepage": "https://conda.io/miniconda.html",
-    "description": "Miniconda is a free minimal installer for conda.",
     "license": "BSD-3-Clause",
+    "checkver": {
+        "url": "https://repo.continuum.io/miniconda",
+        "re": "Miniconda3-([\\d.]+)-Windows"
+    },
     "architecture": {
         "64bit": {
             "url": "https://repo.continuum.io/miniconda/Miniconda3-4.7.12.1-Windows-x86_64.exe",
@@ -12,24 +16,6 @@
             "url": "https://repo.continuum.io/miniconda/Miniconda3-4.7.12.1-Windows-x86.exe",
             "hash": "md5:77d39801e97498ef05231d95ab77dedb"
         }
-    },
-    "installer": {
-        "script": [
-            "# Running installer",
-            "Start-Process \"$dir\\$fname\" \"/S /InstallationType=JustMe /RegisterPython=1 /NoRegistry=1 /AddToPath=0 /D=$dir\" -PassThru -NoNewWindow | Wait-Process",
-            "# Creating conda-hook ps1 shim",
-            "Write-Output 'if (!$env:_CONDA_ROOT){ & \"$PSScriptRoot\\..\\shell\\condabin\\conda-hook.ps1\" }' | Out-File \"$dir\\condabin\\conda.ps1\" -Encoding ASCII",
-            "write-output '& \"$env:ComSpec\" /c \"$PSScriptRoot\\conda.bat\" @args' | Out-File \"$dir\\condabin\\conda.ps1\" -Encoding ASCII -Append"
-        ]
-    },
-    "uninstaller": {
-        "file": "Uninstall-Miniconda3.exe",
-        "args": "/S"
-    },
-    "env_add_path": "condabin",
-    "checkver": {
-        "url": "https://repo.continuum.io/miniconda",
-        "re": "Miniconda3-([\\d.]+)-Windows"
     },
     "autoupdate": {
         "architecture": {
@@ -45,9 +31,36 @@
             "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
         }
     },
+    "installer": {
+        "args": [
+            "/S",
+            "/InstallationType=JustMe",
+            "/RegisterPython=0",
+            "/AddToPath=0",
+            "/NoRegistry=1",
+            "/D=$dir"
+        ]
+    },
+    "uninstaller": {
+        "file": "Uninstall-Miniconda3.exe",
+        "args": "/S"
+    },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python3"
+        ]
+    ],
+    "persist": "envs",
+    "env_add_path": [
+        "scripts",
+        "Library/bin"
+    ],
     "notes": [
-        "The deafult (base) env is not exposed, you'll need to run 'conda activate base' to activate it.",
-        "Conda envs are not persisted, better to setup envs_dirs to use '~/.conda/envs' first.",
-        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs"
+        "Currently conda envs activate and deactivate doesn't work on PowerShell,",
+        "for more information, see: https://github.com/conda/conda/issues/626,",
+        "or just execute: 'conda install -n root -c pscondaenvs pscondaenvs'"
     ]
 }
