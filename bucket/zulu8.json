@@ -1,21 +1,21 @@
 {
     "description": "Zulu 8 is certified build of OpenJDK 8",
     "homepage": "https://www.azul.com/downloads/zulu/",
-    "version": "8.44.0.11",
+    "version": "8.44.0.9",
     "license": {
         "identifier": "GPL-2.0-only WITH Classpath-exception-2.0",
         "url": "https://www.azulsystems.com/license/zulu_third_party_licenses.html"
     },
     "architecture": {
         "64bit": {
-            "url": "https://cdn.azul.com/zulu/bin/zulu8.44.0.11-ca-jdk8.0.242-win_x64.zip",
-            "hash": "5a03afae3bedda54d1e89f776721fd4cfef70c01b0a8adaff28e28af7a8de514",
-            "extract_dir": "zulu8.44.0.11-ca-jdk8.0.242-win_x64"
+            "url": "https://cdn.azul.com/zulu/bin/zulu8.44.0.9-ca-jdk8.0.242-win_x64.zip",
+            "hash": "c4c14a122078f277d1d89b25a2a9f874e4b1859b6a892c01afdb445969e1dd0b",
+            "extract_dir": "zulu8.44.0.9-ca-jdk8.0.242-win_x64"
         },
         "32bit": {
-            "url": "https://cdn.azul.com/zulu/bin/zulu8.44.0.11-ca-jdk8.0.242-win_i686.zip",
-            "hash": "66e637df8be9bffe8fe111361ec698d500de35754fcf70acaa582a4614289bc6",
-            "extract_dir": "zulu8.44.0.11-ca-jdk8.0.242-win_i686"
+            "url": "https://cdn.azul.com/zulu/bin/zulu8.44.0.9-ca-jdk8.0.242-win_i686.zip",
+            "hash": "602e6dd1377c849dd4159fb9774be17c660a0d39596a588bca064b6a952baf75",
+            "extract_dir": "zulu8.44.0.9-ca-jdk8.0.242-win_i686"
         }
     },
     "env_add_path": "bin",
@@ -23,24 +23,29 @@
         "JAVA_HOME": "$dir"
     },
     "checkver": {
-        "url": "https://cdn.azul.com/zulu/bin/?C=M;O=D",
-        "re": ">(?<name>zulu8(?<major>[\\d.]+)-ca-jdk(?<openver>[\\d.]+)-win)_x64.zip</a>",
-        "replace": "8${major}"
+        "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=8&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=64",
+        "jsonpath": "$.name",
+        "regex": "(?<name>zulu(?<version>[\\d.]+)-ca-jdk(?<java>[\\d.]+)-win)_x64.zip",
+        "replace": "${version}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://cdn.azul.com/zulu/bin/$matchName_x64.zip",
-                "extract_dir": "$matchName_x64"
+                "extract_dir": "$matchName_x64",
+                "hash": {
+                    "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=8&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=64",
+                    "jp": "$.sha256_hash"
+                }
             },
             "32bit": {
                 "url": "https://cdn.azul.com/zulu/bin/$matchName_i686.zip",
-                "extract_dir": "$matchName_i686"
+                "extract_dir": "$matchName_i686",
+                "hash": {
+                    "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=8&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=32",
+                    "jp": "$.sha256_hash"
+                }
             }
-        },
-        "hash": {
-            "url": "https://www.azul.com/wp-admin/admin-ajax.php?action=search_bundles",
-            "jp": "$..[?(@.link=='$url')].checksum"
         }
     }
 }

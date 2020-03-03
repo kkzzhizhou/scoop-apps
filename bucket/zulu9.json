@@ -23,24 +23,29 @@
         "JAVA_HOME": "$dir"
     },
     "checkver": {
-        "url": "https://cdn.azul.com/zulu/bin/?C=M;O=D",
-        "re": ">(?<name>zulu9(?<major>[\\d.]+)-jdk(?<openver>[\\d.]+)-win)_x64.zip</a>",
-        "replace": "9${major}"
+        "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=9&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=64",
+        "jsonpath": "$.name",
+        "regex": "(?<name>zulu(?<version>[\\d.]+)(?:-ca)?-jdk(?<java>[\\d.]+)-win)_x64.zip",
+        "replace": "${version}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://cdn.azul.com/zulu/bin/$matchName_x64.zip",
-                "extract_dir": "$matchName_x64"
+                "extract_dir": "$matchName_x64",
+                "hash": {
+                    "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=9&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=64",
+                    "jp": "$.sha256_hash"
+                }
             },
             "32bit": {
                 "url": "https://cdn.azul.com/zulu/bin/$matchName_i686.zip",
-                "extract_dir": "$matchName_i686"
+                "extract_dir": "$matchName_i686",
+                "hash": {
+                    "url": "https://api.azul.com/zulu/download/community/v1.0/bundles/latest/?jdk_version=9&bundle_type=jdk&features=&ext=zip&os=windows&arch=x86&hw_bitness=32",
+                    "jp": "$.sha256_hash"
+                }
             }
-        },
-        "hash": {
-            "url": "https://www.azul.com/wp-admin/admin-ajax.php?action=search_bundles",
-            "jp": "$..[?(@.link=='$url')].checksum"
         }
     }
 }
