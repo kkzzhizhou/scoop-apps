@@ -1,0 +1,56 @@
+{
+    "version": "1.0.0",
+    "description": "Shell extensions that provides File Explorer thumbnails for SVG files.",
+    "homepage": "https://github.com/tibold/svg-explorer-extension",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/tibold/svg-explorer-extension/releases/download/v1.0.0/svg_explorer_extension_x64.exe",
+            "hash": "41ffc71789830720d465576dfdc8ec235f9464eec5c96d72f1a8d215676125a1"
+        },
+        "32bit": {
+            "url": "https://github.com/tibold/svg-explorer-extension/releases/download/v1.0.0/svg_explorer_extension_x86.exe",
+            "hash": "d3e93de50908067eb447c78d6ef3f9846a30f3257054ab1a635236b06e7686ca"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to install $app.\"",
+        "    exit 1",
+        "}"
+    ],
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/DIR=$dir"
+        ]
+    },
+    "post_install": [
+        "taskkill /f /im explorer.exe | Out-Null",
+        "Remove-Item -Force \"$env:LOCALAPPDATA\\IconCache.db\"",
+        "explorer"
+    ],
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": "/VERYSILENT"
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/tibold/svg-explorer-extension/releases/download/v$version/svg_explorer_extension_x64.exe",
+                "hash": {
+                    "url": "https://github.com/tibold/svg-explorer-extension/releases/tag/v$version",
+                    "find": "SHA256.*([A-F0-9]{64})"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/tibold/svg-explorer-extension/releases/download/v$version/svg_explorer_extension_x86.exe",
+                "hash": {
+                    "url": "https://github.com/tibold/svg-explorer-extension/releases/tag/v$version",
+                    "find": "(?sm)SHA256.*SHA256.*([A-F0-9]{64})"
+                }
+            }
+        }
+    }
+}
