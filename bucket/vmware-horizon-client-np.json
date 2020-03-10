@@ -3,6 +3,7 @@
     "description": "VMware Horizon Client for Windows allows you to connect to your VMware Horizon virtual desktop.",
     "homepage": "https://www.vmware.com/products/horizon.html",
     "license": "Proprietary",
+    "depends": "dark",
     "architecture": {
         "64bit": {
             "url": "https://download3.vmware.com/software/view/viewclients/CART20FQ4/VMware-Horizon-Client-5.3.0-15208953.exe#/VMware-Horizon-Client-Setup.exe",
@@ -10,15 +11,17 @@
         }
     },
     "installer": {
-        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c `\"$dir\\VMware-Horizon-Client-Setup.exe`\" /install /norestart /silent INSTALLDIR=`\"$dir\\install`\" AUTO_UPDATE_ENABLED=0\" -Verb RunAs"
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\tmp\" -Removal",
+            "$extract = if ($architecture -eq '64bit') { 'VMware Horizon View Client (x64).msi' } else { 'VMware Horizon View Client (x86).msi' }",
+            "Expand-MsiArchive \"$dir\\tmp\\AttachedContainer\\$extract\" \"$dir\" -ExtractDir \"VMware\\VMware Horizon View Client\" -Removal",
+            "Remove-Item \"$dir\\tmp\" -Recurse"
+        ]
     },
-    "uninstaller": {
-        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c `\"$dir\\VMware-Horizon-Client-Setup.exe`\" /uninstall /norestart /silent && rmdir `\"$dir\\install`\"\" -Verb RunAs"
-    },
-    "bin": "install\\vmware-view.exe",
+    "bin": "vmware-view.exe",
     "shortcuts": [
         [
-            "install\\vmware-view.exe",
+            "vmware-view.exe",
             "VMware Horizon Client"
         ]
     ],
