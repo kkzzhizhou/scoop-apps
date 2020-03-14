@@ -1,6 +1,6 @@
 {
     "version": "1.1",
-    "description": "AdRestore. Restore deleted ('tombstoned') objects.",
+    "description": "AdRestore. Restores deleted ('tombstoned') objects.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/adrestore",
     "license": {
         "identifier": "Freeware",
@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/ADRestore.zip",
     "hash": "68033fa10d80c9dfbea1d47967d6642e08488d661993e21961e27dac9adb875b",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\A\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\A\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\A\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "bin": "adrestore.exe",
     "checkver": "AdRestore\\s+v([\\d.]+)</h1",
     "autoupdate": {
