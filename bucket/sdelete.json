@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/SDelete.zip",
     "hash": "d19cf1835d2024ddd9e67c0566aa5dab963c629f6ff8888fb0aebf0c2092caaf",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\SDelete\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\SDelete\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\SDelete\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
             "bin": [

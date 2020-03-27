@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/ShareEnum.zip",
     "hash": "54242bb3ce5f62c6847aa88ac3079ca58a1d508858ae16265e8e45a7b4ed1d38",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\Share Enum\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\Share Enum\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Share Enum\", \"$sysInt\\ShareEnum\" -ErrorAction SilentlyContinue -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "ShareEnum.exe",

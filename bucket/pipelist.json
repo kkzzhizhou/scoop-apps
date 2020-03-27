@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/PipeList.zip",
     "hash": "e9c8d86659cfa1a89890d92036ff8989c1be12dfdcfbe2a1f1961fe15f8bc306",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\PipeList\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\PipeList\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PipeList\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
             "bin": [

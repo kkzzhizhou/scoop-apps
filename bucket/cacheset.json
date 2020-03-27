@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/CacheSet.zip",
     "hash": "22a22155867227c8fc75bbd6030c50a2e31908c6478804848b244843cc133ca3",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\CacheSet\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\CacheSet\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\CacheSet\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Cacheset.exe",

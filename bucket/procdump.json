@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/Procdump.zip",
     "hash": "9e089b3f25a85c58f901094e4126412bbef480bd7baef2a9039bdef328bf5baa",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\ProcDump\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\ProcDump\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\ProcDump\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
             "bin": [

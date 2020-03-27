@@ -1,6 +1,6 @@
 {
     "version": "3.10",
-    "description": "Autologon. Easily configure Windows’ built-in autologon mechanism.",
+    "description": "Autologon. Easily configure Windows built-in autologon mechanism.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/autologon",
     "license": {
         "identifier": "Freeware",
@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/AutoLogon.zip",
     "hash": "4ba5b92411a9b4b8743bdc479ead0e3f50ed2c8cb5517a49246ef57f3ebb09c7",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\Autologon\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\Autologon\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Autologon\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Autologon.exe",

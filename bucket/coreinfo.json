@@ -1,6 +1,6 @@
 {
     "version": "3.31",
-    "description": "Coreinfo. Shows the mapping between logical processors and the physical processor, NUMA node, and socket on which they reside, as well as the cache’s assigned to each logical processor.",
+    "description": "Coreinfo. Shows the mapping between logical processors and the physical processor, NUMA node, and socket on which they reside, as well as the cache's assigned to each logical processor.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/coreinfo",
     "license": {
         "identifier": "Freeware",
@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/Coreinfo.zip",
     "hash": "af5a57c572a2eb0230a79fa20e34bce20c0ecfdbe88fd205c20d50b18379f913",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\Coreinfo\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\Coreinfo\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Coreinfo\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "bin": "Coreinfo.exe",
     "checkver": "Coreinfo\\s+v([\\d.]+)</h1",
     "autoupdate": {

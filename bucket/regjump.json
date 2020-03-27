@@ -1,6 +1,6 @@
 {
     "version": "1.1",
-    "description": "RegJump. Open regedit with given path.",
+    "description": "RegJump. Opens regedit with given path.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/regjump",
     "license": {
         "identifier": "Freeware",
@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/RegJump.zip",
     "hash": "53dbc149d0bc0bf464a9970a14a1650fe0d2ca311dd80829c09589d0fe150eec",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\Regjump\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\Regjump\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Regjump\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "bin": "regjump.exe",
     "checkver": "RegJump\\s+v([\\d.]+)</h1",
     "autoupdate": {

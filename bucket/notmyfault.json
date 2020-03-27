@@ -8,16 +8,27 @@
     },
     "url": "https://download.sysinternals.com/files/NotMyFault.zip",
     "hash": "f949c922cc790776512c2712c73f42961e5b7cf2326f6f435d5b3dd03b99179d",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\NotMyFault\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\NotMyFault\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\NotMyFault\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
             "bin": [
+                "notmyfaultc64.exe",
                 [
                     "notmyfaultc64.exe",
                     "notmyfault64"
@@ -36,6 +47,7 @@
         },
         "32bit": {
             "bin": [
+                "notmyfaultc.exe",
                 [
                     "notmyfaultc.exe",
                     "notmyfault"

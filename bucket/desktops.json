@@ -1,6 +1,6 @@
 {
     "version": "2.0",
-    "description": "Desktops. Create up to four virtual desktops and to use a tray interface or hotkeys to preview what’s on each desktop and easily switch between them.",
+    "description": "Desktops. Create up to four virtual desktops and to use a tray interface or hotkeys to preview what's on each desktop and easily switch between them.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/desktops",
     "license": {
         "identifier": "Freeware",
@@ -8,13 +8,23 @@
     },
     "url": "https://download.sysinternals.com/files/Desktops.zip",
     "hash": "467c4db36ff13b4e5b9c4eaad66ce3f022509effa6c535f991f727adeccd62cf",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\Desktops\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\Desktops\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Desktops\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Desktops.exe",

@@ -1,0 +1,35 @@
+{
+    "description": "AdoptOpenJDK 14 JRE with Eclipse OpenJ9 JVM with large heap",
+    "homepage": "https://adoptopenjdk.net",
+    "version": "14-36.1-0.19.0",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0,EPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14%2B36.1_openj9-0.19.0/OpenJDK14U-jre_x64_windows_openj9_windowsXL_14_36_openj9-0.19.0.zip",
+            "hash": "682e402b71bd20331d3f48e82a7b289b1b81d029d189afcefe7d4dd2cd65d550"
+        }
+    },
+    "extract_dir": "jdk-14+36-jre",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptopenjdk.net/v2/info/releases/openjdk14?openjdk_impl=openj9&heap_size=large&os=windows&arch=x64&release=latest&type=jre",
+        "jp": "$.binaries[0].binary_link",
+        "re": "https://github.com/(?<url>.*?(?<tag>jdk-(?<major>(?<jdk>[\\d]+)[\\d.]+)(?:\\%2B|\\+)(?<build>[\\d]+)(?<patch>[\\d.]*)(?:(?<oj>_openj9?)(?<jvmver>-[\\d.]+))?)/.*?).zip",
+        "replace": "${major}-${build}${patch}${jvmver}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk-$matchMajor+$matchBuild-jre"
+    }
+}

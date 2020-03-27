@@ -8,16 +8,27 @@
     },
     "url": "https://download.sysinternals.com/files/LoadOrder.zip",
     "hash": "2ae83f2bcfc709a38cbe40a579e363f03fa07d5a3aee6b4477500054295d02a5",
-    "pre_install": [
-        "$sysint = 'HKCU:\\Software\\Sysinternals'",
-        "$fin = \"$sysint\\LoadOrder\"",
-        "if (-not (Test-Path $sysint)) { New-Item $sysint -Force | Out-Null }",
-        "if (-not (Test-Path $fin)) { New-Item $fin -Force | Out-Null }",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-    ],
+    "installer": {
+        "script": [
+            "$sysint = 'HKCU:\\Software\\Sysinternals'",
+            "$fin = \"$sysint\\LoadOrder\"",
+            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
+            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\LoadOrder\" -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
             "bin": [
+                "LoadOrdC64.exe",
                 [
                     "LoadOrdC64.exe",
                     "LoadOrd64"
@@ -36,6 +47,7 @@
         },
         "32bit": {
             "bin": [
+                "LoadOrdC.exe",
                 [
                     "LoadOrdC.exe",
                     "LoadOrd"
