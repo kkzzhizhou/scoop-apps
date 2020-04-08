@@ -1,0 +1,28 @@
+{
+    "version": "2",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/tonsky/FiraCode",
+    "url": "https://github.com/tonsky/FiraCode/releases/download/2/FiraCode_2.zip",
+    "hash": "60D5B1106B708CC134C521AAE4E503BB1D2EC3C9BF8AD978F2C659820505D492",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/tonsky/FiraCode/releases/download/$version/FiraCode_$version.zip"
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'Fira Code' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}
