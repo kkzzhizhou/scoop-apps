@@ -1,0 +1,53 @@
+{
+    "homepage": "https://www.oracle.com/technetwork/java/javase/overview/index.html",
+    "description": "Oracle JDK 8",
+    "license": "https://java.com/otnlicense",
+    "version": "8u241",
+    "architecture": {
+        "64bit": {
+            "url": "https://master.dl.sourceforge.net/project/tomato-extra/apps/jdk-8u241-windows-x64.exe#/dl.7z",
+            "hash": "63e768fb297f50210b00b34bb362e80ca98384cb275c019acdb49f646d8a1549"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "# Java Source (src.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB9\\110\" \"$dir\"",
+            "# JDK (tools.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB10\\111\" \"$dir\\tmp\"",
+            "Expand-7zipArchive \"$dir\\tmp\\tools.zip\" \"$dir\"",
+            "# Copyright (COPYRIGHT)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB11\\112\" \"$dir\"",
+            "# Convert .pack to .jar, and remove .pack",
+            "pushd \"$dir\"",
+            "ls \"$dir\" -recurse | ? name -match '^[^_].*?\\.(?i)pack$' | % {",
+            "    $name = $_.fullname -replace '\\.(?i)pack$', ''",
+            "    $pack = \"$name.pack\"",
+            "    $jar = \"$name.jar\"",
+            "    & \"bin\\unpack200.exe\" \"-r\" \"$pack\" \"$jar\"",
+            "}",
+            "rm -r tmp | out-null",
+            "popd"
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://www.oracle.com/technetwork/java/javase/downloads/index.html",
+        "re": "Java SE (8u\\d+[^ ]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://master.dl.sourceforge.net/project/tomato-extra/apps/jdk-$version-windows-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html",
+            "find": "$basename.*([a-fA-F0-9]{64})\"};"
+        }
+    }
+}
