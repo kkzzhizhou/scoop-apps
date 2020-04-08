@@ -2,6 +2,7 @@
     "version": "0.9.86",
     "description": "A decent markdown editor finally available on Windows",
     "homepage": "https://typora.io",
+    "depends": "sudo",
     "license": {
         "identifier": "Freeware",
         "url": "https://support.typora.io/License-Agreement/"
@@ -9,21 +10,64 @@
     "notes": "Free during beta.",
     "architecture": {
         "64bit": {
-            "url": "https://typora.io/windows/typora-setup-x64.exe",
-            "hash": "4346b67a1409044f39ee50004395a03eef3443718639e34393afc25a7162ac3d"
+            "url": [
+                "https://typora.io/windows/typora-setup-x64.exe#/dl.exe",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/typora/assoc.reg",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/typora/unassoc.reg"
+            ],
+            "hash": [
+                "4346b67a1409044f39ee50004395a03eef3443718639e34393afc25a7162ac3d",
+                "B27B39E99B3CD1B639179320CDEAA0526024E4CF48F2CD3531C159464F683A9E",
+                "5EA864C0862110BB95A27D760CCD9628B6CA62EAA15A33289425C9452983BD24"
+            ],
+            "installer": {
+                "script": "Expand-InnoArchive -Path \"$dir\\dl.exe\""
+            },
+            "uninstaller": {
+                "script": [
+                    "sudo regedit /s $dir\\unassoc.reg",
+                    "ie4uinit.exe -show"
+                ]
+            }
         },
         "32bit": {
-            "url": "https://typora.io/windows/typora-setup-ia32.exe",
-            "hash": "6c4776ad0d3a7711ff33fc225db0fc3417a62692f229fccae3d881687b0272a4"
+            "url": [
+                "https://typora.io/windows/typora-setup-ia32.exe#/dl.exe",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/typora/assoc.reg",
+                "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/scripts/typora/unassoc.reg"
+            ],
+            "hash": [
+                "6c4776ad0d3a7711ff33fc225db0fc3417a62692f229fccae3d881687b0272a4",
+                "B27B39E99B3CD1B639179320CDEAA0526024E4CF48F2CD3531C159464F683A9E",
+                "5EA864C0862110BB95A27D760CCD9628B6CA62EAA15A33289425C9452983BD24"
+            ],
+            "installer": {
+                "script": "Expand-InnoArchive -Path \"$dir\\dl.exe\""
+            },
+            "uninstaller": {
+                "script": [
+                    "sudo regedit /s $dir\\unassoc.reg",
+                    "ie4uinit.exe -show"
+                ]
+            }
         }
     },
-    "innosetup": true,
-    "bin": "Typora.exe",
+    "bin": "typora.exe",
     "shortcuts": [
         [
             "Typora.exe",
             "Typora"
         ]
+    ],
+    "post_install": [
+        "if (Test-Path(\"$dir\\assoc.reg\")) {",
+        "    $path = \"$dir\" -Replace '\\\\', '\\\\'",
+        "    $content = Get-Content \"$dir\\assoc.reg\"",
+        "    $content = $content -Replace '\\$Path', $path",
+        "    Set-Content \"$dir\\assoc.reg\" $content -Encoding ASCII",
+        "}",
+        "sudo regedit /s $dir\\assoc.reg",
+        "ie4uinit.exe -show"
     ],
     "checkver": {
         "url": "https://typora.io/windows/dev_release.html",
@@ -32,10 +76,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://typora.io/windows/typora-setup-x64.exe"
+                "url": "https://typora.io/windows/typora-setup-x64.exe#/dl.exe"
             },
             "32bit": {
-                "url": "https://typora.io/windows/typora-setup-ia32.exe"
+                "url": "https://typora.io/windows/typora-setup-ia32.exe#/dl.exe"
             }
         }
     }
