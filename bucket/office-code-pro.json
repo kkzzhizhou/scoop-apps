@@ -1,0 +1,29 @@
+{
+    "version": "1.004",
+    "description": "Customized version of Source Code Pro",
+    "homepage": "https://github.com/nathco/Office-Code-Pro",
+    "license": "OFL-1.1",
+    "url": "https://github.com/nathco/Office-Code-Pro/archive/1.004.zip",
+    "hash": "9e24d15309ead8c523ec3f0444ed9c171bba535e109c43b1dde8abfa9d359150",
+    "extract_dir": "Office-Code-Pro-1.004/Fonts/Office Code Pro/OTF",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.otf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (OpenType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.otf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (OpenType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'Office Code Pro' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github"
+}

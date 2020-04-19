@@ -1,0 +1,33 @@
+{
+    "version": "1.00",
+    "license": "Unlicensed",
+    "homepage": "https://www.dafont.com/basic-comical-nc.font",
+    "url": "https://dl.dafont.com/dl/?f=basic_comical_nc#/basic-comical-nc.zip",
+    "hash": "ea01596811396ea7fe26c08daebfcb4b6abdea1551c654f8208b8061c898311f",
+    "checkver": {
+        "url" : "https://www.wfonts.com/font/basic-comical-nc",
+        "regex": "Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://dl.dafont.com/dl/?f=basic_comical_nc#/basic-comical-nc.zip"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The '$app' font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

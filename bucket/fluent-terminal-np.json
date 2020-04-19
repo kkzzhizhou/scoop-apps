@@ -1,24 +1,34 @@
 {
-    "version": "0.6.1.0",
+    "version": "0.7.0.0",
     "description": "Terminal emulator based on UWP and web technologies.",
     "homepage": "https://github.com/felixse/FluentTerminal",
     "license": "GPL-3.0-only",
-    "url": "https://github.com/felixse/FluentTerminal/releases/download/0.6.1.0/FluentTerminal.Package_0.6.1.0_Test.zip",
-    "hash": "343344a1becb633c68448f39e76603cf0c8f323ce4e38ddeface379f057c73d9",
-    "pre_install": [
-        "if (!(is_admin)) {",
-        "    error \"Administrator rights are required to install $app.\"",
-        "    exit 1",
-        "}",
-        "",
-        "$thumb = '8A5DE5B20B663BD6A99B44C5BA278289521F419F'",
-        "$store = 'TrustedPeople'",
-        "if (Get-ChildItem -Path Cert:\\LocalMachine\\$store | Where-Object {$_.Thumbprint -eq $thumb}) { return }",
-        "certutil -addstore $store ${dir}\\FluentTerminal.Package_${version}_x86_x64.cer",
-        "gpupdate /force",
-        "reg add 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock' /t REG_DWORD /f /v 'AllowAllTrustedApps' /d 1"
+    "url": "https://github.com/felixse/FluentTerminal/releases/download/0.7.0.0/FluentTerminal_0.7.0.0.zip",
+    "hash": "2d6ac7d6bcd3c50050f80c8a8b7aa061c506525ada76578aff2c01f686a8f3ce",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock\" /t REG_DWORD /f /v \"AllowAllTrustedApps\" /d 1",
+            "",
+            "Add-AppxPackage \"${dir}//FluentTerminal.Package`_${version}`_x64.appxbundle\"",
+            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Install.bat -OutFile $dir//InstallContextMenu.bat -UseBasicParsing",
+            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Uninstall.bat -OutFile $dir//UninstallContextMenu.bat -UseBasicParsing",
+            "cmd /c \"$dir//InstallContextMenu.bat > nul 2> nul\"",
+            "",
+            "New-Item \"$dir//fluent-terminal.ps1\" | Out-Null",
+            "Set-Content \"$dir//fluent-terminal.ps1\" \"explorer shell:AppsFolder\\`$(Get-AppXPackage -Name *FluentTerminal* | Select-Object -ExpandProperty PackageFamilyName)`!App\""
+        ]
+    },
+    "bin": [
+        [
+            "fluent-terminal.ps1",
+            "fluent-terminal"
+        ]
     ],
-    "post_install": "& \"$dir\\Install.ps1\" -ForceContextMenu -Force",
     "uninstaller": {
         "script": [
             "if (!(is_admin)) {",
@@ -26,10 +36,7 @@
             "    exit 1",
             "}",
             "",
-            "$store = 'TrustedPeople'",
-            "certutil -delstore $store ${dir}\\FluentTerminal.Package_${version}_x86_x64.cer",
-            "New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT",
-            "reg delete 'HKCR\\Directory\\Background\\shell\\Open Fluent Terminal here' /f",
+            "cmd /c \"$dir//UninstallContextMenu.bat > nul 2> nul\"",
             "Get-AppxPackage -Name *FluentTerminal* | Remove-AppxPackage -AllUsers"
         ]
     },
@@ -37,6 +44,6 @@
         "github": "https://github.com/felixse/FluentTerminal"
     },
     "autoupdate": {
-        "url": "https://github.com/felixse/FluentTerminal/releases/download/$version/FluentTerminal.Package_$version_Test.zip"
+        "url": "https://github.com/felixse/FluentTerminal/releases/download/$version/FluentTerminal_$version.zip"
     }
 }

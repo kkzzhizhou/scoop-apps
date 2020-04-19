@@ -1,0 +1,35 @@
+{
+    "version": "5.13.0",
+    "description": "The most popular icon set",
+    "homepage": "https://fontawesome.com",
+    "license": "OFL-1.1",
+    "url": "https://github.com/FortAwesome/Font-Awesome/releases/download/5.13.0/fontawesome-free-5.13.0-desktop.zip",
+    "hash": "5d54c86956e7b118f14c03d080882fd76c17cbb577d53b74237af22114658da8",
+    "extract_dir": "fontawesome-free-5.13.0-desktop/otfs",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.otf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (OpenType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.otf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (OpenType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'Font Awesome' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/FortAwesome/Font-Awesome"
+    },
+    "autoupdate": {
+        "url": "https://github.com/FortAwesome/Font-Awesome/releases/download/$version/fontawesome-free-$version-desktop.zip",
+        "extract_dir": "fontawesome-free-$version-desktop/otfs"
+    }
+}
