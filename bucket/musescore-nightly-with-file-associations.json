@@ -1,0 +1,58 @@
+{
+    "version": "2020-04-15-1048-master-b30f199",
+    "description": "Music notation editor with an easy-to-use WYSIWYG interface.",
+    "homepage": "https://musescore.org/",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://ftp.osuosl.org/pub/musescore-nightlies/windows/MuseScoreNightly-2020-04-15-1048-master-b30f199-x86_64.7z",
+            "hash": "d4498f0bbc721ce069f2ebef4cb4fb56bc4c53d86c0d35c4b29a045f75e223f0"
+        }
+    },
+    "extract_dir": "MuseScoreNightly",
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "(Get-Content \"$bucketdir\\..\\scripts\\musescore-install-file-associations.reg\").Replace('$musescore', \"$dir\\bin\\nightly.exe\".Replace('\\', '\\\\')) | Set-Content \"$dir\\musescore-install-file-associations.reg\"",
+        "Copy-Item \"$bucketdir\\..\\scripts\\musescore-uninstall-file-associations.reg\" -Destination \"$dir\\musescore-uninstall-file-associations.reg\"",
+        "regedit /s \"$dir\\musescore-install-file-associations.reg\"",
+        "Stop-Process -Name explorer"
+    ],
+    "uninstaller": {
+        "script": [
+            "regedit /s \"$dir\\musescore-uninstall-file-associations.reg\"",
+            "Stop-Process -Name explorer"
+        ]
+    },
+    "bin": [
+        [
+            "bin\\nightly.exe",
+            "MuseScore"
+        ],
+        [
+            "bin\\nightly.exe",
+            "mscore"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "bin\\nightly.exe",
+            "MuseScore"
+        ]
+    ],
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/ScoopInstaller/Versions/master/bucket/musescore-nightly.json",
+        "regex": "\"version\": \"([\\w-]+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ftp.osuosl.org/pub/musescore-nightlies/windows/MuseScoreNightly-$version-x86_64.7z",
+                "hash": {
+                    "url": "https://raw.githubusercontent.com/ScoopInstaller/Versions/master/bucket/musescore-nightly.json",
+                    "find": "\"hash\": \"([a-z0-9]{64})\""
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "version": "3.27.68",
+    "description": "Tool for the customization of functions on Corsair peripherals and components.",
+    "homepage": "https://www.corsair.com/us/en/icue",
+    "license": "Freeware",
+    "url": "http://downloads.corsair.com/Files/CUE/iCUESetup_3.27.68_release.msi#/setup.msi_",
+    "hash": "30f16266d8c7d70e3ca48acbe36f24226587216cf298b69d1d4db2ae693b87c8",
+    "notes": [
+        "Run the following PowerShell commands as administrator to disable the Corsair Service and Corsair LLA Service from starting automatically:",
+        "Set-Service -Name CorsairService -StartupType Manual",
+        "Set-Service -Name CorsairLLAService -StartupType Manual"
+    ],
+    "installer": {
+        "script": [
+            "# if (!(is_admin)) {",
+            "#     error \"Administrator rights are required to install $app.\"",
+            "#     exit 1",
+            "# }",
+            "",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\setup.msi_`\" /qn INSTALLFOLDER=`\"$dir`\"\" -Verb RunAs",
+            "Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start Menu\\Corsair\\iCUE.lnk\"",
+            "# If the Corsair directory is empty, delete it",
+            "Remove-Item -ErrorAction Ignore \"$env:ProgramData\\Microsoft\\Windows\\Start Menu\\Corsair\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# if (!(is_admin)) {",
+            "#     error \"Administrator rights are required to uninstall $app.\"",
+            "#     exit 1",
+            "# }",
+            "",
+            "Start-Process -Wait msiexec \"/x `\"$dir\\setup.msi_`\" /qn\" -Verb RunAs"
+        ]
+    },
+    "bin": "iCUE.exe",
+    "shortcuts": [
+        [
+            "iCUE.exe",
+            "iCUE"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.corsair.com/us/en/downloads",
+        "regex": "\"CORSAIR iCUE ([\\w.]+)"
+    },
+    "autoupdate": {
+        "url": "http://downloads.corsair.com/Files/CUE/iCUESetup_$version_release.msi#/setup.msi_"
+    }
+}
