@@ -1,0 +1,81 @@
+{
+    "version": "9.51",
+    "description": "Total Commander. File manager",
+    "homepage": "https://www.ghisler.com",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.ghisler.com/privacypolicy.htm"
+    },
+    "notes": "e143436e2f9183a650424d635b535e51",
+    "architecture": {
+        "64bit": {
+            "url": "https://totalcommander.ch/win/tcmd951x64.exe#/cosi.7z",
+            "hash": "b440ec35ea6c4ff7296b51c96e7bf55336a1cebaf211524e6caa2f4db3fe60b2",
+            "bin": [
+                "TOTALCMD64.EXE",
+                [
+                    "TOTALCMD64.EXE",
+                    "TOTALCMD"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "TOTALCMD64.EXE",
+                    "Total Commander"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://totalcommander.ch/win/tcmd951x32.exe#/cosi.7z",
+            "hash": "e80a6c363ac9c62c5849dc4301190c2b2275e2d745baf6390c7826081f2b77bf",
+            "bin": "TOTALCMD.EXE",
+            "shortcuts": [
+                [
+                    "TOTALCMD.EXE",
+                    "Total Commander"
+                ]
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\INSTALL.CAB\" \"$dir\\cosi\" -Removal",
+            "Get-ChildItem \"$dir\" -Exclude cosi | Remove-Item -Force -Recurse",
+            "Move-Item \"$dir\\cosi\\*\" \"$dir\"",
+            "Remove-Item \"$dir\\*\" -Include 'cosi', 'd', 'e' -Force -Recurse",
+            "    # Creating default settings",
+            "function CreateFile([String] $file, [String] $content = $null) {",
+            "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+            "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+            "        Set-Content \"$dir\\$file\" $content -Encoding Ascii",
+            "    }",
+            "}",
+            "CreateFile 'DEFAULT.BAR'",
+            "CreateFile 'default.br2'",
+            "CreateFile 'wcx_ftp.ini'",
+            "CreateFile 'wincmd.ini' @('[Configuration]', 'UseIniInProgramDir=7')",
+            "CreateFile 'wincmd.key'"
+        ]
+    },
+    "persist": [
+        "DEFAULT.BAR",
+        "default.br2",
+        "wcx_ftp.ini",
+        "wincmd.ini",
+        "wincmd.key"
+    ],
+    "checkver": {
+        "url": "https://www.ghisler.com/download.htm",
+        "regex": "Download\\s+version ([\\w+.]+) of Total Commander"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx64.exe#/cosi.7z"
+            },
+            "32bit": {
+                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx32.exe#/cosi.7z"
+            }
+        }
+    }
+}

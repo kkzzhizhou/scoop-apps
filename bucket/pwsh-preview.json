@@ -1,0 +1,75 @@
+{
+    "version": "7.1.0-preview.1",
+    "description": "PowerShell Core Preview. Cross-Platform task automation and configuration management framework/tool.",
+    "homepage": "https://github.com/PowerShell/PowerShell",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.1.0-preview.1/PowerShell-7.1.0-preview.1-win-x64.zip",
+            "hash": "a9a6f163ed1087d16f647ddd1e6460baa2b4e305d6ed63c0f280b236abb93ba3"
+        },
+        "32bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.1.0-preview.1/PowerShell-7.1.0-preview.1-win-x86.zip",
+            "hash": "48f1c4bc67a9b4f585ec3d4a1be9d0cd734ee9198f50e7fd8747195461bd749c"
+        }
+    },
+    "installer": {
+        "script": [
+            "    # Variables",
+            "$GIST = 'https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw'",
+            "$PWSH_PATH = \"$dir\".Replace('\\', '\\\\')",
+            "$INS_REG = \"$dir\\pwsh-context-ins.reg\"",
+            "$UNINS_REG = \"$dir\\pwsh-context-un.reg\"",
+            "    # Downloading",
+            "$content = (New-Object System.Net.WebClient).DownloadString(\"$GIST/pwsh-context-ins.reg\")",
+            "$content = $content.Replace('%%dir%%', $PWSH_PATH)",
+            "    # SET FILES",
+            "Set-Content $INS_REG $content -Encoding Ascii",
+            "$content = (New-Object System.Net.WebClient).DownloadString(\"$GIST/pwsh-context-un.reg\")",
+            "Set-Content $UNINS_REG $content -Encoding Ascii",
+            "    # Append registry",
+            "regedit /s $INS_REG"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "    # Remove registry entry",
+            "regedit /s \"$dir\\pwsh-context-un.reg\""
+        ]
+    },
+    "bin": [
+        [
+            "pwsh.exe",
+            "pwsh-preview",
+            "-NoLogo"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "pwsh.exe",
+            "PowerShell Core Preview",
+            "-NoLogo"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.github.com/PowerShell/PowerShell/releases",
+        "regex": "tree/v([\\d.]+-[\\w.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x86.zip"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/tag/v$version/",
+            "regex": "$basename\\s*<ul>\\s*<li>$sha256"
+        }
+    }
+}
