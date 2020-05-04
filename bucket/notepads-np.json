@@ -1,16 +1,16 @@
 {
-    "version": "1.2.5.0",
+    "version": "1.2.7.0",
     "description": "Lightweight text editor.",
     "homepage": "https://www.notepadsapp.com/",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/JasonStein/Notepads/releases/download/v1.2.5.0/Notepads_1.2.5.0_x64.zip",
-            "hash": "931993632658baee3575f41da47861206b9dc6576a3af1df23676e92711d4f04"
+            "url": "https://github.com/JasonStein/Notepads/releases/download/v1.2.7.0/Notepads_1.2.7.0_x64.zip",
+            "hash": "8154e62cbfbfaae3be76039e1d6d7e560e6a2ab5f9e700890ad09b1fe6524b2a"
         },
         "32bit": {
-            "url": "https://github.com/JasonStein/Notepads/releases/download/v1.2.5.0/Notepads_1.2.5.0_x86.zip",
-            "hash": "912b9b64e988ce8b43c02a14be69da9131cde9233455c22008616785f1c529fa"
+            "url": "https://github.com/JasonStein/Notepads/releases/download/v1.2.7.0/Notepads_1.2.7.0_x86.zip",
+            "hash": "0b9fb82695b968805449b163be23b93348de72f463befe18d72ba0e13c48c516"
         }
     },
     "installer": {
@@ -29,8 +29,7 @@
             "Move-Item \"$dir\\$notepads\\*\" \"$dir\"",
             "Remove-Item \"$dir\\$notepads\"",
             "",
-            "$certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2",
-            "$certificate.Import(\"$dir\\$notepads.cer\")",
+            "$certificate = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2(\"$dir\\$notepads.cer\")",
             "",
             "if (-not (Get-ChildItem -Path Cert:\\LocalMachine\\TrustedPeople | Where-Object {$_.Thumbprint -eq $certificate.Thumbprint})) {",
             "    certutil -addstore TrustedPeople \"$dir\\$notepads.cer\"",
@@ -38,11 +37,14 @@
             "    reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock\" /t REG_DWORD /f /v \"AllowDevelopmentWithoutDevLicense\" /d \"1\"",
             "}",
             "",
-            "Add-AppxPackage \"$dir\\$notepads.msixbundle\"",
-            "New-Item \"$dir\\notepads.ps1\" | Out-Null",
-            "Set-Content \"$dir\\notepads.ps1\" \"explorer shell:AppsFolder\\$(Get-AppXPackage -Name *Notepads* | Select-Object -ExpandProperty PackageFamilyName)!App\""
+            "Add-AppxProvisionedPackage -Online -PackagePath \"$dir\\$notepads.msixbundle\" -SkipLicense | Out-Null",
+            "Start-Sleep -Seconds 2"
         ]
     },
+    "post_install": [
+        "$name = (Get-AppxPackage -Name *Notepads*).PackageFamilyName",
+        "Copy-Item $dir\\Settings -Destination $env:LocalAppData\\Packages\\$name -Force -Recurse | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if (!(is_admin)) {",
@@ -50,6 +52,8 @@
             "    exit 1",
             "}",
             "",
+            "$name = (Get-AppxPackage -Name *Notepads*).PackageFamilyName",
+            "Copy-Item \"$env:LocalAppData\\Packages\\$name\\Settings\" -Destination \"$dir\" -Force -Recurse | Out-Null",
             "if ($architecture -eq '64bit') {",
             "    certutil -delstore TrustedPeople \"$dir\\Notepads_$version_x64.cer\"",
             "} else {",
@@ -59,12 +63,7 @@
             "Get-AppxPackage -Name *Notepads* | Remove-AppxPackage -AllUsers"
         ]
     },
-    "bin": [
-        [
-            "notepads.ps1",
-            "notepads"
-        ]
-    ],
+    "persist": "Settings",
     "checkver": {
         "github": "https://github.com/JasonStein/Notepads"
     },

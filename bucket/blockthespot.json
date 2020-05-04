@@ -1,0 +1,38 @@
+{
+    "version": "2020.4.30.13",
+    "description": "Removes advertisements in Spotify.",
+    "homepage": "https://github.com/mrpond/BlockTheSpot",
+    "license": "MIT",
+    "depends": "spotify-latest",
+    "url": "https://github.com/mrpond/BlockTheSpot/releases/download/2020.4.30.13/chrome_elf.zip",
+    "hash": "815911b2d9e6143942c9a4996a47bf7a1455a13cbc4c78b5533becc5af70c304",
+    "installer": {
+        "script": [
+            "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
+            "Stop-Process -ErrorAction Ignore -Name Spotify | Out-Null",
+            "",
+            "$spotify_path = \"$(appdir spotify-latest)\\current\"",
+            "Move-Item -Force \"$spotify_path\\chrome_elf.dll\" -Destination \"$spotify_path\\chrome_elf.dll.original\"",
+            "Copy-Item \"$dir\\chrome_elf.dll\" -Destination \"$spotify_path\"",
+            "if (-not (Get-Content -ErrorAction Ignore \"$spotify_path\\config.ini\")) { Copy-Item \"$dir\\config.ini\" -Destination \"$spotify_path\" }",
+            "",
+            "if ($spotify_running) { Start-Process \"$spotify_path\\Spotify.exe\" }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
+            "Stop-Process -ErrorAction Ignore -Name Spotify | Out-Null",
+            "",
+            "$spotify_path = \"$(appdir spotify-latest)\\current\"",
+            "Move-Item -ErrorAction Ignore -Force \"$spotify_path\\chrome_elf.dll.original\" -Destination \"$spotify_path\\chrome_elf.dll\"",
+            "Remove-Item -ErrorAction Ignore \"$spotify_path\\config.ini\"",
+            "",
+            "if ($spotify_running) { Start-Process \"$spotify_path\\Spotify.exe\" }"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/mrpond/BlockTheSpot/releases/download/$version/chrome_elf.zip"
+    }
+}

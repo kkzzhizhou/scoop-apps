@@ -1,12 +1,13 @@
 {
-    "version": "nightly",
+    "version": "1.1.30.658.gf13cde74",
     "description": "Digital music service.",
     "homepage": "https://www.spotify.com/",
     "license": {
         "identifier": "Freeware",
         "url": "https://www.spotify.com/au/legal/end-user-agreement/"
     },
-    "url": "http://download.spotify.com/SpotifyFullSetup.exe",
+    "url": "https://download.spotify.com/SpotifyFullSetup.exe",
+    "hash": "77c953863c5882ba78796c192044cbea3841dbdab02a4b2b9237793991e17285",
     "installer": {
         "script": [
             "if (Test-Path \"$(appdir spotify-blockthespot)\") {",
@@ -15,14 +16,43 @@
             "}",
             "",
             "Stop-Process -ErrorAction Ignore -Name Spotify | Out-Null",
-            "Start-Process -Wait \"$dir\\$fname\" -ArgumentList '/extract', \"$dir\"",
-            "Remove-Item \"$dir\\SpotifyFullSetup.exe\""
+            "Start-Process -Wait \"$dir\\SpotifyFullSetup.exe\" -ArgumentList '/extract', \"$dir\"",
+            "Remove-Item \"$dir\\SpotifyFullSetup.exe\"",
+            "",
+            "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /reset /T | Out-Null",
+            "Remove-Item -ErrorAction Ignore -Recurse \"$env:LOCALAPPDATA\\Spotify\\Update\" | Out-Null",
+            "New-Item -ErrorAction Ignore \"$env:LOCALAPPDATA\\Spotify\\Update\" -ItemType Directory | Out-Null",
+            "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /deny Everyone:R | Out-Null"
         ]
     },
+    "post_install": [
+        "if (-not (Test-Path \"$(appdir spicetify-cli)\")) {",
+        "    return",
+        "}",
+        "",
+        "spicetify config spotify_path \"$(Split-Path $(scoop which Spotify))\" --quiet",
+        "spicetify restore --quiet # If a backup has already been made, restore it first",
+        "spicetify backup apply --quiet",
+        "",
+        "($job = Start-Job {",
+        "    while ($spotify_process -eq $null) {",
+        "        Start-Sleep -Milliseconds 250",
+        "        $spotify_process = Get-Process | Where-Object { $_.name -eq 'Spotify' }",
+        "    }",
+        "",
+        "    $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
+        "}) | Out-Null",
+        "",
+        "$job | Wait-Job -Timeout 5 | Out-Null",
+        "$job.StopJob()"
+    ],
     "uninstaller": {
         "script": [
             "Stop-Process -ErrorAction Ignore -Name Spotify | Out-Null",
-            "Start-Process -Wait \"$dir\\Spotify.exe\" -ArgumentList '/Uninstall', '/Silent'"
+            "Move-Item -ErrorAction Ignore -Force \"$env:APPDATA\\Spotify\" -Destination \"$env:APPDATA\\Spotify.original\" | Out-Null",
+            "Start-Process -Wait \"$dir\\Spotify.exe\" -ArgumentList '/Uninstall', '/Silent'",
+            "Move-Item -ErrorAction Ignore -Force \"$env:APPDATA\\Spotify.original\" -Destination \"$env:APPDATA\\Spotify\" | Out-Null",
+            "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /grant Everyone:R | Out-Null"
         ]
     },
     "bin": "Spotify.exe",
@@ -31,5 +61,17 @@
             "Spotify.exe",
             "Spotify"
         ]
-    ]
+    ],
+    "checkver_": {
+        "script": [
+            "Invoke-WebRequest https://download.spotify.com/SpotifyFullSetup.exe -OutFile \"SpotifyFullSetup.exe\"",
+            "$version = Get-ChildItem SpotifyFullSetup.exe | ForEach-Object { $_.VersionInfo.ProductVersion }",
+            "Remove-Item \"SpotifyFullSetup.exe\"",
+            "return \"$version\""
+        ],
+        "regex": "(.+)"
+    },
+    "autoupdate": {
+        "url": "https://download.spotify.com/SpotifyFullSetup.exe"
+    }
 }

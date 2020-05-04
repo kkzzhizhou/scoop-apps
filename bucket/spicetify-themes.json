@@ -1,11 +1,11 @@
 {
-    "version": "232b025dda2764f40c7c2058f0cc9e0774b98627",
+    "version": "2020-05-01T10.06.47",
     "description": "Community-created themes for Spicetify.",
     "homepage": "https://github.com/morpheusthewhite/spicetify-themes",
     "license": "MIT",
     "depends": "spicetify-cli",
     "url": "https://github.com/morpheusthewhite/spicetify-themes/archive/master.zip",
-    "hash": "af3f4b4609edd98fcb4453057259c1dc2999ada20751e30626b95668b906ee3b",
+    "hash": "f6398d84645a1d8dc954395c1051ff2e102028fdd7a7793aa9c22c3f96b33770",
     "notes": [
         "The Elementary theme requires the Open Sans and Raleway fonts:",
         "sudo scoop install open-sans raleway",
@@ -43,9 +43,9 @@
             "",
             "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
             "",
-            "spicetify config spotify_path \"$(Resolve-Path(Split-Path $spotify_path))\"",
-            "spicetify restore | Out-Null # If a backup has already been made, restore it first",
-            "spicetify backup apply | Out-Null",
+            "spicetify config spotify_path \"$(Split-Path $spotify_path)\" --quiet",
+            "spicetify restore --quiet # If a backup has already been made, restore it first",
+            "spicetify backup apply --quiet",
             "",
             "if (-not $spotify_running) {",
             "    ($job = Start-Job {",
@@ -57,7 +57,7 @@
             "        $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
             "    }) | Out-Null",
             "",
-            "    $job | Wait-Job -Timeout 5",
+            "    $job | Wait-Job -Timeout 5 | Out-Null",
             "    $job.StopJob()",
             "}"
         ]
@@ -67,7 +67,8 @@
     },
     "checkver": {
         "url": "https://api.github.com/repos/morpheusthewhite/spicetify-themes/commits",
-        "jsonpath": "$.[0].sha"
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
     },
     "autoupdate": {
         "url": "https://github.com/morpheusthewhite/spicetify-themes/archive/master.zip"

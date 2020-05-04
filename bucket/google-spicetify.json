@@ -1,5 +1,5 @@
 {
-    "version": "2b9479",
+    "version": "2019-06-10T03.49.03",
     "description": "Google-style theme for Spicetify.",
     "homepage": "https://github.com/khanhas/google-spicetify",
     "license": "GPL-3.0-only",
@@ -39,9 +39,9 @@
             "",
             "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
             "",
-            "spicetify config spotify_path \"$(Resolve-Path(Split-Path $spotify_path))\"",
-            "spicetify restore | Out-Null # If a backup has already been made, restore it first",
-            "spicetify backup apply | Out-Null",
+            "spicetify config spotify_path \"$(Split-Path $spotify_path)\" --quiet",
+            "spicetify restore --quiet # If a backup has already been made, restore it first",
+            "spicetify backup apply --quiet",
             "",
             "if (-not $spotify_running) {",
             "    ($job = Start-Job {",
@@ -53,7 +53,7 @@
             "        $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
             "    }) | Out-Null",
             "",
-            "    $job | Wait-Job -Timeout 5",
+            "    $job | Wait-Job -Timeout 5 | Out-Null",
             "    $job.StopJob()",
             "}"
         ]
@@ -62,8 +62,9 @@
         "script": "Get-ChildItem \"$dir\" | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\Themes\\$($_.Name)\" }"
     },
     "checkver": {
-        "url": "https://github.com/khanhas/google-spicetify/commits/master",
-        "regex": "/commit/([a-z0-9]{6})"
+        "url": "https://api.github.com/repos/khanhas/google-spicetify/commits",
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
     },
     "autoupdate": {
         "url": "https://github.com/khanhas/google-spicetify/archive/master.zip"
