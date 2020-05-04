@@ -7,7 +7,7 @@ if (-not (Test-Path "$env:APPDATA\Spotify\prefs")) {
     Set-Content "$env:APPDATA\Spotify\prefs" "app.last-launched-version=`"$spotify_version`""
 }
 
-Stop-Process -Name Spotify
+Stop-Process -ErrorAction Ignore -Name Spotify
 
 $config_exists = Test-Path "$env:USERPROFILE\.spicetify\config.ini"
 
@@ -15,5 +15,6 @@ $config_exists = Test-Path "$env:USERPROFILE\.spicetify\config.ini"
 
 if (-not $config_exists) {
     & "$PSScriptRoot\spicetify.exe" config experimental_features 1 --quiet
+    & "$PSScriptRoot\spicetify.exe" config fastUser_switching 1 --quiet
     & "$PSScriptRoot\spicetify.exe" config extensions "autoSkipExplicit.js|keyboardShortcut.js|queueAll.js|shuffle+.js|webnowplaying.js" --quiet
 }
