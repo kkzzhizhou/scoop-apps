@@ -1,19 +1,12 @@
 {
-    "version": "2019-06-10T03.49.03",
-    "description": "Google-style theme for Spicetify.",
-    "homepage": "https://github.com/khanhas/google-spicetify",
-    "license": "GPL-3.0-only",
+    "version": "2020-05-01T11.46.43",
+    "description": "A Spicetify custom app that fetches lyrics for Spotify.",
+    "homepage": "https://github.com/khanhas/genius-spicetify",
+    "license": "Freeware",
     "depends": "spicetify-cli",
-    "url": "https://github.com/khanhas/google-spicetify/archive/master.zip",
-    "hash": "e57f263335f3977a03d3bd40c27552a2e6dded92fa63ef2a7a8fd33d70bd3731",
-    "notes": [
-        "Run the following commands to apply this theme:",
-        "spicetify config current_theme google-spicetify",
-        "spicetify apply",
-        "Run the following commands to change the color scheme:",
-        "spicetify config color_scheme <Base|Dark|Gow|Spotify>",
-        "spicetify apply"
-    ],
+    "url": "https://github.com/khanhas/genius-spicetify/archive/master.zip",
+    "hash": "f06cf23a83dc248c697cc16627dbcf300e6d9547ac66cc29aaef188c4b6a4eed",
+    "notes": "See here to configure a Musixmatch user token: https://github.com/khanhas/genius-spicetify#musicxmatch",
     "installer": {
         "script": [
             "$spotify_path = scoop which Spotify",
@@ -27,8 +20,9 @@
             "    }",
             "}",
             "",
-            "Remove-Item -ErrorAction Ignore -Recurse \"$env:USERPROFILE\\.spicetify\\Themes\\google-spicetify\"",
-            "Copy-Item -Recurse \"$dir\\google-spicetify-master\" -Destination \"$env:USERPROFILE\\.spicetify\\Themes\\google-spicetify\"",
+            "# TODO persist Musixmatch token",
+            "Remove-Item -ErrorAction Ignore -Recurse \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\"",
+            "Copy-Item -Recurse \"$dir\\genius-spicetify-master\" -Destination \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\"",
             "",
             "if (-not (Test-Path \"$env:APPDATA\\Spotify\\prefs\")) {",
             "    # spicetify-cli refuses to apply without a backup, and spicetify-cli needs a prefs file so it can tell which version of Spotify is currently installed",
@@ -41,6 +35,8 @@
             "Stop-Process -Name Spotify",
             "",
             "spicetify config spotify_path \"$(Split-Path $spotify_path)\" --quiet",
+            "spicetify config custom_apps genius --quiet",
+            "",
             "spicetify restore backup apply --quiet --no-restart",
             "",
             "$spotify_dir = \"$(appdir spotify-latest)\\current\"",
@@ -58,14 +54,26 @@
         ]
     },
     "uninstaller": {
-        "script": "Get-ChildItem \"$dir\" | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\Themes\\$($_.Name)\" }"
+        "script": [
+            "Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\"",
+            "",
+            "$spotify_running = Get-Process Spotify -ErrorAction SilentlyContinue",
+            "Stop-Process -Name Spotify",
+            "",
+            "# TODO remove Genius from config",
+            "spicetify restore backup apply --quiet --no-restart",
+            "",
+            "if ($spotify_running) {",
+            "   & \"$(scoop which Spotify)\"",
+            "}"
+        ]
     },
     "checkver": {
-        "url": "https://api.github.com/repos/khanhas/google-spicetify/commits",
+        "url": "https://api.github.com/repos/khanhas/genius-spicetify/commits",
         "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
         "replace": "$1$2.$3.$4"
     },
     "autoupdate": {
-        "url": "https://github.com/khanhas/google-spicetify/archive/master.zip"
+        "url": "https://github.com/khanhas/genius-spicetify/archive/master.zip"
     }
 }

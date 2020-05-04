@@ -22,29 +22,24 @@
             "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /reset /T | Out-Null",
             "Remove-Item -ErrorAction Ignore -Recurse \"$env:LOCALAPPDATA\\Spotify\\Update\" | Out-Null",
             "New-Item -ErrorAction Ignore \"$env:LOCALAPPDATA\\Spotify\\Update\" -ItemType Directory | Out-Null",
-            "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /deny Everyone:R | Out-Null"
+            "icacls \"$env:LOCALAPPDATA\\Spotify\\Update\" /deny Everyone:R | Out-Null",
+            "",
+            "New-Item \"$dir\\config.ini\" # Persist for BlockTheSpot"
         ]
     },
     "post_install": [
-        "if (-not (Test-Path \"$(appdir spicetify-cli)\")) {",
-        "    return",
+        "if (Test-Path \"$(appdir spicetify-cli)\") {",
+        "    spicetify config spotify_path \"$(Split-Path $(scoop which Spotify))\" --quiet",
+        "    spicetify restore backup apply --quiet --no-restart",
         "}",
         "",
-        "spicetify config spotify_path \"$(Split-Path $(scoop which Spotify))\" --quiet",
-        "spicetify restore --quiet # If a backup has already been made, restore it first",
-        "spicetify backup apply --quiet",
+        "$blockthespot_path = \"$(appdir blockthespot)\\current\"",
         "",
-        "($job = Start-Job {",
-        "    while ($spotify_process -eq $null) {",
-        "        Start-Sleep -Milliseconds 250",
-        "        $spotify_process = Get-Process | Where-Object { $_.name -eq 'Spotify' }",
-        "    }",
-        "",
-        "    $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
-        "}) | Out-Null",
-        "",
-        "$job | Wait-Job -Timeout 5 | Out-Null",
-        "$job.StopJob()"
+        "if (Test-Path \"$blockthespot_path\") {",
+        "    Move-Item -Force \"$dir\\chrome_elf.dll\" -Destination \"$dir\\chrome_elf.dll.original\"",
+        "    Copy-Item \"$blockthespot_path\\chrome_elf.dll\" -Destination \"$dir\"",
+        "    if (-not (Get-Content -ErrorAction Ignore \"$dir\\config.ini\")) { Copy-Item \"$blockthespot_path\\config.ini\" -Destination \"$dir\" }",
+        "}"
     ],
     "uninstaller": {
         "script": [
@@ -62,6 +57,7 @@
             "Spotify"
         ]
     ],
+    "persist": "config.ini",
     "checkver_": {
         "script": [
             "Invoke-WebRequest https://download.spotify.com/SpotifyFullSetup.exe -OutFile \"SpotifyFullSetup.exe\"",

@@ -48,25 +48,10 @@
         ]
     },
     "post_install": [
-        "if (-not (Test-Path \"$(appdir spicetify-cli)\")) {",
-        "    return",
-        "}",
-        "",
-        "spicetify config spotify_path \"$(Split-Path $(scoop which Spotify))\" --quiet",
-        "spicetify restore --quiet # If a backup has already been made, restore it first",
-        "spicetify backup apply --quiet",
-        "",
-        "($job = Start-Job {",
-        "    while ($spotify_process -eq $null) {",
-        "        Start-Sleep -Milliseconds 250",
-        "        $spotify_process = Get-Process | Where-Object { $_.name -eq 'Spotify' }",
-        "    }",
-        "",
-        "    $spotify_process | ForEach-Object { Stop-Process -Id $_.Id }",
-        "}) | Out-Null",
-        "",
-        "$job | Wait-Job -Timeout 5 | Out-Null",
-        "$job.StopJob()"
+        "if (Test-Path \"$(appdir spicetify-cli)\") {",
+        "    spicetify config spotify_path \"$(Split-Path $(scoop which Spotify))\" --quiet",
+        "    spicetify restore backup apply --quiet --no-restart",
+        "}"
     ],
     "uninstaller": {
         "script": [
