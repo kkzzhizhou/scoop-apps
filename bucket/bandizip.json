@@ -1,40 +1,68 @@
 {
     "version": "7.04",
-    "description": "Yet another typical ZIP archiver",
-    "homepage": "http://www.bandisoft.com/bandizip/",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://en.bandisoft.com/bandizip/eula/"
-    },
-    "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP",
-    "hash": "fef4c58e582f5cb21db68868d30260e6cbd0c42f3c5eb1c390c3782b298d8c23",
+    "homepage": "https://www.bandisoft.com/bandizip/",
+    "description": "Bandizip，免费解压缩软件，号称速度最快的压缩和解压缩文件管理器。支持多核快速压缩、快速拖放，可以创建带密码和多卷的压缩包，可以提取包括RAR/RAR5/7Z/ZIP在内30多种格式，支持WinZip、7-Zip 和 WinRAR 以及其它压缩格式，付费许可后支持密码管理器、修复压缩包、密码恢复、预览压缩包内图片。",
+    "depends": "sudo",
+    "url": [
+        "http://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE#/dl.7z",
+        "http://xqh.ma:33001/ltrump-onedrive/raresoftware/Bandizip.v7.x.Patch.exe#/patch.exe"
+    ],
+    "hash": [
+        "90beeea7eefba6a8295b615d3a4da15b7ada5bf7249634ac17e17d878653a121",
+        "21f5e19fbfbd36b4c41a46d4df54f70ec26204fe1227d310fff44720f3e97314"
+    ],
     "architecture": {
         "64bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'"
+            "installer": {
+                "script": [
+                    "Move-Item \"$dir\\Bandizip.x64.exe\" \"$dir\\Bandizip.exe\"",
+                    "Move-Item \"$dir\\bz.x64.exe\" \"$dir\\bz.exe\"",
+                    "sudo regsvr32 /s \"$dir\\bdzshl.x64.dll\"",
+                    "sudo Start-Process -filepath \"$dir\\patch.exe\" -ArgumentList \"/silent\" -Wait",
+                    "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+                ]
+            },
+            "uninstaller": {
+                "script": "sudo regsvr32 /u /s \"$dir\\bdzshl.x64.dll\""
+            }
         },
         "32bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'"
+            "installer": {
+                "script": [
+                    "Move-Item \"$dir\\BandiZip.x86.exe\" \"$dir\\BandiZip.exe\"",
+                    "Move-Item \"$dir\\bz.x86.exe\" \"$dir\\bz.exe\"",
+                    "sudo regsvr32 /s \"$dir\\bdzshl.x86.dll\"",
+                    "sudo Start-Process -filepath \"$dir\\patch.exe\" -ArgumentList \"/silent\" -Wait",
+                    "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+                ]
+            },
+            "uninstaller": {
+                "script": "sudo regsvr32 /u /s \"$dir\\bdzshl.x86.dll\""
+            }
         }
     },
-    "installer": {
-        "script": [
-            "Get-ChildItem \"$dir\\Bandizip.x*.exe\" | Remove-Item",
-            "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
-        ]
-    },
-    "bin": "Bandizip.exe",
-    "shortcuts": [
+    "bin": [
         [
             "Bandizip.exe",
             "Bandizip"
+        ],
+        [
+            "bz.exe",
+            "bz"
         ]
     ],
-    "persist": "Bandizip.ini",
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "BandiZip"
+        ]
+    ],
     "checkver": {
-        "url": "https://en.bandisoft.com/bandizip/history/",
-        "regex": "v([\\d.]+)</font"
+        "encode": "UTF-8",
+        "re": "\\( ?v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP"
-    }
+        "url": "http://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE#/dl.7z"
+    },
+    "notes": "Using Key 42304230-ENT000002-0E34A52561-166371E8 to Reg"
 }

@@ -1,8 +1,12 @@
 {
     "version": "4.7.12.1",
+    "description": "A cross-platform, Python-agnostic binary package manager.",
     "homepage": "https://conda.io/miniconda.html",
-    "description": "Miniconda is a free minimal installer for conda.",
     "license": "BSD-3-Clause",
+    "checkver": {
+        "url": "https://repo.continuum.io/miniconda",
+        "re": "Miniconda3-([\\d.]+)-Windows"
+    },
     "architecture": {
         "64bit": {
             "url": "https://repo.continuum.io/miniconda/Miniconda3-4.7.12.1-Windows-x86_64.exe",
@@ -11,6 +15,20 @@
         "32bit": {
             "url": "https://repo.continuum.io/miniconda/Miniconda3-4.7.12.1-Windows-x86.exe",
             "hash": "md5:77d39801e97498ef05231d95ab77dedb"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://repo.continuum.io/miniconda/Miniconda3-$version-Windows-x86_64.exe"
+            },
+            "32bit": {
+                "url": "https://repo.continuum.io/miniconda/Miniconda3-$version-Windows-x86.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl",
+            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
         }
     },
     "installer": {
@@ -27,28 +45,22 @@
         "file": "Uninstall-Miniconda3.exe",
         "args": "/S"
     },
-    "bin": "scripts\\conda.exe",
-    "post_install": "conda config --set auto_activate_base false",
-    "checkver": {
-        "url": "https://repo.continuum.io/miniconda",
-        "re": "Miniconda3-([\\d.]+)-Windows"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://repo.continuum.io/miniconda/Miniconda3-$version-Windows-x86_64.exe"
-            },
-            "32bit": {
-                "url": "https://repo.continuum.io/miniconda/Miniconda3-$version-Windows-x86.exe"
-            }
-        },
-        "hash": {
-            "url": "$baseurl",
-            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
-        }
-    },
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python3"
+        ]
+    ],
+    "persist": "envs",
+    "env_add_path": [
+        "scripts",
+        "Library/bin"
+    ],
     "notes": [
-        "Conda envs are not persisted, we advice to setup envs_dirs to use '~/.conda/envs'.",
-        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs"
+        "Currently conda envs activate and deactivate doesn't work on PowerShell,",
+        "for more information, see: https://github.com/conda/conda/issues/626,",
+        "or just execute: 'conda install -n root -c pscondaenvs pscondaenvs'"
     ]
 }

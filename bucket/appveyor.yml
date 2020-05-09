@@ -1,0 +1,28 @@
+# Run bin/checkver and push version updates
+#
+# Must point to appveyor.yml if using a regular git repo and not github integration
+# https://github.com/appveyor/ci/issues/1089
+#
+init:
+  - tzutil /s "Pacific Standard Time"
+  - git config --global core.autocrlf true
+
+install:
+  - ps: iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+
+build_script:
+  - ps: bin/checkver * -u
+
+on_success:
+  - git config --global credential.helper store
+  - ps: Add-Content "$HOME\.git-credentials" "https://$($env:access_token):x-oauth-basic@github.com`n"
+  - git config --global user.email "nickbudi@users.noreply.github.com"
+  - git config --global user.name "Nick Budidharma"
+  - git add -A
+  - ps: |
+      $result = $(git diff --name-only --cached)
+      ForEach ($line in $($result -split "`r`n")) {
+        $json = (Get-Content $line -Raw) | ConvertFrom-Json
+        git commit -m "$([System.IO.Path]::GetFileNameWithoutExtension("$line")): Update to version $($json.version)" $line
+      }
+  - git push
