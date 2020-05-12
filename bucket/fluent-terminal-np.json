@@ -12,18 +12,18 @@
             "    exit 1",
             "}",
             "",
-            "reg add HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock /t REG_DWORD /f /v AllowAllTrustedApps /d 1",
+            "reg add 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock' /t REG_DWORD /f /v AllowAllTrustedApps /d 1 | Out-Null",
             "",
             "Add-AppxProvisionedPackage -Online -PackagePath \"$dir\\FluentTerminal.Package_${version}_x64.appxbundle\" -SkipLicense | Out-Null",
-            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Install.bat -OutFile \"$dir\\InstallContextMenu.bat\" -UseBasicParsing",
-            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Uninstall.bat -OutFile \"$dir\\UninstallContextMenu.bat\" -UseBasicParsing",
-            "cmd /c \"$dir\\InstallContextMenu.bat > nul 2> nul\"",
-            "Start-Sleep -Seconds 2"
+            "Invoke-WebRequest https://raw.githubusercontent.com/felixse/FluentTerminal/master/Explorer%20Context%20Menu%20Integration/Install.bat -OutFile \"$dir\\InstallContextMenu.bat\" -UseBasicParsing",
+            "Invoke-WebRequest https://raw.githubusercontent.com/felixse/FluentTerminal/master/Explorer%20Context%20Menu%20Integration/Uninstall.bat -OutFile \"$dir\\UninstallContextMenu.bat\" -UseBasicParsing",
+            "cmd /c \"$dir\\InstallContextMenu.bat > nul 2> nul\""
         ]
     },
     "post_install": [
-        "$name = (Get-AppxPackage -Name *FluentTerminal*).PackageFamilyName",
-        "Copy-Item \"$dir\\Settings\" -Destination \"$env:LocalAppData\\Packages\\$name\" -Force -Recurse | Out-Null"
+        "$package_name = (Get-AppxPackage -Name '*FSApps*FluentTerminal*').PackageFamilyName",
+        "while (-not (Test-Path \"$env:LOCALAPPDATA\\Packages\\$package_name\\Settings\\settings.dat\")) { Start-Sleep -Milliseconds 250 }",
+        "Copy-Item -Recurse -Force \"$dir\\Settings\" -Destination \"$env:LOCALAPPDATA\\Packages\\$package_name\""
     ],
     "uninstaller": {
         "script": [
@@ -32,11 +32,17 @@
             "    exit 1",
             "}",
             "",
+            "Stop-Process -ErrorAction Ignore -Name FluentTerminal.App",
+            "Stop-Process -ErrorAction Ignore -Name FluentTerminal.SystemTray",
+            "Start-Sleep -Milliseconds 250",
             "",
-            "$name = (Get-AppxPackage -Name *FluentTerminal*).PackageFamilyName",
-            "Copy-Item \"$env:LocalAppData\\Packages\\$name\\Settings\" -Destination $dir -Force -Recurse | Out-Null",
+            "$package = Get-AppxPackage -Name '*FSApps*FluentTerminal*'",
+            "",
+            "Remove-Item -ErrorAction Ignore -Recurse -Force \"$persist_dir\\Settings\"",
+            "Copy-Item -Recurse -Force \"$env:LOCALAPPDATA\\Packages\\$($package.PackageFamilyName)\\Settings\" -Destination $persist_dir",
+            "",
             "cmd /c \"$dir//UninstallContextMenu.bat > nul 2> nul\"",
-            "Get-AppxPackage -Name *FluentTerminal* | Remove-AppxPackage -AllUsers"
+            "Remove-AppxPackage $package -AllUsers"
         ]
     },
     "persist": "Settings",
