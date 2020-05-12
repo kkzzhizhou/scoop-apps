@@ -6,11 +6,13 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/JasonStein/Notepads/releases/download/v1.3.3.0/Notepads_1.3.3.0_x64.zip",
-            "hash": "b6fe6170f332dfc4ed6a0fc30097e01000cf19ce1985e2bd22f3cfcd2438dbb6"
+            "hash": "b6fe6170f332dfc4ed6a0fc30097e01000cf19ce1985e2bd22f3cfcd2438dbb6",
+            "extract_dir": "Notepads_1.3.3.0_x64"
         },
         "32bit": {
             "url": "https://github.com/JasonStein/Notepads/releases/download/v1.3.3.0/Notepads_1.3.3.0_x86.zip",
-            "hash": "5b03336cc864993424a56bfccd694892d0093b8f1a490c6a46df8becb0eb49e9"
+            "hash": "5b03336cc864993424a56bfccd694892d0093b8f1a490c6a46df8becb0eb49e9",
+            "extract_dir": "Notepads_1.3.3.0_x86"
         }
     },
     "installer": {
@@ -20,30 +22,23 @@
             "    exit 1",
             "}",
             "",
-            "if ($architecture -eq '64bit') {",
-            "    $notepads = \"Notepads_${version}_x64\"",
-            "} else {",
-            "    $notepads = \"Notepads_${version}_x86\"",
+            "$certificate_file = Get-ChildItem \"$dir\\*.cer\" | Select-Object -First 1",
+            "$certificate = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2($certificate_file)",
+            "",
+            "if (-not (Get-ChildItem -Path 'Cert:\\LocalMachine\\TrustedPeople' | Where-Object { $_.Thumbprint -eq $certificate.Thumbprint })) {",
+            "    certutil -addstore TrustedPeople $certificate_file | Out-Null",
+            "    gpupdate /force | Out-Null",
+            "    reg add 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock' /t REG_DWORD /f /v AllowDevelopmentWithoutDevLicense /d 1 | Out-Null",
             "}",
             "",
-            "Move-Item \"$dir\\$notepads\\*\" \"$dir\"",
-            "Remove-Item \"$dir\\$notepads\"",
-            "",
-            "$certificate = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2(\"$dir\\$notepads.cer\")",
-            "",
-            "if (-not (Get-ChildItem -Path Cert:\\LocalMachine\\TrustedPeople | Where-Object {$_.Thumbprint -eq $certificate.Thumbprint})) {",
-            "    certutil -addstore TrustedPeople \"$dir\\$notepads.cer\"",
-            "    gpupdate /force",
-            "    reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock\" /t REG_DWORD /f /v \"AllowDevelopmentWithoutDevLicense\" /d \"1\"",
-            "}",
-            "",
-            "Add-AppxProvisionedPackage -Online -PackagePath \"$dir\\$notepads.msixbundle\" -SkipLicense | Out-Null",
-            "Start-Sleep -Seconds 2"
+            "$package = Get-ChildItem \"$dir\\*.msixbundle\" | Select-Object -First 1",
+            "Add-AppxProvisionedPackage -Online -PackagePath $package -SkipLicense | Out-Null"
         ]
     },
     "post_install": [
-        "$name = (Get-AppxPackage -Name *Notepads*).PackageFamilyName",
-        "Copy-Item $dir\\Settings -Destination $env:LocalAppData\\Packages\\$name -Force -Recurse | Out-Null"
+        "$package_name = (Get-AppxPackage -Name '*JackieLiu*Notepads*').PackageFamilyName",
+        "while (-not (Test-Path \"$env:LOCALAPPDATA\\Packages\\$package_name\\Settings\")) { Start-Sleep -Milliseconds 250 }",
+        "Copy-Item -Recurse -Force \"$dir\\Settings\" -Destination \"$env:LOCALAPPDATA\\Packages\\$package_name\""
     ],
     "uninstaller": {
         "script": [
@@ -52,15 +47,14 @@
             "    exit 1",
             "}",
             "",
-            "$name = (Get-AppxPackage -Name *Notepads*).PackageFamilyName",
-            "Copy-Item \"$env:LocalAppData\\Packages\\$name\\Settings\" -Destination \"$dir\" -Force -Recurse | Out-Null",
-            "if ($architecture -eq '64bit') {",
-            "    certutil -delstore TrustedPeople \"$dir\\Notepads_$version_x64.cer\"",
-            "} else {",
-            "    certutil -delstore TrustedPeople \"$dir\\Notepads_$version_x86.cer\"",
-            "}",
+            "$package = Get-AppxPackage -Name '*JackieLiu*Notepads*'",
             "",
-            "Get-AppxPackage -Name *Notepads* | Remove-AppxPackage -AllUsers"
+            "Remove-Item -ErrorAction Ignore -Recurse -Force \"$persist_dir\\Settings\"",
+            "Copy-Item -Recurse -Force \"$env:LOCALAPPDATA\\Packages\\$($package.PackageFamilyName)\\Settings\" -Destination $persist_dir",
+            "",
+            "$certificate_file = Get-ChildItem \"$dir\\*.cer\" | Select-Object -First 1",
+            "certutil -delstore TrustedPeople $certificate_file | Out-Null",
+            "Remove-AppxPackage $package -AllUsers"
         ]
     },
     "persist": "Settings",
@@ -70,10 +64,12 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/JasonStein/Notepads/releases/download/v$version/Notepads_$version_x64.zip"
+                "url": "https://github.com/JasonStein/Notepads/releases/download/v$version/Notepads_$version_x64.zip",
+                "extract_dir": "Notepads_$version_x64"
             },
             "32bit": {
-                "url": "https://github.com/JasonStein/Notepads/releases/download/v$version/Notepads_$version_x86.zip"
+                "url": "https://github.com/JasonStein/Notepads/releases/download/v$version/Notepads_$version_x86.zip",
+                "extract_dir": "Notepads_$version_x86"
             }
         }
     }
