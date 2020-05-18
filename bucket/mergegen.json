@@ -1,0 +1,29 @@
+{
+    "version": "3.0.0.0",
+    "url": "https://zapps.ziiyc.com/MergeGen/MergeGen-3.0.0.0.7z",
+    "hash": "714159c2866718efe3f844be5c42b33b2f5568ec201466c2e19fddcf124ff74b",
+    "checkver": {
+        "url": "https://zapps.ziiyc.com/MergeGen/MergeGen.latest",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://zapps.ziiyc.com/MergeGen/MergeGen-$version.7z",
+        "hash": {
+            "url": "$url.sha256",
+            "regex": "$sha256"
+        }
+    },
+    "bin": "HefuGen.exe",
+    "post_install": [
+        "if (Test-Path \"$dir\\add-context.reg\") {",
+        "  $apppath = \"$dir\\HefuGen.exe\".Replace('\\', '\\\\')",
+        "  $content = Get-Content \"$dir\\add-context.reg\"",
+        "  $content = $content.Replace('$path', $apppath)",
+        "  $content | Set-Content -Path \"$dir\\add-context.reg\"",
+        "}",
+        "regedit /s $dir\\add-context.reg"
+    ],
+    "uninstaller": {
+        "script": "regedit /s $dir\\del-context.reg"
+    }
+}
