@@ -4,7 +4,6 @@
     "homepage": "https://raylibtech.itch.io/rfxgen",
     "license": "Zlib",
     "depends": [
-        "cmake",
         "gcc",
         "raylib"
     ],
@@ -12,20 +11,12 @@
     "hash": "ffb54a79f560254439314ef48a1418ea089960f668f8ff4d6e8abbda40ed0351",
     "installer": {
         "script": [
-            "$null, $bucket = find_manifest($app)",
-            "$bucketdir = Find-BucketDirectory($bucket)",
-            "Copy-Item \"$bucketdir\\..\\scripts\\rfxgen_CMakeLists.txt\" -Destination \"$dir\\rfxgen-master\\src\\CMakeLists.txt\"",
-            "",
+            "Push-Location \"$dir\\rfxgen-master\\src\"",
             "$raylib = scoop prefix raylib",
-            "New-Item -ItemType Directory \"$dir\\rfxgen-master\\src\\include\" | Out-Null",
-            "New-Item -ItemType Directory \"$dir\\rfxgen-master\\src\\lib\" | Out-Null",
-            "Copy-Item \"$raylib\\include\\raylib.h\" -Destination \"$dir\\rfxgen-master\\src\\include\"",
-            "Copy-Item \"$raylib\\lib\\libraylib_static.a\" -Destination \"$dir\\rfxgen-master\\src\\lib\"",
-            "",
-            "cmake -S \"$dir\\rfxgen-master\\src\" -B \"$dir\\rfxgen-master\\build\" -G 'MinGW Makefiles' | Out-Null",
-            "cmake --build \"$dir\\rfxgen-master\\build\" | Out-Null",
-            "",
-            "Move-Item \"$dir\\rfxgen-master\\build\\rfxgen.exe\" -Destination $dir",
+            "windres rfxgen.rc rfxgen.o",
+            "gcc -o rfxgen.exe rfxgen.c external/tinyfiledialogs.c rfxgen.o -static -s -w \"-L$raylib\\lib\" -Iexternal \"-I$raylib\\include\" -lraylib_static -lopengl32 -lgdi32 -lcomdlg32 -lole32 -lwinmm -std=c99 '-Wl,-subsystem,windows' -DVERSION_ONE",
+            "Move-Item rfxgen.exe $dir",
+            "Pop-Location",
             "Remove-Item -Recurse \"$dir\\rfxgen-master\""
         ]
     },
