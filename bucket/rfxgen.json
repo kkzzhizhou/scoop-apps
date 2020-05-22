@@ -1,0 +1,47 @@
+{
+    "version": "2020-03-09T17.44.58",
+    "description": "Sound effect generator.",
+    "homepage": "https://raylibtech.itch.io/rfxgen",
+    "license": "Zlib",
+    "depends": [
+        "cmake",
+        "gcc",
+        "raylib"
+    ],
+    "url": "https://github.com/raysan5/rfxgen/archive/master.zip",
+    "hash": "ffb54a79f560254439314ef48a1418ea089960f668f8ff4d6e8abbda40ed0351",
+    "installer": {
+        "script": [
+            "$null, $bucket = find_manifest($app)",
+            "$bucketdir = Find-BucketDirectory($bucket)",
+            "Copy-Item \"$bucketdir\\..\\scripts\\rfxgen_CMakeLists.txt\" -Destination \"$dir\\rfxgen-master\\src\\CMakeLists.txt\"",
+            "",
+            "$raylib = scoop prefix raylib",
+            "New-Item -ItemType Directory \"$dir\\rfxgen-master\\src\\include\" | Out-Null",
+            "New-Item -ItemType Directory \"$dir\\rfxgen-master\\src\\lib\" | Out-Null",
+            "Copy-Item \"$raylib\\include\\raylib.h\" -Destination \"$dir\\rfxgen-master\\src\\include\"",
+            "Copy-Item \"$raylib\\lib\\libraylib_static.a\" -Destination \"$dir\\rfxgen-master\\src\\lib\"",
+            "",
+            "cmake -S \"$dir\\rfxgen-master\\src\" -B \"$dir\\rfxgen-master\\build\" -G 'MinGW Makefiles' | Out-Null",
+            "cmake --build \"$dir\\rfxgen-master\\build\" | Out-Null",
+            "",
+            "Move-Item \"$dir\\rfxgen-master\\build\\rfxgen.exe\" -Destination $dir",
+            "Remove-Item -Recurse \"$dir\\rfxgen-master\""
+        ]
+    },
+    "bin": "rfxgen.exe",
+    "shortcuts": [
+        [
+            "rfxgen.exe",
+            "rFXGen"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/raysan5/rfxgen/commits",
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
+    },
+    "autoupdate": {
+        "url": "https://github.com/raysan5/rfxgen/archive/master.zip"
+    }
+}

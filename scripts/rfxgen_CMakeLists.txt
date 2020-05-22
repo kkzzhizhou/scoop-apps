@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 2.8)
+project(rfxgen)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -w -O3")
+
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/external)
+
+file(GLOB SOURCE_FILES
+    "external/*"
+    "*.c"
+    "*.h"
+    "*.ico"
+    "*.rc"
+    "*.rc.data")
+
+add_executable(rfxgen ${SOURCE_FILES})
+
+add_library(raylib STATIC IMPORTED)
+set_target_properties(raylib PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/lib/libraylib_static.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/include")
+
+target_link_libraries(rfxgen raylib winmm -static-libgcc -static)
+target_link_options(rfxgen PRIVATE -mwindows)
