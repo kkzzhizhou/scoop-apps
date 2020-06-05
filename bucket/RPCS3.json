@@ -1,0 +1,71 @@
+{
+    "version": "0.0.10-10451",
+    "description": "RPCS3. Experimental Sony PlayStation 3 emulator and debugger",
+    "homepage": "https://rpcs3.net",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/RPCS3/rpcs3/blob/master/LICENSE"
+    },
+    "notes": [
+        "Install firmware via 'File -> Install firmware'.",
+        "    Latest firmware file ('PS3UPDAT.PUP') is located inside app directory ('$dir').",
+        "HOW TO INSTALL GAME:",
+        "1.   Download games from 'https://psndl.net/packages'",
+        "1.1.       Both files ('Rap', 'Package') are needed",
+        "2.   Install via 'File -> Install .pkg'",
+        "3.   Copy RAP file and paste it into '$dir\\dev_hdd0\\home\\00000001\\exdata'",
+        "4.   Enjoy the game <3"
+    ],
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/RPCS3/rpcs3-binaries-win/releases/download/build-73fe9b51de22ab7cbf1795072cec294a95fce83f/rpcs3-v0.0.10-10451-73fe9b51_win64.7z",
+                "http://dus01.ps3.update.playstation.net/update/ps3/image/us/2020_0331_cf9cb4ba53a83ad557501417837c8de9/PS3UPDAT.PUP"
+            ],
+            "hash": [
+                "49578685cbfd6bf5143f223a70d918bf4374c44d9f40c63614642386c3fbb549",
+                "14ad0a4716d2bdf096dab9ecf77b9b838cc64435db7925837a38979fa05f4012"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "$file = 'GuiConfigs\\CurrentSettings.ini'",
+            "if (-not (Test-Path \"$persist_dir\\$file\")) {",
+            "    Write-Host \"File $file does not exists.\" -f Yellow",
+            "    $outfile = \"$dir\\$file\"",
+            "    New-Item $outFile -Type File -Force | Out-Null",
+            "    Set-Content $outFile '[Meta]', 'currentStylesheet=Darker Style by TheMitoSan' -Encoding Ascii",
+            "}"
+        ]
+    },
+    "bin": "rpcs3.exe",
+    "shortcuts": [
+        [
+            "rpcs3.exe",
+            "RPCS3"
+        ]
+    ],
+    "persist": [
+        "dev_hdd0",
+        "GuiConfigs"
+    ],
+    "checkver": {
+        "github": "https://github.com/RPCS3/rpcs3-binaries-win",
+        "regex": "/build-(?<commit>(?<cosi>\\w{8})\\w{32})/rpcs3-v([\\d.-]+)-"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/RPCS3/rpcs3-binaries-win/releases/download/build-$matchCommit/rpcs3-v$version-$matchCosi_win64.7z",
+                "hash": {
+                    "url": "https://github.com/RPCS3/rpcs3-binaries-win/releases/tag/build-$matchCommit",
+                    "regex": "$sha256;"
+                }
+            }
+        }
+    }
+}
