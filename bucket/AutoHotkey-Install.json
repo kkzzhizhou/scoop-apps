@@ -1,0 +1,69 @@
+{
+    "version": "1.1.32.00",
+    "description": "The ultimate automation scripting language for Windows.",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://www.autohotkey.com/",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v1.1.32.00/AutoHotkey_1.1.32.00_setup.exe#/setup.exe",
+            "hash": "ce505d272f8d36c5599ac81f005e1d2d586eeaaa778c779ad858e44fdadfdb0d",
+            "installer": {
+                "script": [
+                    "$programname = \"AutoHotkey*\"",
+                    "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "{",
+                    "   &\"$dir\\setup.exe\" /S /x64 /uiAccess=1 /IsHostApp=1 | Out-Null",
+                    "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "   {",
+                    "       exit 1",
+                    "   }",
+                    "}",
+                    "Remove-Item \"$dir\\setup.exe\" -Force"
+                ]
+            }
+        },
+        "32bit": {
+            "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v1.1.32.00/AutoHotkey_1.1.32.00_setup.exe#/setup.exe",
+            "hash": "ce505d272f8d36c5599ac81f005e1d2d586eeaaa778c779ad858e44fdadfdb0d",
+            "installer": {
+                "script": [
+                    "$programname = \"AutoHotkey*\"",
+                    "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "{",
+                    "   &\"$dir\\setup.exe\" /S /U32 /uiAccess=1 /IsHostApp=1 | Out-Null",
+                    "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "   {",
+                    "       exit 1",
+                    "   }",
+                    "}",
+                    "Remove-Item \"$dir\\setup.exe\" -Force"
+                ]
+            }
+        }
+    },
+    "pre_install": [
+        "$processname = \"AutoHotkey\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/lexikos/autohotkey_l"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/setup.exe"
+            }
+        }
+    }
+}

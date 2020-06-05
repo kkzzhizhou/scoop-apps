@@ -1,0 +1,42 @@
+{
+    "version": "5.0.26213.602",
+    "description": "Zoom provides videotelephony and online chat services through a cloud-based peer-to-peer software platform and is used for teleconferencing, telecommuting, distance education, and social relations.",
+    "homepage": "https://zoom.us/",
+    "license": "Proprietary",
+    "url": "https://zoom.us/client/latest/ZoomInstallerFull.msi#/setup.msi_",
+    "hash": "6d0333ba23c706cd49a1bc816fd636533f4af41d3583ee79c50aaa157371fe4e",
+    "pre_install": [
+        "$processname = \"Zoom*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Zoom*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $majorVersion.$minorVersion.$patchVersion -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart', 'MSIRESTARTMANAGERCONTROL=”Disable”', 'ZoomAutoUpdate=\"true\"') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $majorVersion.$minorVersion.$patchVersion -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://ninite.com/applist/pro.html",
+        "regex": "<td>Video Conference ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://zoom.us/client/latest/ZoomInstallerFull.msi#/setup.msi_"
+    }
+}

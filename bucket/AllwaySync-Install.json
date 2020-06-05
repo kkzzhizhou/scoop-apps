@@ -1,0 +1,60 @@
+{
+    "version": "20.0.5",
+    "description": "Allway Sync is backup and file synchronization software.",
+    "homepage": "https://allwaysync.com/",
+    "license": "",
+    "architecture": {
+        "64bit": {
+            "url": "https://allwaysync.com/content/download/allwaysync-x64-20-0-5.exe#/setup.exe",
+            "hash": "b6d72b4d9ebf64abdd1443afb22c619145aa66634fecc8195e81fa45ab372f75"
+        },
+        "32bit": {
+            "url": "https://allwaysync.com/content/download/allwaysync-20-0-5.exe#/setup.exe",
+            "hash": "3784bbb9d8c041566af2a923da24c597ca519be424ca69f358927a5c09205f6d"
+        }
+    },
+    "pre_install": [
+        "$processname = \"syncappw\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Allway Sync\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /verysilent /norestart | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Allway Sync.lnk\") {Remove-Item \"$CommonDesktopPath\\Allway Sync.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://allwaysync.com/download/",
+        "regex": "<p>Latest version: <strong>([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://allwaysync.com/content/download/allwaysync-x64-$dashVersion.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://allwaysync.com/content/download/allwaysync-$dashVersion.exe#/setup.exe"
+            }
+        }
+    }
+}

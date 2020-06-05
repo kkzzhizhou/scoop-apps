@@ -1,0 +1,39 @@
+{
+    "version": "32.0.0.371",
+    "description": "Adobe Flash Player NPAPI Plugin for Firefox based browsers",
+    "homepage": "https://get.adobe.com/flashplayer/",
+    "notes": "This manifest only installs and updates Adobe Flash Player for Firefox",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.adobe.com/content/dam/acom/en/legal/licenses-terms/pdf/Flash_Player_32_0.pdf"
+    },
+    "url": "https://download.macromedia.com/pub/flashplayer/pdc/32.0.0.371/install_flash_player_32_plugin.msi#/setup.msi_",
+    "hash": "f5137ad9cb1a3473ab9b4faf42dc3ee125af6ac4e91bb43a4d5361700c9809c0",
+    "installer": {
+        "script": [
+            "$programname = \"Adobe Flash Player 32 NPAPI*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "SchTasks /Change /Disable /TN \"Adobe Flash Player Updater\" | Out-Null",
+        "Stop-Service \"AdobeFlashPlayerUpdateSvc\" -force | Out-Null",
+        "Set-Service \"AdobeFlashPlayerUpdateSvc\" -StartupType Disabled | Out-Null"
+    ],
+    "checkver": {
+        "url": "https://get.adobe.com/flashplayer/about/",
+        "regex": "<td>Firefox - NPAPI</td>\\n\\s+\\n\\s+<td>([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.macromedia.com/pub/flashplayer/pdc/$version/install_flash_player_32_plugin.msi#/setup.msi_"
+    }
+}

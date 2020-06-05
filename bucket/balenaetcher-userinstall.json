@@ -1,0 +1,44 @@
+{
+    "version": "1.5.95",
+    "description": "Flash OS images to SD cards & USB drives, safely and easily.",
+    "homepage": "https://www.balena.io/etcher/",
+    "license": "Apache-2.0",
+    "url": "https://github.com/balena-io/etcher/releases/download/v1.5.95/balenaEtcher-Setup-1.5.95.exe#/setup.exe",
+    "hash": "803acb6f51ec67e8ccf5c77ab1e691589448123915cec28c6acd84fe57ca623f",
+    "pre_install": [
+        "$processname = \"balenaEtcher\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"balenaEtcher*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}"
+        ]
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\setup.exe\"",
+        "$DesktopPath = [Environment]::GetFolderPath(\"Desktop\")",
+        "if (Test-Path \"$DesktopPath\\balenaEtcher.lnk\") {Remove-Item \"$DesktopPath\\balenaEtcher.lnk\" -Force}"
+    ],
+    "checkver": {
+        "github": "https://github.com/balena-io/etcher"
+    },
+    "autoupdate": {
+        "url": "https://github.com/balena-io/etcher/releases/download/v$version/balenaEtcher-Setup-$version.exe#/setup.exe"
+    }
+}

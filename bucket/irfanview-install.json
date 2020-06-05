@@ -1,0 +1,59 @@
+{
+    "version": "4.54",
+    "description": "A fast, compact and innovative graphic viewer",
+    "homepage": "https://www.irfanview.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.irfanview.com/eula.htm"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.irfanview.info/files/iview454_x64_setup.exe#/setup.exe",
+            "hash": "ceef2253c343902c3ce7e7cac305f12e1123cf203660985159d9ae5b18ceab57"
+        },
+        "32bit": {
+            "url": "https://www.irfanview.info/files/iview454_setup.exe#/setup.exe",
+            "hash": "027531994c0d95836328fe7c39390fa9f85061f79660c093e1d6df7874d8b44b"
+        }
+    },
+    "pre_install": [
+        "$processname = \"i_view*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"IrfanView*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /silent /desktop=0 /thumbs=0 /group=1 /allusers=1 /assoc=0 | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.irfanview.com/",
+        "re": ">\\s*version\\s+([\\d\\.-]+)\\s*<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_x64_setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_setup.exe#/setup.exe"
+            }
+        }
+    }
+}

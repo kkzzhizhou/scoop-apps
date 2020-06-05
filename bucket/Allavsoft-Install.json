@@ -1,0 +1,40 @@
+{
+    "version": "webversion",
+    "description": "Download free videos from 100+ sites and convert to popular video and audio format.",
+    "homepage": "https://www.allavsoft.com/index.html",
+    "notes": "Installs the latest version from the website. You have to update the app using the programs updater.",
+    "license": {
+        "identifier": ""
+    },
+    "url": "https://www.allavsoft.com/downloads/allavsoft.exe#/setup.exe",
+    "pre_install": [
+        "$processname = \"videodownloader\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Allavsoft*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Allavsoft.lnk\") {Remove-Item \"$CommonDesktopPath\\Allavsoft.lnk\" -Force}"
+    ]
+}

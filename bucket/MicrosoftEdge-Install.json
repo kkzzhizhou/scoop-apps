@@ -1,0 +1,52 @@
+{
+    "version": "83.0.478.45",
+    "description": "World-class performance with more privacy, more productivity, and more value while you browse.",
+    "homepage": "https://www.microsoft.com/en-us/edge/business",
+    "license": "",
+    "architecture": {
+        "64bit": {
+            "url": "http://go.microsoft.com/fwlink/?LinkID=2093437#/setup.msi_",
+            "hash": "bf55b2c1753452253ee5faa1bc47bc354adc14b6fe43db2bd08a1d1e3ee70c3b"
+        },
+        "32bit": {
+            "url": "http://go.microsoft.com/fwlink/?LinkID=2093505#/setup.msi_",
+            "hash": "fa9ab428bced5271b6db91a7a54a83a956ef0fe350b4f17611adc801febf9890"
+        }
+    },
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft Edge*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue)`",
+            "-or !(Test-Path \"$ProgramFilesX86\\Microsoft\\Edge\\Application\\$version\\msedge.dll\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue)`",
+            "   -or !(Test-Path \"$ProgramFilesX86\\Microsoft\\Edge\\Application\\$version\\msedge.dll\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Microsoft Edge.lnk\") {Remove-Item \"$CommonDesktopPath\\Microsoft Edge.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnotes-security",
+        "regex": "Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://go.microsoft.com/fwlink/?LinkID=2093437#/setup.msi_"
+            },
+            "32bit": {
+                "url": "http://go.microsoft.com/fwlink/?LinkID=2093505#/setup.msi_"
+            }
+        }
+    }
+}

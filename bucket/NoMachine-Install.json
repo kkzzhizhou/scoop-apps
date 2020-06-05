@@ -1,0 +1,46 @@
+{
+    "version": "6.10.12",
+    "description": "NoMachine is a remote-control tool, available for multiple platforms",
+    "homepage": "https://www.nomachine.com/",
+    "license": "",
+    "url": "https://download.nomachine.com/download/6.10/Windows/nomachine_6.10.12_1.exe#/setup.exe",
+    "hash": "97a5dbfa8de99b85ba28c1775f7bbb2dfaaf4ce8ba91babe2868b69402d1b84f",
+    "pre_install": [
+        "$processname = \"NoMachine\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"NoMachine*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"NoMachine\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.nomachine.com/download/download&id=8",
+        "regex": "<p>([\\d.]+)_(?<revision>[\\d]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.nomachine.com/download/6.10/Windows/nomachine_$version_$matchRevision.exe#/setup.exe"
+    }
+}

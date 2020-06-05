@@ -1,0 +1,82 @@
+{
+    "version": "1.5.4.4969",
+    "description": "Media Player Classic - BE is a free and open source audio and video player for Windows",
+    "homepage": "https://mpcbe.sourceforge.io/",
+    "license": "GPL-3.0-only",
+    "pre_install": [
+        "$processname = \"MPC-BE*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://sourceforge.net/projects/mpcbe/files/MPC-BE/Release%20builds/1.5.4/MPC-BE.1.5.4.4969.x64-installer.zip#/setup.zip",
+            "hash": "sha1:ba0a641204276a377e976eadd6d02911c938962f",
+            "installer": {
+                "script": [
+                    "$programname = \"MPC-BE*\"",
+                    "$InstallFile = dir -Path \"$dir\" -Filter *.exe | %{$_.FullName}",
+                    "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -RequiredVersion $version -ErrorAction SilentlyContinue))",
+                    "{",
+                    "   &\"$installfile\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+                    "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -RequiredVersion $version -ErrorAction SilentlyContinue))",
+                    "   {",
+                    "       exit 1",
+                    "   }",
+                    "}"
+                ]
+            },
+            "post_install": [
+                "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+                "if (Test-Path \"$DesktopPath\\MPC-BE x64.lnk\") {Remove-Item \"$DesktopPath\\MPC-BE x64.lnk\" -Force}",
+                "Start-Sleep -s 10",
+                "Remove-Item \"$dir\\*.exe\" -Force"
+            ]
+        },
+        "32bit": {
+            "url": "https://sourceforge.net/projects/mpcbe/files/MPC-BE/Release%20builds/1.5.4/MPC-BE.1.5.4.4969.x86-installer.zip#/setup.zip",
+            "hash": "sha1:073f3ed713b0b1184fa6cf573f0ffff1911d08d4",
+            "installer": {
+                "script": [
+                    "$programname = \"MPC-BE*\"",
+                    "$InstallFile = dir -Path \"$dir\" -Filter *.exe | %{$_.FullName}",
+                    "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "{",
+                    "   &\"$installfile\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+                    "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+                    "   {",
+                    "       exit 1",
+                    "   }",
+                    "}"
+                ]
+            },
+            "post_install": [
+                "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+                "if (Test-Path \"$DesktopPath\\MPC-BE x86.lnk\") {Remove-Item \"$DesktopPath\\MPC-BE x86.lnk\" -Force}",
+                "Start-Sleep -s 10",
+                "Remove-Item \"$dir\\*.exe\" -Force"
+            ]
+        }
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/mpcbe/rss?path=/MPC-BE/Release%20builds",
+        "regex": "MPC-BE\\.([\\d.]+)\\.x64-installer\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://sourceforge.net/projects/mpcbe/files/MPC-BE/Release%20builds/$majorVersion.$minorVersion.$patchVersion/MPC-BE.$majorVersion.$minorVersion.$patchVersion.$buildVersion.x64-installer.zip#/setup.zip"
+            },
+            "32bit": {
+                "url": "https://sourceforge.net/projects/mpcbe/files/MPC-BE/Release%20builds/$majorVersion.$minorVersion.$patchVersion/MPC-BE.$majorVersion.$minorVersion.$patchVersion.$buildVersion.x86-installer.zip#/setup.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "version": "83.0.4103.97",
+    "description": "Fast, secure, and free web browser, built for the modern web.",
+    "homepage": "https://www.google.com/chrome/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.google.com/chrome/privacy/eula_text.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi#/setup.msi_",
+            "hash": "f36a2c04fbca324438b83a5dfe75780218c06557aadb8cf9972aff837db04ff4"
+        },
+        "32bit": {
+            "url": "https://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise.msi#/setup.msi_",
+            "hash": "8f90e65a9ef851f1567a8b7e1695bfa25c38689d54a0f21e95697986045837d7"
+        }
+    },
+    "installer": {
+        "script": [
+            "$programname = \"Google Chrome*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name $programname -MinimumVersion $version -ErrorAction SilentlyContinue)`",
+            "-or !(Test-Path \"$ProgramFilesX86\\Google\\Chrome\\Application\\$version\\chrome.dll\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   Start-Sleep -Seconds 30",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue)`",
+            "   -or !(Test-Path \"$ProgramFilesX86\\Google\\Chrome\\Application\\$version\\chrome.dll\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Google Chrome.lnk\") {Remove-Item \"$CommonDesktopPath\\Google Chrome.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://chrome-dl.com/api/chrome.xml",
+        "regex": "(?<version>[\\d.]+)</version>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://dl.google.com/edgedl/chrome/install/GoogleChromeStandaloneEnterprise.msi#/setup.msi_"
+            }
+        }
+    }
+}

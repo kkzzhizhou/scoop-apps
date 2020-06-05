@@ -1,0 +1,56 @@
+{
+    "version": "4.3.5.0",
+    "description": "Computer monitoring and classroom management software.",
+    "homepage": "https://veyon.io/",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.3.5/veyon-4.3.5.0-win64-setup.exe#/setup.exe",
+            "hash": "b9c64ed05b4dfa3403b0c6d27b82138c60110e887fcae7181c4d08fbbb78cf1b"
+        },
+        "32bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.3.5/veyon-4.3.5.0-win32-setup.exe#/setup.exe",
+            "hash": "caedee947cc60067497b9ee3502e28872688d3c55216429a21ee0be7770865fd"
+        }
+    },
+    "pre_install": [
+        "$processname = \"veyon-master\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Veyon*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://veyon.io/download/",
+        "regex": "veyon-([\\d.]+)-win64-setup.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win64-setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win32-setup.exe#/setup.exe"
+            }
+        }
+    }
+}

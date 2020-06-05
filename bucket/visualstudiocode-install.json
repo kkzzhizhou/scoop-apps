@@ -1,0 +1,59 @@
+{
+    "homepage": "https://code.visualstudio.com/",
+    "version": "1.45.1",
+    "description": "Visual Studio Code is a lightweight but powerful source code editor.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://code.visualstudio.com/License/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://update.code.visualstudio.com/1.45.1/win32-x64/stable#/setup.exe",
+            "hash": "e9e107cf53f8f06688c881e4616bd9a8553d012a657389399827e0ec2155633c"
+        },
+        "32bit": {
+            "url": "https://update.code.visualstudio.com/1.45.1/win32/stable#/setup.exe",
+            "hash": "64c7c9636e6c7a698085f4c4fd9cd4dc1e346ef182510c42190bc484853e1c06"
+        }
+    },
+    "pre_install": [
+        "$processname = \"Code\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft Visual Studio Code*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /MERGETASKS=!runcode,!desktopicon,!quicklaunchicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://code.visualstudio.com/sha?build=stable",
+        "jp": "$.products[?(@.platform.os == 'win32-x64-archive')].name"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://update.code.visualstudio.com/$version/win32-x64/stable#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://update.code.visualstudio.com/$version/win32/stable#/setup.exe"
+            }
+        }
+    }
+}

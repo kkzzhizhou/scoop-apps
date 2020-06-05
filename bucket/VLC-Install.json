@@ -1,0 +1,61 @@
+{
+    "version": "3.0.10",
+    "description": "A free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.",
+    "homepage": "https://www.videolan.org/",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://mirror.aarnet.edu.au/pub/videolan/vlc/3.0.10/win64/vlc-3.0.10-win64.exe#/setup.exe",
+            "hash": "e0a0883cd6c29aee23ecfc63573bc09e09f78de0da78a6f55ab13fab1c65850b"
+        },
+        "32bit": {
+            "url": "https://mirror.aarnet.edu.au/pub/videolan/vlc/3.0.10/win32/vlc-3.0.10-win32.exe#/setup.exe",
+            "hash": "ccfb91146cba92a3ec5274fee90d2cee35cfda7fd38240b3f65da26d53d28a0b"
+        }
+    },
+    "pre_install": [
+        "$processname = \"VLC\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"VLC media player*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"programname\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.videolan.org/vlc/download-windows.html",
+        "regex": "downloadVersion'>\\s*([\\d.]+)</span>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://mirror.aarnet.edu.au/pub/videolan/vlc/$version/win64/vlc-$version-win64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://mirror.aarnet.edu.au/pub/videolan/vlc/$version/win32/vlc-$version-win32.exe#/setup.exe"
+            }
+        }
+    }
+}
