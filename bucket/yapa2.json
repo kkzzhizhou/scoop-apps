@@ -11,9 +11,18 @@
             "Expand-7zipArchive \"$original_dir\\Setup.exe\" \"$original_dir\\$tmpDir\" -Removal",
             "$nupkg = (Get-Item \"$original_dir\\$tmpDir\\*.nupkg\").name",
             "Expand-7zipArchive \"$original_dir\\$tmpDir\\$nupkg\" \"$original_dir\\$tmpDir\"",
-            "Move-Item $original_dir\\$tmpDir\\lib\\net45\\* $original_dir",
-            "Remove-Item $original_dir\\$tmpDir -Recurse -Force",
-            "Remove-Item $original_dir\\YAPA_ExecutionStub.exe"
+            "New-Item -Path $original_dir\\app-$version\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\$tmpDir\\lib\\net45\\* $original_dir\\app-$version\\",
+            "New-Item -Path $original_dir\\packages\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\$tmpDir\\$nupkg $original_dir\\packages\\",
+            "Move-Item $original_dir\\$tmpDir\\RELEASES $original_dir\\packages\\",
+            "Move-Item $original_dir\\$tmpDir\\Update.exe $original_dir\\",
+            "New-Item -Path $original_dir\\app-$version\\Resources\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\app-$version\\*.png $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\*.ico $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\*.wav $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\YAPA_ExecutionStub.exe $original_dir\\YAPA.exe",
+            "Remove-Item $original_dir\\$tmpDir -Recurse -Force"
         ]
     },
     "bin": "YAPA.exe",
