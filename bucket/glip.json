@@ -1,5 +1,5 @@
 {
-    "version": "20.2.21.35",
+    "version": "20.2.21",
     "description": "RingCentral Glip. Collaborative team messaging app",
     "homepage": "https://glip.com",
     "license": {
@@ -15,8 +15,8 @@
     "installer": {
         "script": [
             "$files = Get-ChildItem $dir",
-            "$files | Where-Object -Property Name -Notlike 'Glip-*full.nupkg' | Remove-Item",
-            "($files | Where-Object -Property Name -Like 'Glip-*full.nupkg').Fullname | Expand-7zipArchive -DestinationPath $dir -ExtractDir 'lib\\net45' -Removal",
+            "$files | Where-Object -Property Name -Notlike -Value 'Glip-*full.nupkg' | Remove-Item",
+            "($files | Where-Object -Property Name -Like -Value 'Glip-*full.nupkg').Fullname | Expand-7zipArchive -DestinationPath $dir -ExtractDir 'lib\\net45' -Removal",
             "Remove-Item \"$dir\\Update.exe\""
         ]
     },
@@ -27,13 +27,13 @@
         ]
     ],
     "checkver": {
-        "url": "https://chocolatey.org/packages/glip",
-        "regex": ">([\\d.]+)</span"
+        "script": "(Invoke-WebRequest -UseBasicParsing -Uri 'https://downloads.ringcentral.com/glip/rc/GlipForWindows64' -Method Head).BaseResponse.RequestMessage.RequestUri.AbsolutePath",
+        "regex": "/glip/rc/([\\d.]+)/"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://downloads.ringcentral.com/glip/rc/$matchHead/x64/RingCentral%20Classic-$matchHead-x64.exe#/cosi.7z"
+                "url": "http://downloads.ringcentral.com/glip/rc/$version/x64/RingCentral%20Classic-$version-x64.exe#/cosi.7z"
             }
         }
     }
