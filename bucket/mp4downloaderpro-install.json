@@ -1,0 +1,41 @@
+{
+    "version": "3.33.20",
+    "description": "MP4 Downloader Pro is a Windows application to download your favorite videos from hundreds of video sharing sites.",
+    "homepage": "http://www.tomabo.com/mp4-downloader-pro/index.html",
+    "license": "",
+    "url": "http://www.tomabo.com/downloads/mp4-downloader-pro-setup.exe#/setup.exe",
+    "hash": "4c458003e460402efa87640cc7d4cdb4ae98ca5de4be5c14175550816aeecb6d",
+    "pre_install": [
+        "$processname = \"MP4DownloaderPro\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"MP4 Downloader Pro*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "http://www.tomabo.com/mp4-downloader-pro/download.html",
+        "regex": "Version\\s+([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "http://www.tomabo.com/downloads/mp4-downloader-pro-setup.exe#/setup.exe"
+    }
+}
