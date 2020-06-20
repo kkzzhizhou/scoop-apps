@@ -19,11 +19,13 @@
     ],
     "installer": {
         "script": [
-            "$programname = \"MP4 Downloader Pro*\"",
-            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFilesX86\\Tomabo\\MP4 Downloader Pro\\MP4DownloaderPro.exe\"",
+            "if((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\")",
             "{",
-            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
-            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /NORESTART /SP- | Out-Null",
+            "   Start-Sleep -Seconds 30",
+            "   if((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\")",
             "   {",
             "       exit 1",
             "   }",
