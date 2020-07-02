@@ -1,0 +1,38 @@
+{
+    "version": "5.1.0.407",
+    "description": "Creative Cloud for desktop is a great place to start any creative project.",
+    "homepage": "https://www.adobe.com",
+    "license": "",
+    "url": "https://creativecloud.adobe.com/apps/download/creative-cloud#/setup.exe",
+    "notes":"Download latest version from https://creativecloud.adobe.com/apps/download/creative-cloud",
+    "pre_install": [
+        "$processname = \"Creative Cloud\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Adobe Creative Cloud*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /quiet | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://helpx.adobe.com/au/creative-cloud/release-note/cc-release-notes.html",
+        "regex": "><p>Version\\s+([\\d.]+)"
+    }
+}
