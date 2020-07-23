@@ -1,0 +1,39 @@
+{
+    "version": "0.6.1.2",
+    "description": "The NV Updater program is used to update the driver for Geforce graphics cards from Nvidia. No NVIDIA account is required and the additional tool Geforce Experience is not installed.",
+    "homepage": "https://www.sys-worx.net/nv-updater-eng/",
+    "license": "Freeware",
+    "notes": "To run at startup you need to right click on the tray icon and click Options then select the 'Autorun NV Updater at Windows startup'.",
+    "url": "https://www.sys-worx.net/filebase/download/39/#/setup.exe",
+    "hash": "921C4159777170AD9B7147FCA32676967A4E00273E376F3B965742B2403914AD",
+    "pre_install": [
+        "$processname = \"nv_updater\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"NV Updater*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.sys-worx.net/filebase/file/9-nv-updater-nvidia-driver-updater/",
+        "regex": "version\">([\\d.]+)</span>"
+    }
+}
