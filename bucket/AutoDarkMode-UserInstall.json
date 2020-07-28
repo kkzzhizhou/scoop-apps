@@ -1,0 +1,38 @@
+{
+    "version": "",
+    "description": "",
+    "homepage": "",
+    "license": "",
+    "url": "https://github.com/Armin2208/Windows-Auto-Night-Mode/releases/download/3.0/AutoDarkMode_v3_Setup.zip",
+    "hash": "9070876F8646688AFF139FAA699DB86ACFC4FE4B9AC7062131FCA775392261CF",
+    "pre_install": [
+        "$processname = \"AutoDarkMode\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Auto Dark Mode*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\AutoDarkMode_v3_Setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\AutoDarkMode_v3_Setup.exe\" -Force"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Armin2208/Windows-Auto-Night-Mode/releases/download/$version/AutoDarkMode_v3_Setup.zip"
+    }
+}
