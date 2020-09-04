@@ -6,11 +6,11 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/veyon/veyon/releases/download/v4.4.2/veyon-4.4.2.0-win64-setup.exe#/setup.exe",
-            "hash": "0bec24780f0f7879cde5307c5acfc0bf42c716f6e3305ae4e8544d8a42a6a5c9"
+            "hash": "2f9f498254ef6e499eadd26dab1610d607d25406a45a8af005ebfbacb9d412ff"
         },
         "32bit": {
             "url": "https://github.com/veyon/veyon/releases/download/v4.4.2/veyon-4.4.2.0-win32-setup.exe#/setup.exe",
-            "hash": "7b4b779725e684c92782178074db8ce76fbdb941f9e4dfbddcce623c69f889b9"
+            "hash": "84c5d61c1c51c37385b3cf2322b0f53757222f0b9e39cdc670ca596fa98ee985"
         }
     },
     "pre_install": [
@@ -28,10 +28,12 @@
     "installer": {
         "script": [
             "$programname = \"Veyon*\"",
-            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$masterpath = \"$ProgramFilesPath\\Veyon\\veyon-master.exe\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue) -or !(Test-Path -Path \"$masterpath\"))",
             "{",
             "   &\"$dir\\setup.exe\" /S | Out-Null",
-            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue) -or !(Test-Path -Path \"$masterpath\"))",
             "   {",
             "       exit 1",
             "   }",
