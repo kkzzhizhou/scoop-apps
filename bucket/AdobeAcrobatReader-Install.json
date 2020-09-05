@@ -1,0 +1,59 @@
+{
+    "version": "20.012.20043",
+    "description": "Not only view, but print, sign, and annotate PDFs with the free Adobe Acrobat Reader DC.",
+    "homepage": "https://acrobat.adobe.com/us/en/acrobat/pdf-reader.html",
+    "notes": "This manifest only installs and updates Adobe Acrobat Reader DC",
+    "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2001220043/AcroRdrDCUpd2001220043.msp#/setup.msp_",
+    "hash": "ef9e27aa57cf1452a2409e7f547b18843a9f745ae82ee670cf8ab7cc3ab577be",
+    "pre_install": [
+        "$processname = \"AcroRd32\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Adobe Acrobat Reader DC*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   $ProgramFilesX86Path = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "   if (Test-Path \"$ProgramFilesX86Path\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe\")",
+            "   {",
+            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn') -RunAs | Out-Null",
+            "   }",
+            "   else",
+            "   {",
+            "       $url = \"http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1902120058/AcroRdrDC1902120058_en_US.exe\"",
+            "       $destination = \"$dir\\setup.exe\"",
+            "      (New-Object System.Net.WebClient).DownloadFile($url, $destination)",
+            "       Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/sAll', '/rs', '/msi', '/qn', '/norestart', 'EULA_ACCEPT=YES') -RunAs | Out-Null",
+            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn') -RunAs | Out-Null",
+            "       Remove-Item \"$dir\\setup.exe\"",
+            "   }",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msp_\""
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Acrobat Reader DC.lnk\") {Remove-Item \"$CommonDesktopPath\\Acrobat Reader DC.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html#installers",
+        "re": "<em>([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/$cleanVersion/AcroRdrDCUpd$cleanVersion.msp#/setup.msp_"
+    }
+}

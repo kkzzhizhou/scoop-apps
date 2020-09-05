@@ -1,0 +1,30 @@
+{
+    "version": "9.02.65",
+    "description": "Tool for the customization of functions on Logitech peripherals and components.",
+    "homepage": "https://support.logi.com/hc/en-us/articles/360025298053-Logitech-Gaming-Software",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.logitech.com/assets/51813/3/lgs-guide.pdf#page=29"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download01.logi.com/web/ftp/pub/techsupport/gaming/LGS_9.02.65_x64_Logitech.exe#/setup.exe",
+            "hash": "e037727f2e571f41864d93fbcc094e124eda3e1dcd2d56973f1f65c5a577bf55"
+        },
+        "32bit": {
+            "url": "https://download01.logi.com/web/ftp/pub/techsupport/gaming/LGS_9.02.65_x86_Logitech.exe#/setup.exe",
+            "hash": "fd70176ddeeee0a24bbaceef67a67004debf53ed437db7d7c06786f8d4fd8eeb"
+        }
+    },
+    "installer": {
+        "script": "Start-Process -Wait \"$dir\\setup.exe\" /S -Verb RunAs"
+    },
+    "uninstaller": {
+        "script": [
+            "$uninstall_string = $(Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Logitech Gaming Software' -Name UninstallString).UninstallString",
+            "$uninstall_string = $uninstall_string.replace('/silentmode=off', '/silentmode=on')",
+            "$arguments_index = $uninstall_string.IndexOf('.exe') + 5",
+            "Start-Process -Wait \"$($uninstall_string.Substring(0, $arguments_index))\" \"$($uninstall_string.Substring($arguments_index))\" -Verb RunAs"
+        ]
+    }
+}

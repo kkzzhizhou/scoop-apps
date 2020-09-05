@@ -1,0 +1,35 @@
+{
+    "version": "5.000",
+    "license": "SIL OFL 1.1",
+    "homepage": "https://software.sil.org/andika/",
+    "url": "https://software.sil.org/downloads/r/andika/AndikaCompact-5.000.zip",
+    "hash": "047d7abc6a12abf83fe0e62177e835434392c3c6d79e46433bc610fda05e0331",
+    "checkver": {
+        "url" : "https://software.sil.org/andika/download/",
+        "regex": "Andika ([\\d.]+) Developer"
+    },
+    "autoupdate": {
+        "url": "https://software.sil.org/downloads/r/andika/AndikaCompact-$version.zip"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Move-Item $dir\\AndikaCompact-$version\\* $dir",
+            "Remove-Item $dir\\AndikaCompact-$version",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The '$app' font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

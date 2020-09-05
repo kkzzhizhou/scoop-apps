@@ -1,0 +1,35 @@
+{
+    "description": "AdoptOpenJDK 11 JRE with Eclipse OpenJ9 JVM with large heap",
+    "homepage": "https://adoptopenjdk.net",
+    "version": "11.0.8-10-0.21.0",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0,EPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.8%2B10_openj9-0.21.0/OpenJDK11U-jre_x64_windows_openj9_windowsXL_11.0.8_10_openj9-0.21.0.zip",
+            "hash": "bc25272763d7c72bec076b3c6ca298d9566c84737c775f2c8f2a02ece62f5990"
+        }
+    },
+    "extract_dir": "jdk-11.0.8+10-jre",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptopenjdk.net/v3/assets/feature_releases/11/ga?jvm_impl=openj9&heap_size=large&os=windows&architecture=x64&image_type=jre&project=jdk&vendor=adoptopenjdk&page_size=1&sort_order=DESC",
+        "jp": "$..binaries[0].package.link",
+        "re": "https://github.com/(?<url>.*?(?<tag>jdk-(?<major>(?<jdk>[\\d]+)[\\d.]+)(?:\\%2B|\\+)(?<build>[\\d]+)(?<patch>[\\d.]*)(?:(?<oj>_openj9?)(?<jvmver>-[\\d.]+))?)/.*?).zip",
+        "replace": "${major}-${build}${patch}${jvmver}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk-$matchMajor+$matchBuild-jre"
+    }
+}

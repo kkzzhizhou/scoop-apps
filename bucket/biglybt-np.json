@@ -1,0 +1,57 @@
+{
+    "version": "2.4.0.0",
+    "homepage": "https://www.biglybt.com/",
+    "description": "BitTorrent client.",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/BiglySoftware/BiglyBT/releases/download/v2.4.0.0/Github_BiglyBT_Installer64.exe#/setup.exe",
+            "hash": "a4168c7860307a6df8d8b5cfb9594405c11d131ad828d6f4beff1b66545b9596"
+        },
+        "32bit": {
+            "url": "https://github.com/BiglySoftware/BiglyBT/releases/download/v2.4.0.0/Github_BiglyBT_Installer32.exe#/setup.exe",
+            "hash": "80d28f46d0992fb9878f44aecd3cd01b997c9775f540dac906313ef855600319"
+        }
+    },
+    "installer": {
+        "args": [
+            "-q",
+            "-dir \"$dir\\install\""
+        ],
+        "##": "For some reason, Scoop fails to remove the installer once installation is complete.",
+        "keep": true
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\setup.exe\"",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\BiglyBT.lnk\"",
+        "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\BiglyBT.lnk\""
+    ],
+    "uninstaller": {
+        "file": "install\\uninstall.exe",
+        "args": "-q"
+    },
+    "##": "We install to $dir\\install instead of just $dir because for some reason, Scoop has trouble removing $dir upon uninstallation.",
+    "bin": "install\\BiglyBT.exe",
+    "shortcuts": [
+        [
+            "install\\BiglyBT.exe",
+            "BiglyBT"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/BiglySoftware/BiglyBT"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/BiglySoftware/BiglyBT/releases/download/v$version/Github_BiglyBT_Installer64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/BiglySoftware/BiglyBT/releases/download/v$version/Github_BiglyBT_Installer32.exe#/setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Github_sha256sum.txt"
+        }
+    }
+}

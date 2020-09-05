@@ -1,0 +1,66 @@
+{
+    "version": "1.77.1.27713",
+    "description": "Tabbed, multi-protocol remote connections manager. Fork of mRemote.",
+    "homepage": "https://mremoteng.org",
+    "license": {
+        "identifier": "GPL-2.0-only",
+        "url": "https://github.com/mRemoteNG/mRemoteNG/blob/develop/COPYING.TXT"
+    },
+    "url": "https://github.com/mRemoteNG/mRemoteNG/releases/download/v1.77.1/mRemoteNG-Portable-1.77.1.27713.zip",
+    "hash": "49ca9646e42123f0258caf547b29577b1b24ab9e3effe1b8df6ba250d7ed0de0",
+    "pre_install": [
+        "function SettingProperty ($key, $value) {",
+        "    return \"    <setting name=\"\"$key\"\">$value</setting>\"",
+        "}",
+        "function Persist-Check ($file, $content) {",
+        "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+        "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+        "        Set-Content \"$dir\\$file\" ($content -join \"`r`n\") -Encoding Ascii",
+        "    }",
+        "}",
+        "$SETTINGS = @{",
+        "    'CheckForUpdatesOnStartup' = 'False'",
+        "    'CheckForUpdatesAsked'     = 'True'",
+        "}",
+        "$CONT = @(",
+        "    '<?xml version=\"1.0\" encoding=\"utf-8\"?>'",
+        "    '<settings>'",
+        "    '  <localSettings>'",
+        ")",
+        "$SETTINGS.Keys | ForEach-Object { $CONT += SettingProperty $_ $SETTINGS[$_] }",
+        "$CONT += '  </localSettings>'",
+        "$CONT += '</settings>'",
+        "",
+        "Persist-Check 'mRemoteNG.settings' $CONT",
+        "$confCONT = @(",
+        "    '<?xml version=\"1.0\" encoding=\"utf-8\"?>'",
+        "    '<mrng:Connections xmlns:mrng=\"http://mremoteng.org\" Name=\"Connections\" Export=\"false\" EncryptionEngine=\"AES\" BlockCipherMode=\"GCM\" KdfIterations=\"1000\" FullFileEncryption=\"false\" Protected=\"ivoI7siIZakTBRM676LK7RTH9N2RgT8xngMykDB/xs630qEm8sO8qkFbsO1VewsD2LiptqRME4vJEBqCjEZyFTc1\" ConfVersion=\"2.6\" />'",
+        ")",
+        "Persist-Check 'confCons.xml' $confCONT"
+    ],
+    "bin": [
+        "mRemoteNG.exe",
+        "PuTTYNG.exe"
+    ],
+    "shortcuts": [
+        [
+            "mRemoteNG.exe",
+            "mRemoteNG"
+        ],
+        [
+            "PuTTYNG.exe",
+            "PuTTYNG"
+        ]
+    ],
+    "persist": [
+        "confCons.xml",
+        "mRemoteNG.settings"
+    ],
+    "checkver": {
+        "url": "https://github.com/mRemoteNG/mRemoteNG/releases",
+        "regex": "(?sm)Pre-release.*?mRemoteNG-Portable-([\\d.]+)\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://github.com/mRemoteNG/mRemoteNG/releases/download/v$matchHead/mRemoteNG-Portable-$version.zip"
+    }
+}

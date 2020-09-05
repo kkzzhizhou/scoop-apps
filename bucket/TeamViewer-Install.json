@@ -1,0 +1,48 @@
+{
+    "version": "15.9.4",
+    "description": "Software for remote control, desktop sharing, online meetings, web conferencing and file transfer between computers.",
+    "homepage": "https://www.teamviewer.com",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.teamviewer.com/en/eula/"
+    },
+    "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe",
+    "hash": "5f229117239895f3701407300ce9df5a0d7e396054bfd6e824fbd1980655a899",
+    "pre_install": [
+        "$processname = \"teamviewer*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Teamviewer*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S /norestart | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\TeamViewer.lnk\") {Remove-Item \"$CommonDesktopPath\\TeamViewer.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.teamviewer.com/en/download/windows/",
+        "re": ">\\s*([\\d.]+)\\s*<"
+    },
+    "autoupdate": {
+        "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe"
+    }
+}

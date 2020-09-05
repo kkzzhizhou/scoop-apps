@@ -1,0 +1,36 @@
+{
+    "version": "1",
+    "description": "Humanist sans-serif typeface.",
+    "homepage": "https://fonts.google.com/specimen/Open+Sans",
+    "license": "Apache-2.0",
+    "url": "https://fonts.google.com/download?family=Open+Sans#/fonts.zip",
+    "hash": "da00d6f00a99963ca7e1a5869e3bbf530d57ce61f18e033b9f8c49c30b7043f2",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem \"$dir\" -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:WINDIR\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem \"$dir\" -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:WINDIR\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "",
+            "Write-Host \"Font 'Open Sans' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

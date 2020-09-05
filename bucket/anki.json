@@ -1,0 +1,58 @@
+{
+    "version": "2.1.33",
+    "description": "Powerful and intelligent flash cards",
+    "homepage": "https://apps.ankiweb.net",
+    "license": "AGPL-3.0-only",
+    "suggest": {
+        "vcredist": "extras/vcredist2008"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ankitects/anki/releases/download/2.1.33/anki-2.1.33-windows.exe#/dl.7z",
+            "hash": "d90a1ac70821da657006c05d00b8368fa61b9f2c1b0895c516542f093194d8f3"
+        },
+        "32bit": {
+            "url": "https://github.com/ankitects/anki/releases/download/2.1.33/anki-2.1.33-windows-alternate.exe#/dl.7z",
+            "hash": "6ef8166dd5c0c92ba95be753660aaab7069bb1481c7b579cd09d49cc93218f91"
+        }
+    },
+    "pre_install": [
+        "@(",
+        "    '@echo off'",
+        "    'SET _allParams=\"%*\"'",
+        "    'IF /i %_allParams:-b =%==%_allParams% ('",
+        "    \"    start `\"anki`\" /D `\"%~dp0`\" `\"%~dp0anki.exe`\" -b `\"$persist_dir\\data`\" %*\"",
+        "    ') ELSE ('",
+        "    '    start \"anki\" /D \"%~dp0\" \"%~dp0anki.exe\" %*'",
+        "    ')'",
+        ") | Set-Content \"$dir\\anki.cmd\" -Encoding ASCII",
+        "Remove-Item \"$dir\\`$*\" -Recurse"
+    ],
+    "bin": "anki.cmd",
+    "shortcuts": [
+        [
+            "anki.cmd",
+            "Anki",
+            "",
+            "anki.exe"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://github.com/ankitects/anki/releases",
+        "regex": "anki-([\\d.]+)-windows\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ankitects/anki/releases/download/$version/anki-$version-windows.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/ankitects/anki/releases/download/$version/anki-$version-windows-alternate.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/anki-$version-checksums.txt"
+        }
+    }
+}

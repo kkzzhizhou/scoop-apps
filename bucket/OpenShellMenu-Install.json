@@ -1,0 +1,40 @@
+{
+    "version": "4.4.152",
+    "description": "Classic style Start Menu for Windows 7, 8, 8.1, 10",
+    "homepage": "https://open-shell.github.io/Open-Shell-Menu/",
+    "license": "Freeware",
+    "url": "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v4.4.152/OpenShellSetup_4_4_152.exe#/setup.exe",
+    "hash": "f8e7d594a8adbd3aee4b1861bece8d1308d98cdbd4661512c39524ff7e1b75cc",
+    "pre_install": [
+        "$processname = \"StartMenu\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Open-Shell*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /qn ADDLOCAL=StartMenu /norestart | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/Open-Shell/Open-Shell-Menu"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Open-Shell/Open-Shell-Menu/releases/download/v$version/OpenShellSetup_$underscoreVersion.exe#/setup.exe"
+    }
+}

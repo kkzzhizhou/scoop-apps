@@ -1,0 +1,54 @@
+{
+    "version": "7.0.3",
+    "description": "PowerShell Core, the cross-platform task automation and configuration management framework/tool.",
+    "homepage": "https://github.com/PowerShell/PowerShell",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi#/setup.msi_",
+            "hash": "ad3b4a868d1b7e47a1048e1eb20f7f782d9b95d5066d79a25d02ccc4dd14e79f"
+        },
+        "32bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x86.msi#/setup.msi_",
+            "hash": "d7e18159c49d762b45b1551bb749aab6a68ee5548cea6bb987394918b9b0cf59"
+        }
+    },
+    "pre_install": [
+        "$processname = \"pwsh\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"PowerShell*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/quiet ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x86.msi#/setup.msi_"
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "version": "15.9.4",
+    "description": "Software for remote control, desktop sharing, online meetings, web conferencing and file transfer between computers.",
+    "homepage": "https://www.teamviewer.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.teamviewer.com/en/eula/"
+    },
+    "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe",
+    "hash": "81339c07face06056ab3bbd3326f5bf9f6c5a637f9305d2df9fc84c8bfbb1d86",
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\TeamViewer.lnk\"",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "taskkill /F /IM teamviewer.exe /FI 'status eq running'",
+            "$uninstall = \"$env:ProgramFiles\\TeamViewer\\uninstall.exe\"",
+            "if (-not (Test-Path $uninstall)) { $uninstall = \"${env:ProgramFiles(x86)}\\TeamViewer\\uninstall.exe\" }",
+            "Invoke-ExternalCommand \"$uninstall\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.teamviewer.com/en/download/windows/",
+        "regex": ">\\s*([\\d.]+)\\s*<"
+    },
+    "autoupdate": {
+        "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe"
+    }
+}

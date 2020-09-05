@@ -1,0 +1,31 @@
+{
+    "version": "2.1.0",
+    "license": "MIT",
+    "homepage": "https://github.com/ryanoasis/nerd-fonts",
+    "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip",
+    "hash": "21de9aa0edaa3fd2dc1d87fb9ecec0b67c9b3b18bd1998a19904158067fea7e7",
+    "checkver": "github",
+    "depends": "sudo",
+    "autoupdate": {
+        "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v$version/FiraCode.zip"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*Windows Compatible.*' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*Windows Compatible.*' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The '$($app.Replace('-NF', ''))' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

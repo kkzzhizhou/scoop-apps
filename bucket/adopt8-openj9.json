@@ -1,0 +1,42 @@
+{
+    "description": "AdoptOpenJDK 8 with Eclipse OpenJ9 JVM",
+    "homepage": "https://adoptopenjdk.net",
+    "version": "8u265-b01-0.21.0",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0,EPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01_openj9-0.21.0/OpenJDK8U-jdk_x64_windows_openj9_8u265b01_openj9-0.21.0.zip",
+            "hash": "b7def2e7261cdadbe309cd60f4c72bba5b8e865982bb8196087660b52f7be2f8"
+        },
+        "32bit": {
+            "url": "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u265-b01_openj9-0.21.0/OpenJDK8U-jdk_x86-32_windows_openj9_8u265b01_openj9-0.21.0.zip",
+            "hash": "2e49db3c5c231f8863d6287ab16174055b7efb2d97a17539f373c4ac13649325"
+        }
+    },
+    "extract_dir": "jdk8u265-b01",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptopenjdk.net/v3/assets/feature_releases/8/ga?jvm_impl=openj9&heap_size=normal&os=windows&architecture=x64&image_type=jdk&project=jdk&vendor=adoptopenjdk&page_size=1&sort_order=DESC",
+        "jp": "$..binaries[0].package.link",
+        "re": "https://github.com/(?<url>.*?/(?<tag>jdk(?<major>[\\d]+)(?<update>u[\\d]+)-(?<build>b[\\d]+)(?<patch>[\\d.]*)(?:(?:_openj9?)(?<jvmver>-[\\d.]+))?))/",
+        "replace": "${major}${update}-${build}${patch}${jvmver}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchMajorU-jdk_x64_windows_openj9_$matchMajor$matchUpdate$matchBuild_openj9$matchJvmver.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchMajorU-jdk_x86-32_windows_openj9_$matchMajor$matchUpdate$matchBuild_openj9$matchJvmver.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk$matchMajor$matchUpdate-$matchBuild"
+    }
+}

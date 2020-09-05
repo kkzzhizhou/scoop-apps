@@ -1,34 +1,63 @@
 {
-    "version": "6.0197",
-    "description": "Xshell，连接SSH/Telnet等协议",
-    "homepage": "https://www.423down.com/8196.html",
-    "depends": "sudo",
-    "url": "http://xqh.ma:33001/ltrump-onedrive/raresoftware/Xshell_v6.0197.7z",
-    "hash": "19ef4d593311cdbcc7d4c5d9727bc6e6dce34b41ac68c6da93cf7bdec3d23c65",
-    "installer": {
-        "script": "sudo cmd /c \"$dir\\!绿化.bat\""
-    },
-    "uninstaller": {
-        "script": "sudo cmd /c \"$dir\\!卸载.bat\""
-    },
-    "extract_dir": "Xshell",
-    "bin": [
-        [
-            "Xshell.exe",
-            "Xshell"
-        ]
+    "homepage": "https://www.netsarang.com/zh/xshell/",
+    "description": "业界最强大的SSH客户机",
+    "version": "6.0.0204",
+    "depends": [
+        "bluelifehostseditor",
+        "vcredist2008",
+        "vcredist2012",
+        "sudo"
     ],
+    "url": "https://zapps.ziiyc.com/Xshell/Xshell-6.0.0204r.exe#/setup.exe",
+    "hash": "ce8566f14e23697378e6037c668a602341d84f80283c64d961568762530a55d8",
+    "pre_install": [
+        "sudo hostseditor.exe /a transact.netsarang.com",
+        "sudo hostseditor.exe /a update.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.com",
+        "sudo hostseditor.exe /a www.netsarang.co.kr",
+        "sudo hostseditor.exe /a sales.netsarang.com",
+        "sudo hostseditor.exe /a active.netsarang.com",
+        "sudo hostseditor.exe /a up.netsarang.com"
+    ],
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" \"/b$dir /S /v/qn\" -Verb RunAs",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\Xshell` 6.msi`\" INSTALLDIR=`\"$dir`\" /qb\" -Verb RunAs"
+        ],
+        "keep": true
+    },
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+        "(gc \"$bucketdir\\..\\scripts\\xshell\\register.reg.templ\") | out-file -enc oem \"$dir\\register.reg\"",
+        "sudo regedit /s $dir\\register.reg",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse",
+        "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse",
+        "ie4uinit.exe -show"
+    ],
+    "uninstaller": {
+        "script": "Start-Process -Wait msiexec \"/x `\"$dir\\Xshell` 6.msi`\" /qb\" -Verb RunAs"
+    },
     "shortcuts": [
         [
             "Xshell.exe",
-            "..\\XShell\\Xshell"
+            "Xshell"
+        ],
+        [
+            "Xagent.exe",
+            "Xagent"
         ]
     ],
     "checkver": {
-        "encode": "UTF-8",
-        "re": "下载地址[\\s\\S]*Xshell v([\\d.]+)"
+        "url": "https://zapps.ziiyc.com/Xshell/Xshell.latest",
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
-        "url": "http://xqh.ma:33001/ltrump-onedrive/raresoftware/Xshell_v$version.7z"
+        "url": "https://zapps.ziiyc.com/Xshell/Xshell-$versionr.exe#/setup.exe",
+        "hash": {
+            "url": "$url.sha256",
+            "regex": "$sha256"
+        }
     }
 }

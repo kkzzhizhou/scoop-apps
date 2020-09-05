@@ -1,0 +1,66 @@
+{
+    "homepage": "https://mgba.io/",
+    "description": "A fast, accurate, and portable GBA emulator (development version)",
+    "license": "MPL-2.0",
+    "version": "0.8.3-6496",
+    "architecture": {
+        "64bit": {
+            "url": "https://s3.amazonaws.com/mgba/mGBA-build-latest-win64.7z",
+            "hash": "6dd4237f7f7b3413e1d40429c1216d6274a338ef938cfc9f23726c1228df1f0a"
+        },
+        "32bit": {
+            "url": "https://s3.amazonaws.com/mgba/mGBA-build-latest-win32.7z",
+            "hash": "898c431af11de7580be70d56cb53e1f0fb1b76d6109ddbb0562a42d3f406e3db"
+        }
+    },
+    "installer": {
+        "script": [
+            "Copy-item -Path \"$dir\\$(Get-ChildItem -Path $dir)\\*\" -Destination \"$dir\" -Recurse",
+            "if (!(Test-Path \"$persist_dir\\qt.ini\")) {",
+            "   New-Item \"$dir\\qt.ini\" -ItemType \"file\" | Out-Null ",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
+            "   Set-Content \"$dir\\config.ini\" '[ports.qt]'",
+            "   'cheats', 'patch', 'savegame', 'savestate', 'screenshot' | ForEach-Object {",
+            "       Add-Content -Path \"$dir\\config.ini\" -Value $_`Path`=$persist_dir\\$_ }",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "mGBA.exe",
+            "mgba-sdl.exe"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "mGBA.exe",
+            "mGBA"
+        ]
+    ],
+    "persist": [
+        "cheats",
+        "patch",
+        "savegame",
+        "savestate",
+        "screenshot",
+        "shaders",
+        "qt.ini",
+        "config.ini"
+    ],
+    "checkver": {
+        "url": "https://mgba.io",
+        "regex": "Release:\\s+<[^>]+>(?<version>[\\d.]+)</a>[\\s\\S]+Version:\\s+<[^>]+>(?<build>[\\d]+)-",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://s3.amazonaws.com/mgba/mGBA-build-latest-win64.7z"
+            },
+            "32bit": {
+                "url": "https://s3.amazonaws.com/mgba/mGBA-build-latest-win32.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "homepage": "http://jikasei.me/font/rounded-mplus/about.html",
+    "description": "CJK font based on the Mplus font, but with more rounded shape. (less rounder version)",
+    "version": "20150529",
+    "license": {
+        "identifier": "Freeware",
+        "url": "http://jikasei.me/font/rounded-mplus/license.html"
+    },
+    "url": "https://ymu.dl.osdn.jp/users/8/8568/rounded-l-mplus-20150529.7z",
+    "hash": "44ebd9b9a18576374ef1c40c6c02a44ccab031e70f433b5547d4ae11bb6fe76a",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'Rounded-L M+' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "https://osdn.jp/downloads/users/8/(?<tag>\\d+)/rounded-l-mplus-(\\d{8}).7z",
+    "autoupdate": {
+        "url": "https://ymu.dl.osdn.jp/users/8/$matchTag/rounded-l-mplus-$version.7z"
+    }
+}

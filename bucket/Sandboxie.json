@@ -1,0 +1,54 @@
+{
+    "homepage": "https://github.com/sandboxie-plus/Sandboxie",
+    "description": "Sandboxie uses isolation technology to separate programs from your underlying operating system preventing unwanted changes from happening to your personal data, programs and applications that rest safely on your hard drive.",
+    "version": "5.42.1",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v0.3.5/SandboxieInstall64-v5.42.1.exe#/setup.exe",
+            "hash": "9d8004c963834162aac0612240596b4d4edb5961c81e1a6e062f0cbc1429738d",
+            "installer": {
+                "script": [
+                    "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/lang=2052','/install','/S',\"/D=$dir\") -RunAs | Out-Null",
+                    "Remove-Item \"$dir\\setup.exe\" -Force -Recurse"
+                ]
+            },
+            "uninstaller": {
+                "script": [
+                    "$uninstaller = (Get-Item Env:windir).Value+'\\installer\\SandboxieInstall64.exe'",
+                    "Invoke-ExternalCommand \"$uninstaller\" -ArgumentList @('/remove','/S') -RunAs | Out-Null"
+                ]
+            }
+        },
+        "32bit": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v0.3.5/SandboxieInstall32-v5.42.1.exe#/setup.exe",
+            "hash": "9e603daa59ad20e46f3b38b29b03548a4d8ad3a8be8d400d1bae2b0c11ecb311",
+            "installer": {
+                "script": [
+                    "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/lang=2052','/install','/S',\"/D=$dir\") -RunAs | Out-Null",
+                    "Remove-Item \"$dir\\setup.exe\" -Force -Recurse"
+                ]
+            },
+            "uninstaller": {
+                "script": [
+                    "$uninstaller = (Get-Item Env:windir).Value+'\\installer\\SandboxieInstall.exe'",
+                    "Invoke-ExternalCommand \"$uninstaller\" -ArgumentList @('/remove','/S') -RunAs | Out-Null"
+                ]
+            }
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/sandboxie-plus/Sandboxie/releases/latest",
+        "jp": "$.name",
+        "regex": "Release v(?<tag>.*) / (.*)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$matchTag/SandboxieInstall64-v$version.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$matchTag/SandboxieInstall32-v$version.exe#/setup.exe"
+            }
+        }
+    }
+}

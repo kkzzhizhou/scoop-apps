@@ -1,0 +1,44 @@
+{
+    "version": "3.26",
+    "description": "A popular utility designed to copy files faster and more reliably, providing the user with many features.",
+    "homepage": "https://www.codesector.com",
+    "url": "http://www.codesector.com/files/teracopy.exe#/setup.exe",
+    "hash": "5b667ff25a5f2ecf810e2f60dd079dc68fce6eafa174e6de835b8aed919e12f3",
+    "pre_install": [
+        "$processname = \"TeraCopy\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"TeraCopy*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /verysilent /nocancel /norestart | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonStartMenuPath = [Environment]::GetFolderPath(\"CommonStartMenu\")",
+        "if (Test-Path \"$CommonStartMenuPath\\TeraCopy.lnk\") {Move-Item -Path \"$CommonStartMenuPath\\TeraCopy.lnk\" -Destination \"$CommonStartMenuPath\\Programs\\TeraCopy.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.codesector.com/downloads",
+        "re": "TeraCopy ([\\d.]+)</td>\\s+<td>Windows"
+    },
+    "autoupdate": {
+        "url": "http://www.codesector.com/files/teracopy.exe"
+    }
+}
