@@ -1,0 +1,34 @@
+{
+    "version": "3.6.1.0",
+    "description": "IPVanish provides a secure environment for everyday internet activity",
+    "homepage": "https://www.ipvanish.com",
+    "license": "Paid",
+    "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe",
+    "hash": "9a962bd38643b9cea60e84775b713950a38a3c58e45e28e99d9ec315785beb6c",
+    "installer": {
+        "script": [
+            "$programname = \"programname*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /quiet | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"programname\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.majorgeeks.com/mg/get/ipvanish,1.html",
+        "regex": "Download IPVanish\\s+([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe"
+    }
+}
