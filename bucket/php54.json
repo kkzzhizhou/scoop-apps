@@ -7,12 +7,29 @@
     "version": "5.4.45",
     "url": "https://windows.php.net/downloads/releases/archives/php-5.4.45-Win32-VC9-x86.zip",
     "hash": "38cde4bac05e916fb0c0b78a2e5bfeec9b02b4b6fc51c9a02a66e4fc1e1a1d08",
-    "bin": "php.exe",
+    "bin": [
+        "php.exe",
+        "php-cgi.exe",
+        "phpdbg.exe"
+    ],
+    "persist": [
+        "cli",
+        [
+            "php.ini-production",
+            "cli\\php.ini"
+        ]
+    ],
+    "env_set": {
+        "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
+    },
+    "pre_install": [
+        "# Create directory for custom PHP configuration",
+        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+        "}"
+    ],
     "post_install": [
-        "#Copy PHP configuration file to expected location",
-        "cp \"$dir\\php.ini-production\" \"$dir\\php.ini\"",
-        "",
-        "#Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
         "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
     ],
     "suggest": {
