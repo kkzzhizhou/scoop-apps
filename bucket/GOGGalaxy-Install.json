@@ -1,0 +1,48 @@
+{
+    "version": "2.0.20.39",
+    "description": "GOG Galaxy 2.0. Gaming Client designed for a convenient purchasing, playing and updating games, as well as an online play between gaming platforms.",
+    "homepage": "https://www.gog.com/galaxy",
+    "license": "",
+    "url": "https://cdn.gog.com/open/galaxy/client/setup_galaxy_2.0.20.39.exe#/setup.exe",
+    "hash": "b0a503643bc609b79e6e7d3a0055c558c673107ba5b0a4517926ed7de6938b3c",
+    "pre_install": [
+        "$processname = \"GalaxyClient\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFilesX86\\GOG Galaxy\\GalaxyClient.exe\"",
+            "if((!(Test-Path \"$filepath\")) -or ((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /NORESTART /SP- | Out-Null",
+            "   Start-Sleep -Seconds 30",
+            "   if((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\")",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"GOG GALAXY\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.kcsoftwares.com/sumo/view.php?uid=312543986&ProductName=GOG%20Galaxy&Company=GOG.com&prot=2",
+        "regex": "<small>v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://cdn.gog.com/open/galaxy/client/setup_galaxy_$version.exe#/setup.exe"
+    }
+}
