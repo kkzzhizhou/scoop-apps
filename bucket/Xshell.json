@@ -1,23 +1,28 @@
-{
+﻿{
     "homepage": "https://www.netsarang.com/zh/xshell/",
     "description": "业界最强大的SSH客户机",
     "version": "6.0.0204",
     "depends": [
-        "bluelifehostseditor",
+        "sudo",
         "vcredist2008",
-        "vcredist2012",
-        "sudo"
+        "vcredist2012"
     ],
     "url": "https://zapps.ziiyc.com/Xshell/Xshell-6.0.0204r.exe#/setup.exe",
     "hash": "ce8566f14e23697378e6037c668a602341d84f80283c64d961568762530a55d8",
     "pre_install": [
-        "sudo hostseditor.exe /a transact.netsarang.com",
-        "sudo hostseditor.exe /a update.netsarang.com",
-        "sudo hostseditor.exe /a www.netsarang.com",
-        "sudo hostseditor.exe /a www.netsarang.co.kr",
-        "sudo hostseditor.exe /a sales.netsarang.com",
-        "sudo hostseditor.exe /a active.netsarang.com",
-        "sudo hostseditor.exe /a up.netsarang.com"
+        "function AddHosts([string]$IPURL) {",
+        "    if((Get-Content $env:windir\\System32\\drivers\\etc\\hosts |?{$_ -match \"$IPURL\"}) -eq $null) {",
+        "        \"`n$IPURL\" | Out-File -FilePath \"$env:windir\\System32\\drivers\\etc\\hosts\" -Append -encoding ascii",
+        "        Write-Host \"success: add $IPURL to hosts\"",
+        "    }",
+        "}",
+        "AddHosts \"127.0.0.1 transact.netsarang.com\"",
+        "AddHosts \"127.0.0.1 update.netsarang.com\"",
+        "AddHosts \"127.0.0.1 www.netsarang.com\"",
+        "AddHosts \"127.0.0.1 www.netsarang.co.kr\"",
+        "AddHosts \"127.0.0.1 sales.netsarang.com\"",
+        "AddHosts \"127.0.0.1 active.netsarang.com\"",
+        "AddHosts \"127.0.0.1 up.netsarang.com\""
     ],
     "installer": {
         "script": [
@@ -29,11 +34,12 @@
     "post_install": [
         "$null, $bucket = find_manifest($app)",
         "$bucketdir = Find-BucketDirectory($bucket)",
+        "$userdir = $env:USERPROFILE.Replace('\\', '\\\\')",
         "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
-        "(gc \"$bucketdir\\..\\scripts\\xshell\\register.reg.templ\") | out-file -enc oem \"$dir\\register.reg\"",
+        "(gc \"$bucketdir\\..\\scripts\\xshell\\register.reg.templ\") | % { $_ -replace 'USERPROFILE', \"$userdir\" } | out-file -enc oem \"$dir\\register.reg\"",
         "sudo regedit /s $dir\\register.reg",
-        "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse",
-        "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse -ErrorAction SilentlyContinue",
+        "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse -ErrorAction SilentlyContinue",
         "ie4uinit.exe -show"
     ],
     "uninstaller": {
@@ -43,10 +49,6 @@
         [
             "Xshell.exe",
             "Xshell"
-        ],
-        [
-            "Xagent.exe",
-            "Xagent"
         ]
     ],
     "checkver": {
