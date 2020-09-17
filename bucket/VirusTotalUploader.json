@@ -1,34 +1,30 @@
 {
-    "version": "1.0.110",
+    "version": "0.1.4",
     "description": "VirusTotal Uploader. Simple file uploader to VirusTotal",
     "homepage": "https://github.com/SamuelTulach/VirusTotalUploader",
     "license": {
         "identifier": "GPL-3.0-only",
         "url": "https://github.com/SamuelTulach/VirusTotalUploader/blob/master/LICENSE"
     },
-    "url": "https://github.com/SamuelTulach/VirusTotalUploader/releases/download/uploader-v1.0.110/setup_anycpu.zip",
-    "hash": "b8da72af5969feb5d36a967d8bacc97098dedbba8624c6f1a6e5d5b398ea70dd",
-    "installer": {
-        "script": [
-            "Rename-Item \"$dir\\uploader.exe\" 'installer.exe'",
-            "Expand-InnoArchive \"$dir\\installer.exe\" -Removal",
-            "if ((-not (Test-Path \"$persist_dir\\Settings.ini\")) -and (-not (Test-Path \"$dir\\Settings.ini\"))) {",
-            "    Set-Content \"$dir\\Settings.ini\" @('[General]', 'ApiKey = ', 'Theme = dark', 'Language = English') -Encoding Ascii -Force",
-            "}"
-        ]
-    },
+    "url": "https://github.com/SamuelTulach/VirusTotalUploader/releases/download/0.1.4/setup_anycpu.zip",
+    "hash": "fb32581f07d41de76f9efcacaf922bd58a62354a756cebd01545f8a7764da513",
+    "pre_install": [
+        "Rename-Item \"$dir\\uploader.exe\" 'installer.exe'",
+        "Expand-InnoArchive \"$dir\\installer.exe\" -Removal",
+        "Copy-Item \"$persist_dir\\vtu_settings.json\" $dir -ErrorAction SilentlyContinue -Force"
+    ],
+    "pre_uninstall": "Copy-Item \"$dir\\vtu_settings.json\" $persist_dir -ErrorAction SilentlyContinue -Force",
     "shortcuts": [
         [
             "uploader.exe",
             "VirusTotal Uploader"
         ]
     ],
-    "persist": "Settings.ini",
+    "persist": "vtu_settings.json",
     "checkver": {
-        "github": "https://github.com/SamuelTulach/VirusTotalUploader",
-        "regex": "tag/uploader-v([\\d.]+)"
+        "github": "https://github.com/SamuelTulach/VirusTotalUploader"
     },
     "autoupdate": {
-        "url": "https://github.com/SamuelTulach/VirusTotalUploader/releases/download/uploader-v$version/setup_anycpu.zip"
+        "url": "https://github.com/SamuelTulach/VirusTotalUploader/releases/download/$version/setup_anycpu.zip"
     }
 }
