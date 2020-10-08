@@ -13,12 +13,19 @@
             "hash": "3aab8b8bfb593525b9d2b85fbfb41cdcc0318daa7733f02b8617acdafcad9790"
         }
     },
-    "pre_install": "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { & \"$dir\\Everything.exe\" -install-config null }",
     "installer": {
         "script": "& \"$dir\\Everything.exe\" -install-service"
     },
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { & \"$dir\\Everything.exe\" -install-config null }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
+    ],
     "uninstaller": {
-        "script": "& \"$dir\\Everything.exe\" -uninstall-service"
+        "script": [
+            "& \"$dir\\Everything.exe\" -uninstall-service",
+            "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server'| Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+
     },
     "bin": "Everything.exe",
     "shortcuts": [
@@ -29,6 +36,7 @@
     ],
     "persist": [
         "Everything.ini",
+        "Bookmark.csv",
         "Filters.csv",
         "Run History.csv",
         "Search History.csv",

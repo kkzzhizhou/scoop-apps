@@ -1,0 +1,59 @@
+{
+    "homepage": "https://cytoscape.org/",
+    "description": "Cytoscape is an open source software platform for visualizing complex networks and integrating these with any type of attribute data.",
+    "license": "MIT",
+    "version": "3.8.1",
+    "depends": "java/openjdk12",
+    "env_set": {
+        "EXEJ_JAVA_HOME": "$scoopdir\\apps\\openjdk12\\current\\bin"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cytoscape/cytoscape/releases/download/3.8.1/Cytoscape_3_8_1_windows_64bit.exe#/setup.exe",
+            "hash": "524abc820d2732dc3a63c1facbaa34d214e8aa59ada6e8b1c826f50bbd946546"
+        },
+        "32bit": {
+            "url": "https://github.com/cytoscape/cytoscape/releases/download/3.8.1/Cytoscape_3_8_1_windows_32bit.exe#/setup.exe",
+            "hash": "fa2a3283410a78553f7ed55f5fa6082fa2a77c9563b00998f41426611fc32866"
+        }
+    },
+    "installer": {
+        "script": [
+            "$process = Start-Process \"$dir\\setup.exe\" -ArgumentList @('/S', \"/D=$dir\") -Verb RunAs -PassThru",
+            "do { Start-Sleep -Milliseconds 200 } until ($process.HasExited)",
+            "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Cytoscape\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Start-Process \"$dir\\Uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -PassThru | Out-Null",
+            "$activeProcess1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "$activeProcess2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "do {",
+            "    Start-Sleep -Milliseconds 200",
+            "    $activeProcess1 = Get-Process Uninstall -ErrorAction SilentlyContinue",
+            "    $activeProcess2 = Get-Process Un_A -ErrorAction SilentlyContinue",
+            "} until (($activeProcess1 -eq $null) -And ($activeProcess2 -eq $null))"
+        ]
+    },
+    "bin": "Cytoscape.exe",
+    "shortcuts": [
+        [
+            "Cytoscape.exe",
+            "Cytoscape"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/cytoscape/cytoscape/"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cytoscape/cytoscape/releases/download/$version/Cytoscape_$majorVersion_$minorVersion_$patchVersion_windows_64bit.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/cytoscape/cytoscape/releases/download/$version/Cytoscape_$majorVersion_$minorVersion_$patchVersion_windows_32bit.exe"
+            }
+        }
+    }
+}
