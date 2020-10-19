@@ -12,6 +12,15 @@
 ## 合并仓库列表
 
 - L-Trump/scoop-raresoft
+- Paxxs/Cluttered-bucket
+- aoisummer/scoop-bucket
+- Qv2ray/mochi
+- kidonng/sushi
+- tianzhijiexian/scoop-bucket
+- Velgus/Scoop-Portapps
+- ChungZH/peach
+- KNOXDEV/wsl
+- integzz/scoopet
 - jxxkvs/flowerKitty
 - ProfElements/EmulatorBucket
 - BlueHeaven1969/rsp-scoop
