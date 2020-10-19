@@ -1,0 +1,32 @@
+{
+    "version": "202009300006",
+    "description": "GeoIP data for V2Ray (official)",
+    "homepage": "https://github.com/v2ray/geoip",
+    "license": "MIT",
+    "depends": "v2ray",
+    "url": "https://github.com/v2ray/geoip/releases/download/202009300006/geoip.dat",
+    "hash": "cc864d37f9caf1357a9c712ec628afd1dbc0cc9404207e6759e5e64af18f42eb",
+    "installer": {
+        "script": [
+            "if (-not (Test-Path \"$persist_dir\\v2ray-geoip\")) {",
+            "    Copy-Item \"$(appdir v2ray $global)\\current\\geoip.dat\" -Destination \"$dir\\geoip.dat.bak\"",
+            "}",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path \"$(appdir v2ray $global)\\current\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "LinkFile 'geoip.dat'"
+        ]
+    },
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\geoip.dat.bak\" -Destination \"$(appdir v2ray $global)\\current\\geoip.dat\" -Force"
+    },
+    "persist": "geoip.dat.bak",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/v2ray/geoip/releases/download/$version/geoip.dat",
+        "hash": {
+            "url": "$url.sha256sum"
+        }
+    }
+}

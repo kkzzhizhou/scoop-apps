@@ -1,0 +1,37 @@
+{
+    "version": "6.0.5.16",
+    "description": "A revolutionary search utility (beta)",
+    "homepage": "https://www.listary.com/beta",
+    "license": "Freeware",
+    "notes": "We don't persist your Listary data, they are still storaged in \"$env:APPDATA\\Listary\".",
+    "url": "https://www.listary.com/download/beta/listary6/ListaryInstaller.exe",
+    "hash": "5baf39cd63e1d07784f8614fe0ec79fbc1f5ba2f4f8a91d0f2b55b24d493a250",
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "New-Service -Name ListaryServiceV2 -BinaryPathName \"$dir\\Listary.Service.exe\" -StartupType Automatic",
+            "$WshShell = New-Object -comObject WScript.Shell",
+            "$Shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\")",
+            "$Shortcut.TargetPath = \"$dir\\Listary.exe\"",
+            "$Shortcut.Arguments = \"-startup\"",
+            "$Shortcut.Save()"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Process -Name Listary",
+            "Stop-Service -Name ListaryServiceV2",
+            "Remove-Service -Name ListaryServiceV2",
+            "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\""
+        ]
+    },
+    "shortcuts": [["Listary.exe", "Listary"]]
+}

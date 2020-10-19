@@ -1,0 +1,32 @@
+{
+    "version": "20201017062631",
+    "description": "Geosite and domain data for V2Ray (official)",
+    "homepage": "https://github.com/v2fly/domain-list-community",
+    "license": "MIT",
+    "depends": "v2ray",
+    "url": "https://github.com/v2fly/domain-list-community/releases/download/20201017062631/dlc.dat",
+    "hash": "f585e234ab93d98d69144689906ddde7062c899443159b00439ee99922c68f24",
+    "installer": {
+        "script": [
+            "if (-not (Test-Path \"$persist_dir\\v2ray-domain-list-community\")) {",
+            "    Copy-Item \"$(appdir v2ray $global)\\current\\geosite.dat\" -Destination \"$dir\\geosite.dat.bak\"",
+            "}",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path \"$(appdir v2ray $global)\\current\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "LinkFile 'geosite.dat' 'dlc.dat'"
+        ]
+    },
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\geosite.dat.bak\" -Destination \"$(appdir v2ray $global)\\current\\geosite.dat\" -Force"
+    },
+    "persist": "geosite.dat.bak",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/v2fly/domain-list-community/releases/download/$version/dlc.dat",
+        "hash": {
+            "url": "$url.sha256sum"
+        }
+    }
+}

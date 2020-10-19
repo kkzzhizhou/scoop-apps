@@ -1,0 +1,43 @@
+{
+    "version": "2.002",
+    "description": "A typeface made for developers by JetBrains (Variable format)",
+    "homepage": "https://github.com/JetBrains/JetBrainsMono",
+    "license": "Apache-2.0",
+    "notes": "You may need to restart the system to use recently installed fonts.",
+    "depends": "sudo",
+    "url": "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.002/JetBrainsMono-2.002.zip",
+    "hash": "568ff44a4495773c5d204524e1a8442649b4b53b94e21e1a7d784289c2a19a51",
+    "extract_dir": "ttf/Variable",
+    "installer": {
+        "script": [
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path $path -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "Get-ChildItem $dir -Filter \"*.ttf\" | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$($_.Name)\" -Force | Out-Null",
+            "    LinkFile $_.Name",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Service FontCache",
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "Get-ChildItem $dir -Filter \"*.ttf\" | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force | Out-Null",
+            "    sudo Remove-Item \"$path\\$($_.Name)\"",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/JetBrains/JetBrainsMono/releases/download/v$version/JetBrainsMono-$version.zip",
+        "extract_dir": "JetBrains Mono $version/ttf/Variable"
+    }
+}

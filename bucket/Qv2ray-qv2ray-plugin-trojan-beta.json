@@ -1,0 +1,46 @@
+{
+  "version": "3.0.0-pre1",
+  "description": "Trojan plugin for Qv2ray (beta)",
+  "homepage": "https://github.com/Qv2ray/QvPlugin-Trojan",
+  "license": "GPL-3.0-or-later",
+  "depends": "mochi/qv2ray-beta",
+  "architecture": {
+    "64bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan/releases/download/v3.0.0-pre1/QvPlugin-Trojan.v3.0.0-pre1.Windows-x64.dll",
+      "hash": "89b77ddb61dccc9e526a1554dbd3c26d7f8abd6197641d0bb4cbbdc83754336c"
+    },
+    "32bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan/releases/download/v3.0.0-pre1/QvPlugin-Trojan.v3.0.0-pre1.Windows-x86.dll",
+      "hash": "2172d141fc6da1ee490d329a24f5a83273e8d4a30c0464db1e337430f2fd03e7"
+    }
+  },
+  "installer": {
+    "script": [
+      "function LinkFile([String] $file, [String] $source = $file) {",
+      "    Write-Host \"Creating hardlink for $file\"",
+      "    New-Item -Force -ItemType HardLink -Path \"$(appdir qv2ray-beta $global)\\current\\config\\plugins\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+      "}",
+      "LinkFile 'trojan.dll' '*.dll'"
+    ]
+  },
+  "uninstaller": {
+    "script": "Remove-Item \"$(appdir qv2ray-beta $global)\\current\\config\\plugins\\trojan.dll\" -Force"
+  },
+  "checkver": {
+    "url": "https://github.com/Qv2ray/QvPlugin-Trojan/releases",
+    "regex": "/releases/tag/(?:v|V)?([\\w.-]+)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan/releases/download/v$version/QvPlugin-Trojan.v$version.Windows-x64.dll"
+      },
+      "32bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan/releases/download/v$version/QvPlugin-Trojan.v$version.Windows-x86.dll"
+      }
+    },
+    "hash": {
+      "url": "https://github.com/Qv2ray/QvPlugin-Trojan/releases/download/v$version/sha256.list"
+    }
+  }
+}

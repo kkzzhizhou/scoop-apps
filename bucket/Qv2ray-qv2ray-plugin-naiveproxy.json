@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "description": "NaiveProxy plugin for Qv2ray",
+  "homepage": "https://github.com/Qv2ray/QvPlugin-NaiveProxy",
+  "license": "GPL-3.0-or-later",
+  "depends": ["mochi/qv2ray", "mochi/naiveproxy"],
+  "architecture": {
+    "64bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-NaiveProxy/releases/download/v1.0.0/QvPlugin-NaiveProxy.v1.0.0.Windows-x64.dll",
+      "hash": "ce0b5fc032442f2b9efb854c886c196a66429bf2d5fa639ee02fe35dcedfe243"
+    },
+    "32bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-NaiveProxy/releases/download/v1.0.0/QvPlugin-NaiveProxy.v1.0.0.Windows-x86.dll",
+      "hash": "b567e7b271fc438fe627a690acfb2fbe87877d5befad64eb89b00f8b7323ccff"
+    }
+  },
+  "installer": {
+    "script": [
+      "function LinkFile([String] $file, [String] $source = $file) {",
+      "    Write-Host \"Creating hardlink for $file\"",
+      "    New-Item -Force -ItemType HardLink -Path \"$(appdir qv2ray $global)\\current\\config\\plugins\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+      "}",
+      "LinkFile 'naiveproxy.dll' '*.dll'",
+      "$config = \"$(appdir qv2ray $global)\\current\\config\\plugin_settings\\qvplugin_naiveproxy.conf\"",
+      "if (-not (Test-Path $config)) {",
+      "    New-Item \"$(appdir qv2ray $global)\\current\\config\\plugin_settings\" -ItemType Directory | Out-Null",
+      "    $naiveproxyPath = $(appdir naiveproxy $global).Replace('\\', '/')",
+      "    @{",
+      "        'kernelPath' = \"$naiveproxyPath/current/naive.exe\"",
+      "    } | ConvertTo-Json -Depth 20 | Out-File $config",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": "Remove-Item \"$(appdir qv2ray $global)\\current\\config\\plugins\\naiveproxy.dll\" -Force"
+  },
+  "checkver": "github",
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-NaiveProxy/releases/download/v$version/QvPlugin-NaiveProxy.v$version.Windows-x64.dll"
+      },
+      "32bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-NaiveProxy/releases/download/v$version/QvPlugin-NaiveProxy.v$version.Windows-x86.dll"
+      }
+    },
+    "hash": {
+      "url": "https://github.com/Qv2ray/QvPlugin-NaiveProxy/releases/download/v$version/sha256.list"
+    }
+  }
+}

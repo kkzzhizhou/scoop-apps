@@ -1,0 +1,61 @@
+{
+    "version": "1.19.3",
+    "description": "A timer app with strong expansibility for computers",
+    "homepage": "https://github.com/RoderickQiu/wnr",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/RoderickQiu/wnr/releases/download/v1.19.3/wnr-1.19.3-Win-64.7z",
+            "hash": "a974fcf062fc127e2c04f4b4ed7a31e8ee512a15b858cd6cf3403b061c91f650"
+        },
+        "32bit": {
+            "url": "https://github.com/RoderickQiu/wnr/releases/download/v1.19.3/wnr-1.19.3-Win-32.7z",
+            "hash": "b297cbe53c878b6f80fdd21f2c3004a48e390bbe17d96cd4b118d30b218d59aa"
+        }
+    },
+    "installer": {
+        "script": [
+            "function CreateFile([String] $file, [String] $content = $null) {",
+            "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+            "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+            "        Set-Content \"$dir\\$file\" $content",
+            "    }",
+            "}",
+            "CreateFile 'wnr-config.json'",
+            "CreateFile 'wnr-statistics.json'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "function BackupFile([String] $file) {",
+            "    Copy-Item \"$dir\\$file\" \"$persist_dir\" -Force",
+            "}",
+            "BackupFile 'wnr-config.json'",
+            "BackupFile 'wnr-statistics.json'"
+        ]
+    },
+    "shortcuts": [
+        [
+            "wnr.exe",
+            "Work & Rest"
+        ]
+    ],
+    "persist": [
+        "wnr-config.json",
+        "wnr-statistics.json"
+    ],
+    "checkver": {
+        "github": "https://github.com/RoderickQiu/wnr",
+        "regex": "/releases/tag/(?:v|V)?([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/RoderickQiu/wnr/releases/download/v$version/wnr-$matchHead-Win-64.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/RoderickQiu/wnr/releases/download/v$version/wnr-$matchHead-Win-32.7z"
+            }
+        }
+    }
+}

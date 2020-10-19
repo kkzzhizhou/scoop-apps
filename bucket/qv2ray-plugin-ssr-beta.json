@@ -1,0 +1,46 @@
+{
+    "version": "3.0.0-pre1",
+    "description": "ShadowSocksR plugin for Qv2ray (beta)",
+    "homepage": "https://github.com/Qv2ray/QvPlugin-SSR",
+    "license": "GPL-3.0-or-later",
+    "depends": "sushi/qv2ray-beta",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases/download/v3.0.0-pre1/QvPlugin-SSR.v3.0.0-pre1.Windows-x64.dll",
+            "hash": "5b6ba8fd3e73b5afa3da109071da554b8685e23bf50b24f9d6a0803720f3ebea"
+        },
+        "32bit": {
+            "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases/download/v3.0.0-pre1/QvPlugin-SSR.v3.0.0-pre1.Windows-x86.dll",
+            "hash": "9dcaeb422414dc9b0de1a1c70d9f133eb2984e529b6ed3567b8261cdf44347bc"
+        }
+    },
+    "installer": {
+        "script": [
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path \"$(appdir qv2ray-beta $global)\\current\\config\\plugins\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "LinkFile 'ssr.dll' '*.dll'"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$(appdir qv2ray-beta $global)\\current\\config\\plugins\\ssr.dll\" -Force"
+    },
+    "checkver": {
+        "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases",
+        "regex": "/releases/tag/(?:v|V)?([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases/download/v$version/QvPlugin-SSR.v$version.Windows-x64.dll"
+            },
+            "32bit": {
+                "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases/download/v$version/QvPlugin-SSR.v$version.Windows-x86.dll"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/Qv2ray/QvPlugin-SSR/releases/download/v$version/sha256.list"
+        }
+    }
+}

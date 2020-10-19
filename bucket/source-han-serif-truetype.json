@@ -1,0 +1,37 @@
+{
+    "version": "1.001",
+    "description": "Source Han Serif font by Adobe (TrueType)",
+    "homepage": "https://github.com/Pal3love/Source-Han-TrueType",
+    "license": "OFL-1.1",
+    "notes": "You may need to restart the system to use recently installed fonts.",
+    "depends": "sudo",
+    "url": "https://github.com/Pal3love/Source-Han-TrueType/raw/2.000-1.001-2.011-R/SourceHanSerif.rar",
+    "hash": "83627d36e2dead714be097773a4aff53bbb11d627ef131334cbc35d8874ec510",
+    "installer": {
+        "script": [
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path $path -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "Get-ChildItem $dir -Filter \"*.ttc\" | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$($_.Name)\" -Force | Out-Null",
+            "    LinkFile $_.Name",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Service FontCache",
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "Get-ChildItem $dir -Filter \"*.ttc\" | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force | Out-Null",
+            "    sudo Remove-Item \"$path\\$($_.Name)\"",
+            "}"
+        ]
+    }
+}

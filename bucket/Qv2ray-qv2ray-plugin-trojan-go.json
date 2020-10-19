@@ -1,0 +1,51 @@
+{
+  "version": "1.0.1",
+  "description": "Trojan-Go plugin for Qv2ray",
+  "homepage": "https://github.com/Qv2ray/QvPlugin-Trojan-Go",
+  "license": "GPL-3.0-or-later",
+  "depends": ["mochi/qv2ray", "sushi/trojan-go"],
+  "architecture": {
+    "64bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan-Go/releases/download/v1.0.1/QvTrojanGoPlugin.v1.0.1.Windows-x64.dll",
+      "hash": "fb926693b9902ef04a862926827606c01f54c051f9de9d39df2f444f21339540"
+    },
+    "32bit": {
+      "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan-Go/releases/download/v1.0.1/QvTrojanGoPlugin.v1.0.1.Windows-x86.dll",
+      "hash": "f0e1c28cc72ca56bc71537225f00733a967c15b5e5559ea6328739118106c1da"
+    }
+  },
+  "installer": {
+    "script": [
+      "function LinkFile([String] $file, [String] $source = $file) {",
+      "    Write-Host \"Creating hardlink for $file\"",
+      "    New-Item -Force -ItemType HardLink -Path \"$(appdir qv2ray $global)\\current\\config\\plugins\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+      "}",
+      "LinkFile 'trojan-go.dll' '*.dll'",
+      "$config = \"$(appdir qv2ray $global)\\current\\config\\plugin_settings\\qvtrojango_plugin.conf\"",
+      "if (-not (Test-Path $config)) {",
+      "    New-Item \"$(appdir qv2ray $global)\\current\\config\\plugin_settings\" -ItemType Directory | Out-Null",
+      "    $trojanGoPath = $(appdir trojan-go $global).Replace('\\', '/')",
+      "    @{",
+      "        'kernelPath' = \"$trojanGoPath/current/trojan-go.exe\"",
+      "    } | ConvertTo-Json -Depth 20 | Out-File $config",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": "Remove-Item \"$(appdir qv2ray $global)\\current\\config\\plugins\\trojan-go.dll\" -Force"
+  },
+  "checkver": "github",
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan-Go/releases/download/v$version/QvTrojanGoPlugin.v$version.Windows-x64.dll"
+      },
+      "32bit": {
+        "url": "https://download.fastgit.org/Qv2ray/QvPlugin-Trojan-Go/releases/download/v$version/QvTrojanGoPlugin.v$version.Windows-x86.dll"
+      }
+    },
+    "hash": {
+      "url": "https://github.com/Qv2ray/QvPlugin-Trojan-Go/releases/download/v$version/sha256.list"
+    }
+  }
+}
