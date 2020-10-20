@@ -7,16 +7,22 @@
     "hash": "b566c700db92041e96d9e75319f70f5fd37ad4346c8daff282389c386bfdf8dd",
     "installer": {
         "script": [
-            "$programname = \"Rufus*\"",
-            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "$programname = \"Rufus\"",
+            "if(!(Get-AppxPackage -Name $programname | Where-Object {$_.Version -ge \"$version\"} -ErrorAction SilentlyContinue))",
             "{",
             "   Add-AppxPackage \"${dir}//Rufus.appx\"",
-            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   if(!(Get-AppxPackage -Name $programname | Where-Object {$_.Version -ge \"$version\"} -ErrorAction SilentlyContinue))",
             "   {",
             "       exit 1",
             "   }",
             "}",
-            "Remove-Item \"$dir\\setup.exe\" -Force"
+            "Remove-Item \"$dir\\rufus.appx\" -Force"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$programname = \"Rufus\"",
+            "if(Get-AppxPackage -Name $programname) {Get-AppxPackage -Name $programname | Remove-AppxPackage}"
         ]
     },
     "checkver": {
