@@ -11,7 +11,7 @@
             "$installpath = \"$dir\\setup.msi_\"",
             "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
             "{",
-            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/norestart') -RunAs | Out-Null",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
             "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
             "   {",
             "       exit 1",
@@ -20,6 +20,10 @@
             "Remove-Item \"$dir\\setup.msi_\" -Force"
         ]
     },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Mouse without Borders.lnk\") {Remove-Item \"$CommonDesktopPath\\Mouse without Borders.lnk\" -Force}"
+    ],
     "checkver": {
         "url": "https://www.microsoft.com/en-us/download/details.aspx?id=35460",
         "regex": "</div><p>([\\d.]+)"
