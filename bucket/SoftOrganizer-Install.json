@@ -1,0 +1,46 @@
+{
+    "version": "8.16",
+    "description": "Soft Organizer. Free Unnecessary Programs Removal Tool",
+    "homepage": "https://www.chemtable.com/soft-organizer.htm",
+    "license": "Proprietary",
+    "url": "https://www.chemtable.com/files/soft-organizer-setup.exe#/setup.exe",
+    "hash": "2f5fa6bfab5b11a74ee176dba05941b2e53760d83791438b6158a01c02b72420",
+    "pre_install": [
+        "$processname = \"SoftOranizer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Soft Organizer version*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Soft Organizer\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.chemtable.com/soft-organizer.htm",
+        "regex": "<title>Soft Organizer ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.chemtable.com/files/soft-organizer-setup.exe#/setup.exe"
+    }
+}

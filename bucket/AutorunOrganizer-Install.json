@@ -1,0 +1,45 @@
+{
+    "version": "4.45",
+    "description": "Autorun Organizer. Free Startup Manager for Windows",
+    "homepage": "https://www.chemtable.com/autorun-organizer.htm",
+    "license": "Freeware",
+    "url": "https://www.chemtable.com/files/ao3/autorun-organizer-setup.exe#/setup.exe",
+    "hash": "7bfcc96a8ec1a674caaac0d91323169a4dd0f5b725e30dfe43a2e681c4b5549f",
+    "pre_install": [
+        "$processname = \"AutorunOrganizer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Autorun Organizer version*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force",
+            "while ((Get-Process -Name 'AutorunOrganizer' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "   Start-Sleep -Milliseconds 50",
+            "}",
+            "taskkill /F /IM 'AutorunOrganizer' /FI 'status eq running'"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.chemtable.com/autorun-organizer.htm",
+        "regex": "<title>Autorun Organizer ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.chemtable.com/files/ao3/autorun-organizer-setup.exe#/setup.exe"
+    }
+}
