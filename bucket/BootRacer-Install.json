@@ -1,0 +1,46 @@
+{
+    "version": "7.96.0.596",
+    "description": "BootRacer. Monitors Boot Time and Detects Slow Startup Programs",
+    "homepage": "https://www.greatis.com/bootracer/#top",
+    "license": "Freemium",
+    "url": "https://www.greatissoftware.com/bootracer_free.zip",
+    "hash": "2516677f59657345f8c66757e0dc4da3400640dbb65d2081e951d604aff3800a",
+    "pre_install": [
+        "$processname = \"Bootrace.exe\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"BootRacer*\"",
+            "$processname = \"BootRace.exe\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\BootRacerSetup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\BootRacerSetup.exe\" -Force",
+            "while ((Get-Process -Name 'Bootrace' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "   Start-Sleep -Milliseconds 50",
+            "}",
+            "taskkill /F /IM $processname /FI 'status eq running'"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.greatis.com/bootracer/download.htm",
+        "regex": "><strong>([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.greatissoftware.com/bootracer_free.zip"
+    }
+}
