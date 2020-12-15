@@ -10,8 +10,8 @@ Stop-Process -ErrorAction Ignore -Name Spotify
 # This must be run with --quiet to prevent the version mismatch warning
 & "$PSScriptRoot\spicetify.exe" restore --quiet --no-restart
 
-if ($quiet) { & "$PSScriptRoot\spicetify.exe" backup apply --quiet --no-restart }
-else { & "$PSScriptRoot\spicetify.exe" backup apply --no-restart }
+if ($quiet) { & "$PSScriptRoot\spicetify.exe" backup apply disable-devtool --quiet --no-restart }
+else { & "$PSScriptRoot\spicetify.exe" backup apply disable-devtool --no-restart }
 
 if (Get-Command "blockthespot" -ErrorAction Ignore) { blockthespot }
 if ($spotify_running) { Start-Process "$(& `"$PSScriptRoot\get-spotify-path.ps1`")" }
