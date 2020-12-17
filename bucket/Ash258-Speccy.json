@@ -15,16 +15,10 @@
         "8aed54c768b365ca01ad7d79c35a5ff5c8652fe30726c7e2877bf4e9cdb2cf29"
     ],
     "pre_install": [
-        "    # Create portable.dat",
-        "Set-Content \"$dir\\portable.dat\" '#PORTABLE#' -Encoding Ascii",
-        "    # Create Speccy.ini",
-        "$file = 'Speccy.ini'",
-        "if (-not (Test-Path \"$persist_dir\\$file\")) {",
-        "    Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-        "    Set-Content \"$dir\\$file\" '[Software\\Piriform\\Speccy]' -Encoding Ascii",
-        "}",
-        "    # Remove irrelevant files",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\uninst.exe\" -Force -Recurse"
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Out-UTF8File \"$dir\\portable.dat\" '#PORTABLE#'",
+        "Test-Persistence 'Speccy.ini' '[Software\\Piriform\\Speccy]'",
+        "Remove-AppDirItem '$*', 'uninst*'"
     ],
     "architecture": {
         "64bit": {

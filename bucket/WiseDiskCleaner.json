@@ -6,12 +6,10 @@
     "url": "http://downloads.wisecleaner.com/soft/WDCFree_10.4.1.789.exe",
     "hash": "1110fd6ec4f6bb5a4c05fd7cbfd5bc61e7069228d44f94ec34b66e1ba57d7c78",
     "innosetup": true,
-    "installer": {
-        "script": [
-            "$file = 'config.ini'",
-            "if (-not (Test-Path \"$persist_dir\\$file\")) { Set-Content \"$dir\\$file\" '[General]', 'checkNewVer=3' -Encoding Ascii }"
-        ]
-    },
+    "pre_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Test-Persistence 'config.ini' '[General]', 'checkNewVer=3'"
+    ],
     "shortcuts": [
         [
             "WiseDiskCleaner.exe",

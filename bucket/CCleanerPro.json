@@ -18,12 +18,10 @@
         "d5142f288ee9e334671c807931ace52c31eaa0fa254ffe31979fad0b6ba5c2cd"
     ],
     "pre_install": [
-        "Set-Content \"$dir\\portable.dat\" '#PORTABLE#' -Encoding Ascii",
-        "if (-not (Test-Path \"$persist_dir\\ccleaner.ini\")) {",
-        "    $CONT = @('[Options]', 'HelpImproveCCleaner=0', 'PrefsPrivacyShowOffers1stParty=0', 'PrefsPrivacyShareData1stParty=0')",
-        "    Set-Content \"$dir\\ccleaner.ini\" $CONT -Encoding Ascii",
-        "}",
-        "@('$*', 'uninst.exe', 'CCUpdate.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -Recurse }"
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Out-UTF8File \"$dir\\portable.dat\" '#PORTABLE#'",
+        "Test-Persistence 'ccleaner.ini' '[Options]', 'HelpImproveCCleaner=0', 'PrefsPrivacyShowOffers1stParty=0', 'PrefsPrivacyShareData1stParty=0'",
+        "Remove-AppDirItem '$*', 'uninst*', 'CCUpdate*'"
     ],
     "architecture": {
         "64bit": {

@@ -6,13 +6,8 @@
     "url": "https://www.hide-windows.com/Download/EusingCleaner.zip",
     "hash": "ea0d3b3ae4608e307cdd2af27a4ac73411485c539f1e33e53b5edb714de0040e",
     "pre_install": [
-        "$file = 'options.ini'",
-        "if (-not (Test-Path \"$persist_dir\\$file\")) {",
-        "    Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-        "    $CONT = @('[Options]', \"OutputDirectory=$dir\\Backup\")",
-        "    New-Item \"$dir\\Backup\" -Type Directory | Out-Null",
-        "    Set-Content \"$dir\\$file\" $CONT -Encoding Ascii -Force",
-        "}"
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Test-Persistence 'options.ini' '[Options]', \"OutputDirectory=$dir\\Backup\""
     ],
     "shortcuts": [
         [
@@ -20,7 +15,10 @@
             "Eusing Cleaner"
         ]
     ],
-    "persist": "options.ini",
+    "persist": [
+        "Backup",
+        "options.ini"
+    ],
     "checkver": "Eusing Cleaner\\s+([\\d.]+)",
     "autoupdate": {
         "url": "https://www.hide-windows.com/Download/EusingCleaner.zip"

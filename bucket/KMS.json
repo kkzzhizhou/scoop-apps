@@ -13,15 +13,13 @@
         "    C:\\Windows\\SECOH-QAD.exe)",
         "🎉🎉You are all clear and ready to go 😍🎉🎉"
     ],
+    "pre_download": "Assert-Administrator",
     "url": "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/kmi.exe",
     "hash": "64c731adbe1b96cb5765203b1e215093dcf268d020b299445884a4ae62ed2d3a",
     "pre_install": [
-        "if (-not (is_admin)) {",
-        "    Write-Host 'Elevated prompt is needed for correct installation.' -f Yellow",
-        "    exit(1)",
-        "}",
-        "Add-MpPreference -ExclusionPath \"$dir\"",
-        "Write-Host 'Disabling Realtime Defender Protection' -f Yellow",
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Add-MpPreference -ExclusionPath $dir",
+        "Write-UserMessage 'Disabling Realtime Defender Protection' -Color Yellow",
         "Set-MpPreference -DisableRealtimeMonitoring $true"
     ],
     "installer": {
@@ -40,13 +38,12 @@
         "Add-MpPreference -ExclusionPath \"$env:windir\\SECOH-QAD.dll\"",
         "Add-MpPreference -ExclusionPath \"$env:windir\\SECOH-QAD.exe\"",
         "Set-MpPreference -DisableRealtimeMonitoring $false",
-        "Write-Host 'Realtime Defender Protection Enabled' -f Yellow"
+        "Write-UserMessage 'Realtime Defender Protection Enabled' -Color Yellow"
     ],
     "uninstaller": {
         "file": "unins000.exe",
         "args": "/VERYSILENT"
     },
-    "persist": "TokensBackup",
     "bin": "AutoPico.exe",
     "shortcuts": [
         [
@@ -54,6 +51,7 @@
             "KMSpico"
         ]
     ],
+    "persist": "TokensBackup",
     "checkver": {
         "url": "https://kmspico.co/download/",
         "regex": "Version: ([\\d\\.]+), Date:"

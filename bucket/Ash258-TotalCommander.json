@@ -37,26 +37,15 @@
             ]
         }
     },
-    "installer": {
-        "script": [
-            "Expand-7zipArchive \"$dir\\INSTALL.CAB\" \"$dir\\cosi\" -Removal",
-            "Get-ChildItem \"$dir\" -Exclude cosi | Remove-Item -Force -Recurse",
-            "Move-Item \"$dir\\cosi\\*\" \"$dir\"",
-            "Remove-Item \"$dir\\*\" -Include 'cosi', 'd', 'e' -Force -Recurse",
-            "    # Creating default settings",
-            "function CreateFile([String] $file, [String] $content = $null) {",
-            "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
-            "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-            "        Set-Content \"$dir\\$file\" $content -Encoding Ascii",
-            "    }",
-            "}",
-            "CreateFile 'DEFAULT.BAR'",
-            "CreateFile 'default.br2'",
-            "CreateFile 'wcx_ftp.ini'",
-            "CreateFile 'wincmd.ini' @('[Configuration]', 'UseIniInProgramDir=7')",
-            "CreateFile 'wincmd.key'"
-        ]
-    },
+    "pre_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Expand-7zipArchive \"$dir\\INSTALL.CAB\" \"$dir\\cosi\" -Removal",
+        "Get-ChildItem \"$dir\" -Exclude cosi | Remove-Item -Force -Recurse",
+        "Move-Item \"$dir\\cosi\\*\" \"$dir\"",
+        "Remove-AppDirItem 'cosi', 'd', 'e'",
+        "Test-Persistence 'DEFAULT.BAR', 'default.br2', 'wcx_ftp.ini', 'wincmd.key'",
+        "Test-Persistence 'wincmd.ini' '[Configuration]', 'UseIniInProgramDir=7'"
+    ],
     "persist": [
         "DEFAULT.BAR",
         "default.br2",
@@ -71,10 +60,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx64.exe#/cosi.7z"
+                "url": "https://totalcommander.ch/win/tcmd${cleanVersion}x64.exe#/cosi.7z"
             },
             "32bit": {
-                "url": "https://totalcommander.ch/win/tcmd$cleanVersionx32.exe#/cosi.7z"
+                "url": "https://totalcommander.ch/win/tcmd${cleanVersion}x32.exe#/cosi.7z"
             }
         }
     }

@@ -8,9 +8,10 @@
     "hash": "c5d12870f4a881637184b968fb72e4ef4191f17538baa7b33ba62050f362e4a5",
     "installer": {
         "script": [
-            "if (-not (Test-Path \"$persist_dir\\W10Privacy.ini\")) { Set-Content \"$dir\\W10Privacy.ini\" '' -Encoding Ascii }",
+            "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
             "(Get-ChildItem $dir 'W10*Setup.exe').FullName | Expand-7zipArchive -DestinationPath $dir -Removal",
-            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstal*\" -Recurse"
+            "Test-Persistence 'W10Privacy.ini'",
+            "Remove-AppDirItem '$*', 'Uninstal*'"
         ]
     },
     "bin": "W10Privacy.exe",
