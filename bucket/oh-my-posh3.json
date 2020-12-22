@@ -1,0 +1,49 @@
+{
+    "version": "3.58.0",
+    "description": "A prompt theme engine for any shell",
+    "homepage": "https://ohmyposh.dev",
+    "license": "GPL-3.0-only",
+    "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh3/releases/tag/v3.58.0",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/JanDeDobbeleer/oh-my-posh3/releases/download/v3.58.0/posh-windows-wsl-amd64.7z",
+                "https://raw.githubusercontent.com/Ash258/Scoop-Ash258/master/support/oh-my-posh/Ash258.json",
+                "https://raw.githubusercontent.com/Ash258/Scoop-Ash258/master/support/oh-my-posh/Hook.ps1"
+            ],
+            "hash": [
+                "2d2e7354e58bb3a24f6c7b58a39068775bda3a4acb29dc7df0df744f278427e6",
+                "aaebe35950824e192d9a7274ca8d4be7b0fb53b00c455e2ac47b6e56a53fda32",
+                "a2c0eb9d6409746073299b138a9b2de1487db6166ca2e5d0e4b6cc14f2bf1744"
+            ]
+        }
+    },
+    "post_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Move-Item \"$dir\\Ash258.json\" \"$dir\\themes\\Ash258.omp.json\" -Force",
+        "if ($env:POSH_INSTALL) { # TODO: Migrate to install options",
+        "    Write-UserMessage 'Installing Ash258 theme to $PROFILE' -Warning",
+        "    Get-Content \"$dir\\Hook.ps1\" -Raw | Out-File $PROFILE -Force -Append",
+        "    Get-Content \"$dir\\Hook.ps1\" -Raw | Out-File $PROFILE.AllUsersAllHosts -Force -Append",
+        "}"
+    ],
+    "bin": [
+        "oh-my-posh.exe",
+        "oh-my-posh-wsl"
+    ],
+    "persist": "themes",
+    "checkver": {
+        "github": "https://github.com/JanDeDobbeleer/oh-my-posh3"
+    },
+    "autoupdate": {
+        "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh3/releases/tag/v$version",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/JanDeDobbeleer/oh-my-posh3/releases/download/v$version/posh-windows-wsl-amd64.7z"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}
