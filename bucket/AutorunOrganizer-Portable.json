@@ -8,6 +8,19 @@
     "hash": "22d20c6a3196fab1e33dc22452f8228ea6191a52edf0f844099d011899201051",
     "bin": "AutorunOrganizer.exe",
     "innosetup": true,
+    "pre_install": [
+            "if([System.Environment]::Is64BitOperatingSystem)",
+            "{",
+            "   Set-Location -Path \"$dir\"",
+            "   Get-ChildItem \"*,1*\" | Rename-Item -NewName {$_.name -replace ',1',''}",
+            "}",
+            "else",
+            "{",
+            "   Set-Location -Path \"$dir\"",
+            "   Get-ChildItem \"*,2*\" | Rename-Item -NewName {$_.name -replace ',2',''}",
+            "   Get-ChildItem \"*,1*\" | Select-String -Pattern \",1\" | Select-Object -ExcludeProperty path | Remove-Item -Force -Confirm",
+            "}"
+        ],
     "shortcuts": [
         [
             "AutorunOrganizer.exe",
