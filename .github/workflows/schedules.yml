@@ -1,6 +1,7 @@
 name: 'AutoUpdate'
  
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 */3 * * *'
 
@@ -8,9 +9,22 @@ jobs:
   bot:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout codes'
-        uses: actions/checkout@v2
-      - name: 'Run autoupdate.sh'
-        run: bash ./autoupdate.sh
+    - name: 'Checkout codes'
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+    - name: 'Run autoupdate.sh'
+      run: bash ./autoupdate.sh
+    - name: Commit files
+      run: |
+        git config --local user.email "github-actions@noreply.github.com"
+        git config --local user.name "github-actions"
+        git commit -m `date` -a
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
 
