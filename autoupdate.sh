@@ -2,7 +2,7 @@
 ###
  # @Author: zzz
  # @Date: 2021-03-03 05:13:39
- # @LastEditTime: 2021-03-03 07:07:42
+ # @LastEditTime: 2021-03-03 07:48:38
  # @Description: autoupdate bucket:scoop-apps
  # @FilePath: /data/scoop-apps/autoupdate.sh
 ### 
@@ -14,6 +14,7 @@ cd $script_dir
 buckets=$(cat bucket.config)
 
 # check env
+echo "check cache dir"
 if [ ! -d "cache" ]
 then
     mkdir -p cache
@@ -38,8 +39,6 @@ do
     files=$(find cache/$bucket_dir -type f -name *.json -not -path "cache/$bucket_dir/.vscode/*")
     for file in ${files[@]}
     do
-        echo $file
-        # exit 1
         file_name=$(echo $file | awk -F'/' '{print $NF}')
         file_id=$(echo $file_name | tr 'A-Z' 'a-z')
         check_file_id=$(cat cache/file_ids | grep $file_id | wc -l)
@@ -54,6 +53,5 @@ do
             new_name=$(echo $file_name | sed "s/.json/$owner.json/")
             cp -f $file ./bucket/$new_name
         fi
-
     done
 done
