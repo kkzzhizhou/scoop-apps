@@ -1,0 +1,58 @@
+{
+    "version": "nightly",
+    "description": "JDownloader. Download manager with custom configuration and Dark Theme by Vinylwalk3r enabled.",
+    "homepage": "http://jdownloader.org",
+    "license": "Shareware|AGPL-3.0-only",
+    "suggest": {
+        "Java Runtime Enviroment": "java/oraclejdk"
+    },
+    "url": [
+        "http://installer.jdownloader.org/JDownloader.jar",
+        "http://jdownloader.org/lib/tpl/arctic/images/favicon.ico#/icon.ico",
+        "https://raw.githubusercontent.com/Vinylwalk3r/JDownloader-2-Dark-Theme/master/syntheticaBlackEye.jar",
+        "https://raw.githubusercontent.com/Vinylwalk3r/JDownloader-2-Dark-Theme/master/config/cfg/laf/JDDefaultLookAndFeel.json",
+        "https://raw.githubusercontent.com/Vinylwalk3r/JDownloader-2-Dark-Theme/master/config/cfg/laf/JDDefaultLookAndFeel.popupborderinsets.json",
+        "https://raw.githubusercontent.com/Vinylwalk3r/JDownloader-2-Dark-Theme/master/config/cfg/laf/SyntheticaBlackEyeLookAndFeel.json",
+        "https://gist.githubusercontent.com/Ash258/daeb1148f9293233996d0e9d43bb8148/raw/DownloadTableContext.menu.json",
+        "https://gist.githubusercontent.com/Ash258/daeb1148f9293233996d0e9d43bb8148/raw/LinkgrabberContext.menu.json",
+        "https://gist.githubusercontent.com/Ash258/daeb1148f9293233996d0e9d43bb8148/raw/MainToolbar.menu.json"
+    ],
+    "installer": {
+        "script": [
+            "Set-Content \"$dir\\JDownloader.bat\" '@start javaw.exe -jar \"%~dp0\\JDownloader.jar\" %*' -Encoding ASCII",
+            "'cfg', 'cfg\\menus_v2', 'cfg\\laf', 'libs\\laf' | ForEach-Object {",
+            "    New-Item \"$dir\\$_\" -ItemType Directory -Force | Out-Null",
+            "}",
+            "Move-Item \"$dir\\syntheticaBlackEye.jar\" \"$dir\\libs\\laf\" -Force",
+            "Copy-Item \"$dir\\*.menu.json\" \"$dir\\cfg\\menus_v2\"",
+            "Get-ChildItem $dir '*.menu.json' | ForEach-Object { Rename-Item $_.Fullname \"$($_.Name).backup\" }",
+            "Move-Item \"$dir\\*.json\" \"$dir\\cfg\\laf\"",
+            "$cfgs = @{",
+            "    'org.jdownloader.controlling.packagizer.PackagizerSettings.json' = @{ 'packagizerenabled' = $true }",
+            "    'org.jdownloader.settings.GraphicalUserInterfaceSettings.json' = @{",
+            "        'packagedoubleclickaction'   = 'OPEN_FOLDER'",
+            "        'captchascalefactor'         = 200",
+            "        'lookandfeeltheme'           = 'BLACK_EYE'",
+            "        'linkgrabbersidebarvisible'  = $false",
+            "    }",
+            "    'org.jdownloader.settings.GeneralSettings.json' = @{",
+            "        'maxsimultanedownloadsperhost' = 3",
+            "        'maxsimultanedownloads'        = 9",
+            "        'maxchunksperfile'             = 4",
+            "    }",
+            "}",
+            "    # Generate config files",
+            "foreach ($cf in $cfgs.Keys) { Set-Content \"$dir\\cfg\\$cf\" (ConvertTo-Json $cfgs[$cf]) -Encoding Ascii }"
+        ]
+    },
+    "bin": "JDownloader.bat",
+    "shortcuts": [
+        [
+            "JDownloader.bat",
+            "JDdownloader 2",
+            "",
+            "icon.ico"
+        ]
+    ],
+    "persist": "cfg"
+}

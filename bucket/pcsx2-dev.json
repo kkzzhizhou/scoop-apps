@@ -2,10 +2,20 @@
     "homepage": "https://pcsx2.net/",
     "description": "A feature rich FOSS PlayStation 2 emulator (development version)",
     "license": "LGPL-3.0-or-later",
-    "version": "1.7.0-953",
-    "url": "https://buildbot.orphis.net/pcsx2/index.php?m=dl&rev=v1.7.0-dev-953-g7187b883b&platform=windows-x86#/dl.7z",
-    "hash": "cbf46a7b80a8d22a300f04997a2dbb22b48155bcb5092a12b3fabed25457621a",
-    "extract_dir": "pcsx2-v1.7.0-dev-953-g7187b883b-windows-x86",
+    "version": "1.7.0-1040",
+    "url": "https://buildbot.orphis.net/pcsx2/index.php?m=dl&rev=v1.7.0-dev-1040-gb6246a7ba&platform=windows-x86#/dl.7z",
+    "hash": "1a9cf79c1857018c2ddee5baef11cf88e8a2bc9bd0dd234d4311639a4c47609c",
+    "extract_dir": "pcsx2-v1.7.0-dev-1040-gb6246a7ba-windows-x86",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
+        "   }",
+        "}"
+    ],
     "bin": "pcsx2.exe",
     "persist": [
         "bios",
@@ -33,7 +43,7 @@
     },
     "checkver": {
         "url": "https://buildbot.orphis.net/pcsx2/index.php",
-        "regex": "(?<basever>[\\d]+\\.[\\d]+\\.[\\d])-dev-(?<build>[\\d]+)-(?<commit>g[a-f\\d]{9})",
+        "regex": "(?<basever>[\\d\\.]+)-dev-(?<build>[\\d]+)-(?<commit>g[a-f\\d]{9})",
         "replace": "${basever}-${build}"
     },
     "autoupdate": {
@@ -42,7 +52,7 @@
     },
     "notes": [
         "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
-        "Place the BIOS file in PCSX2's bios directory, you can see the path it is looking in on first setup.",
+        "Place the BIOS file in $persist_dir\\bios",
         "Learn more at https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios"
     ]
 }

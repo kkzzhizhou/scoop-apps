@@ -1,0 +1,49 @@
+{
+    "version": "6.23",
+    "description": "Icecream Screen Recorder",
+    "homepage": "https://icecreamapps.com/Screen-Recorder/",
+    "license": "Proprietary",
+    "url": "http://download.icecreamapps.com/screen_recorder_setup.exe",
+    "hash": "33bbc37454de367c633c8680e97cd5cc87d48e0d485b973929c26f4599fbda48",
+    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Get-ChildItem $dir '*,2.*' -Recurse | Rename-Item -NewName { $_.FullName -replace ',2\\.', '.' }"
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Get-ChildItem $dir '*,1.*' -Recurse | Rename-Item -NewName { $_.FullName -replace ',1\\.', '.' }"
+            }
+        }
+    },
+    "post_install": "Get-ChildItem \"$dir\\*,[12].*\" -Recurse | Remove-Item -Force -Recurse",
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $localIcecream = Join-Path $env:LOCALAPPDATA 'Icecream'",
+            "    $appdataIcecream = Join-Path $env:APPDATA 'Icecream'",
+            "    $toDelete = @((Join-Path $env:USERPROFILE '.Icecream Screen Recorder'), (Join-Path $localIcecream 'Icecream Screen Recorder'))",
+            "    $toDelete += Join-Path $appdataIcecream 'Icecream Screen Recorder'",
+            "    $appdataIcecream, $localIcecream | ForEach-Object {",
+            "        if ((Get-ChildItem $_ -ErrorAction SilentlyContinue).Count -eq 0) { $toDelete += $_ }",
+            "    }",
+            "    Remove-Item $toDelete -ErrorAction SilentlyContinue -Recurse",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "recorder.exe",
+            "Icecream Screen Recorder"
+        ]
+    ],
+    "checkver": {
+        "url": "https://icecreamapps.com/Screen-Recorder/changelog.html",
+        "regex": ">([\\d.]+)<"
+    },
+    "autoupdate": {
+        "url": "http://download.icecreamapps.com/screen_recorder_setup.exe"
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "homepage": "https://www.voidtools.com",
+    "description": "Locate files and folders by name instantly.",
+    "license": "MIT",
+    "version": "1.4.1.1005",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1005.x64.zip",
+            "hash": "61b31d6d7837a10dc441b5c7616c053e019f198f9d0a67acaa19142176c5ca56"
+        },
+        "32bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1005.x86.zip",
+            "hash": "5b66fd451d511315abc333b539a506a3b92925767b5008cb000d929b7cd7f1b9"
+        }
+    },
+    "installer": {
+        "script": "& \"$dir\\Everything.exe\" -install-service"
+    },
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { & \"$dir\\Everything.exe\" -install-config null }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
+    ],
+    "uninstaller": {
+        "script": [
+            "& \"$dir\\Everything.exe\" -uninstall-service",
+            "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server'| Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+        ]
+    },
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "persist": [
+        "Everything.ini",
+        "Bookmarks.csv",
+        "Filters.csv",
+        "Run History.csv",
+        "Search History.csv",
+        "debug.log",
+        "Errorlog.txt",
+        "Logs",
+        "HTTP Server"
+    ],
+    "checkver": "Download Everything ([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x86.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Everything-$version.sha256"
+        }
+    }
+}
