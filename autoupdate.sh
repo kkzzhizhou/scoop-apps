@@ -32,6 +32,7 @@ do
 done
 
 # merge bucket
+rm -f bucket/*.json
 rm -f cache/file_ids && touch cache/file_ids
 for bucket in ${buckets[@]}
 do
@@ -50,7 +51,7 @@ do
         else
             # rename file
             owner=$(echo $bucket | awk -F'/' '{print $1}')
-            new_name=$(echo $file_name | sed "s/.json/$owner.json/")
+            new_name=$(echo $file_name | sed "s/.json/_$owner.json/")
             cp -f $file ./bucket/$new_name
         fi
     done
