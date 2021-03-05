@@ -37,12 +37,13 @@ rm -f cache/file_ids && touch cache/file_ids
 for bucket in ${buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
+    echo $bucket_dir
     files=$(find cache/$bucket_dir -type f -name *.json -not -path "cache/$bucket_dir/.vscode/*")
     for file in ${files[@]}
     do
         file_name=$(echo $file | awk -F'/' '{print $NF}')
         file_id=$(echo $file_name | tr 'A-Z' 'a-z')
-        check_file_id=$(cat cache/file_ids | grep $file_id | wc -l)
+        check_file_id=$(cat cache/file_ids | grep -w $file_id | wc -l)
         if [ "$check_file_id" -eq 0 ]
         then
             # record file_id
