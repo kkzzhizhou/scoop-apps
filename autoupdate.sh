@@ -43,7 +43,7 @@ do
     do
         file_name=$(echo $file | awk -F'/' '{print $NF}')
         file_id=$(echo $file_name | tr 'A-Z' 'a-z')
-        check_file_id=$(cat cache/file_ids | grep -w $file_id | wc -l)
+        check_file_id=$(cat cache/file_ids | grep -E "^$file_id$" | wc -l)
         if [ "$check_file_id" -eq 0 ]
         then
             # record file_id
