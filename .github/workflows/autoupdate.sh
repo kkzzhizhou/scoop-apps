@@ -10,8 +10,9 @@
 # setting working dir
 script_dir=$(cd $(dirname $0) && pwd)
 cd $script_dir
+cd ../../
 
-buckets=$(cat bucket.config)
+buckets=$(cat $script_dir/bucket.config)
 
 # check env
 echo "check cache dir"
@@ -69,4 +70,4 @@ done
 
 
 # fix nothing commit
-echo "最近更新时间：`date`" > latest
+echo "最近更新时间：`date`" > .github/workflows/latest.update

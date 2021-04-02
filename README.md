@@ -5,6 +5,16 @@
 - 每小时自动更新
 - 未对仓库软件来源进行安全检验，请自行甄别恶意软件，或者使用杀毒软件
 
+# 仓库重置说明
+
+因之前版本每小时提交commit,累计有8000+个commit,绝大部分已经属于无用的信息，因此重置本仓库为最新一次的提交
+恢复使用本仓库的方式
+
+```
+scoop bucket rm apps
+scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
+```
+
 # 合并仓库列表
 
 - kkzzhizhou/scoop-zapps
