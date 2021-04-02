@@ -1,0 +1,60 @@
+{
+    "homepage": "https://www.oracle.com/technetwork/java/javase/overview/index.html",
+    "description": "Oracle JDK 8",
+    "license": "https://java.com/otnlicense",
+    "version": "8u251",
+    "architecture": {
+        "64bit": {
+            "url": "http://download.macromedia.com/pub/coldfusion/java/java8/JDK8u251/jdk-8u251-windows-x64.exe#/dl.7z",
+            "hash": "125157bba0325558d04c836c30ece43bfa3d87b704d350d3f4221df668535f71"
+        },
+        "32bit": {
+            "url": "http://download.macromedia.com/pub/coldfusion/java/java8/JDK8u251/jdk-8u251-windows-i586.exe#/dl.7z",
+            "hash": "879785542adbe3e9931b44e3774fb7af936cf77c1083b2470f502610344f6a83"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "# Java Source (src.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB9\\110\" \"$dir\"",
+            "# JDK (tools.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB10\\111\" \"$dir\\tmp\"",
+            "Expand-7zipArchive \"$dir\\tmp\\tools.zip\" \"$dir\"",
+            "# Copyright (COPYRIGHT)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB11\\112\" \"$dir\"",
+            "# Convert .pack to .jar, and remove .pack",
+            "pushd \"$dir\"",
+            "ls \"$dir\" -recurse | ? name -match '^[^_].*?\\.(?i)pack$' | % {",
+            "    $name = $_.fullname -replace '\\.(?i)pack$', ''",
+            "    $pack = \"$name.pack\"",
+            "    $jar = \"$name.jar\"",
+            "    & \"bin\\unpack200.exe\" \"-r\" \"$pack\" \"$jar\"",
+            "}",
+            "rm -r tmp | out-null",
+            "popd"
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://www.adobe.com/support/coldfusion/downloads.html",
+        "re": "JAVA SE (8u\\d+[^<]*)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://download.macromedia.com/pub/coldfusion/java/java8/JDK$version/jdk-$version-windows-x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "http://download.macromedia.com/pub/coldfusion/java/java8/JDK$version/jdk-$version-windows-i586.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "http://download.macromedia.com/pub/coldfusion/java/java8/JDK$version/jdk$version-checksum.txt",
+            "find": "$basename.*([a-fA-F0-9]{64})"
+        }
+    }
+}

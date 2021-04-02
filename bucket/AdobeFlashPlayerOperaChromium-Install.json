@@ -1,0 +1,43 @@
+{
+    "version": "32.0.0.465",
+    "description": "Adobe Flash Player PPAPI. Flash Plugin for Opera and Chromium based browsers",
+    "homepage": "https://get.adobe.com/flashplayer/",
+    "notes": "This manifest only installs and updates Adobe Flash Player for Opera/Chromium",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.adobe.com/content/dam/acom/en/legal/licenses-terms/pdf/Flash_Player_32_0.pdf"
+    },
+    "changelog": "https://helpx.adobe.com/flash-player/flash-player-releasenotes.html",
+    "url": "https://download.macromedia.com/pub/flashplayer/pdc/32.0.0.465/install_flash_player_32_ppapi.msi#/setup.msi_",
+    "hash": "ae97be0f15b1ea0ffce8348a74152a264a3d81b7f2004377730dbf3e733cf402",
+    "pre_download":[
+        "Assert-Administrator"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Adobe Flash Player 32 PPAPI*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "SchTasks /Change /Disable /TN \"Adobe Flash Player Updater\" | Out-Null",
+        "Stop-Service \"AdobeFlashPlayerUpdateSvc\" -force | Out-Null",
+        "Set-Service \"AdobeFlashPlayerUpdateSvc\" -StartupType Disabled | Out-Null"
+    ],
+    "checkver": {
+        "url": "https://get.adobe.com/flashplayer/about/",
+        "regex": "<td>Opera, Chromium-based browsers - PPAPI</td>\\n\\s+\\n\\s+<td>([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.macromedia.com/pub/flashplayer/pdc/$version/install_flash_player_32_ppapi.msi#/setup.msi_"
+    }
+}

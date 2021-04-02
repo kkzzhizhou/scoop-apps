@@ -1,0 +1,59 @@
+{
+    "version": "87.0",
+    "description": "Popular open source web browser.",
+    "homepage": "https://www.mozilla.org/firefox/",
+    "license": "MPL-2.0",
+    "changelog": "https://www.mozilla.org/en-US/firefox/84.0.2/releasenotes/",
+    "architecture": {
+        "64bit": {
+            "url": "https://archive.mozilla.org/pub/firefox/releases/87.0/win64/en-US/Firefox%20Setup%2087.0.exe#/setup.exe",
+            "hash": "sha512:5db58537945306669ea769ab030693ba801a39f7e89764ffb6f6b773d529e4c8f864dcd53c882e0eac3a6aa9baf57460ac4b1ae6750690ce4812e8cf3d0881aa"
+        },
+        "32bit": {
+            "url": "https://archive.mozilla.org/pub/firefox/releases/87.0/win32/en-US/Firefox%20Setup%2087.0.exe#/setup.exe",
+            "hash": "sha512:1994a3aba1ab5f78eed3e30015f0ab4830880793a730adfcd410216ec1f9ab11b129587aa02b242a1b10e1e5906d75f34c8d4fcdb7a75df3b3b3ac600fc9f7ab"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"Mozilla Firefox*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" -ms | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Firefox.lnk\") {Remove-Item \"$CommonDesktopPath\\Firefox.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.mozilla.org/en-US/firefox/notes/",
+        "regex": "<div class=\"c-release-version\">([\\d.]+)</div>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$version/win64/en-US/Firefox%20Setup%20$version.exe#/setup.exe",
+                "hash": {
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win64/en-US/$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$version/win32/en-US/Firefox%20Setup%20$version.exe#/setup.exe",
+                "hash": {
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win32/en-US/$basename"
+                }
+            }
+        },
+        "changelog": "https://www.mozilla.org/en-US/firefox/$version/releasenotes/"
+    }
+}

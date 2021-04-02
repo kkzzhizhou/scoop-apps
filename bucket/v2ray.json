@@ -1,0 +1,50 @@
+{
+    "version": "4.36.2",
+    "description": "A platform for building proxies to bypass network restrictions.",
+    "homepage": "https://www.v2fly.org/en_US/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.fastgit.org/v2fly/v2ray-core/releases/download/v4.36.2/v2ray-windows-64.zip",
+            "hash": "sha512:aa8bc93dbc277240053f4cb56b1733a593832db864f2bf50ed91d069b57617ecaa661b4c3604ef2560d8f6c6dfb2b957eebba92901a3b13e495d1fd2bb3a0107"
+        },
+        "32bit": {
+            "url": "https://download.fastgit.org/v2fly/v2ray-core/releases/download/v4.36.2/v2ray-windows-32.zip",
+            "hash": "sha512:74b7136a193df0dc8b3b9e3858d4f52afbbabfe373725b25fc59650a65fd325086b302353f7faf496c7d3cec435913c3c329a5203da84b37386d07923b89e0ed"
+        }
+    },
+    "installer": {
+        "script": [
+            "Write-Host 'Verifying V2Ray binary...' -f Yellow",
+            "$sig = \"$dir\\Release\"",
+            "Invoke-WebRequest \"https://download.fastgit.org/v2fly/v2ray-core/releases/download/v$version/Release\" -OutFile $sig",
+            "if (!(Invoke-Expression \"$dir\\v2ctl.exe verify --sig=$sig $dir\\v2ray.exe\" | Select-String 'OK')) {",
+            "    Write-Host 'V2Ray binary is corrupted!' -f Red",
+            "    exit 1",
+            "}"
+        ]
+    },
+    "bin": [
+        "v2ctl.exe",
+        "v2ray.exe",
+        "wv2ray.exe"
+    ],
+    "persist": "config.json",
+    "checkver": {
+        "github": "https://github.com/v2fly/v2ray-core"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.fastgit.org/v2fly/v2ray-core/releases/download/v$version/v2ray-windows-64.zip"
+            },
+            "32bit": {
+                "url": "https://download.fastgit.org/v2fly/v2ray-core/releases/download/v$version/v2ray-windows-32.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.dgst",
+            "regex": "SHA512= $sha512"
+        }
+    }
+}

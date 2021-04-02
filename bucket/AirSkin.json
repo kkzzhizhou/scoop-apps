@@ -1,0 +1,64 @@
+{
+    "version": "2019-0917",
+    "description": "Air For Steam. An elegant and customizable skin for Steam",
+    "homepage": "http://airforsteam.com",
+    "license": {
+        "identifier": "CC-BY-NC-4.0",
+        "url": "https://github.com/airforsteam/Air-for-Steam/blob/master/LICENSE.txt"
+    },
+    "changelog": "https://github.com/airforsteam/Air-for-Steam/releases/tag/2019-0917",
+    "notes": [
+        "If you installed steam via scoop, skin was automatically copied.",
+        "Otherwise copy '$dir' folder into '...\\Steam\\skins' folder.",
+        "There are few themes, which could be set. (see: https://github.com/Outsetini/Air-for-Steam/wiki#colors)"
+    ],
+    "url": "https://github.com/airforsteam/Air-for-Steam/archive/2019-0917.zip",
+    "hash": "9c497e33ff4ac598f830da0d2ffee6e649e26ecdec768b02502baf0d0fd22194",
+    "extract_dir": "Air-for-Steam-2019-0917",
+    "pre_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Remove-AppDirItem '+Extras\\Fonts', '+Extras\\Square Avatars', 'README.md', 'LICENSE.txt', 'FAQ.url', '.gitattributes'",
+        "",
+        "",
+        "",
+        "    # TODO: Optimize using new helpers",
+        "    # Copy rather than moving (could be changed afterwards)",
+        "Copy-Item \"$extras\\Themes\\Dark\\*\" $dir -Force -Recurse",
+        "    # REPLACING HELL in config.ini",
+        "$FILE = \"$dir\\config.ini\"",
+        "$content = Get-Content $FILE",
+        "    # Replacing Default Theme",
+        "$find = 'include \"resource/colors/steamblue.styles\"'",
+        "$content = $content -replace $find, \"//$find\"",
+        "    # Enabling Spotify Theme",
+        "$replace = 'include \"resource/colors/user/spotify.styles\"'",
+        "$find = \"//$replace\"",
+        "$content = $content -replace $find, $replace",
+        "    # Enabling Dark Theme",
+        "    # Remove steam blue",
+        "$find = 'include \"resource/themes/_blue.styles\"'",
+        "$replace = \"//$find\"",
+        "$content = $content -replace $find, $replace",
+        "    # Apply dark",
+        "$replace = 'include \"resource/themes/_dark.styles\"'",
+        "$find = \"//$replace\"",
+        "$content = $content -replace $find, $replace",
+        "    # Final file overwrite",
+        "Set-Content $FILE $content -Encoding Ascii",
+        "    # COPYING. If steam is installed via scoop, copy automatically",
+        "if (Join-Path $env:SCOOP 'apps\\Steam' | Test-Path) {",
+        "    Write-Host 'Detected installed Steam via SCOOP. Copying Files.' -f Yellow",
+        "    Copy-Item $dir \"$(Resolve-Path (scoop prefix Steam))\\skins\" -Force -Recurse",
+        "    Write-Host '✔ Copying DONE. Set skin in Steam interface settings.' -f Green",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/airforsteam/air-for-steam/releases/latest",
+        "jsonpath": "$.tag_name"
+    },
+    "autoupdate": {
+        "changelog": "https://github.com/airforsteam/Air-for-Steam/releases/tag/$version",
+        "url": "https://github.com/airforsteam/Air-for-Steam/archive/$version.zip",
+        "extract_dir": "Air-for-Steam-$version"
+    }
+}

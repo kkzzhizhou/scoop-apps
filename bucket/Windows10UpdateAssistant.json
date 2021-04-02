@@ -1,0 +1,31 @@
+{
+    "version": "October2020",
+    "description": "Windows 10 Update Assistant. Force update to latest version of Windows 10.",
+    "homepage": "https://www.microsoft.com/en-GB/software-download/windows10",
+    "license": "Freeware",
+    "url": "https://download.microsoft.com/download/7/a/a/7aa0472b-49a0-46d1-b651-e8a2c53f1fe4/Windows10Upgrade9252.exe#/UpdateAssistant.exe",
+    "hash": "97897e33c29b7823b2550959770a061ab9a6123d28874b823e8d022aeeac68ef",
+    "uninstaller": {
+        "script": [
+            "if ((is_admin)) {",
+            "    Remove-Item 'C:\\Windows10Upgrade' -ErrorAction SilentlyContinue -Force -Recurse",
+            "    $name = 'Windows 10 Update Assistant*'",
+            "    (shortcut_folder $true | Split-Path), \"$env:USERPROFILE\\Desktop\" | ForEach-Object {",
+            "        Join-Path $_ $name | Remove-Item -ErrorAction SilentlyContinue -Force",
+            "    }",
+            "} else {",
+            "    warn 'To fully uninstall Update Assistant you need to run ''Remove-Item \"C:\\Windows10Upgrade\" -Force -Recurse'' within elevated prompt.'",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "UpdateAssistant.exe",
+            "Windows 10 Update Assistant"
+        ]
+    ],
+    "checkver": {
+        "regex": "<h2>Windows 10\\s+((?<month>.+)\\s+(?<year>\\d+)) Update",
+        "replace": "${month}${year}"
+    }
+}

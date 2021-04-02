@@ -1,0 +1,45 @@
+{
+    "##": "This package has to be updated manually since autoupdate does not support updating multiple urls.",
+    "version": "1.001",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/adobe-fonts/source-han-serif/",
+    "url": [
+        "https://github.com/adobe-fonts/source-han-serif/raw/release/OTF/SourceHanSerifJ_EL-M.zip",
+        "https://github.com/adobe-fonts/source-han-serif/raw/release/OTF/SourceHanSerifJ_SB-H.zip"
+    ],
+    "hash": [
+        "9c8911fa58b0f8a64b3ec80addca43c0f06733f4de1f6911ed388ae6e31025c6",
+        "dce24554e7a687d40ea17394581760d7d74660df5ebfa1fb04cbf202d2d81662"
+    ],
+    "checkver": {
+        "url": "https://github.com/adobe-fonts/source-han-serif/releases",
+        "regex": "source-han-serif/tree/([\\d.]+)R"
+    },
+    "autoupdate": {
+        "url": [
+            "https://github.com/adobe-fonts/source-han-serif/raw/release/OTF/SourceHanSerifJ_EL-M.zip",
+            "https://github.com/adobe-fonts/source-han-serif/raw/release/OTF/SourceHanSerifJ_SB-H.zip"
+        ]
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Move-Item \"$dir\\SourceHanSerifJ_EL-M\\*.otf\" \"$dir\"",
+            "Move-Item \"$dir\\SourceHanSerifJ_SB-H\\*.otf\" \"$dir\"",
+            "Get-ChildItem \"$dir\" -Filter '*.otf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem \"$dir\" -Filter '*.otf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font family 'Source Han Serif J' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "version": "8.3.0.2240",
+    "description": "Amazon Music. Your Music: Simplae, Fast, Advanced.",
+    "homepage": "https://www.amazon.com/b?node=16962657011",
+    "license": "",
+    "url": "https://images-na.ssl-images-amazon.com/images/G/01/digital/music/morpho/installers/20210210/2003125d77/AmazonMusicInstaller.exe",
+    "hash": "EDFA9FA4650BFC335A64E9D7844E8F52AD1677FD21A00AD7B2519611839FBDEC",
+    "installer": {
+        "script": [
+            "$programname = \"Amazon Music*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Get-Process 'Amazon Music' -ErrorAction SilentlyContinue | Stop-Process -Force",
+            "   $command = \"do {Sleep 1} until (Get-Process 'Amazon Music' -ErrorAction SilentlyContinue); Get-Process 'Amazon Music Helper' | Stop-Process -Force; Get-Process 'Amazon Music' | Stop-Process -Force\"",
+            "   Start-Process -FilePath \"powershell.exe\" -ArgumentList $command -WindowStyle Hidden",
+            "   &\"$dir\\AmazonMusicInstaller.exe\" --mode unattended | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\AmazonMusicInstaller.exe\" -Force",
+            "$programname = \"Amazon Music\"",
+            "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+            "if (Test-Path \"$DesktopPath\\$programname.lnk\") {Remove-Item \"$DesktopPath\\$programname.lnk\" -Force}",
+            "taskkill /F /IM \"Amazon Music\" /FI 'status eq running'",
+            "taskkill /F /IM \"Amazon Music Helper\" /FI 'status eq running'"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.kcsoftwares.com/sumo/view.php?uid=312543986&ProductName=Amazon%20Music&Company=Amazon&prot=2",
+        "regex": "<small>v([\\d.]+)"
+    }
+}

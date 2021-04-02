@@ -1,0 +1,70 @@
+{
+    "version": "1.55.0",
+    "description": "Portable code for vim education",
+    "homepage": "https://code.visualstudio.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://code.visualstudio.com/License"
+    },
+    "changelog": "https://code.visualstudio.com/updates/v1_55",
+    "depends": "vim",
+    "architecture": {
+        "64bit": {
+            "url": "https://update.code.visualstudio.com/1.55.0/win32-x64-archive/stable#/dl.zip",
+            "hash": "b48b02458796c2547da309667e922d62229db899a391745f82dec471557b1641"
+        },
+        "32bit": {
+            "url": "https://update.code.visualstudio.com/1.55.0/win32-archive/stable#/dl.zip",
+            "hash": "710201909d4f6885498ed074ea7574c9861845958ce39c7f3f9ec2d08950b013"
+        }
+    },
+    "pre_install": [
+        "if (-not (Test-Path \"$persist_dir\\data\")) { ",
+        "    @('tmp', 'user-data', 'extensions') | ForEach-Object { Confirm-DirectoryExistence \"$dir\\data\\$_\" | Out-Null }",
+        "}"
+    ],
+    "post_install": [
+        "function installExt([String] $ext) { & \"$dir\\bin\\code.cmd\" --install-extension \"$ext\" }",
+        "",
+        "installExt 'vscodevim.vim'",
+        "installExt 'coenraads.bracket-pair-colorizer-2'",
+        "installExt 'usernamehw.errorlens'",
+        "installExt 'equinusocio.vsc-material-theme'"
+    ],
+    "bin": [
+        [
+            "bin\\code.cmd",
+            "vimcode"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "code.exe",
+            "VIM Code"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://code.visualstudio.com/sha?build=stable",
+        "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].name"
+    },
+    "autoupdate": {
+        "changelog": "https://code.visualstudio.com/updates/v$majorVersion_$minorVersion",
+        "architecture": {
+            "64bit": {
+                "url": "https://update.code.visualstudio.com/$version/win32-x64-archive/stable#/dl.zip",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=stable",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].sha256hash"
+                }
+            },
+            "32bit": {
+                "url": "https://update.code.visualstudio.com/$version/win32-archive/stable#/dl.zip",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=stable",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-archive')].sha256hash"
+                }
+            }
+        }
+    }
+}

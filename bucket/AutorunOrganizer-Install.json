@@ -1,0 +1,51 @@
+{
+    "version": "5.10",
+    "description": "Autorun Organizer. Free Startup Manager for Windows",
+    "homepage": "https://www.chemtable.com/autorun-organizer.htm",
+    "license": "Freeware",
+    "changelog": "https://www.chemtable.com/version-history.htm?prod_id=Autorun%20Organizer",
+    "url": "https://www.chemtable.com/files/ao3/autorun-organizer-setup.exe#/setup.exe",
+    "hash": "29d3c46e83edd98651ebd7eb557bbad95eb35d38c21aaea7ee2069309b09b969",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"AutorunOrganizer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Autorun Organizer version*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force",
+            "while ((Get-Process -Name 'AutorunOrganizer' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "   Start-Sleep -Milliseconds 50",
+            "}",
+            "taskkill /F /IM 'AutorunOrganizer' /FI 'status eq running'"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\Autorun Organizer.lnk\") {Remove-Item \"$DesktopPath\\Autorun Organizer.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.chemtable.com/autorun-organizer.htm",
+        "regex": "<title>Autorun Organizer ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.chemtable.com/files/ao3/autorun-organizer-setup.exe#/setup.exe"
+    }
+}

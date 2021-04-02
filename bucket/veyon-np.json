@@ -1,0 +1,55 @@
+{
+    "version": "4.5.4.0",
+    "description": "Computer monitoring and classroom management software.",
+    "homepage": "https://veyon.io/",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.5.4/veyon-4.5.4.0-win64-setup.exe#/installer.exe",
+            "hash": "b9fab997b297ede0a62c07e21f0279f555e4793a1f09f0f837cc444b5a3018d5"
+        },
+        "32bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.5.4/veyon-4.5.4.0-win32-setup.exe#/installer.exe",
+            "hash": "a846dfa318cd1a812f4db6a557e62844e64c9dfd1d90182b8852259c554babe1"
+        }
+    },
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+            "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Veyon\"",
+            "Remove-Item \"$dir\\installer.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": "Start-Process \"$dir\\uninstall.exe\" -ArgumentList @('/S') -Verb RunAs -Wait | Out-Null"
+    },
+    "bin": [
+        "veyon-cli.exe",
+        "veyon-configurator.exe",
+        "veyon-master.exe"
+    ],
+    "shortcuts": [
+        [
+            "veyon-configurator.exe",
+            "Veyon Configurator"
+        ],
+        [
+            "veyon-master.exe",
+            "Veyon Master"
+        ]
+    ],
+    "checkver": {
+        "url": "https://veyon.io/download/",
+        "regex": "veyon-([\\d.]+)-win64-setup.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win64-setup.exe#/installer.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win32-setup.exe#/installer.exe"
+            }
+        }
+    }
+}

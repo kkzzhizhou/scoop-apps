@@ -1,0 +1,42 @@
+{
+    "version": "2.6.48.21069",
+    "description": "Power Automate Desktop. Easily automate anything from your desktop",
+    "homepage": "https://flow.microsoft.com/en-us/desktop/",
+    "license": "",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=2102613&clcid=0x409#/setup.exe",
+    "hash": "bbfd5f47c6ba9cb17a96b9a4f025ae5437185297c6361272fcade82d38b380c9",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"PAD.Console.Host.exe\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Power Automate Desktop*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" -Install -ACCEPTEULA -Silent -DisablePADShortcut | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://power-automate-desktop.updatestar.com/en",
+        "regex": "Power Automate Desktop ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://go.microsoft.com/fwlink/?LinkId=2102613&clcid=0x409#/setup.exe"
+    }
+}

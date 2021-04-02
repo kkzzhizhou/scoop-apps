@@ -1,0 +1,46 @@
+{
+    "version": "1.13.0",
+    "description": "Free cross platform Desktop Player for YouTube Music",
+    "homepage": "https://ytmdesktop.app/",
+    "license": "",
+    "url": "https://github.com/ytmdesktop/ytmdesktop/releases/download/v1.13.0/YouTube-Music-Desktop-App-Setup-1.13.0.exe#/setup.exe",
+    "hash": "1e76442d40b273e42b5068972ccf0129c81b75a64bb26a0ef086ca7f6850285d",
+    "pre_install": [
+        "$processname = \"YouTube Music Desktop App\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"YouTube Music Desktop App*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   Start-Sleep -Seconds 10",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"YouTube Music Desktop App\"",
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\$programname.lnk\") {Remove-Item \"$DesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "github": "https://github.com/ytmdesktop/ytmdesktop"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ytmdesktop/ytmdesktop/releases/download/v$version/YouTube-Music-Desktop-App-Setup-$version.exe#/setup.exe"
+    }
+}
