@@ -70,4 +70,4 @@ done
 
 
 # fix nothing commit
-echo "最近更新时间：`date`" > .github/workflows/latest.update
+echo "最近更新时间：`date`" > latest.update
