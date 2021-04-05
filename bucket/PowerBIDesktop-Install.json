@@ -1,0 +1,47 @@
+{
+    "version": "2.91.884.0",
+    "description": "Power BI Desktop. Create rich, interactive reports with visual analytics at your fingertips",
+    "homepage": "https://powerbi.microsoft.com/en-us/desktop/",
+    "license": "",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup_x64.exe#/setup.exe",
+            "hash": "82cdd1ecb0dcfea39a7857b03e553ebe7cab0b8bf5bf51e3aae271434593efcd"
+        },
+        "32bit": {
+            "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup.exe#/setup.exe",
+            "hash": "d8aa7e687fe5281be6d582af0dc70a8ae41f2db62c13d9243b8787d5345132fb"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"PowerBI.exe\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft PowerBI Desktop*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" -quiet -norestart ACCEPT_EULA=1 | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://community.chocolatey.org/packages/PowerBI",
+        "regex": " Power BI Desktop ([\\d.]+)"
+    }
+}
