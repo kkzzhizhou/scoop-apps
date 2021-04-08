@@ -4,40 +4,42 @@
     "homepage": "https://github.com/JetBrains/JetBrainsMono",
     "license": "Apache-2.0",
     "notes": "You may need to restart the system to use recently installed fonts.",
-    "depends": "sudo",
     "url": "https://github.com/JetBrains/JetBrainsMono/releases/download/v2.225/JetBrainsMono-2.225.zip",
     "hash": "03b2e2c0e3285703a204b6efbe2d277bf568e0bb53a395e9f4e74e9b77c4aeb2",
-    "extract_dir": "JetBrains Mono 2.225/ttf/Variable",
+    "extract_dir": "fonts/variable",
     "installer": {
         "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
             "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
             "function LinkFile([String] $file, [String] $source = $file) {",
             "    Write-Host \"Creating hardlink for $file\"",
             "    New-Item -Force -ItemType HardLink -Path $path -Name $file -Target \"$dir\\$source\" | Out-Null",
             "}",
             "Get-ChildItem $dir -Filter \"*.ttf\" | ForEach-Object {",
-            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$($_.Name)\" -Force | Out-Null",
-            "    LinkFile $_.Name",
-            "}"
+            "    $name = $_.Name.Replace('[wght]', '') -replace '^(JetBrainsMono)\\b', '$1Variable'",
+            "    Move-Item \"$dir\\$($_.Name -replace '([\\[\\]])', '`$1')\" $dir\\$name",
+            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$name\" -Force | Out-Null",
+            "    LinkFile $name",
+            "}",
+            "Restart-Service FontCache"
         ]
     },
     "uninstaller": {
         "script": [
-            "if (!(is_admin)) {",
-            "    error \"Administrator rights are required to uninstall $app.\"",
-            "    exit 1",
-            "}",
-            "Stop-Service FontCache",
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
             "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
             "Get-ChildItem $dir -Filter \"*.ttf\" | ForEach-Object {",
             "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force | Out-Null",
-            "    sudo Remove-Item \"$path\\$($_.Name)\"",
+            "}",
+            "Restart-Service FontCache",
+            "Get-ChildItem $dir -Filter \"*.ttf\" | ForEach-Object {",
+            "    Remove-Item \"$path\\$($_.Name)\"",
             "}"
         ]
     },
     "checkver": "github",
     "autoupdate": {
         "url": "https://github.com/JetBrains/JetBrainsMono/releases/download/v$version/JetBrainsMono-$version.zip",
-        "extract_dir": "JetBrains Mono $version/ttf/Variable"
+        "extract_dir": "fonts/variable"
     }
 }
