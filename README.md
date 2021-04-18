@@ -58,3 +58,4 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheLastZombie/scoop-bucket
 - chadrien/scoop
 - icedream/scoop-bucket
+- bobo2334/scoop-bucket
