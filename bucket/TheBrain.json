@@ -1,4 +1,4 @@
-﻿{
+{
     "homepage": "https://www.thebrain.com/",
     "version": "11.0.137.0",
     "license": "freeware",
@@ -8,8 +8,9 @@
         "script": [
             "Expand-DarkArchive \"$dir\\$fname\" \"$dir\" -Removal",
             "Get-ChildItem $dir -Exclude 'AttachedContainer' | Remove-Item -Force -Recurse",
-            "Expand-MsiArchive \"$dir\\AttachedContainer\\TheBrainSetup11.0.137.0.msi\" -DestinationPath $dir -Removal",
-            "Move-Item \"$dir\\PFiles\\TheBrain 11\\*\" \"$dir\"",
+            "Get-ChildItem \"$dir\\AttachedContainer\\TheBrainSetup*.msi\" | Expand-MsiArchive -DestinationPath $dir -Removal",
+            "$folder = (Get-ChildItem \"$dir\\PFiles\\TheBrain *\" | Select-Object -First 1).FullName",
+            "Move-Item $folder\\* \"$dir\"",
             "Remove-Item \"$dir\\AttachedContainer\",\"$dir\\System\",\"$dir\\PFiles\" -Recurse -Force"
         ]
     },
@@ -21,15 +22,6 @@
         ]
     ],
     "autoupdate": {
-        "url": "http://updater.thebrain.com/files/TheBrain%20$version%20Installer.exe",
-        "installer": {
-            "script": [
-                "Expand-DarkArchive \"$dir\\$fname\" \"$dir\" -Removal",
-                "Get-ChildItem $dir -Exclude 'AttachedContainer' | Remove-Item -Force -Recurse",
-                "Expand-MsiArchive \"$dir\\AttachedContainer\\TheBrainSetup$version.msi\" -DestinationPath $dir -Removal",
-                "Move-Item \"$dir\\PFiles\\TheBrain $majorVersion\\*\" \"$dir\"",
-                "Remove-Item \"$dir\\AttachedContainer\",\"$dir\\System\",\"$dir\\PFiles\" -Recurse -Force"
-            ]
-        }
+        "url": "http://updater.thebrain.com/files/TheBrain%20$version%20Installer.exe"
     }
 }
