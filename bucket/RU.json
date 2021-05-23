@@ -1,6 +1,6 @@
 {
     "version": "1.2",
-    "description": "RU. Reports the registry space usage for the registry key you specify.",
+    "description": "RU. Reports the registry space usage for the specific registry key.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/ru",
     "license": {
         "identifier": "Freeware",
@@ -8,20 +8,18 @@
     },
     "url": "https://download.sysinternals.com/files/RU.zip",
     "hash": "14ff3824edd2a4b7ca827a8f52142b0f08b7136e061917734dd7465e56dac666",
-    "installer": {
-        "script": [
-            "$sysint = 'HKCU:\\Software\\Sysinternals'",
-            "$fin = \"$sysint\\Regsize\"",
-            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
-            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-        ]
-    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\Regsize\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\Regsize\" -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Regsize\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
             "}"
         ]
     },

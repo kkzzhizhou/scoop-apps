@@ -8,20 +8,18 @@
     },
     "url": "https://download.sysinternals.com/files/NotMyFault.zip",
     "hash": "f949c922cc790776512c2712c73f42961e5b7cf2326f6f435d5b3dd03b99179d",
-    "installer": {
-        "script": [
-            "$sysint = 'HKCU:\\Software\\Sysinternals'",
-            "$fin = \"$sysint\\NotMyFault\"",
-            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
-            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-        ]
-    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\NotMyFault\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\NotMyFault\" -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\NotMyFault\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
             "}"
         ]
     },

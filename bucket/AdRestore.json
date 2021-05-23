@@ -8,20 +8,18 @@
     },
     "url": "https://download.sysinternals.com/files/ADRestore.zip",
     "hash": "9fd6461d6e5a3affed9d4415573c7c8f4eae0aab48b7410ed973a84d59e908c9",
-    "installer": {
-        "script": [
-            "$sysint = 'HKCU:\\Software\\Sysinternals'",
-            "$fin = \"$sysint\\A\"",
-            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
-            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-        ]
-    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\AdRestore\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\A\" -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\AdRestore\", \"$sysInt\\A\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
             "}"
         ]
     },

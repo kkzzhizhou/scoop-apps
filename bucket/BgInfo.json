@@ -8,22 +8,20 @@
     },
     "url": "https://download.sysinternals.com/files/BGInfo.zip",
     "hash": "7e15fdef35a0b39583f6f7f0373f99ed5a53b7464388753549634e8015f9a733",
-    "installer": {
-        "script": [
-            "$sysint = 'HKCU:\\Software\\Sysinternals'",
-            "$fin = \"$sysint\\BGInfo\"",
-            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
-            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-        ]
-    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\BGInfo\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $winInt = 'HKCU:\\Software\\Winternals'",
-            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\BGInfo\", \"$winInt\\BGInfo\" -ErrorAction SilentlyContinue -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
-            "    if ((Get-ChildItem $winInt).Count -eq 0) { Remove-Item $winInt -Force -Recurse }",
+            "    $winInt = 'HKCU:\\SOFTWARE\\Winternals'",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\BGInfo\", \"$winInt\\BGInfo\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt -ErrorAction 'SilentlyContinue').Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "    if ((Get-ChildItem $winInt -ErrorAction 'SilentlyContinue').Count -eq 0) { Remove-Item $winInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
             "}"
         ]
     },

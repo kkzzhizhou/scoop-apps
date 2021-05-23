@@ -1,6 +1,6 @@
 {
     "version": "1.0.0.0",
-    "description": "RegHide. Creates a Registry key that cannot be opened with Regedit.",
+    "description": "RegHide. Creates a registry key that cannot be opened with Regedit.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/reghide",
     "license": {
         "identifier": "Freeware",
@@ -8,20 +8,18 @@
     },
     "url": "https://download.sysinternals.com/files/RegHide.zip",
     "hash": "e5c8c70322295696c3c27a1dd6915e7704aa6d2dbcd2c05d4f5ad77381c73a8b",
-    "installer": {
-        "script": [
-            "$sysint = 'HKCU:\\Software\\Sysinternals'",
-            "$fin = \"$sysint\\Reghide\"",
-            "New-Item $sysint, $fin -ErrorAction SilentlyContinue -Force | Out-Null",
-            "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type DWord -Force | Out-Null"
-        ]
-    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\Reghide\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
     "uninstaller": {
         "script": [
             "if ($purge) {",
-            "    $sysInt = 'HKCU:\\Software\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\Reghide\" -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -Force -Recurse }",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Reghide\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
             "}"
         ]
     },
