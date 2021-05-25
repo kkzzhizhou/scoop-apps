@@ -33,7 +33,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Ash258/scoop-Ash258
 - TheCjw/scoop-retools
 - borger/scoop-galaxy-integrations
-- AStupidBear/scoop-bear
 - nickbudi/scoop-bucket
 - dodorz/scoop
 - Ash258/Scoop-Sysinternals
@@ -50,7 +49,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - ChungZH/peach
 - Velgus/Scoop-Portapps
-- tianzhijiexian/scoop-bucket
 - kidonng/sushi
 - Qv2ray/mochi
 - aoisummer/scoop-bucket
