@@ -22,6 +22,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - matthewjberger/scoop-nerd-fonts
 - Ash258/Scoop-JetBrains
 - MCOfficer/scoop-nirsoft
+- dodorz/scoop
 - TheRandomLabs/scoop-nonportable
 - Calinou/scoop-games
 - ScoopInstaller/Java
@@ -34,7 +35,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheCjw/scoop-retools
 - borger/scoop-galaxy-integrations
 - nickbudi/scoop-bucket
-- dodorz/scoop
 - Ash258/Scoop-Sysinternals
 - rasa/scoops
 - MCOfficer/scoop-bucket
