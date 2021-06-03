@@ -13,6 +13,7 @@ cd $script_dir
 cd ../../
 
 buckets=$(cat $script_dir/bucket.config)
+confuses=$(cat $script_dir/app.confuse)
 
 # check env
 echo "check cache dir"
@@ -56,6 +57,17 @@ do
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/")
             cp -f $file ./bucket/$new_name
         fi
+    done
+done
+
+# fix confuse manifest
+for confuse in ${confuses[@]}
+do
+    realapp=$(echo $confuse | awk -F'=' '{print $1}')
+    confuse_names=$(echo $confuse | awk -F'=' '{print $2}' | sed 's/,/ /g')
+    for confuse_name in ${confuse_names[@]}
+    do
+        cat ./bucket/$realapp.json > ./bucket/$confuse_name.json
     done
 done
 
