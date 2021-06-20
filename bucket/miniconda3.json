@@ -1,21 +1,16 @@
 {
     "version": "4.9.2",
-    "description": "A cross-platform, Python-agnostic binary package manager",
     "homepage": "https://conda.io/miniconda.html",
+    "description": "Miniconda is a free minimal installer for conda.",
     "license": "BSD-3-Clause",
-    "notes": [
-        "Currently conda envs activate and deactivate doesn't work on PowerShell,",
-        "for more information, see: https://github.com/conda/conda/issues/626,",
-        "or just execute: 'conda install -n root -c pscondaenvs pscondaenvs'"
-    ],
     "architecture": {
         "64bit": {
-            "url": "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Windows-x86_64.exe",
-            "hash": "4fa22bba0497babb5b6608cb8843545372a99f5331c8120099ae1d803f627c61"
+            "url": "https://repo.continuum.io/miniconda/Miniconda3-py39_4.9.2-Windows-x86_64.exe",
+            "hash": "md5:1ca0befe028325a766be4e3e0727b945"
         },
         "32bit": {
-            "url": "https://repo.anaconda.com/miniconda/Miniconda3-py38_4.9.2-Windows-x86.exe",
-            "hash": "9c2ef76bae97246c85c206733ca30fd1feb8a4b3f90a2a511fea681ce7ebc661"
+            "url": "https://repo.continuum.io/miniconda/Miniconda3-py39_4.9.2-Windows-x86.exe",
+            "hash": "md5:36cbe3b9a2933efa4ed71bb286368673"
         }
     },
     "installer": {
@@ -32,35 +27,36 @@
         "file": "Uninstall-Miniconda3.exe",
         "args": "/S"
     },
-    "bin": [
-        "python.exe",
-        "pythonw.exe",
-        [
-            "python.exe",
-            "python3"
-        ]
+    "bin": "scripts\\conda.exe",
+    "post_install": [
+        "# PREVENT CREATING SHORTCUTS",
+        "Invoke-ExternalCommand -Path \"$dir\\_conda.exe\" -ArgumentList \"constructor --prefix $dir --rm-menus\" | Out-Null",
+        "conda config --system --set auto_activate_base false"
     ],
-    "env_add_path": [
-        "scripts",
-        "Library\\bin"
-    ],
-    "persist": "envs",
     "checkver": {
-        "url": "https://docs.conda.io/en/latest/miniconda_hashes.html",
-        "regex": "Miniconda3-py38_([\\d.]+)-Windows"
+        "url": "https://repo.continuum.io/miniconda",
+        "re": "Miniconda3-py(?<pyversion>[\\d]+)_([\\d.]+)-Windows",
+        "reverse": true
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://repo.anaconda.com/miniconda/Miniconda3-py38_$version-Windows-x86_64.exe"
+                "url": "https://repo.continuum.io/miniconda/Miniconda3-py$matchPyversion_$version-Windows-x86_64.exe"
             },
             "32bit": {
-                "url": "https://repo.anaconda.com/miniconda/Miniconda3-py38_$version-Windows-x86.exe"
+                "url": "https://repo.continuum.io/miniconda/Miniconda3-py$matchPyversion_$version-Windows-x86.exe"
             }
         },
         "hash": {
-            "url": "https://docs.conda.io/en/latest/miniconda_hashes.html",
-            "regex": "(?sm)$basename.*?$sha256"
+            "url": "$baseurl",
+            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
         }
-    }
+    },
+    "notes": [
+        "Conda envs and pkgs are not persisted by Scoop, we advice to setup `envs_dirs` to use '~/.conda/envs'.",
+        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs",
+        "",
+        "To enable conda tab-completion autoload, you need to add follow code to PowerShell $PROFILE:",
+        "Add-Content -Path $Profile -Value \"`n(& conda \"shell.powershell\" \"hook\") | Out-String | Invoke-Expression"
+    ]
 }

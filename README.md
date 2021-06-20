@@ -22,6 +22,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - matthewjberger/scoop-nerd-fonts
 - Ash258/Scoop-JetBrains
 - MCOfficer/scoop-nirsoft
+- h404bi/dorado
 - dodorz/scoop
 - TheRandomLabs/scoop-nonportable
 - Calinou/scoop-games
@@ -30,7 +31,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Versions
 - lukesampson/scoop-extras
 - ACooper81/scoop-apps
-- h404bi/dorado
 - Ash258/scoop-Ash258
 - TheCjw/scoop-retools
 - borger/scoop-galaxy-integrations

@@ -1,17 +1,36 @@
 {
-    "version": "0.6.12",
-    "description": "Launcher for Minecraft that allows for multiple, cleanly separated instances of Minecraft.",
     "homepage": "https://multimc.org/",
+    "description": "A custom launcher for Minecraft that allows you to easily manage multiple installations of Minecraft at once",
     "license": "Apache-2.0",
+    "version": "0.6.12",
     "url": "https://github.com/MultiMC/MultiMC5/releases/download/0.6.12/mmc-stable-win32.zip",
     "hash": "309ffff7d48c6f9eeb4b424b812e03a5ad11785d912fbbb7ca065ab4cdf07688",
     "extract_dir": "MultiMC",
-    "pre_install": [
-        "if (-not (Test-Path \"$dir\\accounts.json\")) { New-Item \"$dir\\accounts.json\" -ItemType File | Out-Null }",
-        "if (-not (Test-Path \"$dir\\multimc.cfg\")) { New-Item \"$dir\\multimc.cfg\" -ItemType File -Value \"Analytics=false`r`nAutoUpdate=false`r`nIconTheme=pe_colored`r`nLaunchMaximized=true\" | Out-Null }",
-        "if (-not (Test-Path \"$dir\\notifications.json\")) { New-Item \"$dir\\notifications.json\" -ItemType File | Out-Null }"
-    ],
-    "bin": "MultiMC.exe",
+    "installer": {
+        "script": [
+            "function CreateFile([String] $file, [String] $content = $null) {",
+            "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+            "        New-Item -Force -Path \"$persist_dir\\$file\" -ItemType file -Value $content | Out-Null",
+            "    }",
+            "}",
+            "CreateFile 'accounts.json'",
+            "CreateFile 'multimc.cfg' 'UpdateChannel=stable'",
+            "CreateFile 'notifications.json'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "function BackupFile([String] $file) {",
+            "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+            "        Remove-Item \"$persist_dir\\$file\" -Force",
+            "    }",
+            "    Move-Item \"$dir\\$file\" \"$persist_dir\" -Force",
+            "}",
+            "BackupFile 'accounts.json'",
+            "BackupFile 'multimc.cfg'",
+            "BackupFile 'notifications.json'"
+        ]
+    },
     "shortcuts": [
         [
             "MultiMC.exe",
@@ -30,6 +49,9 @@
         "multimc.cfg",
         "notifications.json"
     ],
+    "suggest": {
+        "MCEdit": "dorado/mcedit"
+    },
     "checkver": {
         "github": "https://github.com/MultiMC/MultiMC5"
     },
