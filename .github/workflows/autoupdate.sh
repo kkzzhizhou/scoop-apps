@@ -54,14 +54,14 @@ do
             echo $file_id >> cache/file_ids
             cp -f $file ./bucket/$file_name
 	    # record app-contributor-list.txt
-	    echo "$file_name    $bucket" >> app-contributor-list.txt 
+	    echo "$file_name    $bucket" >> app-contributor-list.txt
         else
             # rename file
             owner=$(echo $bucket | awk -F'/' '{print $1}')
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/")
             cp -f $file ./bucket/$new_name
 	    # record app-contributor-list.txt
-	    echo "$new_name    $bucket" >> app-contributor-list.txt 
+	    echo "$new_name    $bucket" >> app-contributor-list.txt
         fi
     done
 done
@@ -85,7 +85,6 @@ for bucket in ${buckets[@]}
 do
     echo "- $bucket" >> README.md
 done
-
 
 # fix nothing commit
 echo "最近更新时间：`date`" > latest.update
