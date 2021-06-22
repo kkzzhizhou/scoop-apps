@@ -6,6 +6,7 @@
 - 未对仓库软件来源进行安全检验，请自行甄别恶意软件，或者使用杀毒软件
 - 此仓库为合并仓库，不接受Pull requests，请参考仓库根路径的app-contributor-list.txt到相应的仓库提交pull requests
 - 接受仓库推荐以及不维护仓库清理等相关Issues
+- 如果是国内的网络环境，可以使用https://gitee.com/kkzzhizhou/scoop-apps
 
 # 仓库重置说明
 
