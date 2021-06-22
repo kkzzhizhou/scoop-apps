@@ -36,6 +36,8 @@ done
 # merge bucket
 rm -f bucket/*.json
 rm -f cache/file_ids && touch cache/file_ids
+rm -f app-contributor-list.txt
+echo "name    bucket" > app-contributor-list.txt
 for bucket in ${buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
@@ -51,11 +53,15 @@ do
             # record file_id
             echo $file_id >> cache/file_ids
             cp -f $file ./bucket/$file_name
+	    # record app-contributor-list.txt
+	    echo "$file_name    $bucket" >> app-contributor-list.txt 
         else
             # rename file
             owner=$(echo $bucket | awk -F'/' '{print $1}')
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/")
             cp -f $file ./bucket/$new_name
+	    # record app-contributor-list.txt
+	    echo "$new_name    $bucket" >> app-contributor-list.txt 
         fi
     done
 done
