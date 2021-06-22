@@ -17,6 +17,8 @@
 ```
 scoop bucket rm apps
 scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
+# 国内网络
+scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 ```
 
 # 合并仓库列表
