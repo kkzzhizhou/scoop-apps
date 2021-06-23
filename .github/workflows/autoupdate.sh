@@ -29,7 +29,7 @@ do
     if [ ! -d "cache/$bucket_dir" ]
     then
         echo "clone bucket:$bucket"
-        git clone --depth==1 https://github.com/$bucket cache/$bucket_dir
+        git clone --depth=1 https://github.com/$bucket cache/$bucket_dir
     fi
 done
 
