@@ -1,0 +1,34 @@
+{
+    "homepage": "http://wenq.org/",
+    "description": "CJK sans-serif font that focuses on on-screen readibility.",
+    "version": "0.9.45",
+    "license": "GPL-2.0-or-later",
+    "url": "https://dl.sourceforge.net/projects/wqy/files/wqy-zenhei/0.9.45 (Fighting-state RC1)/wqy-zenhei-0.9.45.tar.gz",
+    "hash": "sha1:b86b65d3048ade868fcc89229cfac6baf80a3e54",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'wqy-zenhei\\*.ttc' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'wqy-zenhei\\*.ttc' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'WenQuanYi Zenhei' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/wqy/files/wqy-zenhei/",
+        "regex": "<tr title=\\\"([\\d.]+)(?<suffix>.*?)\\\""
+    },
+    "autoupdate": {
+        "url": "https://dl.sourceforge.net/projects/wqy/files/wqy-zenhei/$version$matchSuffix/wqy-zenhei-$version.tar.gz"
+    }
+}

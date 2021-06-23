@@ -1,0 +1,66 @@
+{
+    "version": "4.20",
+    "description": "NotMyFault. Crash, hang, and cause kernel memory leaks on Windows system.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/notmyfault",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/NotMyFault.zip",
+    "hash": "f949c922cc790776512c2712c73f42961e5b7cf2326f6f435d5b3dd03b99179d",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\NotMyFault\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\NotMyFault\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "notmyfaultc64.exe",
+                [
+                    "notmyfaultc64.exe",
+                    "notmyfault64"
+                ],
+                [
+                    "notmyfaultc64.exe",
+                    "notmyfault"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "notmyfault64.exe",
+                    "SysInternals\\NotMyFault"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": [
+                "notmyfaultc.exe",
+                [
+                    "notmyfaultc.exe",
+                    "notmyfault"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "notmyfault.exe",
+                    "SysInternals\\NotMyFault"
+                ]
+            ]
+        }
+    },
+    "checkver": "NotMyFault\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/NotMyFault.zip"
+    }
+}

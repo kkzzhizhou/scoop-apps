@@ -1,0 +1,49 @@
+{
+    "version": "3.23.6.7836",
+    "description": "Allavsoft. Download free videos from 100+ sites and convert to popular video and audio format.",
+    "homepage": "https://www.allavsoft.com/index.html",
+    "notes": "Installs the latest version from the website. You have to update the app using the programs updater.",
+    "license": {
+        "identifier": ""
+    },
+    "url": "https://www.allavsoft.com/downloads/allavsoft.exe#/setup.exe",
+    "hash": "8be265a8e6de82c572425dbecd9637fd81ecf964f1ccd2d84d9095ecd100d2af",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"videodownloader\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Allavsoft *\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Allavsoft.lnk\") {Remove-Item \"$CommonDesktopPath\\Allavsoft.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://m.majorgeeks.com/files/details/allavsoft.html",
+        "regex": ">Allavsoft ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.allavsoft.com/downloads/allavsoft.exe#/setup.exe"
+    }
+}

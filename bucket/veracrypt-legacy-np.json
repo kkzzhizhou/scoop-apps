@@ -1,0 +1,51 @@
+{
+    "homepage": "https://www.veracrypt.fr/",
+    "description": "A free open source disk encryption software for Windows, Mac OSX and Linux.",
+    "license": "Apache Licence",
+    "version": "1.24-Update7",
+    "url": "https://launchpad.net/veracrypt/trunk/1.24-update7/+download/VeraCrypt%20Legacy%20Portable%201.24-Update7.exe#/setup.exe",
+    "hash": "a686ac374e2a6dfa09e18af29a51e0bf63859b459d91b26325accd9c39fcdcf0",
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\"",
+            "Remove-Item -Recurse \"$dir\\setup.exe\"",
+            "Move-Item \"$dir\\VeraCrypt\\*\" -Destination \"$dir\"",
+            "Remove-Item -Recurse \"$dir\\VeraCrypt\"",
+            "$file = 'Configuration.xml'",
+            "if (!(Test-Path \"$persist_dir\\$file\")) {",
+            "    New-Item \"$dir\\$file\" -Type File | Out-Null",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "shortcuts": [
+                [
+                    "VeraCrypt-x64.exe",
+                    "VeraCrypt"
+                ]
+            ]
+        },
+        "32bit": {
+            "shortcuts": [
+                [
+                    "VeraCrypt.exe",
+                    "VeraCrypt"
+                ]
+            ]
+        }
+    },
+    "persist": "Configuration.xml",
+    "notes": "From version 1.24-Update7, VeraCrypt normal version only support Windows 8 or later. If you are using Windows 8 or later, should use normal version.",
+    "checkver": {
+        "url": "https://www.veracrypt.fr/en/Downloads.html",
+        "regex": "/trunk/(?<ver>[\\w.-]+?)/&#43;download/VeraCrypt%20Portable%20([\\w.-]+?).exe"
+    },
+    "autoupdate": {
+        "url": "https://launchpad.net/veracrypt/trunk/$matchVer/+download/VeraCrypt%20Legacy%20Portable%20$version.exe#/setup.exe",
+        "hash": {
+            "url": "https://launchpad.net/veracrypt/trunk/$matchVer/+download/veracrypt-$version-sha256sum.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}

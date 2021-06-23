@@ -1,0 +1,68 @@
+{
+    "version": "1.8.1.1029",
+    "description": "4K Slideshow Maker. Create impressive slideshows, save your memories.",
+    "homepage": "https://www.4kdownload.com/products/product-slideshowmaker",
+    "notes": "This manifest only installs and updates 4K Slideshow Maker",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.4kdownload.com/agreement/freeware"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.4kdownload.com/app/4kslideshowmaker_1.8.1_x64.msi#/setup.msi_",
+            "hash": "9127ccf7a5145df36c84920bbe2779915dfdaf35c014c5c9952e0d831dbcb2f4"
+        },
+        "32bit": {
+            "url": "https://dl.4kdownload.com/app/4kslideshowmaker_1.8.1.msi#/setup.msi_",
+            "hash": "f61cb1adf76a45d1cde2d7ab307d08acbddd630d4d8f14962a4fc7f5d8b6ae6b"
+        }
+    },
+    "pre_download":[
+        "Assert-Administrator"
+    ],
+    "pre_install": [
+        "$processname = \"4kslideshowmaker\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"4K Slideshow Maker*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\4K Slideshow Maker.lnk\") {Remove-Item \"$DesktopPath\\4K Slideshow Maker.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.4kdownload.com/products/product-slideshowmaker",
+        "regex": "\"slideshowmaker_([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.4kdownload.com/app/4kslideshowmaker_$majorVersion.$minorVersion.$patchVersion_x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://dl.4kdownload.com/app/4kslideshowmaker_$majorVersion.$minorVersion.$patchVersion.msi#/setup.msi_"
+            }
+        }
+    }
+}
