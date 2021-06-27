@@ -1,33 +1,45 @@
 {
-    "version": "0.4.11391-preview",
+    "version": "1.0.11692",
     "description": "Official windows command line installer",
     "homepage": "https://github.com/microsoft/winget-cli",
     "license": {
         "identifier": "MIT",
         "url": "https://github.com/microsoft/winget-cli/blob/master/LICENSE"
     },
-    "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v-0.4.11391-preview",
+    "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v1.0.11692",
     "url": [
-        "https://github.com/microsoft/winget-cli/releases/download/v-0.4.11391-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle#/cosi.7z",
+        "https://github.com/microsoft/winget-cli/releases/download/v1.0.11692/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z",
         "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Microsoft.VCLibs.140.00.UWPDesktop_14.0.29231.0_x64__8wekyb3d8bbwe.Appx",
         "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Microsoft.VCLibs.140.00.UWPDesktop_14.0.29231.0_x86__8wekyb3d8bbwe.Appx",
         "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Microsoft.VCLibs.140.00_14.0.29231.0_x64__8wekyb3d8bbwe.Appx",
         "https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Microsoft.VCLibs.140.00_14.0.29231.0_x86__8wekyb3d8bbwe.Appx"
     ],
     "hash": [
-        "d2e161077084c1c2bf0e42836c0df5975ef424b0e5cebd83db301361fd26f05a",
+        "2414d8dc102296bab4081f126dd9c4ffa878f45193baf1f96ec881ab7fafe35a",
         "6602159c341bafea747d0edf15669ac72df8817299fbfaa90469909e06794256",
         "eb0e38a8958df9e4576089851d846473d04204c62d69f5afacfd67d69d74d5d1",
         "e3339b2b40ee2522703fcaa451236653d8b9aca2b98ae9162c427f978d08139a",
         "641cba2377c4fb5d859d5b10348aa47dcbc04b9f221dc6e2d6b057f277ed941d"
     ],
-    "pre_install": [
-        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
-        "Get-ChildItem \"$dir\\*\" -Exclude 'AppInstaller_x*.appx' -Force -Recurse | Remove-Item -Force -Recurse",
-        "$a = if ($architecture -like '64*') { '64' } else { '86' }",
-        "Expand-7zipArchive \"$dir\\AppInstaller_x$a.appx\"",
-        "Remove-AppDirItem 'AppInstaller_x*.appx'"
-    ],
+    "architecture": {
+        "64bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_x64.msix\" \"$dir\\cosi\""
+        },
+        "32bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_x86.msix\" \"$dir\\cosi\""
+        },
+        "arm64": {
+            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_arm64.msix\" \"$dir\\cosi\""
+        }
+    },
+    "installer": {
+        "script": [
+            "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+            "Get-ChildItem \"$dir\\*\" -Exclude 'cosi' -Force | Remove-Item -Force -Recurse",
+            "movedir \"$dir\\cosi\" \"$dir\" | Out-Null",
+            "Remove-AppDirItem 'cosi'"
+        ]
+    },
     "bin": [
         "AppInstallerCLI.exe",
         [
@@ -37,13 +49,14 @@
     ],
     "checkver": {
         "url": "https://github.com/microsoft/winget-cli/releases",
-        "regex": "tag/v-([\\w.-]+)\""
+        "regex": "tag/v([\\w.-]+)\""
     },
     "autoupdate": {
-        "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v-$version",
-        "url": "https://github.com/microsoft/winget-cli/releases/download/v-$version/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle#/cosi.7z",
+        "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v$version",
+        "url": "https://github.com/microsoft/winget-cli/releases/download/v$version/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z",
         "hash": {
-            "url": "$baseurl/Microsoft.DesktopAppInstaller.SHA256.txt"
+            "url": "$urlNoExt.txt",
+            "regex": "$sha256"
         }
     }
 }
