@@ -13,7 +13,7 @@ cd $script_dir
 cd ../../
 
 buckets=$(cat $script_dir/bucket.config)
-script_buckets=(tac $script_dir/bucket.config)
+script_buckets=$(tac $script_dir/bucket.config)
 confuses=$(cat $script_dir/app.confuse)
 
 # check env
@@ -44,6 +44,7 @@ do
         cp -rf cache/${bucket_dir}/scripts/ ./scripts
     fi
 done
+
 
 # merge bucket
 rm -f bucket/*.json
