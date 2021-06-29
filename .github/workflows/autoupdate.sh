@@ -13,6 +13,7 @@ cd $script_dir
 cd ../../
 
 buckets=$(cat $script_dir/bucket.config)
+script_buckets=(tac $script_dir/bucket.config)
 confuses=$(cat $script_dir/app.confuse)
 
 # check env
@@ -31,6 +32,14 @@ do
         echo "clone bucket:$bucket"
         git clone --depth=1 https://github.com/$bucket cache/$bucket_dir
     fi
+done
+
+# merge scripts
+rm -rf scripts/*
+for bucket in ${script_buckets[@]}
+do
+    bucket_dir=$(echo $bucket | sed 's@/@-@g')
+    cp -rf cache/${bucket_dir}/scripts/ ./scripts
 done
 
 # merge bucket
