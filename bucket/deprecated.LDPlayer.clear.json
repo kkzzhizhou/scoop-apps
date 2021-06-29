@@ -1,0 +1,102 @@
+{
+    "version": "3.73",
+    "license": "Unknown",
+    "homepage": "https://www.ldplayer.net/",
+    "description": "An Android emulator optimized for mobile gaming with lower resource consumption",
+    "url": "https://encdn.ldmnq.com/download/en/LDPlayer_3.73.exe#/dl.7z",
+    "hash": "dd3366fd1dffe16ec2ce298fdfbc26ea345fb1598e15a32c33b49a676eaa5b02",
+    "shortcuts": [
+        [
+            "dnplayer.exe",
+            "LDPlayer\\LDPlayer"
+        ],
+        [
+            "dnmultiplayer.exe",
+            "LDPlayer\\LDMultiPlayer"
+        ],
+        [
+            "dnrepairer.exe",
+            "LDPlayer\\LDPlayer Repairer"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "$adfiles = @(\"$env:APPDATA\\ChangZhi\\cache\",\"$env:APPDATA\\ChangZhi2\\cache\")",
+            "foreach ($ad in $adfiles) {",
+            "    if (-NOT (Test-Path $ad)) {",
+            "        Write-Host \"cearting '$ad'\"",
+            "        New-Item -Path $ad -ItemType Directory | Out-Null",
+            "    }",
+            "    $acl = Get-Acl $ad",
+            "    $ower = (Get-Acl $ad).Owner",
+            "    $accesRuler = New-Object System.Security.AccessControl.FileSystemAccessRule($ower,[System.Security.AccessControl.FileSystemRights]::Write,[System.Security.AccessControl.AccessControlType]::Deny)",
+            "    $acl.AddAccessRule($accesRuler)",
+            "    $acl | Set-Acl $ad",
+            "}",
+            "Remove-Item $dir\\ldnews.exe -Force",
+            "Remove-Item $dir\\dnuninst.exe -Force"
+        ]
+    },
+    "post_install": "Write-Host 'You need admin right to run repairer to get ldplayer working' -ForegroundColor Green",
+    "uninstaller": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"ERROR: uninstall require UAC. Please try again.\"",
+            "}",
+            "$adfiles = @(",
+            "    \"$env:APPDATA\\ChangZhi\\cache\",",
+            "    \"$env:APPDATA\\ChangZhi2\\cache\"",
+            ")",
+            "foreach ($ad in $adfiles) {",
+            "    if(Test-Path $ad) {",
+            "        $acl = Get-Acl $ad",
+            "        $ower = (Get-Acl $ad).Owner",
+            "        $accesRuler = New-Object System.Security.AccessControl.FileSystemAccessRule($ower,[System.Security.AccessControl.FileSystemRights]::Write,[System.Security.AccessControl.AccessControlType]::Deny)",
+            "        $acl.RemoveAccessRule($accesRuler)",
+            "        $acl | Set-Acl $ad",
+            "    }",
+            "}",
+            "#卸载驱动",
+            "$uninstallers = @(\"$env:ProgramFiles\\dnplayerext2\",\"$env:ProgramFiles\\dnplayerext\",\"${env:ProgramFiles(x86)}\\dnplayerext2\",\"${env:ProgramFiles(x86)}\\dnplayerext\")",
+            "$count = 0",
+            "foreach ($uninst in $uninstallers) {",
+            "    if (Test-Path $uninst) {",
+            "        Start-Process $uninst\\uninstall.bat -Wait -Verb RunAs",
+            "    }else{",
+            "        $count ++",
+            "    }",
+            "    if ($count -gt 3) {",
+            "        Write-Host \":( Unable to find uninstaller, maybe you have not run the program ?\" -ForegroundColor Green",
+            "    }",
+            "}",
+            "#清理文件",
+            "$delfiles = @(",
+            "    \"$env:ProgramFiles\\dnplayerext2\",",
+            "    \"$env:ProgramFiles\\dnplayerext\",",
+            "    \"${env:ProgramFiles(x86)}\\dnplayerext2\",",
+            "    \"${env:ProgramFiles(x86)}\\dnplayerext\",",
+            "    \"$env:APPDATA\\ChangZhi2\",",
+            "    \"$env:APPDATA\\Changzhi\",",
+            "    \"$env:APPDATA\\changzhi_leidian.data\",",
+            "    \"$env:APPDATA\\changzhi_mplayer.data\",",
+            "    \"$env:USERPROFILE\\.LdVirtualBox\",",
+            "    \"HKCU:\\Software\\ChangZhi2\",",
+            "    \"HKCU:\\Software\\ChangZhi\"",
+            ")",
+            "foreach ($del in $delfiles) {",
+            "    if (Test-Path \"$del\") {",
+            "        Write-Host \"处理：$del\"",
+            "        Remove-Item \"$del\" -Force -Recurse",
+            "    }",
+            "}"
+        ]
+    },
+    "persist": [
+        "ldrecord\\video",
+        "vms"
+    ],
+    "checkver": {
+        "url": "https://www.ldplayer.net/app/blog/the-history-version-of-ldplayer.html",
+        "re": "LDPlayer_([\\d.]+).exe"
+    }
+}

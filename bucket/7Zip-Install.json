@@ -1,0 +1,65 @@
+{
+    "version": "19.00",
+    "description": "7-Zip. A multi-format file archiver with high compression ratios",
+    "homepage": "https://www.7-zip.org/",
+    "notes": "This manifest only installs and updates 7-Zip",
+    "license": {
+        "identifier": "Freeware,LGPL-2.0-only,BSD-3-Clause",
+        "url": "https://www.7-zip.org/license.txt"
+    },
+    "changelog": "https://7zip.dev/en/changelog/",
+    "architecture": {
+        "64bit": {
+            "url": "https://7-zip.org/a/7z1900-x64.msi#/setup.msi_",
+            "hash": "a7803233eedb6a4b59b3024ccf9292a6fffb94507dc998aa67c5b745d197a5dc"
+        },
+        "32bit": {
+            "url": "https://7-zip.org/a/7z1900.msi#/setup.msi_",
+            "hash": "b49d55a52bc0eab14947c8982c413d9be141c337da1368a24aa0484cbb5e89cd"
+        }
+    },
+    "pre_download":[
+        "Assert-Administrator"
+    ],
+    "pre_install": [
+        "$processname = \"7zFM\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"7-Zip*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.7-zip.org/download.html",
+        "regex": "Download 7-Zip ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://7-zip.org/a/7z$cleanVersion-x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://7-zip.org/a/7z$cleanVersion.msi#/setup.msi_"
+            }
+        }
+    }
+}

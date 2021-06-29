@@ -1,0 +1,53 @@
+{
+    "version": "4.280",
+    "description": "BlueStacks App Player. Android emulator.",
+    "homepage": "https://www.bluestacks.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.bluestacks.com/tw/terms-and-privacy.html"
+    },
+    "changelog": "https://support.bluestacks.com/hc/en-us/articles/360021469391-Release-Notes-BlueStacks-4",
+    "architecture": {
+        "64bit": {
+            "url": "https://cloud.bluestacks.com/get_offline_download?os_arch=x64#/setup.7z",
+            "hash": "aff6a76d6e022e96600940458d99e6a165e5c8a6949f9c0a7e696a71dfeba87d"
+        },
+        "32bit": {
+            "url": "https://cloud.bluestacks.com/get_offline_download?os_arch=x86#/setup.7z",
+            "hash": "8031878ba8767f3c98a02849564f620e0fdad7028d78957fa55704f0e29dcd1a"
+        }
+    },
+    "installer": {
+        "script": [
+            "$programname = \"BlueStacks App Player*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   Start-Process -Wait \"$dir\\BlueStacksInstaller.exe\" \"-s\" -Verb RunAs",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Get-ChildItem -Path \"$dir\\*\" | Where-Object -FilterScript {$_.BaseName -notlike \"scoop-*\"} | Remove-Item -Recurse -Force"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\BlueStacks.lnk\") {Remove-Item \"$DesktopPath\\BlueStacks.lnk\" -Force}",
+        "if (Test-Path \"$DesktopPath\\BlueStacks Multi-Instance Manager.lnk\") {Remove-Item \"$DesktopPath\\BlueStacks Multi-Instance Manager.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://support.bluestacks.com/hc/en-us/articles/360021469391-Release-Notes-BlueStacks-4",
+        "regex": "<font>BlueStacks ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cloud.bluestacks.com/get_offline_download?os_arch=x64#/setup.7z"
+            },
+            "32bit": {
+                "url": "https://cloud.bluestacks.com/get_offline_download?os_arch=x86#/setup.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "##": "Download URL and Hashes https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI",
+    "version": "2.93.981.0",
+    "description": "Power BI Desktop. Create rich, interactive reports with visual analytics at your fingertips",
+    "homepage": "https://powerbi.microsoft.com/en-us/desktop/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup_x64.exe#/setup.exe",
+            "hash": "E7753188EB1B2A0555BD2000EFBD5EA62C1FF3B2DF1322BB4B725E1957BB7443"
+        },
+        "32bit": {
+            "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup.exe#/setup.exe",
+            "hash": "1CCF96117432580E5A95C1733DC36521036E219C314EE283C3DE673BE249C807"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"PowerBI.exe\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft PowerBI Desktop*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" -quiet -norestart ACCEPT_EULA=1 | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Power BI Desktop.lnk\") {Remove-Item \"$CommonDesktopPath\\Power BI Desktop.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI",
+        "regex": "/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI/([\\d.]+)",
+        "reverse": true
+    }
+}

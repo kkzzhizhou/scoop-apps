@@ -1,0 +1,53 @@
+{
+    "version": "2.25",
+    "description": "PsService. Local and remote service information and configuration utility",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psservice",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsService64.exe",
+            "hash": "6de3137b3088b2c2c311a540f9aaeb57e9fd38259cb18875f2380ee74ec1c7af",
+            "bin": [
+                "PsService64.exe",
+                [
+                    "PsService64.exe",
+                    "PsService"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsService.exe",
+            "hash": "9454ba56bcb470d330559573afbc10f6989ba46f3e656c20979de6f92e051752",
+            "bin": "PsService.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsService\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsService\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsService\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsService64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsService.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,1 @@
+Remove-Item -Path "$dir\`$0" -Force -Recurse
