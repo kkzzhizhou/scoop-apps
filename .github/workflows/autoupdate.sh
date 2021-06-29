@@ -39,7 +39,10 @@ rm -rf scripts/*
 for bucket in ${script_buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
-    cp -rf cache/${bucket_dir}/scripts/ ./scripts
+    if [ -d "cache/${bucket_dir}" ]
+    then
+        cp -rf cache/${bucket_dir}/scripts/ ./scripts
+    fi
 done
 
 # merge bucket
