@@ -41,7 +41,7 @@ do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
     if [ -d "cache/${bucket_dir}" ]
     then
-        cp -rf cache/${bucket_dir}/scripts/ ./scripts
+        cp -rf cache/${bucket_dir}/scripts/* ./scripts/
     fi
 done
 
