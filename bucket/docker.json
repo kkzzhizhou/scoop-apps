@@ -10,39 +10,40 @@
         "This version of docker manifest is nightly and has its own mind.",
         "All files will be installed into DEFAULT docker directory. (C:\\Program Files\\Docker)",
         "I suggest to change the docker images location:",
-        "    https://docs.docker.com/v1.11/engine/reference/commandline/daemon/#daemon-configuration-file",
+        "    https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-configuration-file",
         "",
         "Updating is handled by docker itself.",
         "    No updates will be done to this manifest.",
         "",
         "'scoop uninstall docker' will uninstall docker completely.",
-        "    Images, vms, settings, ..."
+        "    Images, VM, settings, ..."
     ],
     "architecture": {
         "64bit": {
-            "url": "https://download.docker.com/win/stable/Docker%20Desktop%20Installer.exe#/dockerInstall.exe",
-            "pre_install": [
-                "if (is_admin) {",
-                "    if ((Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V-All -Online).State -eq 'Disabled') {",
-                "        Write-Host 'Hyper-V is disabled. Enabling. Please restart PC before first start of Docker.' -f Yellow",
-                "        Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart",
-                "    }",
-                "}"
-            ],
-            "installer": {
-                "args": [
-                    "install",
-                    "--quiet"
-                ],
-                "keep": true
-            },
-            "uninstaller": {
-                "file": "dockerInstall.exe",
-                "args": [
-                    "uninstall",
-                    "--quiet"
-                ]
-            }
+            "url": "https://desktop.docker.com/win/stable/amd64/Docker%20Desktop%20Installer.exe#/dockerInstall.exe"
         }
+    },
+    "pre_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "if (is_admin) {",
+        "    if ((Get-WindowsOptionalFeature -FeatureName 'Microsoft-Hyper-V' -Online).State -eq 'Disabled') {",
+        "        Write-UserMessage -Message 'Hyper-V is disabled. Enabling. Please restart PC before first start of Docker.' -Warning",
+        "        Enable-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Hyper-V' -All -NoRestart",
+        "    }",
+        "}"
+    ],
+    "installer": {
+        "args": [
+            "install",
+            "--quiet"
+        ],
+        "keep": true
+    },
+    "uninstaller": {
+        "file": "dockerInstall.exe",
+        "args": [
+            "uninstall",
+            "--quiet"
+        ]
     }
 }
