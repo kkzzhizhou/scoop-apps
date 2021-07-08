@@ -25,16 +25,16 @@
             "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
             "{",
             "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   while ((Get-Process -Name 'FilesInspector' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "       Start-Sleep -Milliseconds 50",
+            "   }",
+            "   taskkill /F /IM 'FilesInspector' /FI 'status eq running'",
             "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
             "   {",
             "       exit 1",
             "   }",
             "}",
-            "Remove-Item \"$dir\\setup.exe\" -Force",
-            "while ((Get-Process -Name 'FilesInspector' -ErrorAction SilentlyContinue).Count -eq 0) {",
-            "   Start-Sleep -Milliseconds 50",
-            "}",
-            "taskkill /F /IM 'FilesInspector' /FI 'status eq running'"
+            "Remove-Item \"$dir\\setup.exe\" -Force"
         ]
     },
     "post_install": [
