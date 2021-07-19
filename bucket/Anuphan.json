@@ -1,0 +1,52 @@
+{
+    "version": "3.002",
+    "description": "A Cadson Demak version of IBM Plex Thai (Loopless), which features the plex corner (round outside, sharp inside).",
+    "homepage": "https://github.com/cadsondemak/Anuphan",
+    "license": "OFL-1.1",
+    "url": [
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-Bold.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-ExtraLight.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-Light.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-Medium.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-Regular.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-SemiBold.otf",
+        "https://github.com/cadsondemak/Anuphan/raw/master/Fonts/OTF/Anuphan-Thin.otf"
+    ],
+    "hash": [
+        "4AF292288AF164D47ECE2E6E43147FDECF1DF28FC2DA999D4B8356C3CE06AB6E",
+        "8787D237EE559121F56F196DC6174DFC11F8EA2F47A23290BF4C609A3752F0E3",
+        "141DFEB5B964324303346646DC1D9E1CBD29F7B0951F8551FE057C21B8EF7799",
+        "E7EA263AF2EAD1242FECFD28D2D1C9D0CE8B59D0C8BF05FDC63A7AB4C905462F",
+        "4262AE86F5385A422A28E5A8762C3C45C519A86D794831B41832D480A36C304C",
+        "E98083AFEB5BD78BBDDED83A1E2E0C73E5D6147AF550FD94564DF592DC3CD1D4",
+        "2C361D2A9F03E2819E1FE69A9F1270CA6BFE7FC325973A4B6B8424466A9A7AB4"
+    ],
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*.otf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:WINDIR\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*otf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:WINDIR\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "",
+            "Write-Host \"Font 'Anuphan' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}
