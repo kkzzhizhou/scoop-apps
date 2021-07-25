@@ -13,7 +13,7 @@ cd $script_dir
 cd ../../
 
 # generate bucket.config
-echo "kkzzhizhou/scoop-apps" > $script_dir/bucket.config
+echo "kkzzhizhou/scoop-apps" > bucket.config
 # clone rasa/scoop-directory
 temp_dir=`mktemp -d`
 [ -d "$temp_dir/scoop-directory" ] || git clone --depth=1 https://github.com/rasa/scoop-directory $temp_dir/scoop-directory
@@ -23,11 +23,11 @@ for bucket in ${buckets[@]}; do
     app_num=$(echo $bucket | awk -F',' '{print $2}')
     star_num=$(echo $bucket | awk -F',' '{print $3}')
     if [ "$app_num" -gt 10 -a "$star_num" -gt 5 ];then
-        echo "$bucket_name" >> $script_dir/bucket.config
+        echo "$bucket_name" >> bucket.config
     fi
 done
-buckets=$(cat $script_dir/bucket.config)
-script_buckets=$(tac $script_dir/bucket.config)
+buckets=$(cat bucket.config)
+script_buckets=$(tac bucket.config)
 confuses=$(cat $script_dir/app.confuse)
 
 # check env
