@@ -17,7 +17,7 @@ echo "kkzzhizhou/scoop-apps" > $script_dir/bucket.config
 # clone rasa/scoop-directory
 temp_dir=`mktemp -d`
 [ -d "$temp_dir/scoop-directory" ] || git clone --depth=1 https://github.com/rasa/scoop-directory $temp_dir/scoop-directory
-buckets=$(cat ${temp_dir}/scoop-directory/by-stars.md | sed '/###/, /$d/d' | grep "name=" | sed "s/<[^>]*>//g" | sed 's/_//g' | awk -F'[][]' '{print $4","$6","$8}' | grep -v 'kkzzhizhou/scoop-zapps')
+buckets=$(cat ${temp_dir}/scoop-directory/by-stars.md | sed '/###/, /$d/d' | grep "name=" | sed "s/<[^>]*>//g" | sed 's/_//g' | awk -F'[][]' '{print $4","$6","$8}' | grep -v 'kkzzhizhou/scoop-zapps' | grep -v 'ScoopInstaller/Main')
 for bucket in ${buckets[@]}; do
     bucket_name=$(echo $bucket | awk -F',' '{print $1}')
     app_num=$(echo $bucket | awk -F',' '{print $2}')
