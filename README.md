@@ -25,7 +25,6 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 
 - kkzzhizhou/scoop-apps
 - lukesampson/scoop-extras
-- ScoopInstaller/Main
 - chawyehsu/dorado
 - Ash258/Scoop-Ash258
 - matthewjberger/scoop-nerd-fonts
