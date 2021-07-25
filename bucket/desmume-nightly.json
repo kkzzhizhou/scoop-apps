@@ -1,0 +1,62 @@
+{
+    "homepage": "https://desmume.org",
+    "version": "20190318-be2735b",
+    "license": "GPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://drive.google.com/uc?export=download&id=1WUhK2m-M0Z1GLj-4D3TF8MXYNJuJ0jpE#/dl.zip",
+            "hash": "19edf68574a1070994ef8a1ee67e08df77395fceeee1abcd61779ffca814d764"
+        },
+        "32bit": {
+            "url": "https://drive.google.com/uc?export=download&id=1B7mUS_u1Io9LZewmeBJ-IK5COF1YF9sB#/dl.zip",
+            "hash": "a47c51d54a8a52d10505c182f715a9d060362c46b0ae4a9c61abbc1f1f7cc4d7"
+        }
+    },
+    "shortcuts": [
+        [
+            "DeSmuME.exe",
+            "DeSmuME (Nightly)"
+        ]
+    ],
+    "persist": [
+        "AviFiles",
+        "Battery",
+        "Cheats",
+        "Firmware",
+        "Lua",
+        "Roms",
+        "Screenshots",
+        "SramImportExport",
+        "States",
+        "StateSlots",
+        "desmume.ini"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\desmume.ini\")) {",
+        "    New-Item \"$dir\\desmume.ini\" -Type File | Out-Null",
+        "}",
+        "if (!(test-path \"$dir\\DeSmuME.exe\")) {",
+        "gci \"$dir\" \"DeSmuME*.exe\" |",
+        "? { $_.Name -match '(?i)DeSmuME_git#[a-z\\d]{8}_x[\\d]{2}.exe' } |",
+        "% {",
+        "warn \"Moving $($_.Name) to DeSmuMe.exe\"",
+        "mv \"$dir\\$($_.Name)\" \"$dir\\DeSmuMe.exe\"",
+        "}",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://desmume.org/download/",
+        "re": "(?sm)<strong>(?<year>[\\d]{4})/(?<month>[\\d]{2})/(?<day>[\\d]{2}).*?git\\#(?<git>[a-z\\d]{7}).*?id=(?<one>.*?)\">Windows 32-bit.*?id=(?<two>.*?)\">Windows 64-bit",
+        "replace": "${year}${month}${day}-${git}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://drive.google.com/uc?export=download&id=$matchTwo#/dl.zip"
+            },
+            "32bit": {
+                "url": "https://drive.google.com/uc?export=download&id=$matchOne#/dl.zip"
+            }
+        }
+    }
+}

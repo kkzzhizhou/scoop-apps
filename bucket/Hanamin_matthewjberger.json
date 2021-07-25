@@ -1,0 +1,35 @@
+{
+    "homepage": "https://osdn.net/projects/hanazono-font/",
+    "description": "Free CJK serif font including over 80,000 Unicode characters.",
+    "version": "20170904",
+    "license": "OFL-1.1",
+    "url": "http://dl.osdn.jp/hanazono-font/68253/hanazono-20170904.zip",
+    "hash": "571cd4a09ae7da0c642d640fc2442c050aa450ebb0587a95cdd097d41a9c9572",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'HanaMin' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://osdn.net/projects/hanazono-font/",
+        "regex": "(?s)hanazono-font/releases/(?<tag>[\\d]+)\\\">hanazono-font.*?\\(([\\d]{4})-([\\d]{2})-([\\d]{2})\\)</a>",
+        "replace": "${1}${2}${3}"
+    },
+    "autoupdate": {
+        "url": "http://dl.osdn.jp/hanazono-font/$matchTag/hanazono-$version.zip"
+    }
+}

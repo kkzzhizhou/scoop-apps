@@ -1,0 +1,32 @@
+{
+    "version": "3.3.8.22043",
+    "description": "tencent TIM, lightweight alternative to QQ",
+    "homepage": "https://office.qq.com/",
+    "license": {
+        "identifier": "Unknown",
+        "url": "http://play.mobile.qq.com/yy/eim/help/serverinfo.html"
+    },
+    "url": "http://dldir1.qq.com/qqfile/qq/PCTIM/TIM3.3.8/TIM3.3.8.22043.exe#/TimSetup.exe",
+    "hash": "435b11b9a7be94db7a2496039f01d79b9b9c895968e6ebc203340a3e3d2d8e5d",
+    "installer": {
+        "script": [
+            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TimSetup.exe`\" -s\" -Verb RunAs",
+            "Remove-Item \"$dir\\TimSetup.exe\""
+        ]
+    },
+    "post_install": "Copy-Item -Path \"C:\\Program Files (x86)\\Tencent\\TIM\\TIMUninst.exe\" \"$dir\\TIMUninst.exe\"",
+    "uninstaller": {
+        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TIMUninst.exe`\" -s\" -Verb RunAs"
+    },
+    "checkver": {
+        "url": "https://qzonestyle.gtimg.cn/qzone/qzactStatics/configSystem/data/1605/config1.js",
+        "regex": "https?://dldir1\\.qq\\.com/qqfile/qq(?<extra>.*)/TIM(?<main>\\d+\\.\\d+\\.\\d+)/TIM.*\\.(?<patch>\\d+)\\.exe",
+        "replace": "${main}.${patch}"
+    },
+    "autoupdate": {
+        "url": "http://dldir1.qq.com/qqfile/qq$matchExtra/TIM$matchMain/TIM$version.exe#/TimSetup.exe",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}

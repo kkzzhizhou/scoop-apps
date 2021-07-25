@@ -1,0 +1,42 @@
+{
+    "version": "0.1",
+    "description": "Typeface designed for people with weak vision. Developed by The Royal National Institute for the Blind (RNIB).",
+    "homepage": "https://en.wikipedia.org/wiki/Tiresias_(typeface)",
+    "license": "GPL-3.0-or-later",
+    "url": "http://deb.debian.org/debian/pool/main/f/fonts-tiresias/fonts-tiresias_0.1.orig.tar.gz",
+    "hash": "19D197EFDA2734C583505F78A6A16FC2CB3A2B45485F4808E427C0FA891C98E3",
+    "extract_dir": "ttf-tiresias-0.1",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*.zip' | ForEach-Object {",
+            "    Expand-Archive $_.FullName \"$dir\" -Force",
+            "    Remove-Item $_.FullName",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:WINDIR\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:WINDIR\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "",
+            "Write-Host \"Font 'Tiresias' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

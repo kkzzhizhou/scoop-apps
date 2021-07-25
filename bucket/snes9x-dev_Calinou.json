@@ -1,0 +1,54 @@
+{
+    "homepage": "http://www.snes9x.com/",
+    "description": "SNES (Super Nintendo Entertainment System) emulator",
+    "version": "1.60-978",
+    "license": "Freeware",
+    "architecture": {
+        "32bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/cjfdcprdtyk3us30/artifacts/snes9x-1.60-978-9398d21-win32.zip",
+            "hash": "8059489bbe86d552a54ec4db965d3c4f35a97c9209a87360d90dbc3338996179",
+            "bin": "snes9x.exe",
+            "shortcuts": [
+                [
+                    "snes9x.exe",
+                    "Snes9X"
+                ]
+            ]
+        },
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/nl69m41632gsdpt5/artifacts/snes9x-1.60-978-9398d21-win32-x64.zip",
+            "hash": "1dad56bd1b09281f121dfb6e4e12b321c1e3ea535070068cdb99b7d59fcd3a52",
+            "bin": [
+                [
+                    "snes9x-x64.exe",
+                    "snes9x"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "snes9x-x64.exe",
+                    "Snes9X"
+                ]
+            ]
+        }
+    },
+    "pre_install": "If(!(Test-Path(\"$persist_dir\\snes9x.conf\"))){New-Item -ItemType File \"$dir\\snes9x.conf\" | Out-Null }",
+    "persist": [
+        "Saves",
+        "snes9x.conf"
+    ],
+    "checkver": {
+        "url": "https://ci.appveyor.com/api/projects/snes9x/snes9x",
+        "regex": "\"jobId\":\"(?<win32>.*?)\".*?arch=win32,.*?\"jobId\":\"(?<x64>.*?)\".*?arch=win32-x64,.*\"version\":\"(?<version>.*?)\".*\"commitId\":\"(?<commit>.{7}).*\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchWin32/artifacts/snes9x-$matchVersion-$matchCommit-win32.zip"
+            },
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchX64/artifacts/snes9x-$matchVersion-$matchCommit-win32-x64.zip"
+            }
+        }
+    }
+}

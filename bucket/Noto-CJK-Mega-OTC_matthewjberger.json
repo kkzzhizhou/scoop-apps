@@ -1,0 +1,34 @@
+{
+    "version": "20190603",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/adobe-fonts/source-han-super-otc",
+    "url": "https://github.com/adobe-fonts/source-han-super-otc/releases/download/20190603/NotoCJK.ttc",
+    "hash": "md5:5fb3f42574c27390bc60347858f4bf8e",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/adobe-fonts/source-han-super-otc/releases/download/$version/NotoCJK.ttc",
+        "hash": {
+            "url": "https://github.com/adobe-fonts/source-han-super-otc",
+            "find": "href=\"#noto-cjknotocjkttc\">.+?MD5 hash is ([A-Fa-f0-9]{32})"
+        }
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttc' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttc' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The Noto CJK Mega OTC (OpenType Collection) has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "version": "1.9.6",
+    "description": "Frontend for emulators, game engines and media players.",
+    "homepage": "https://www.retroarch.com/",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://buildbot.libretro.com/stable/1.9.6/windows/x86_64/RetroArch.7z",
+            "hash": "4e1084e15af0ab120a8dce4c2dab9a3c46380fdc80b4cdbda8b4627c27417cb3",
+            "extract_dir": "RetroArch-Win64"
+        },
+        "32bit": {
+            "url": "https://buildbot.libretro.com/stable/1.9.6/windows/x86/RetroArch.7z",
+            "hash": "1f3440a3faaceeb55d6dd85c387bb91e6739b31a4912bf218621da8e594f585b",
+            "extract_dir": "RetroArch-Win32"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\retroarch.cfg\")) { Move-Item \"$dir\\retroarch.default.cfg\" \"$dir\\retroarch.cfg\" }",
+        "'favorites', 'history' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\content_$_.lpl\")) { New-Item \"$dir\\content_$_.lpl\" | Out-Null }",
+        "}"
+    ],
+    "bin": "retroarch.exe",
+    "shortcuts": [
+        [
+            "retroarch.exe",
+            "RetroArch"
+        ]
+    ],
+    "persist": [
+        "assets\\wallpapers",
+        "cores",
+        "cheats",
+        "config",
+        "playlists",
+        "records",
+        "recordings",
+        "saves",
+        "screenshots",
+        "shaders\\presets",
+        "states",
+        "system",
+        "thumbnails",
+        "content_favorites.lpl",
+        "content_history.lpl",
+        "retroarch.cfg"
+    ],
+    "checkver": {
+        "url": "https://www.retroarch.com/?page=platforms",
+        "regex": "The current stable version is: (?<main>[\\d.]+)(\\s*\\((\\w+)\\))?",
+        "replace": "${3}${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://buildbot.libretro.com/stable/$matchMain/windows/x86_64/RetroArch.7z"
+            },
+            "32bit": {
+                "url": "https://buildbot.libretro.com/stable/$matchMain/windows/x86/RetroArch.7z"
+            }
+        }
+    }
+}

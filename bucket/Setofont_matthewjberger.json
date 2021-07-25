@@ -1,0 +1,31 @@
+{
+    "homepage": "https://osdn.net/projects/setofont/",
+    "description": "CJK hand-written font including over 80,000 Unicode characters.",
+    "version": "6.20",
+    "license": "OFL-1.1",
+    "url": "http://dl.osdn.jp/setofont/61995/setofont_v_6_20.zip",
+    "hash": "d940029f4cbe736fb6c556f6bd45170b26ca3db5dc198fb1663f9d6137b575db",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'setofont\\*.ttf' | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'setofont\\*.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font 'Seto Font' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "setofont/releases/(?<tag>\\d+)\\\">setofont SetoFont v([\\d.]+)</a>",
+    "autoupdate": {
+        "url": "http://dl.osdn.jp/setofont/$matchTag/setofont_v_$majorVersion_$minorVersion.zip"
+    }
+}
