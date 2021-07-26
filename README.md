@@ -1,11 +1,15 @@
 # 仓库说明
 
-- 合并多个scoop仓库
+- 合并多个scoop仓库，仅克隆最新的一个版本
 - 自动处理同名文件,仓库靠前优先使用，其他仓库同名文件按"软件-贡献人ID"进行重命名
 - 每天自动更新
 - 未对仓库软件来源进行安全检验，请自行甄别恶意软件，或者使用杀毒软件
 - 此仓库为合并仓库，不接受Pull requests，请参考仓库根路径的app-contributor-list.txt到相应的仓库提交pull requests
 - 接受仓库推荐以及不维护仓库清理等相关Issues
+- 名称歧义修正功能
+- 同名文件md5去重
+- 合并仓库的scripts文件夹
+- 根据Github项目[scoop-directory](https://github.com/rasa/scoop-directory)动态生成bucket.config，[前端地址](https://rasa.github.io/scoop-directory/)
 - 如果是国内的网络环境，可以使用https://gitee.com/kkzzhizhou/scoop-apps
 
 # 仓库重置说明
