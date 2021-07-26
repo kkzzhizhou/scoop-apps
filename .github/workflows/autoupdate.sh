@@ -13,7 +13,8 @@ cd $script_dir
 cd ../../
 
 # generate bucket.config
-echo "kkzzhizhou/scoop-apps" > bucket.config
+echo "kkzzhizhou/scoop-zapps" > bucket.config
+
 # clone rasa/scoop-directory
 temp_dir=`mktemp -d`
 [ -d "$temp_dir/scoop-directory" ] || git clone --depth=1 https://github.com/rasa/scoop-directory $temp_dir/scoop-directory

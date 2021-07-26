@@ -23,7 +23,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 
 # 合并仓库列表
 
-- kkzzhizhou/scoop-apps
+- kkzzhizhou/scoop-zapps
 - lukesampson/scoop-extras
 - chawyehsu/dorado
 - Ash258/Scoop-Ash258
