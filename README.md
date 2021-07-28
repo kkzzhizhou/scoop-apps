@@ -71,6 +71,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - excitoon/scoop-user
 - ChungZH/peach
 - BjoernPetersen/scoop-misc-bucket
+- naderi/scoop-bucket
 - 42wim/scoop-bucket
 - wzv5/ScoopBucket
 - krproject/qi-windows
