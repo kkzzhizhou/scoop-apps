@@ -55,10 +55,10 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - tetradice/scoop-iyokan-jp
 - wangzq/scoop-bucket
-- ZvonimirSun/scoop-iszy
 - Qv2ray/mochi
 - zhoujin7/tomato
 - ScoopInstaller/PHP
+- ZvonimirSun/scoop-iszy
 - dodorz/scoop
 - borger/scoop-emulators
 - scoopcn/scoopcn
