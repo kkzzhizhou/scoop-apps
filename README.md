@@ -65,8 +65,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - Paxxs/Cluttered-bucket
 - kiennq/scoop-misc
-- AStupidBear/scoop-bear
 - Ash258/Scoop-NirSoft
+- AStupidBear/scoop-bear
 - nueko/scoop-php
 - excitoon/scoop-user
 - ChungZH/peach
