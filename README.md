@@ -51,13 +51,13 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - hermanjustnu/scoop-emulators
 - Ash258/Scoop-Sysinternals
 - echoiron/echo-scoop
-- TheRandomLabs/Scoop-Bucket
 - cderv/r-bucket
+- TheRandomLabs/Scoop-Bucket
 - tetradice/scoop-iyokan-jp
 - wangzq/scoop-bucket
+- ScoopInstaller/PHP
 - Qv2ray/mochi
 - zhoujin7/tomato
-- ScoopInstaller/PHP
 - ZvonimirSun/scoop-iszy
 - dodorz/scoop
 - borger/scoop-emulators
