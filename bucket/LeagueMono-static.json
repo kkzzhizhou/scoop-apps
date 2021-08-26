@@ -1,0 +1,49 @@
+{
+    "version": "2.220",
+    "description": "Sans-serif font featuring variable character spaces. Inspired by Fira Mono, Libertinus Mono, and Courier.",
+    "homepage": "https://www.theleagueofmoveabletype.com/league-mono",
+    "license": "OFL-1.1",
+    "notes": [
+        "You are installing the static version of LeagueMono.",
+        "This package contains 40 pre-defined styles, instead of a variable TTF font. (for better compatibility)",
+        "For variable TTF version, install 'LeagueMono-variable'."
+    ],
+    "url": "https://github.com/theleagueof/league-mono/releases/download/2.220/LeagueMono-2.220.zip",
+    "hash": "79135d873ee5c6fc4b84926bfc96fede198259ccb65d26edce8badf2fad42694",
+    "extract_dir": "LeagueMono-2.220/static/TTF",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:WINDIR\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "Get-ChildItem $dir -filter '*ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:WINDIR\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "",
+            "Write-Host \"Font 'League Mono' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/theleagueof/league-mono"
+    },
+    "autoupdate": {
+        "url": "https://github.com/theleagueof/league-mono/releases/download/$version/LeagueMono-$version.zip",
+        "extract_dir": "LeagueMono-$version/static/TTF"
+    }
+}
