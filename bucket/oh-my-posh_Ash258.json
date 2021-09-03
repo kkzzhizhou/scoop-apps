@@ -1,18 +1,55 @@
 {
-    "version": "2.0.496",
-    "description": "A prompt theming engine for Powershell running in ConEmu",
-    "homepage": "https://github.com/JanDeDobbeleer/oh-my-posh",
-    "license": "MIT",
-    "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/tag/2.0.496",
-    "url": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/2.0.496/oh-my-posh.zip",
-    "hash": "48d20c92cd97f4ac513f632a67b5a24c8362e1f0d0d990d336ac22159abdc7d7",
-    "psmodule": {
-        "name": "oh-my-posh"
+    "version": "3.176.0",
+    "description": "A prompt theme engine for any shell",
+    "homepage": "https://ohmyposh.dev",
+    "license": "GPL-3.0-only",
+    "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/tag/v3.176.0",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v3.176.0/posh-windows-wsl-amd64.7z",
+                "https://raw.githubusercontent.com/Ash258/Scoop-Ash258/main/support/oh-my-posh/Ash258.json"
+            ],
+            "hash": [
+                "a86493314981bd15a882728b27732978ebd530a52c42fb61f6474d200c6711f9",
+                "af5fa4864736479f1b462ecd33380bc7b5b7c99173108b59e99a6c06b7d477a6"
+            ]
+        }
     },
-    "persist": "Themes",
-    "checkver": "github",
+    "post_install": [
+        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+        "Move-Item \"$dir\\Ash258.json\" \"$dir\\themes\\Ash258.omp.json\" -Force",
+        "if ($env:POSH_INSTALL) { # TODO: Migrate to install options",
+        "    Write-UserMessage 'Installing Ash258 theme to $PROFILE' -Warning",
+        "    $c = @(",
+        "        '#region Oh-my-posh'",
+        "        '$bitness = if ([System.IntPtr]::Size -eq 8) { ''64bit'' } else { ''32bit'' }'",
+        "        '$ps = if ($PSVersionTable.PSVersion.Major -ge 6) { ''pwsh'' } else { ''ps'' }'",
+        "        '$ps += ''@'' + $PSVersionTable.PSVersion.ToString()'",
+        "        '$env:__SHELL_INFORMATION_POSH_258__ = \"$ps@$bitness\"'",
+        "        \"Invoke-Expression (@(oh-my-posh.exe --print-init --shell 'pwsh' --config '$dir\\themes\\Ash258.omp.json') -join \"\"``n\"\")\"",
+        "        'Enable-PoshTransientPrompt'",
+        "        '#endregion Oh-my-posh'",
+        "    )",
+        "    $prof = if ($global) { $PROFILE.AllUsersAllHosts } else { $PROFILE }",
+        "    New-Item $prof -ErrorAction 'SilentlyContinue' -Force | Out-Null",
+        "    Add-Content $prof $c -Force",
+        "}"
+    ],
+    "bin": "bin\\oh-my-posh.exe",
+    "persist": "themes",
+    "checkver": {
+        "github": "https://github.com/JanDeDobbeleer/oh-my-posh"
+    },
     "autoupdate": {
-        "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/tag/$version",
-        "url": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/$version/oh-my-posh.zip"
+        "changelog": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/tag/v$version",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v$version/posh-windows-wsl-amd64.7z"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }
