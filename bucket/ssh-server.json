@@ -6,16 +6,17 @@
         "identifier": "BSD-3-Clause",
         "url": "https://github.com/PowerShell/openssh-portable/blob/latestw_all/LICENCE"
     },
+    "changelog": "https://github.com/PowerShell/Win32-OpenSSH/releases/tag/V8.6.0.0p1-Beta",
     "pre_download": "Assert-Administrator",
     "architecture": {
         "64bit": {
-            "hash": "9f9215dc0b823264d52603f4767d8531880ddfa9aedf16404923814c0ab086b7",
             "url": "https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win64.zip",
+            "hash": "9f9215dc0b823264d52603f4767d8531880ddfa9aedf16404923814c0ab086b7",
             "extract_dir": "OpenSSH-Win64"
         },
         "32bit": {
-            "hash": "0221324212413a6caf260f95e308d22f8c141fc37727b622a6ad50998c46d226",
             "url": "https://github.com/PowerShell/Win32-OpenSSH/releases/download/V8.6.0.0p1-Beta/OpenSSH-Win32.zip",
+            "hash": "0221324212413a6caf260f95e308d22f8c141fc37727b622a6ad50998c46d226",
             "extract_dir": "OpenSSH-Win32"
         }
     },
@@ -28,9 +29,9 @@
         "",
         "    # Key-based authentication with administrator support",
         "$admins = \"$env:ProgramData\\ssh\\administrators_authorized_keys\"",
-        "$key = if (Test-Path \"$env:USERPROFILE\\.ssh\\authorized_keys\") { \"$env:USERPROFILE\\.ssh\\authorized_keys\" } else { \"$env:USERPROFILE\\.ssh\\id_rsa.pub\" }",
+        "$key = if (Test-Path \"$env:USERPROFILE\\.ssh\\authorized_keys\" -PathType 'Leaf') { \"$env:USERPROFILE\\.ssh\\authorized_keys\" } else { \"$env:USERPROFILE\\.ssh\\id_rsa.pub\" }",
         "",
-        "if (Test-Path $key) {",
+        "if (Test-Path $key -PathType 'Leaf') {",
         "    Copy-Item $key $admins -ErrorAction 'SilentlyContinue' -Force",
         "    icacls.exe $admins /inheritance:r",
         "    icacls.exe $admins /grant 'BUILTIN\\Administrators:F'",
@@ -38,19 +39,20 @@
         "    icacls.exe $admins /setowner 'NT AUTHORITY\\System'",
         "}",
         "",
-        "if (!(Test-Path \"$env:ProgramData\\ssh\\sshd_config\")) {",
+        "if (!(Test-Path \"$env:ProgramData\\ssh\\sshd_config\" -PathType 'Leaf')) {",
         "    Copy-Item \"$dir\\sshd_config_default\" \"$env:ProgramData\\ssh\\sshd_config\"",
         "} else {",
         "    Add-Content \"$env:ProgramData\\ssh\\sshd_config\" @'",
         "Match Group administrators",
         "       AuthorizedKeysFile __PROGRAMDATA__/ssh/administrators_authorized_keys",
         "'@",
+        "}",
         "",
         "    # Default shell to pwsh",
         "$pwshPath = Invoke-ScoopCommand 'which' @('pwsh')",
         "New-ItemProperty -Path 'HKLM:\\SOFTWARE\\OpenSSH' -Name 'DefaultShell' -Value \"$pwshPath\" -PropertyType 'String' -Force | Out-Null",
-        "& \"$openSSH\\FixUserFilePermissions.ps1\" -Confirm:$false",
-        "& \"$openSSH\\FixHostFilePermissions.ps1\" -Confirm:$false",
+        "& \"$dir\\FixUserFilePermissions.ps1\" -Confirm:$false",
+        "& \"$dir\\FixHostFilePermissions.ps1\" -Confirm:$false",
         "New-NetFirewallRule -Name 'sshd' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction 'Inbound' -Protocol 'TCP' -Action 'Allow' -LocalPort 22 -ErrorAction 'SilentlyContinue' | Out-Null",
         "$serv = Get-Service 'sshd', 'ssh-agent'",
         "$serv | Set-Service -StartupType Automatic",
@@ -73,6 +75,7 @@
         "regex": "download/V([\\w.-]+)/"
     },
     "autoupdate": {
+        "changelog": "https://github.com/PowerShell/Win32-OpenSSH/releases/tag/V$version",
         "architecture": {
             "64bit": {
                 "url": "https://github.com/PowerShell/Win32-OpenSSH/releases/download/V$version/OpenSSH-Win64.zip"
