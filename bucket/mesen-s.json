@@ -1,14 +1,11 @@
 {
     "homepage": "https://www.mesen.ca",
-    "description": "A high-accuracy NES and Famicom emulator and NSF player",
-    "version": "0.9.9",
+    "description": "A high-accuracy SNES and Super GameBoy emulator",
+    "version": "0.4.0",
     "license": "GPL-3.0-only",
-    "url": "https://github.com/SourMesen/Mesen/releases/download/0.9.9/Mesen.0.9.9.zip",
-    "hash": "91bd2b1ba007c9349864a96e490dbdaada78033d51e0be1aabbf442a4b9a7cda",
-    "pre_install": [
-        "if(!(Test-Path(\"$persist_dir\\settings.xml\"))) { New-Item \"$dir\\settings.xml\" | Out-Null }",
-        "if(!(Test-Path(\"$persist_dir\\MesenDB.txt\"))) { New-Item \"$dir\\MesenDB.txt\" | Out-Null }"
-    ],
+    "url": "https://github.com/SourMesen/Mesen-S/releases/download/0.4.0/Mesen-S.0.4.0.zip",
+    "hash": "ce4ee543dd3aaa4a10e8597d5aa4735fbe9252c8d679e5772dbee827cfaa2d96",
+    "bin": "Mesen-S.exe",
     "shortcuts": [
         [
             "Mesen-S.exe",
@@ -16,19 +13,37 @@
         ]
     ],
     "persist": [
-        "settings.xml",
-        "MesenDB.txt",
+        "Avi",
+        "Cheats",
+        "Firmware",
+        "Movies",
         "RecentGames",
         "Saves",
         "SaveStates",
-        "Resources",
         "Screenshots",
-        "HdPacks"
+        "Wave"
     ],
     "checkver": {
-        "github": "https://github.com/SourMesen/Mesen"
+        "github": "https://github.com/SourMesen/Mesen-S/"
     },
     "autoupdate": {
-        "url": "https://github.com/SourMesen/Mesen/releases/download/$version/Mesen.$version.zip"
-    }
+        "url": "https://github.com/SourMesen/Mesen-S/releases/download/$version/Mesen-S.$version.zip"
+    },
+    "post_install": [
+        "'settings.xml' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "'settings.xml' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "notes": "Configuration files cannot be persisted, but will be retained during the update"
 }

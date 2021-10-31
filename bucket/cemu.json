@@ -17,17 +17,19 @@
     ],
     "installer": {
         "script": [
-            "if (!(Test-Path \"$persist_dir\\settings.xml\")) {",
-            "    New-Item \"$dir\\settings.xml\" -Type File | Out-Null",
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
+            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
+            "   }",
             "}"
         ]
     },
     "persist": [
-        "settings.xml",
         "controllerProfiles",
         "gameProfiles",
         "graphicPacks",
-        "mlc01"
+        "mlc01",
+        "sharedFonts"
     ],
     "suggest": {
         "vcredist": "extras/vcredist2015",
@@ -43,5 +45,22 @@
             }
         },
         "extract_dir": "cemu_$matchVersion"
-    }
+    },
+    "post_install": [
+        "'settings.xml' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\"  -Force",
+        "   } else {",
+        "       New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "'settings.xml' | ForEach-Object {",
+            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "notes": "Configuration files cannot be persisted, but will be retained during the update"
 }

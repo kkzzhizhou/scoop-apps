@@ -1,0 +1,46 @@
+{
+    "version": "4.2.3-105-g882742f53",
+    "description": "A free single-player dungeon exploration Roguelike (Pre-release)",
+    "homepage": "https://rephial.org/",
+    "license": "GPL-2.0",
+    "url": "https://github.com/angband/angband/releases/download/4.2.3-105-g882742f53/Angband-4.2.3-105-g882742f53-win.zip",
+    "hash": "b907e9b381c505f76de05a33f0dd73557d368c69e4dae81c708936d85a7de0b7",
+    "extract_dir": "angband-4.2.3-105-g882742f53",
+    "shortcuts": [
+        [
+            "angband.exe",
+            "Angband\\Angband (Pre-release)"
+        ],
+        [
+            "docs\\index.html",
+            "Angband\\Angband Manual (Pre-release)"
+        ]
+    ],
+    "persist": "lib\\user",
+    "checkver": {
+        "url": "https://github.com/angband/angband/releases",
+        "regex": "Angband-(?<major>[\\d]+)\\.(?<minor>[\\d]+)\\.(?<patch>[\\d]+)-(?<build>[\\d]+)-g(?<commit>[\\da-z]+)-win\\.zip",
+        "replace": "${major}.${minor}.${patch}-${build}-g${commit}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/angband/angband/releases/download/$version/Angband-$version-win.zip",
+        "extract_dir": "angband-$version"
+    },
+    "post_install": [
+        "'angband.INI' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "'angband.INI' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "notes": "Configuration files cannot be persisted, but will be retained during the update"
+}
