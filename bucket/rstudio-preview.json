@@ -1,20 +1,27 @@
 {
     "version": "2021.09.0+351",
-    "homepage": "https://www.rstudio.com/",
-    "description": "An IDE for R, which includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
+    "description": "An IDE for R with console, syntax-highlighting, editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
+    "homepage": "https://www.rstudio.com",
     "license": "AGPL-3.0-only",
+    "notes": "For 32bit, please install 'versions/rstudio11",
+    "depends": "r",
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2021.09.0%2B351.zip",
-            "hash": "5f99c89897e867e4ef2d6b600b6d0c4f8e547cc13b7b0faef2345ac2241cba16"
+            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2021.09.0%2B351.exe#/dl.7z",
+            "hash": "f698d4a2eda99e90486cae868aef872b5cccf469e8c189c6fc03afd71d22cd0c",
+            "post_install": [
+                "Remove-Item \"$dir\\`$*\" -Recurse",
+                "if (!(Test-Path \"$env:Appdata\\RStudio\")) {",
+                "    New-Item \"$env:Appdata\\RStudio\" -ItemType Directory -Force | Out-Null",
+                "    @(",
+                "        '[General]'",
+                "        \"RBinDir=`\"$(appdir r $global)\\current\\bin\\x64`\"\".Replace('\\', '/')",
+                "    ) | Add-Content -Path \"$env:Appdata\\RStudio\\desktop.ini\" -Encoding UTF8 -Force",
+                "}"
+            ]
         }
     },
-    "bin": [
-        [
-            "bin\\rstudio.exe",
-            "rstudio-preview"
-        ]
-    ],
+    "bin": "bin\\rstudio.exe",
     "shortcuts": [
         [
             "bin\\rstudio.exe",
@@ -23,13 +30,17 @@
     ],
     "checkver": {
         "url": "https://www.rstudio.com/products/rstudio/download/preview/",
-        "regex": "RStudio (?<date>[\\d.]+)(?:&#43;)(?<build>\\d+) - Windows",
-        "replace": "${date}+${build}"
+        "regex": "windows/RStudio-([\\d.]+)%2B(\\d+)\\.exe",
+        "replace": "${1}+${2}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$matchDate%2B$matchBuild.zip"
+                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$match1%2B$match2.exe#/dl.7z",
+                "hash": {
+                    "url": "https://www.rstudio.com/products/rstudio/download/preview/",
+                    "regex": "(?s)/windows/.*?exe.*?$sha256"
+                }
             }
         }
     }
