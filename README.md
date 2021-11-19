@@ -33,7 +33,6 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Calinou/scoop-games
 - TheCjw/scoop-retools
 - ivaquero/scoopet
-- kodybrown/scoop-nirsoft
 - Ash258/Scoop-JetBrains
 - ScoopInstaller/Versions
 - kidonng/sushi
