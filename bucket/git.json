@@ -1,17 +1,16 @@
 {
-    "version": "2.34.0.windows.1",
-    "description": "Distributed version control system",
-    "homepage": "https://gitforwindows.org",
-    "license": "GPL-2.0-only",
-    "notes": "Set Git Credential Manager Core by running: \"git config --global credential.helper manager-core\"",
+    "##": "Maintainers: when updating this manifest to a new version, you might like to also update git-with-openssh.json",
+    "homepage": "https://git-for-windows.github.io/",
+    "license": "GPL2",
+    "version": "2.17.0.windows.1",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/git-for-windows/git/releases/download/v2.34.0.windows.1/PortableGit-2.34.0-64-bit.7z.exe#/dl.7z",
-            "hash": "12f6aed40fdf2d409dc61d5d1626eed97b0e818549d92626bfffdd7bc580855c"
+            "url": "https://github.com/git-for-windows/git/releases/download/v2.17.0.windows.1/PortableGit-2.17.0-64-bit.7z.exe#/dl.7z",
+            "hash": "9625365ccb67d1c7c52f14824c5dd68af4cca2a1b83a2ba998ba9ba45b708551"
         },
         "32bit": {
-            "url": "https://github.com/git-for-windows/git/releases/download/v2.34.0.windows.1/PortableGit-2.34.0-32-bit.7z.exe#/dl.7z",
-            "hash": "46643dde0f40bee6e7963b9d67ec2f78ffc6882d452b866940e5fe5724dbdba3"
+            "url": "https://github.com/git-for-windows/git/releases/download/v2.17.0.windows.1/PortableGit-2.17.0-32-bit.7z.exe#/dl.7z",
+            "hash": "f2344ec1bb2d87a1ab7b05bd2e7bcbbbbf4de6ae8a6b1dc034b9de4b3a1f0ec9"
         }
     },
     "bin": [
@@ -25,32 +24,33 @@
         [
             "git-bash.exe",
             "Git Bash",
-            "--cd-to-home"
-        ],
-        [
-            "cmd\\git-gui.exe",
-            "Git GUI"
+            "--cd-to-home",
+            "usr\\share\\git\\git-for-windows.ico"
         ]
     ],
+    "post_install": [
+        "git config --global credential.helper manager"
+    ],
+    "notes": "To get Git to recognise OpenSSH, you will need to run\n\nscoop install openssh\n[environment]::setenvironmentvariable('GIT_SSH', (resolve-path (scoop which ssh)), 'USER')\n\nand then restart powershell.",
+    "checkver": {
+        "url": "https://github.com/git-for-windows/git/releases/latest",
+        "re": "v(?<version>[\\d\\w.]+)/PortableGit-(?<short>[\\d.]+).*\\.exe"
+    },
     "env_set": {
         "GIT_INSTALL_ROOT": "$dir"
-    },
-    "checkver": {
-        "github": "https://github.com/git-for-windows/git",
-        "regex": "v([\\w.]+)/PortableGit-(?<full>[\\w.]+)-64-bit"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchFull-64-bit.7z.exe#/dl.7z"
+                "url": "https://github.com/git-for-windows/git/releases/download/v$matchVersion/PortableGit-$matchShort-64-bit.7z.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchFull-32-bit.7z.exe#/dl.7z"
+                "url": "https://github.com/git-for-windows/git/releases/download/v$matchVersion/PortableGit-$matchShort-32-bit.7z.exe#/dl.7z"
             }
         },
         "hash": {
-            "url": "https://github.com/git-for-windows/git/releases/tag/v$version",
-            "regex": "<td>$basename</td>\\s*<td>$sha256</td>"
+            "url": "https://github.com/git-for-windows/git/releases/latest",
+            "find": "<td>$basename<\\/td>\\s*<td>([0-9a-fA-F]+)<\\/td>"
         }
     }
 }

@@ -64,7 +64,6 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Ash258/Scoop-NirSoft
 - ChungZH/peach
 - AStupidBear/scoop-bear
-- rivy/scoop.bucket.scoop-main
 - nueko/scoop-php
 - excitoon/scoop-user
 - naderi/scoop-bucket

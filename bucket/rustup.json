@@ -1,50 +1,34 @@
 {
-    "version": "1.24.3",
-    "description": "Manage multiple rust installations with ease",
-    "homepage": "https://rustup.rs",
-    "license": "MIT|Apache-2.0",
-    "notes": "To use the MSVC ABI without Visual Studio 2015 (or higher) installed, you will need the Visual Studio 2017 Build Tools: https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017",
-    "architecture": {
-        "64bit": {
-            "url": "https://static.rust-lang.org/rustup/archive/1.24.3/x86_64-pc-windows-gnu/rustup-init.exe",
-            "hash": "5a4e8d6193f4239cd81c02350949c73b6ce4ac52839d204f9552a132b552cc41"
-        },
-        "32bit": {
-            "url": "https://static.rust-lang.org/rustup/archive/1.24.3/i686-pc-windows-gnu/rustup-init.exe",
-            "hash": "89f529d6e17d688bf5f2c2af25281da504c24830c794564287bf760c0e6e2e9b"
-        }
+    "version": "1.18.3",
+    "license": "MIT",
+    "hash": "9b15c26905d4505ab77e000750aa3aedeb909507485c5e5901b6ad7de9d42e2d",
+    "homepage": "https://github.com/rust-lang-nursery/rustup.rs",
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/rust-lang-nursery/rustup.rs/master/Cargo.toml",
+        "re": "version = \"(\\d+\\.\\d+\\.\\d+)\""
     },
-    "installer": {
-        "script": [
-            "[Environment]::SetEnvironmentVariable('CARGO_HOME', \"$persist_dir\\.cargo\", 'Process')",
-            "[Environment]::SetEnvironmentVariable('RUSTUP_HOME', \"$persist_dir\\.rustup\", 'Process')",
-            "Invoke-ExternalCommand -Path \"$dir\\rustup-init.exe\" -Args '-y --no-modify-path' | Out-Null"
-        ]
-    },
-    "env_add_path": ".cargo\\bin",
-    "env_set": {
-        "CARGO_HOME": "$persist_dir\\.cargo",
-        "RUSTUP_HOME": "$persist_dir\\.rustup"
+    "url": "https://win.rustup.rs/#/rustup-init.exe",
+    "autoupdate": {
+        "url": "https://win.rustup.rs/#/rustup-init.exe"
     },
     "persist": [
         ".cargo",
         ".rustup"
     ],
-    "checkver": {
-        "url": "https://raw.githubusercontent.com/rust-lang-nursery/rustup.rs/master/Cargo.toml",
-        "regex": "version = \"([\\d.]+)\""
+    "env_add_path": ".cargo\\bin",
+    "env_set": {
+        "CARGO_HOME": "$persist_dir\\.cargo",
+        "RUSTUP_HOME": "$persist_dir\\.rustup"
     },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://static.rust-lang.org/rustup/archive/$version/x86_64-pc-windows-gnu/rustup-init.exe"
-            },
-            "32bit": {
-                "url": "https://static.rust-lang.org/rustup/archive/$version/i686-pc-windows-gnu/rustup-init.exe"
-            }
-        },
-        "hash": {
-            "url": "$url.sha256"
-        }
-    }
+    "installer": {
+        "script": [
+            "# Create environment variables for this process",
+            "[Environment]::SetEnvironmentVariable('CARGO_HOME', \"$persist_dir\\.cargo\", 'Process')",
+            "[Environment]::SetEnvironmentVariable('RUSTUP_HOME', \"$persist_dir\\.rustup\", 'Process')",
+            "",
+            "# Install Rustup",
+            "& \"$dir\\rustup-init.exe\" -y --no-modify-path --default-toolchain stable-gnu"
+        ]
+    },
+    "notes": "To use the MSVC ABI without Visual Studio 2015 (or higher) installed, you will need the Visual Studio 2017 Build Tools: https://www.visualstudio.com/downloads/#build-tools-for-visual-studio-2017"
 }
