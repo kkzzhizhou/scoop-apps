@@ -53,14 +53,14 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
 - zhoujin7/tomato
-- dodorz/scoop
 - ScoopInstaller/PHP
+- dodorz/scoop
 - kiennq/scoop-misc
 - TheRandomLabs/Scoop-Python
 - borger/scoop-emulators
 - scoopcn/scoopcn
-- Paxxs/Cluttered-bucket
 - wzv5/ScoopBucket
+- Paxxs/Cluttered-bucket
 - Ash258/Scoop-NirSoft
 - ChungZH/peach
 - AStupidBear/scoop-bear
