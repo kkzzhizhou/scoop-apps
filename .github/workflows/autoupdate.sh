@@ -2,7 +2,7 @@
 ###
  # @Author: zzz
  # @Date: 2021-03-03 05:13:39
- # @LastEditTime: 2021-03-03 07:48:38
+# LastEditTime: 2021-12-06 17:15:12
  # @Description: autoupdate bucket:scoop-apps
  # @FilePath: /data/scoop-apps/autoupdate.sh
 ### 
@@ -11,29 +11,54 @@
 script_dir=$(cd $(dirname $0) && pwd)
 cd $script_dir
 cd ../../
+# create cache dir
+cache_dir=`mktemp -d`
+
+apt -y update && apt -y install jq recode sqlite3
 
 # generate bucket.config
-echo "kkzzhizhou/scoop-zapps" > bucket.config
+init_scoop-zapps(){
+    git clone --depth=1 https://github.com/kkzzhizhou/scoop-zapps  ${cache_dir}/scoop-zapps
+    files=$(find ${cache_dir}/scoop-zapps -type f -name *.json -not -path "${cache_dir}/$bucket_dir/.vscode/*")
+    for file in ${files[@]}
+    do
+        file_name=$(echo $file | awk -F'/' '{print $NF}')
+        file_id=$(echo $file_name | tr 'A-Z' 'a-z')
+        check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l)
+        if [ "$check_file_id" -eq 0 ]
+        then
+            # record file_id
+            echo $file_id >> ${cache_dir}/file_ids
+        fi
+        # record file_md5
+        echo $file_md5 >> ${cache_dir}/file_md5
+        # copy file to bucket
+        cp -f $file ./bucket/$file_name
+    done
+}
 
-# clone rasa/scoop-directory
-temp_dir=`mktemp -d`
-[ -d "$temp_dir/scoop-directory" ] || git clone --depth=1 https://github.com/rasa/scoop-directory $temp_dir/scoop-directory
-buckets=$(cat ${temp_dir}/scoop-directory/by-stars.md | sed '/###/, /$d/d' | grep "name=" | sed "s/<[^>]*>//g" | sed 's/_//g' | awk -F'[][]' '{print $4","$6","$8}' | grep -v 'kkzzhizhou/scoop-zapps' | grep -v 'ScoopInstaller/Main')
-for bucket in ${buckets[@]}; do
-    bucket_name=$(echo $bucket | awk -F',' '{print $1}')
-    app_num=$(echo $bucket | awk -F',' '{print $2}')
-    star_num=$(echo $bucket | awk -F',' '{print $3}')
-    if [ "$app_num" -gt 10 -a "$star_num" -gt 5 ];then
+# get bucket from rasa/scoop-directory
+rm -f bucket.config
+wget https://github.com/rasa/scoop-directory/raw/master/scoop_directory.db
+if [ $? -eq 0 ];then
+    count=$(sqlite3 ./scoop_directory.db "select count(1) from buckets");
+    for((i=1;i<=$count;i++))
+    do
+        date_recode=$(sqlite3 ./scoop_directory.db "select updated from buckets where id = $i" | recode html)
+        sqlite3 ./scoop_directory.db "UPDATE buckets SET updated = '$date_recode' where id = $i"
+    done
+    check_date=$(date +"%y-%m-%d" -d '1 month ago')
+    bucket_urls=$(sqlite3 ./scoop_directory.db "select bucket_url from buckets where packages >= 10 and stars >= 5 and updated > '$check_date' and bucket_url not like '%ScoopInstaller/Main%' and bucket_url not like '%kkzzhizhou/scoop-zapps%' order by stars desc, updated desc, stars desc")
+    for bucket_url in ${bucket_urls[@]}; do
+        bucket_name=$(echo $bucket_url | awk -F'/' '{print $(NF-1)"/"$NF}')
+        echo "add bucket:$bucket_name"
         echo "$bucket_name" >> bucket.config
-    fi
-done
+    done
+fi
 
 buckets=$(cat bucket.config)
 script_buckets=$(tac bucket.config)
 confuses=$(cat $script_dir/app.confuse)
-
-# create cache dir
-cache_dir=`mktemp -d`
 
 # download bucket
 for bucket in ${buckets[@]}
@@ -57,12 +82,39 @@ do
     fi
 done
 
+# add json
+add_to_bucket(){
+    local file="$1"
+    local file_name="$2"
+    local bucket="$3"
+    cat $file | jq > /dev/null 2&>1
+    if [ $? -eq 0 ];then
+        cp -f $file ./bucket/$file_name
+    else
+        echo "$file is invalid."
+    fi
+	echo "$file_name    $bucket" >> app-contributor-list.txt
+}
+
+# init main
+init_main(){
+    git clone --depth=1 https://github.com/ScoopInstaller/Main  ${cache_dir}/Main
+    files=$(find ${cache_dir}/Main -type f -name *.json -not -path "${cache_dir}/$bucket_dir/.vscode/*")
+    for file in ${files[@]}
+    do
+        file_name=$(echo $file | awk -F'/' '{print $NF}')
+        echo $file_name | tr 'A-Z' 'a-z' >> ${cache_dir}/file_ids
+    done
+}
+
 # merge bucket
 rm -f bucket/*.json
 rm -f ${cache_dir}/file_ids && touch ${cache_dir}/file_ids
 rm -f ${cache_dir}/file_md5 && touch ${cache_dir}/file_md5
 rm -f app-contributor-list.txt
 echo "name    bucket" > app-contributor-list.txt
+init_main
+init_scoop-zapps
 for bucket in ${buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
@@ -82,9 +134,7 @@ do
             # record file_md5
             echo $file_md5 >> ${cache_dir}/file_md5
             # copy file to bucket
-            cp -f $file ./bucket/$file_name
-	        # record app-contributor-list.txt
-	        echo "$file_name    $bucket" >> app-contributor-list.txt
+            add_to_bucket "$file" "$file_name" "$bucket"
         elif [ "$check_file_md5" -eq 0 ]
         then
             # rename file
@@ -92,10 +142,8 @@ do
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/")
             # record file_md5
             echo $file_md5 >> ${cache_dir}/file_md5
-	        # record app-contributor-list.txt
-	        echo "$new_name    $bucket" >> app-contributor-list.txt
             # copy file to bucket
-            cp -f $file ./bucket/$new_name
+            add_to_bucket "$file" "$new_name" "$bucket"
         else
            # ignore duplicate file
            echo "duplicate file:$bucket   $file"

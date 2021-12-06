@@ -1,0 +1,33 @@
+{
+    "homepage": "https://github.com/miiton/Cica",
+    "description": "Japanese fixed-width font for Programming",
+    "version": "5.0.2",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://github.com/miiton/Cica/blob/master/LICENSE.txt"
+    },
+    "url": "https://github.com/miiton/Cica/releases/download/v5.0.2/Cica_v5.0.2_with_emoji.zip",
+    "hash": "b5d2eaa5841f629ed8cfd239aa30f5a4b45aa1aa2ef9f4c2b3f715f3d59bb8de",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/miiton/Cica/releases/download/v$version/Cica_v$version_with_emoji.zip"
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    $fontdir = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "    New-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$fontdir\\$($_.Name)\" -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$fontdir\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    $fontdir = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Move-Item \"$fontdir\\$($_.Name)\" -Destination \"$fontdir\\Deleted\\$($_.Name)\" -Force",
+            "}"
+        ]
+    }
+}
