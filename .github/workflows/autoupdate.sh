@@ -170,5 +170,9 @@ do
     echo "- $bucket" >> README.md
 done
 
+# delete unused file
+rm -f 1
+rm -f bucket/setting.json
+
 # fix nothing commit
 echo "最近更新时间：`date`" > latest.update
