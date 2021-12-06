@@ -14,7 +14,7 @@ cd ../../
 # create cache dir
 cache_dir=`mktemp -d`
 
-apt -y update && apt -y install jq recode sqlite3
+sudo apt-get -y update && sudo apt-get -y install jq recode sqlite3
 
 # generate bucket.config
 init_scoop-zapps(){
