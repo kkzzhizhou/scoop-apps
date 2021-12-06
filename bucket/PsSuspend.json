@@ -1,0 +1,53 @@
+{
+    "version": "1.07",
+    "description": "PsSuspend. Suspends or resumes processes on a local or remote NT system.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/pssuspend",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsSuspend64.exe",
+            "hash": "e93ddd9ed564b7f6532cd5b94cdce73067d8ebad8a5ce9373a6f839c7050780f",
+            "bin": [
+                "PsSuspend64.exe",
+                [
+                    "PsSuspend64.exe",
+                    "PsSuspend"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsSuspend.exe",
+            "hash": "02ec8c37dd946a2cd74673993c2108f12fff3e82019a1590231c4205ccb2f0d4",
+            "bin": "PsSuspend.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsSuspend\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsSuspend\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsSuspend\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsSuspend64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsSuspend.exe"
+            }
+        }
+    }
+}

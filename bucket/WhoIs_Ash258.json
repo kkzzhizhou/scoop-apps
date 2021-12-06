@@ -1,0 +1,53 @@
+{
+    "version": "1.21",
+    "description": "WhoIs. Domain information lookup",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/whois",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/WhoIs.zip",
+    "hash": "43d82eb09a93c788030b31668a1b578d4953c52875dccf5c5ebc98059fa834a1",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\Whois\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Whois\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "whois64.exe",
+                [
+                    "whois64.exe",
+                    "whois"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "whois.exe"
+        },
+        "arm64": {
+            "bin": [
+                "whois64a.exe",
+                [
+                    "whois64a.exe",
+                    "whois"
+                ]
+            ]
+        }
+    },
+    "checkver": "Whois\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/WhoIs.zip"
+    }
+}

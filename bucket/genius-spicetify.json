@@ -1,0 +1,65 @@
+{
+    "version": "2021-06-04T22.26.26",
+    "description": "Custom app for Spicetify that fetches lyrics from Genius and Musixmatch.",
+    "homepage": "https://github.com/khanhas/genius-spicetify",
+    "license": "Freeware",
+    "depends": "spicetify-cli",
+    "url": "https://github.com/khanhas/genius-spicetify/archive/master.zip",
+    "hash": "80abe09519957c6be3ff322f5014746a2af770d7c4d683fc4fbc8463d795c64e",
+    "notes": [
+        "See here to configure a Musixmatch user token: https://github.com/khanhas/genius-spicetify#musicxmatch",
+        "--purge should be used to fully uninstall this package."
+    ],
+    "installer": {
+        "script": [
+            "if ($global) {",
+            "    Write-Host \"$app cannot be installed globally.\" -Foreground Red",
+            "    exit 1",
+            "}",
+            "",
+            "$spotify_path = get-spotify-path",
+            "",
+            "if (-not (Test-Path $spotify_path)) {",
+            "    Write-Host \"Spotify must be installed to install $app.\" -Foreground Red",
+            "    exit 1",
+            "}",
+            "",
+            "$genius_dir = \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\"",
+            "",
+            "# Persist Musixmatch token",
+            "if (Test-Path \"$genius_dir\\manifest.json\") { $musixmatch_token = (Select-String -Path \"$genius_dir\\manifest.json\" -Pattern 'UserToken.*\"(\\w*)\"' | Select-Object -First 1).Matches[0].Groups[1].Value }",
+            "",
+            "Remove-Item -ErrorAction Ignore -Recurse \"$genius_dir\"",
+            "Copy-Item -Force -Recurse \"$dir\\genius-spicetify-master\" -Destination \"$genius_dir\"",
+            "",
+            "if ($musixmatch_token) {",
+            "    $content = (Get-Content \"$genius_dir\\manifest.json\") -replace '(UserToken.*)\"\\w*\"', \"`$1`\"$musixmatch_token`\"\"",
+            "    [System.IO.File]::WriteAllLines(\"$genius_dir\\manifest.json\", $content) # UTF-8 no BOM is required",
+            "}",
+            "",
+            "$spotify_running = Get-Process -ErrorAction Ignore -Name Spotify",
+            "init-spicetify-config",
+            "spicetify config custom_apps genius --quiet",
+            "spicetify-apply -quiet",
+            "if ($spotify_running) { Start-Process \"$spotify_path\" }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($purge) { Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\" }",
+            "else { Get-ChildItem \"$env:USERPROFILE\\.spicetify\\CustomApps\\genius\" -Exclude 'manifest.json' -ErrorAction Ignore | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore $_ } }",
+            "if (installed spicetify-cli) {",
+            "    spicetify config custom_apps genius- --quiet",
+            "    init-spicetify-config-and-apply",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/khanhas/genius-spicetify/commits",
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
+    },
+    "autoupdate": {
+        "url": "https://github.com/khanhas/genius-spicetify/archive/master.zip"
+    }
+}

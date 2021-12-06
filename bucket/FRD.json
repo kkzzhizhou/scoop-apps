@@ -1,0 +1,65 @@
+{
+    "version": "1.0beta",
+    "description": "FreeRapid Downloader. Easy to use downloader that supports downloading from Youtube, Facebook, Picasa and other file-sharing services, include the new ones like mega.co.nz.",
+    "homepage": "http://wordrider.net/freerapid/",
+    "license": "GPL-2.0-or-later",
+    "suggest": {
+        "java": "oraclejdk-lts"
+    },
+    "url": "http://wordrider.net/download/FreeRapid-1.0beta.zip",
+    "hash": "c493b4fb4223c7a75fa748b309dc9342ca8bd68d4415b686d28d68c6a8b7b520",
+    "extract_dir": "FreeRapid-1.0beta",
+    "post_install": [
+        "$delimeter = \"`r`n\"",
+        "$start = @(",
+        "    '<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>',",
+        "    '<!DOCTYPE preferences SYSTEM \"http://java.sun.com/dtd/preferences.dtd\">',",
+        "    '<preferences EXTERNAL_XML_VERSION=\"1.0\">',",
+        "    '  <root type=\"user\">',",
+        "    '    <map>'",
+        ")",
+        "$ents = @()",
+        "$end =  @('    </map>', '  </root>', '</preferences>')",
+        "$entryTemplate = \"      <entry key=\"\"%%key%%\"\" value=\"\"%%value%%\"\"/>\"",
+        "$entries = @{",
+        "    'enableDirectDownloads'             = 'true'",
+        "    'enableNewLinkCheckDownloadHistory' = 'true'",
+        "    'errorAttemptsCount'                = '-1'",
+        "    'openIncompleteFiles'               = 'true'",
+        "    'pluginUpdateCheckInterval'         = '1'",
+        "    'pluginUpdateMethod'                = '3'",
+        "    'preCreateFile'                     = 'true'",
+        "    'showInfoInFrameTitle'              = 'true'",
+        "    'showPercentProgress'               = 'true'",
+        "    'skipDuplicateFiles'                = 'true'",
+        "    'zoomCaptchaImage'                  = 'true'",
+        "}",
+        "foreach ($entry in $entries.Keys) {",
+        "    $ent = ($entryTemplate -replace '%%key%%', $entry) -replace '%%value%%', $entries.Item($entry)",
+        "    $ents += $ent",
+        "}",
+        "    # Create file string",
+        "$finalFile  = $start -join $delimeter",
+        "$finalFile += $ents -join $delimeter",
+        "$finalFile += $end -join $delimeter",
+        "    # Set File",
+        "$FILE = \"$env:AppData\\VitySoft\\FRD\\frd.xml\"",
+        "if (-not (Test-Path $FILE)) {",
+        "    Write-Host 'File' $FILE 'does not exists. Creating.' -f Yellow",
+        "    New-Item $FILE -Type File -Force | Out-Null",
+        "    Set-Content $FILE $finalFile -Encoding Ascii -Force",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "frd.bat",
+            "Freerapid Downloader",
+            "",
+            "frd.ico"
+        ]
+    ],
+    "autoupdate": {
+        "url": "http://www.wordrider.net/download/FreeRapid-$version.zip",
+        "extract_dir": "FreeRapid-$version"
+    }
+}

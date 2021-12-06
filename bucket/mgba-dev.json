@@ -1,0 +1,68 @@
+{
+    "homepage": "https://mgba.io/",
+    "description": "A fast, accurate, and portable GBA emulator (development version)",
+    "license": "MPL-2.0",
+    "version": "7157-20211129",
+    "architecture": {
+        "64bit": {
+            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2021-11-29-win64-7157-c9e1b78426b9774447dc3a611b078b8670542b36.7z",
+            "hash": "b304cf17c51182121d2f053f36bb14a58dd48acd3965b9432e02246c2397e6ce"
+        },
+        "32bit": {
+            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2021-11-29-win32-7157-c9e1b78426b9774447dc3a611b078b8670542b36.7z",
+            "hash": "517b028f7c87c26eca63bad9f839e4f9aeb62e7bbb2da30eeafb352f56af093d"
+        }
+    },
+    "installer": {
+        "script": [
+            "Move-Item -Path \"$(Get-ChildItem -Path $dir)\\*\" -Destination \"$dir\"",
+            "Set-Location -Path $dir",
+            "Remove-Item -Path $(Get-ChildItem -Path $dir -Name -Include mGBA-build*)",
+            "if (!(Test-Path \"$persist_dir\\qt.ini\")) {",
+            "   New-Item \"$dir\\qt.ini\" -ItemType \"file\" | Out-Null ",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
+            "   Set-Content \"$dir\\config.ini\" '[ports.qt]'",
+            "   'cheats', 'patch', 'savegame', 'savestate', 'screenshot' | ForEach-Object {",
+            "       Add-Content -Path \"$dir\\config.ini\" -Value $_`Path`=$persist_dir\\$_ }",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "mGBA.exe",
+            "mgba-sdl.exe"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "mGBA.exe",
+            "mGBA (Development)"
+        ]
+    ],
+    "persist": [
+        "cheats",
+        "patch",
+        "savegame",
+        "savestate",
+        "screenshot",
+        "shaders",
+        "qt.ini",
+        "config.ini"
+    ],
+    "checkver": {
+        "url": "https://mgba.io/builds/1/",
+        "regex": "build-(?<year>20\\d{2})-(?<month>\\d{2})-(?<day>\\d{2})-win32-(?<ver>[\\d]+)-(?<git>\\w{40})\\.7z",
+        "replace": "$4-$1$2$3"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win64-$matchVer-$matchGit.7z"
+            },
+            "32bit": {
+                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win32-$matchVer-$matchGit.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "version": "2.8.3",
+    "description": "Tool for customizing the Spotify client.",
+    "homepage": "https://github.com/khanhas/spicetify-cli",
+    "license": "GPL-3.0-only",
+    "suggest": {
+        "Spotify": [
+            "spotify-latest",
+            "spotify-with-blockthespot"
+        ]
+    },
+    "url": "https://github.com/khanhas/spicetify-cli/releases/download/v2.8.3/spicetify-2.8.3-windows-x64.zip",
+    "hash": "fdfa44cfbf0975b1371ada069de8590f6cbc0cfc5f4fd9b99a7ff38b0e16d879",
+    "notes": [
+        "Run `spicetify-apply` instead of `spicetify apply` to ensure changes are applied correctly, especially if `blockthespot` is also installed.",
+        "For similar reasons, `spicetify-enable-devtool` and `spicetify-disable-devtool` should be run instead of `spicetify enable-devtool` and `spicetify disable-devtool`.",
+        "--purge should be used to fully uninstall this package."
+    ],
+    "installer": {
+        "script": [
+            "if ($global) {",
+            "    Write-Host \"$app cannot be installed globally.\" -Foreground Red",
+            "    exit 1",
+            "}",
+            "",
+            "$null, $bucket = find_manifest($app)",
+            "$bucketdir = Find-BucketDirectory($bucket)",
+            "'get-spotify-path', 'init-spicetify-config', 'init-spicetify-config-and-apply', 'spicetify-apply', 'spicetify-disable-devtool', 'spicetify-enable-devtool' | ForEach-Object { Copy-Item \"$bucketdir\\..\\scripts\\$_.ps1\" -Destination $dir }",
+            "",
+            "if (-not (Test-Path (& \"$dir\\get-spotify-path.ps1\"))) {",
+            "    Write-Host \"Spotify must be installed to install $app.\" -Foreground Red",
+            "    exit 1",
+            "}",
+            "",
+            "& \"$dir\\init-spicetify-config-and-apply.ps1\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$spotify_running = Get-Process -ErrorAction Ignore -Name Spotify",
+            "Stop-Process -ErrorAction Ignore -Name Spotify",
+            "spicetify restore --quiet --no-restart",
+            "if (installed blockthespot) { blockthespot }",
+            "if ($spotify_running) { Start-Process \"$(scoop which Spotify)\" }",
+            "if ($purge) { Remove-Item -ErrorAction Ignore -Recurse \"$env:USERPROFILE\\.spicetify\" }"
+        ]
+    },
+    "bin": [
+        "get-spotify-path.ps1",
+        "init-spicetify-config.ps1",
+        "init-spicetify-config-and-apply.ps1",
+        "spicetify.exe",
+        "spicetify-apply.ps1",
+        "spicetify-disable-devtool.ps1",
+        "spicetify-enable-devtool.ps1"
+    ],
+    "checkver": {
+        "github": "https://github.com/khanhas/spicetify-cli"
+    },
+    "autoupdate": {
+        "url": "https://github.com/khanhas/spicetify-cli/releases/download/v$version/spicetify-$version-windows-x64.zip"
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "version": "10.11",
+    "description": "ProcDump. Captures process dumps of otherwise difficult to isolate and reproduce CPU spikes.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/procdump",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/Procdump.zip",
+    "hash": "397fe79657aba2fae9ebbf8d28ece416ef091d5d8b5b902e5eade0dcfbc09562",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\ProcDump\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\ProcDump\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "procdump64.exe",
+                [
+                    "procdump64.exe",
+                    "procdump"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "procdump.exe"
+        },
+        "arm64": {
+            "bin": [
+                "procdump64a.exe",
+                [
+                    "procdump64a.exe",
+                    "procdump"
+                ]
+            ]
+        }
+    },
+    "checkver": "ProcDump\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/Procdump.zip"
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "version": "1.35",
+    "description": "PsLoggedOn. List of local and remote currently logged on users",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psloggedon",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsLoggedOn64.exe",
+            "hash": "fdadb6e15c52c41a31e3c22659dd490d5b616e017d1b1aa6070008ce09ed27ea",
+            "bin": [
+                "PsLoggedOn64.exe",
+                [
+                    "PsLoggedOn64.exe",
+                    "PsLoggedOn"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsLoggedOn.exe",
+            "hash": "d689cb1dbd2e4c06cd15e51a6871c406c595790ddcdcd7dc8d0401c7183720ef",
+            "bin": "PsLoggedOn.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsLoggedon\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsLoggedon\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsLoggedOn\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsLoggedOn64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsLoggedOn.exe"
+            }
+        }
+    }
+}

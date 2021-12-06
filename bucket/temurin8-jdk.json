@@ -1,0 +1,42 @@
+{
+    "description": "Eclipse Temurin is a runtime provided by Eclipse Adoptium for general use across the Java ecosystem",
+    "homepage": "https://adoptium.net",
+    "version": "8u312-b07",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jdk_x64_windows_hotspot_8u312b07.zip",
+            "hash": "d957ada22f53d201d78f0ad3844e9e55da0b279e67c1e6c9366276cb5d8a981a"
+        },
+        "32bit": {
+            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u312-b07/OpenJDK8U-jdk_x86-32_windows_hotspot_8u312b07.zip",
+            "hash": "f9c89272593d9fde5d6281f3310e3c6f34ac823fd710d29cf2b40df2397960fb"
+        }
+    },
+    "extract_dir": "jdk8u312-b07",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptium.net/v3/assets/feature_releases/8/ga?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jdk&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
+        "jsonpath": "$..binaries[0].package.link",
+        "regex": "https://github.com/(?<url>.*?(?<tag>jdk(?<major>[\\d]+)(?<update>u[\\d]+)-(?<build>b[\\d]+)(?<patch>[\\d.]*)))/",
+        "replace": "${major}${update}-${build}${patch}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$version/OpenJDK$matchMajorU-jdk_x64_windows_hotspot_$matchMajor$matchUpdate$matchBuild.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$version/OpenJDK$matchMajorU-jdk_x86-32_windows_hotspot_$matchMajor$matchUpdate$matchBuild.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk$matchMajor$matchUpdate-$matchBuild"
+    }
+}

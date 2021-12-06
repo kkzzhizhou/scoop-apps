@@ -1,0 +1,53 @@
+{
+    "version": "1.11",
+    "description": "RegDelNull. Deletes registry keys that contain embedded-null characters and that are otherwise undeleteable using standard Registry-editing tools.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/regdelnull",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/Regdelnull.zip",
+    "hash": "c8eede7452ece5b41b5ebb2061e162854ac9a51dd7f5e7cfd84b943834433dae",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\RegDelNull\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\RegDelNull\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "RegDelNull64.exe",
+                [
+                    "RegDelNull64.exe",
+                    "RegDelNull"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "RegDelNull.exe"
+        },
+        "arm64": {
+            "bin": [
+                "RegDelNull64a.exe",
+                [
+                    "RegDelNull64a.exe",
+                    "RegDelNull"
+                ]
+            ]
+        }
+    },
+    "checkver": "RegDelNull\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/Regdelnull.zip"
+    }
+}

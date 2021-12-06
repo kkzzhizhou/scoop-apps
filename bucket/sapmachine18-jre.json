@@ -1,0 +1,35 @@
+{
+    "description": "SapMachine 17: An OpenJDK release maintained and supported by SAP",
+    "homepage": "https://sap.github.io/SapMachine/",
+    "version": "18-9-ea",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/SAP/SapMachine/releases/download//sapmachine-18%2B9/sapmachine-jre-18-ea.9_windows-x64_bin.zip",
+            "hash": "af2e60fe0817c98d039293128f9d71faa50df18d57ab26bbf33ee983bafe8c4e"
+        }
+    },
+    "extract_dir": "sapmachine-jre-18",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://sap.github.io/SapMachine/assets/data/sapmachine_releases.json",
+        "jsonpath": "$.assets.18.releases[0].jre.windows-x64",
+        "re": "(?<sap>/sapmachine-(?:[\\d.]+)(?:\\%2B|\\+)?(?:[\\d]*)/sapmachine-jre-(?<version>[\\d.]+)(?:(?<dash>-)(?<ea>ea)\\.(?<build>[\\d]+))?_windows-x64_bin).zip",
+        "replace": "${version}${dash}${build}${dash}${ea}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/SAP/SapMachine/releases/download/$matchSap.zip"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/SAP/SapMachine/releases/download/$matchSap.sha256.txt",
+            "find": "^($sha256)\\s"
+        },
+        "extract_dir": "sapmachine-jre-$matchVersion"
+    }
+}
