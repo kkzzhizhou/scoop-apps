@@ -30,10 +30,9 @@ init_scoop-zapps(){
             # record file_id
             echo $file_id >> ${cache_dir}/file_ids
         fi
+        add_to_bucket "file" "file_name" "kkzzhizhou/scoop-zapps" 
         # record file_md5
         echo $file_md5 >> ${cache_dir}/file_md5
-        # copy file to bucket
-        cp -f $file ./bucket/$file_name
     done
 }
 
@@ -169,10 +168,6 @@ for bucket in ${buckets[@]}
 do
     echo "- $bucket" >> README.md
 done
-
-# delete unused file
-rm -f 1
-rm -f bucket/setting.json
 
 # fix nothing commit
 echo "最近更新时间：`date`" > latest.update
