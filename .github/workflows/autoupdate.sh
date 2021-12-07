@@ -74,16 +74,18 @@ download_bucket(){
     done
 }
 # merge scripts
-rm -rf scripts/*
-for bucket in ${script_buckets[@]}
-do
-    bucket_dir=$(echo $bucket | sed 's@/@-@g')
-    if [ -d "${cache_dir}/${bucket_dir}/scripts" ]
-    then
-        cp -rf ${cache_dir}/${bucket_dir}/scripts/* ./scripts/
-    fi
-done
-
+merge_scripts(){
+    rm -rf scripts/*
+    for bucket in ${script_buckets[@]}
+    do
+        bucket_dir=$(echo $bucket | sed 's@/@-@g')
+        if [ -d "${cache_dir}/${bucket_dir}/scripts" ]
+        then
+            cp -rf ${cache_dir}/${bucket_dir}/scripts/* ./scripts/
+        fi
+    done
+    cp -rf ${cache_dir}/scoop-zapps/scripts/* ./scripts/
+}
 # add json
 add_to_bucket(){
     local file="$1"
@@ -98,7 +100,7 @@ add_to_bucket(){
 	echo "$file_name    $bucket" >> app-contributor-list.txt
 }
 
-# init main
+# init main bucket
 init_main(){
     git clone --depth=1 https://github.com/ScoopInstaller/Main  ${cache_dir}/Main
     files=$(find ${cache_dir}/Main -type f -name *.json -not -path "${cache_dir}/$bucket_dir/.vscode/*")
@@ -119,6 +121,7 @@ init_main
 init_scoop-zapps
 gen_bucket_config
 download_bucket
+merge_scripts
 for bucket in ${buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
