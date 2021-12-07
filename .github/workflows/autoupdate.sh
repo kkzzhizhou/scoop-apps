@@ -169,8 +169,8 @@ do
 done
 
 # update README.md
-sed -i '/^# 合并仓库列表/,$d' README.md
-echo -e "# 合并仓库列表\n" >> README.md
+sed -i '/^## 合并仓库列表/,$d' README.md
+echo -e "## 合并仓库列表\n" >> README.md
 for bucket in ${buckets[@]}
 do
     echo "- $bucket" >> README.md
