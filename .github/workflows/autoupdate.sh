@@ -16,7 +16,7 @@ cache_dir=`mktemp -d`
 
 sudo apt-get -y update && sudo apt-get -y install jq recode sqlite3
 
-# generate bucket.config
+# init scoop-zapps
 init_scoop-zapps(){
     git clone --depth=1 https://github.com/kkzzhizhou/scoop-zapps  ${cache_dir}/scoop-zapps
     files=$(find ${cache_dir}/scoop-zapps -type f -name *.json -not -path "${cache_dir}/scoop-zapps/.vscode/*")
@@ -30,46 +30,49 @@ init_scoop-zapps(){
             # record file_id
             echo $file_id >> ${cache_dir}/file_ids
         fi
-        add_to_bucket "file" "file_name" "kkzzhizhou/scoop-zapps" 
+        add_to_bucket "$file" "${file_name}" "kkzzhizhou/scoop-zapps" 
         # record file_md5
         echo $file_md5 >> ${cache_dir}/file_md5
     done
+    exit 0
 }
 
 # get bucket from rasa/scoop-directory
-rm -f bucket.config
-wget https://github.com/rasa/scoop-directory/raw/master/scoop_directory.db
-if [ $? -eq 0 ];then
-    count=$(sqlite3 ./scoop_directory.db "select count(1) from buckets");
-    for((i=1;i<=$count;i++))
-    do
-        date_recode=$(sqlite3 ./scoop_directory.db "select updated from buckets where id = $i" | recode html)
-        sqlite3 ./scoop_directory.db "UPDATE buckets SET updated = '$date_recode' where id = $i"
-    done
-    check_date=$(date +"%y-%m-%d" -d '1 month ago')
-    bucket_urls=$(sqlite3 ./scoop_directory.db "select bucket_url from buckets where packages >= 10 and stars >= 5 and updated > '$check_date' and bucket_url not like '%ScoopInstaller/Main%' and bucket_url not like '%kkzzhizhou/scoop-zapps%' order by stars desc, updated desc, stars desc")
-    for bucket_url in ${bucket_urls[@]}; do
-        bucket_name=$(echo $bucket_url | awk -F'/' '{print $(NF-1)"/"$NF}')
-        echo "add bucket:$bucket_name"
-        echo "$bucket_name" >> bucket.config
-    done
-fi
-
-buckets=$(cat bucket.config)
-script_buckets=$(tac bucket.config)
-confuses=$(cat $script_dir/app.confuse)
+gen_bucket_config(){
+    rm -f bucket.config
+    wget https://github.com/rasa/scoop-directory/raw/master/scoop_directory.db
+    if [ $? -eq 0 ];then
+        count=$(sqlite3 ./scoop_directory.db "select count(1) from buckets");
+        for((i=1;i<=$count;i++))
+        do
+            date_recode=$(sqlite3 ./scoop_directory.db "select updated from buckets where id = $i" | recode html)
+            sqlite3 ./scoop_directory.db "UPDATE buckets SET updated = '$date_recode' where id = $i"
+        done
+        check_date=$(date +"%y-%m-%d" -d '1 month ago')
+        bucket_urls=$(sqlite3 ./scoop_directory.db "select bucket_url from buckets where packages >= 10 and stars >= 5 and updated > '$check_date' and bucket_url not like '%ScoopInstaller/Main%' and bucket_url not like '%kkzzhizhou/scoop-zapps%' order by stars desc, updated desc, stars desc")
+        for bucket_url in ${bucket_urls[@]}; do
+            bucket_name=$(echo $bucket_url | awk -F'/' '{print $(NF-1)"/"$NF}')
+            echo "add bucket:$bucket_name"
+            echo "$bucket_name" >> bucket.config
+        done
+    fi
+}
 
 # download bucket
-for bucket in ${buckets[@]}
-do
-    bucket_dir=$(echo $bucket | sed 's@/@-@g')
-    if [ ! -d "${cache_dir}/$bucket_dir" ]
-    then
-        echo "clone bucket:$bucket"
-        git clone --depth=1 https://github.com/$bucket ${cache_dir}/$bucket_dir
-    fi
-done
-
+download_bucket(){
+    buckets=$(cat bucket.config)
+    script_buckets=$(tac bucket.config)
+    confuses=$(cat $script_dir/app.confuse)
+    for bucket in ${buckets[@]}
+    do
+        bucket_dir=$(echo $bucket | sed 's@/@-@g')
+        if [ ! -d "${cache_dir}/$bucket_dir" ]
+        then
+            echo "clone bucket:$bucket"
+            git clone --depth=1 https://github.com/$bucket ${cache_dir}/$bucket_dir
+        fi
+    done
+}
 # merge scripts
 rm -rf scripts/*
 for bucket in ${script_buckets[@]}
@@ -114,6 +117,8 @@ rm -f app-contributor-list.txt
 echo "name    bucket" > app-contributor-list.txt
 init_main
 init_scoop-zapps
+gen_bucket_config
+download_bucket
 for bucket in ${buckets[@]}
 do
     bucket_dir=$(echo $bucket | sed 's@/@-@g')
@@ -171,3 +176,4 @@ done
 
 # fix nothing commit
 echo "最近更新时间：`date`" > latest.update
+rm -f 1
