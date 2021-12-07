@@ -1,0 +1,56 @@
+{
+    "version": "2.70.5853",
+    "description": "mRemoteNC. Full-featured, multi-tab remote connections manager.",
+    "homepage": "http://exaktus.github.io/mRemoteNC/",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/Exaktus/mRemoteNC/blob/master/mRemoteV2/COPYING.TXT"
+    },
+    "url": "https://github.com/Exaktus/mRemoteNC/releases/download/2.70.5853/mRemoteNC-Portable-Latest.zip",
+    "hash": "c27474f9bc7b41ecee5472eb2de3ab7d94f991097c06f009838c74809643f862",
+    "pre_install": [
+        "function SettingProperty ($key, $value) {",
+        "    return \"    <$key>$value</$key>\"",
+        "}",
+        "function Persist-Check ($file, $content) {",
+        "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+        "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+        "        Set-Content \"$dir\\$file\" ($content -join \"`r`n\") -Encoding Ascii",
+        "    }",
+        "}",
+        "$SETTINGS = @{",
+        "    'CheckForUpdatesOnStartup' = 'False'",
+        "    'CheckForUpdatesAsked'     = 'True'",
+        "}",
+        "$CONT = @(",
+        "    '<?xml version=\"1.0\" encoding=\"utf-8\"?>'",
+        "    '<Settings>'",
+        ")",
+        "$SETTINGS.Keys | ForEach-Object { $CONT += SettingProperty $_ $SETTINGS[$_] }",
+        "$CONT += '</Settings>'",
+        "",
+        "Persist-Check 'portable.config' $CONT",
+        "$confCONT = @(",
+        "    '<?xml version=\"1.0\" encoding=\"utf-8\"?>'",
+        "    '<Connections Name=\"Connections\" Export=\"False\" Protected=\"6RMaUw9QjD2hpeVwwJIQ8Xs35QGVah2aYcNf3Dj5Lk2CLRqnfl1Vk88cBK8YhUA1\" ConfVersion=\"2.5\" />'",
+        ")",
+        "Persist-Check 'confCons.xml' $confCONT"
+    ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\confCons.xml\" $persist_dir -Force"
+    },
+    "shortcuts": [
+        [
+            "mRemoteNC.exe",
+            "mRemoteNC"
+        ],
+        [
+            "PuttyNG.exe",
+            "PuttyNG"
+        ]
+    ],
+    "persist": [
+        "portable.config",
+        "confCons.xml"
+    ]
+}

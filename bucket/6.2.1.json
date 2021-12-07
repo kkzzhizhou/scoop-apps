@@ -1,0 +1,69 @@
+{
+    "version": "6.2.1",
+    "description": "PowerShell Core. Cross-Platform task automation and configuration management framework/tool.",
+    "homepage": "https://github.com/PowerShell/PowerShell",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/PowerShell/PowerShell/blob/master/LICENSE.txt"
+    },
+    "changelog": "https://github.com/PowerShell/PowerShell/releases/tag/v6.2.1",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v6.2.1/PowerShell-6.2.1-win-x64.zip",
+            "hash": "6bcc0f80ca549a8adb317b2ec1294f103c4bf75cc29efa8ac03a27f9a860b1f4"
+        },
+        "32bit": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v6.2.1/PowerShell-6.2.1-win-x86.zip",
+            "hash": "f8a713a2614603267683f463b75ce9a81756107f0c927f198bbdd747acb10ac0"
+        },
+        "arm64": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v6.2.1/PowerShell-6.2.1-win-arm64.zip",
+            "hash": "e0aba4e85adaa1325b4bcd3037c4c1916f6cd1fa1e439dec134bce46424d1bd2"
+        }
+    },
+    "installer": {
+        "script": [
+            "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+            "Test-Persistence 'Microsoft.PowerShell_profile.ps1', 'profile.ps1'werShell_profile.ps1', 'profile.ps1'",
+            "    #TODO: Adopt Edit-File",
+            "    # Variables",
+            "$GIST = 'https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw'",
+            "$PWSH_PATH = \"$dir\".Replace('\\', '\\\\')",
+            "$INS_REG = \"$dir\\pwsh-context-ins.reg\"",
+            "$UNINS_REG = \"$dir\\pwsh-context-un.reg\"",
+            "    # Downloading",
+            "$content = (New-Object System.Net.WebClient).DownloadString(\"$GIST/pwsh-context-ins.reg\")",
+            "$content = $content.Replace('%%dir%%', $PWSH_PATH)",
+            "    # SET FILES",
+            "Set-Content $INS_REG $content -Encoding Ascii",
+            "$content = (New-Object System.Net.WebClient).DownloadString(\"$GIST/pwsh-context-un.reg\")",
+            "Set-Content $UNINS_REG $content -Encoding Ascii",
+            "    # Append registry",
+            "regedit /s $INS_REG"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "    # Remove registry entry",
+            "regedit /s \"$dir\\pwsh-context-un.reg\""
+        ]
+    },
+    "bin": [
+        [
+            "pwsh.exe",
+            "pwsh",
+            "-NoLogo"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "pwsh.exe",
+            "PowerShell Core",
+            "-NoLogo"
+        ]
+    ],
+    "persist": [
+        "Microsoft.PowerShell_profile.ps1",
+        "profile.ps1"
+    ]
+}

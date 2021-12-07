@@ -1,0 +1,42 @@
+{
+    "version": "2110.31",
+    "description": "Cascadia Code font by Microsoft (Powerline version)",
+    "homepage": "https://github.com/microsoft/cascadia-code",
+    "license": "OFL-1.1",
+    "notes": "You may need to restart the system to use recently installed fonts.",
+    "depends": "sudo",
+    "url": "https://github.com/microsoft/cascadia-code/releases/download/v2110.31/CascadiaCode-2110.31.zip",
+    "hash": "b1a18b6b15818f5e5467f06363c963d7f373f26c41910284943076c064756fac",
+    "extract_dir": "ttf",
+    "installer": {
+        "script": [
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path $path -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "Get-ChildItem $dir -Filter \"Cascadia*PL.ttf\" | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$($_.Name)\" -Force | Out-Null",
+            "    LinkFile $_.Name",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Service FontCache",
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "Get-ChildItem $dir -Filter \"Cascadia*PL.ttf\" | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force | Out-Null",
+            "    sudo Remove-Item \"$path\\$($_.Name)\"",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/microsoft/cascadia-code/releases/download/v$version/CascadiaCode-$version.zip"
+    }
+}

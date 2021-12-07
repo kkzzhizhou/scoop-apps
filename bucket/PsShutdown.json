@@ -1,0 +1,31 @@
+{
+    "version": "2.53",
+    "description": "PsShutdown. Shutdown, logoff and power manage local and remote systems.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psshutdown",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://live.sysinternals.com/PsShutdown.exe",
+    "hash": "f01468012f5de0fdbfa71202786085e7ef15237c80c9a9faaa5c30a3188cf385",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsShutdown\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsShutdown\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "bin": "PsShutdown.exe",
+    "checkver": "PsShutdown\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://live.sysinternals.com/PsShutdown.exe"
+    }
+}

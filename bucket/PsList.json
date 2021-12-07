@@ -1,0 +1,53 @@
+{
+    "version": "1.4",
+    "description": "PsList. Local and remote process information lister",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/pslist",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsList64.exe",
+            "hash": "e6901e8423da3e54bab25f7c90f60d3979bfa5bb61bcc46059662736253b8c72",
+            "bin": [
+                "PsList64.exe",
+                [
+                    "PsList64.exe",
+                    "PsList"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsList.exe",
+            "hash": "9927831e111ac61fd7645bf7efa1787db1a3e85b6f64a274ca04b213dc27fd08",
+            "bin": "PsList.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsList\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsList\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsList\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsList64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsList.exe"
+            }
+        }
+    }
+}

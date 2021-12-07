@@ -1,0 +1,46 @@
+{
+    "version": "2.66",
+    "description": "Icecream Video Editor",
+    "homepage": "https://icecreamapps.com/Video-editor/",
+    "license": "Proprietary",
+    "url": "http://download.icecreamapps.com/video_editor_setup.exe",
+    "hash": "99d4301dfb5fad7f9ace4b0b4d4a17bda1ac6a341ddd17686d9fc1c4eb6e6f8e",
+    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Get-ChildItem $dir '*,2.*' -Recurse | Rename-Item -NewName { $_.FullName -replace ',2\\.', '.' }"
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Get-ChildItem $dir '*,1.*' -Recurse | Rename-Item -NewName { $_.FullName -replace ',1\\.', '.' }"
+            }
+        }
+    },
+    "post_install": "Get-ChildItem \"$dir\\*,[12].*\" -Recurse | Remove-Item -Force -Recurse",
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $iceCream = Join-Path $env:LOCALAPPDATA 'Icecream'",
+            "    $toDelete = @((Join-Path $env:USERPROFILE '.Icecream Video Editor'), (Join-Path $iceCream 'Icecream Video Editor'))",
+            "    if ((Get-ChildItem $iceCream -ErrorAction SilentlyContinue).Count -eq 0) { $toDelete += $iceCream }",
+            "    Remove-Item $toDelete -ErrorAction SilentlyContinue -Recurse",
+            "}"
+        ]
+    },
+    "bin": "icevideoeditor.exe",
+    "shortcuts": [
+        [
+            "icevideoeditor.exe",
+            "Icecream Video Editor"
+        ]
+    ],
+    "checkver": {
+        "url": "https://icecreamapps.com/Video-Editor/changelog.html",
+        "regex": ">([\\d.]+)<"
+    },
+    "autoupdate": {
+        "url": "http://download.icecreamapps.com/video_editor_setup.exe"
+    }
+}
