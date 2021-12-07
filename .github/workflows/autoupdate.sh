@@ -34,7 +34,6 @@ init_scoop-zapps(){
         # record file_md5
         echo $file_md5 >> ${cache_dir}/file_md5
     done
-    exit 0
 }
 
 # get bucket from rasa/scoop-directory
