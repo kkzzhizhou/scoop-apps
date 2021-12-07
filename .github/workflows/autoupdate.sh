@@ -19,7 +19,7 @@ sudo apt-get -y update && sudo apt-get -y install jq recode sqlite3
 # generate bucket.config
 init_scoop-zapps(){
     git clone --depth=1 https://github.com/kkzzhizhou/scoop-zapps  ${cache_dir}/scoop-zapps
-    files=$(find ${cache_dir}/scoop-zapps -type f -name *.json -not -path "${cache_dir}/$bucket_dir/.vscode/*")
+    files=$(find ${cache_dir}/scoop-zapps -type f -name *.json -not -path "${cache_dir}/scoop-zapps/.vscode/*")
     for file in ${files[@]}
     do
         file_name=$(echo $file | awk -F'/' '{print $NF}')
