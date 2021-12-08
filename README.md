@@ -48,8 +48,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - matthewjberger/scoop-nerd-fonts
 - TheRandomLabs/Scoop-Spotify
 - ScoopInstaller/Java
-- TheRandomLabs/scoop-nonportable
 - Calinou/scoop-games
+- TheRandomLabs/scoop-nonportable
 - borger/scoop-galaxy-integrations
 - TheCjw/scoop-retools
 - ivaquero/scoopet
@@ -75,8 +75,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - ScoopInstaller/PHP
 - dodorz/scoop
-- kiennq/scoop-misc
 - TheRandomLabs/Scoop-Python
+- kiennq/scoop-misc
 - wzv5/ScoopBucket
 - borger/scoop-emulators
 - scoopcn/scoopcn
@@ -93,9 +93,9 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Darkatse/Scoop-Darkatse
 - ChinLong/scoop-customize
 - krproject/qi-windows
+- iquiw/scoop-bucket
 - batkiz/backit
 - hoilc/scoop-lemon
-- iquiw/scoop-bucket
 - nickbudi/scoop-bucket
 - yuanying1199/scoopbucket
 - Velgus/Scoop-Portapps
