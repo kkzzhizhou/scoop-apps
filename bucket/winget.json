@@ -1,96 +1,22 @@
 {
-    "version": "1.1.12701",
+    "version": "0.2.3162",
     "description": "Official windows command line installer",
     "homepage": "https://github.com/microsoft/winget-cli",
     "license": {
         "identifier": "MIT",
         "url": "https://github.com/microsoft/winget-cli/blob/master/LICENSE"
     },
-    "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v1.1.12701",
-    "architecture": {
-        "64bit": {
-            "url": [
-                "https://github.com/microsoft/winget-cli/releases/download/v1.1.12701/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_x64.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_x86.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00_14.0.30704.0_x64.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00_14.0.30704.0_x86.Appx"
-            ],
-            "hash": [
-                "05ad3c4e58c3421a19c1dd5b2aec3fbf8b85f644c2b1f62900660e5100a95923",
-                "9bfde6cfcc530ef073ab4bc9c4817575f63be1251dd75aaa58cb89299697a569",
-                "3195db914bea1534ee73582cd483c548a929aed2799d305b3bbf7411ba7a6c7d",
-                "009f7db134c6061fe8f260e075374a28abbbc44e6cf23de107f93ec8b8c59816",
-                "397b610554d67abaddfdc287ced6a9bf1ada4d4c9ddf53e01c6a061bed2860ef"
-            ],
-            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_x64.msix\" \"$dir\\cosi\""
-        },
-        "32bit": {
-            "url": [
-                "https://github.com/microsoft/winget-cli/releases/download/v1.1.12701/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_x86.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00_14.0.30704.0_x86.Appx"
-            ],
-            "hash": [
-                "05ad3c4e58c3421a19c1dd5b2aec3fbf8b85f644c2b1f62900660e5100a95923",
-                "3195db914bea1534ee73582cd483c548a929aed2799d305b3bbf7411ba7a6c7d",
-                "397b610554d67abaddfdc287ced6a9bf1ada4d4c9ddf53e01c6a061bed2860ef"
-            ],
-            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_x86.msix\" \"$dir\\cosi\""
-        },
-        "arm64": {
-            "url": [
-                "https://github.com/microsoft/winget-cli/releases/download/v1.1.12701/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_arm64.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00.UWPDesktop_14.0.30704.0_arm.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00_14.0.30704.0_arm64.Appx",
-                "https://stor.shovel.ash258.com/winget/Microsoft.VCLibs.140.00_14.0.30704.0_arm.Appx"
-            ],
-            "hash": [
-                "05ad3c4e58c3421a19c1dd5b2aec3fbf8b85f644c2b1f62900660e5100a95923",
-                "1ec4e926f17b8557c76b4dd0bd06af229ab0d096e719fa6631d1fab8334fd9a5",
-                "e88497eed19c1207acca2bf85a81e4c52899e8c7350030b57298ee0282c69c9b",
-                "4ab54162efffe26e605c5ec6170de76d72d8f78983c7fc84427630b951402973",
-                "a9e511ff763091b098a932761288c44871dab527f4a429087245295a551d0540"
-            ],
-            "pre_install": "Expand-7zipArchive \"$dir\\AppInstaller_arm64.msix\" \"$dir\\cosi\""
-        }
-    },
-    "installer": {
-        "script": [
-            "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
-            "Get-ChildItem \"$dir\\*\" -Exclude 'cosi' -Force | Remove-Item -Force -Recurse",
-            "movedir \"$dir\\cosi\" \"$dir\" | Out-Null",
-            "Remove-AppDirItem 'cosi'"
-        ]
-    },
-    "bin": [
-        "AppInstallerCLI.exe",
-        [
-            "AppInstallerCLI.exe",
-            "winget"
-        ]
+    "url": "https://github.com/microsoft/winget-cli/releases/download/v0.2.3162-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle#/cosi.7z",
+    "hash": "fbfb34d240fc1acc52a03d6350f17ecc4fd8ea1bde9c3b9c1261ed2a6d855ef9",
+    "pre_install": [
+        "Get-ChildItem \"$dir\\*\" -Exclude 'AppInstaller_x*.appx' -Force -Recurse | Remove-Item -Force -Recurse",
+        "$a = if ($architecture -like '64*') { '64' } else { '86' }",
+        "Expand-7zipArchive \"$dir\\AppInstaller_x$a.appx\"",
+        "Remove-Item \"$dir\\AppInstaller_x*.appx\" -Force"
     ],
-    "checkver": {
-        "url": "https://github.com/microsoft/winget-cli/releases",
-        "regex": "tag/v([\\w.-]+)\""
-    },
+    "bin": ["AppInstallerCLI.exe", ["AppInstallerCLI.exe", "winget"]],
+    "checkver": "github",
     "autoupdate": {
-        "changelog": "https://github.com/microsoft/winget-cli/releases/tag/v$version",
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/microsoft/winget-cli/releases/download/v$version/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z"
-            },
-            "32bit": {
-                "url": "https://github.com/microsoft/winget-cli/releases/download/v$version/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z"
-            },
-            "arm64": {
-                "url": "https://github.com/microsoft/winget-cli/releases/download/v$version/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle#/cosi.7z"
-            }
-        },
-        "hash": {
-            "url": "$urlNoExt.txt",
-            "regex": "$sha256"
-        }
+        "url": "https://github.com/microsoft/winget-cli/releases/download/v$version-preview/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.appxbundle#/cosi.7z"
     }
 }
