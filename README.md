@@ -77,9 +77,9 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/PHP
 - TheRandomLabs/Scoop-Python
 - kiennq/scoop-misc
-- wzv5/ScoopBucket
 - Paxxs/Cluttered-bucket
 - borger/scoop-emulators
+- wzv5/ScoopBucket
 - scoopcn/scoopcn
 - Ash258/Scoop-NirSoft
 - AStupidBear/scoop-bear
@@ -93,11 +93,11 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - jfut/scoop-jfut
 - ChinLong/scoop-customize
 - krproject/qi-windows
+- iquiw/scoop-bucket
 - batkiz/backit
 - hoilc/scoop-lemon
-- iquiw/scoop-bucket
-- liaoya/scoop-bucket
 - nickbudi/scoop-bucket
+- liaoya/scoop-bucket
 - MCOfficer/scoop-bucket
 - yuanying1199/scoopbucket
 - Velgus/Scoop-Portapps
