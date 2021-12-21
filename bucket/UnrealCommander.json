@@ -1,26 +1,25 @@
 {
     "version": "3.57.1497",
-    "description": "Unreal Commander. Easy to use file manager",
+    "description": "Unreal Commander. Easy to use file manager.",
     "homepage": "https://x-diesel.com",
     "license": "Freeware",
-    "changelog": "https://x-diesel.com/?whatsnew",
     "architecture": {
         "64bit": {
-            "url": "https://unrealcommander.org/download/evolution/uncomsetup3.57x64(build1497).exe",
+            "url": "http://unrealcommander.org/download/evolution/uncomsetup3.57x64(build1497).exe",
             "hash": "1a2e99bd0f1f6b474e93b978511505b0d8357dbaf0de9f9cbf8a24a9aa310c80"
         },
         "32bit": {
-            "url": "https://unrealcommander.org/download/evolution/uncomsetup3.57x32(build1497).exe",
+            "url": "http://unrealcommander.org/download/evolution/uncomsetup3.57x32(build1497).exe",
             "hash": "b37d7568ecfb8b73d07dd3dc593cd25766791ae6523de0e67d4e28008a72ca81"
         }
     },
     "innosetup": true,
     "pre_install": [
-        "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
-        "Test-Persistence 'Uncom.ini' -ScriptBlock {",
+        "$file = 'Uncom.ini'",
+        "if (-not (Test-Path \"$persist_dir\\$file\" -Type Leaf)) {",
         "    function replaceVal ($cont, $string, $rep) { return $cont -replace \"^($string=).*$\", \"`${1}$rep\" }",
         "    Write-Host 'No previous configuration found. Creating.' -f Yellow",
-        "    $content = Get-Content $currentFileDir",
+        "    $content = Get-Content \"$dir\\$file\"",
         "    $content = replaceVal $content 'ViewStyle' 'Hard day''s light (by Max Diesel)'",
         "    $content = replaceVal $content 'FirstRun' '0'",
         "    $content = replaceVal $content 'ToolbarGraphicsLibrary' 'Everaldo Coelho''s theme.tgl'",
@@ -33,13 +32,16 @@
         "    $second = $content[($split+1)..($content.Length-1)]",
         "    $first += 'windowskin=Amakrits'",
         "    $new = $first + $second",
-        "",
-        "    Out-UTF8File $currentFileDir $new",
+        "    Set-Content \"$dir\\$file\" $new -Encoding Ascii -Force",
         "}",
-        "Test-Persistence 'Uncom.bar' -ScriptBlock {",
-        "    Invoke-Webrequest 'https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Uncom.bar' -o $currentFileDir",
+        "    # Precreate configurations, which does not exists",
+        "$file = 'Uncom.bar'",
+        "if (-not (Test-Path \"$persist_dir\\$file\")) {",
+        "    Invoke-Webrequest 'https://gist.githubusercontent.com/Ash258/e143436e2f9183a650424d635b535e51/raw/Uncom.bar' -o \"$dir\\$file\"",
         "}",
-        "Test-Persistence 'license.key', 'UncomFTP.ini'"
+        "@('license.key', 'UncomFTP.ini') | ForEach-Object {",
+        "    if (-not (Test-Path \"$persist_dir\\$_\" -Type Leaf)) { Set-Content \"$dir\\$_\" '' -Encoding Ascii }",
+        "}"
     ],
     "bin": "Uncom.exe",
     "shortcuts": [
@@ -52,7 +54,11 @@
         "license.key",
         "UncomFTP.ini",
         "Uncom.bar",
-        "Uncom.ini"
+        "Uncom.ini",
+        "Uncomstyles.ini",
+        "ignorelist.txt",
+        "Universal Viewer\\Viewer.ini",
+        "Universal Viewer\\ViewerHistory.ini"
     ],
     "checkver": {
         "regex": "Unreal Commander v(?<pure>[\\d.]+) \\(build (?<build>\\d+)\\)",
@@ -61,10 +67,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://unrealcommander.org/download/evolution/uncomsetup${majorVersion}.${minorVersion}x64(build${patchVersion}).exe"
+                "url": "http://unrealcommander.org/download/evolution/uncomsetup$majorVersion.$minorVersionx64(build$patchVersion).exe"
             },
             "32bit": {
-                "url": "https://unrealcommander.org/download/evolution/uncomsetup${majorVersion}.${minorVersion}x32(build${patchVersion}).exe"
+                "url": "http://unrealcommander.org/download/evolution/uncomsetup$majorVersion.$minorVersionx32(build$patchVersion).exe"
             }
         }
     }
