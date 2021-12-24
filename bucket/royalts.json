@@ -1,0 +1,38 @@
+{
+    "version": "6.00.51119.0",
+    "description": "Comprehensive Remote Management Solution",
+    "homepage": "https://www.royalapps.com/ts/win",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.royalapps.com/RoyalTS/RoyalTS_6.00.51119.0.zip",
+            "hash": "ad3ae98c11812698bf7eb1e18703ceacfa6baabfa11ce682d7453bc72d02054c"
+        }
+    },
+    "post_install": [
+        "$appsetting = Get-Content -Raw \"$dir\\appsettings-sample.json\" | ConvertFrom-Json",
+        "$appsetting.RoyalTS.CreateApplicationShortcut = $false",
+        "$appsetting.RoyalTS.ConfigurationPath = \"$dir\\config\"",
+        "ConvertTo-json $appsetting | Set-Content -Encoding ASCII -Path \"$dir\\appsettings.json\"",
+        "if(Test-Path \"$env:APPDATA\\code4ward\") { warn \"Found config in $env:APPDATA\\code4ward with higher priority. Royal TS would be NOT portable.\" }"
+    ],
+    "persist": "config",
+    "bin": "rtscli.exe",
+    "shortcuts": [
+        [
+            "RoyalTS.exe",
+            "Royal TS"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.royalapps.com/ts/win/download",
+        "regex": "RoyalTS_([\\d.]+).zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.royalapps.com/RoyalTS/RoyalTS_$version.zip"
+            }
+        }
+    }
+}
