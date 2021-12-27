@@ -71,8 +71,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
 - wangzq/scoop-bucket
-- zhoujin7/tomato
 - dodorz/scoop
+- zhoujin7/tomato
 - ScoopInstaller/PHP
 - scoopcn/scoopcn
 - kiennq/scoop-misc
@@ -92,11 +92,11 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Darkatse/Scoop-Darkatse
 - ChinLong/scoop-customize
 - krproject/qi-windows
-- MCOfficer/scoop-bucket
-- hoilc/scoop-lemon
-- batkiz/backit
-- nickbudi/scoop-bucket
 - iquiw/scoop-bucket
+- MCOfficer/scoop-bucket
+- batkiz/backit
+- hoilc/scoop-lemon
+- nickbudi/scoop-bucket
 - Darkatse/Scoop-KanColle
 - yuanying1199/scoopbucket
 - liaoya/scoop-bucket
