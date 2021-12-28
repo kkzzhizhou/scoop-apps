@@ -65,8 +65,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - echoiron/echo-scoop
 - hermanjustnu/scoop-emulators
 - Ash258/Scoop-Sysinternals
-- tetradice/scoop-iyokan-jp
 - TheRandomLabs/Scoop-Bucket
+- tetradice/scoop-iyokan-jp
 - cderv/r-bucket
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
@@ -87,15 +87,15 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - jfut/scoop-jfut
 - BjoernPetersen/scoop-misc-bucket
 - excitoon/scoop-user
+- Darkatse/Scoop-Darkatse
 - 42wim/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
-- Darkatse/Scoop-Darkatse
 - ChinLong/scoop-customize
 - krproject/qi-windows
 - iquiw/scoop-bucket
+- hoilc/scoop-lemon
 - MCOfficer/scoop-bucket
 - batkiz/backit
-- hoilc/scoop-lemon
 - nickbudi/scoop-bucket
 - Darkatse/Scoop-KanColle
 - yuanying1199/scoopbucket
