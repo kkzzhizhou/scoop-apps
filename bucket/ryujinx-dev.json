@@ -1,0 +1,48 @@
+{
+    "homepage": "https://ryujinx.org/",
+    "description": "A simple, experimental Nintendo Switch emulator written in C#.",
+    "license": "MIT",
+    "version": "1.0.7171",
+    "architecture": {
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/pjn71d5q2rahuv7x/artifacts/ryujinx-1.0.7171-win_x64.zip",
+            "hash": "cd49f1d7faff784eab41348963def9af187b4dcb98f6d10eab87b61dd621002b"
+        }
+    },
+    "extract_dir": "publish",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\\portable\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Ryujinx\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Ryujinx\\*\" -Destination \"$persist_dir\\portable\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\Ryujinx\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": "Ryujinx.exe",
+    "shortcuts": [
+        [
+            "Ryujinx.exe",
+            "Ryujinx"
+        ]
+    ],
+    "persist": "portable",
+    "checkver": {
+        "url": "https://ci.appveyor.com/api/projects/gdkchan/ryujinx/branch/master",
+        "regex": "\"jobId\":\"(?<jobid>.*?)\".*\"version\":\"(?<version>.*?)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJobid/artifacts/ryujinx-$version-win_x64.zip"
+            }
+        }
+    },
+    "notes": [
+        "ATTENTION: Ryujinx requires Nintendo Switch firmware and a prod.keys file to function.",
+        "Learn more at https://github.com/Ryujinx/Ryujinx/wiki/Ryujinx-Setup-&-Configuration-Guide",
+        "Be sure to disable auto-update in Ryujinx's settings!",
+        "You must only do this once."
+    ]
+}

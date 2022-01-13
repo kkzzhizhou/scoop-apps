@@ -1,0 +1,42 @@
+{
+    "description": "Eclipse Temurin is a runtime provided by Eclipse Adoptium for general use across the Java ecosystem",
+    "homepage": "https://adoptium.net",
+    "version": "11.0.13-8",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.13%2B8/OpenJDK11U-jre_x64_windows_hotspot_11.0.13_8.zip",
+            "hash": "7b0c07a068506b8539408cfe60e3120f54610af463a2dbd3b2ca42b572dd567e"
+        },
+        "32bit": {
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.13%2B8/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.13_8.zip",
+            "hash": "60ed46fd2072d2ab25333a367b0ed58f8cf6441b877628f2324273a6b5c71222"
+        }
+    },
+    "extract_dir": "jdk-11.0.13+8-jre",
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptium.net/v3/assets/feature_releases/11/ga?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jre&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
+        "jsonpath": "$..binaries[0].package.link",
+        "regex": "https://github.com/(?<url>.*?(?<tag>jdk-(?<major>(?<jdk>[\\d]+)[\\d.]*)(?:\\%2B|\\+)(?<build>[\\d]+)(?<patch>[\\d.]*)))/OpenJDK(?:[\\d]+)(?<update>U?)",
+        "replace": "${major}-${build}${patch}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchJdk$matchUpdate-jre_x64_windows_hotspot_$matchMajor_$matchBuild.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/$matchUrl/OpenJDK$matchJdk$matchUpdate-jre_x86-32_windows_hotspot_$matchMajor_$matchBuild.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        },
+        "extract_dir": "jdk-$matchMajor+$matchBuild-jre"
+    }
+}

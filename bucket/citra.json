@@ -1,0 +1,39 @@
+{
+    "homepage": "https://citra-emu.org/",
+    "description": "Emulator for Nintendo 3DS, capable of playing many of your favorite games",
+    "license": "MIT",
+    "version": "1742-20220108",
+    "url": "https://github.com/citra-emu/citra-nightly/releases/download/nightly-1742/citra-windows-mingw-20220108-67f1e41.7z",
+    "hash": "2fc7e1165b7a808c27f676851f28f6b6c99dc231e2be7eb041e8720815ebdae4",
+    "extract_dir": "nightly-mingw",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\user\")) {",
+        "   New-Item -Path \"$persist_dir\" -Name \"user\" -ItemType \"directory\" | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Citra\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Citra\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\Citra\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": [
+        "citra.exe",
+        "citra-qt.exe",
+        "citra-room.exe"
+    ],
+    "shortcuts": [
+        [
+            "citra-qt.exe",
+            "Citra"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "github": "https://github.com/citra-emu/citra-nightly",
+        "regex": "download/nightly-(?<build>[\\d]+)/citra-windows-mingw-(?<date>[\\d]+)-(?<random>[a-fA-F\\d]+).7z",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/citra-emu/citra-nightly/releases/download/nightly-$matchBuild/citra-windows-mingw-$matchDate-$matchRandom.7z"
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "version": "13.5",
+    "description": "Object-relational database management system based on POSTGRES.",
+    "homepage": "https://www.postgresql.org",
+    "license": "PostgreSQL",
+    "notes": [
+        "Run run 'pg_ctl start' or 'pg_ctl stop' to start and stop the database or",
+        "register it as a service by running 'pg_ctl register -N PostgreSQL' from an elevated shell.",
+        "Default superuser login: postgres, password: <blank>"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://get.enterprisedb.com/postgresql/postgresql-13.5-1-windows-x64-binaries.zip",
+            "hash": "662124fc2b1b87a85d20840931b53a5de4ec5475af70bc9027e65eb5e69f81b4"
+        }
+    },
+    "extract_dir": "pgsql",
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\pg_hba.conf\")) {",
+        "   Invoke-ExternalCommand -FilePath \"$dir\\bin\\initdb.exe\" -ArgumentList \"--username=postgres --encoding=UTF8 --locale=en --lc-collate=C\" | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "pgAdmin 4\\bin\\pgAdmin4.exe",
+            "pgAdmin 4"
+        ]
+    ],
+    "env_add_path": "bin",
+    "env_set": {
+        "PGDATA": "$dir\\data"
+    },
+    "persist": "data",
+    "checkver": {
+        "url": "https://www.postgresql.org/ftp/source/",
+        "re": "v(13\\.[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://get.enterprisedb.com/postgresql/postgresql-$version-1-windows-x64-binaries.zip"
+            }
+        }
+    }
+}

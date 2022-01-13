@@ -1,0 +1,41 @@
+{
+    "homepage": "https://www.swift.org/",
+    "description": "The Swift Programming Language",
+    "license": "Apache-2.0",
+    "version": "snapshot-2022-01-09-a",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-2022-01-09-a/swift-DEVELOPMENT-SNAPSHOT-2022-01-09-a-windows10.exe",
+            "hash": "d53099311ce066c49831b933338b13dce02518794a02c09f2c72443d19635328"
+        }
+    },
+    "depends": "dark",
+    "installer": {
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\extracted\" -Removal",
+            "Get-ChildItem \"$dir\\extracted\\AttachedContainer\\*.msi\" | ForEach-Object { Expand-MsiArchive $_ \"$dir\" }",
+            "@('extracted') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse }"
+        ]
+    },
+    "env_add_path": [
+        "Library\\Developer\\Toolchains\\unknown-Asserts-development.xctoolchain\\usr\\bin",
+        "Library\\icu-67\\usr\\bin",
+        "Library\\Swift-development\\bin"
+    ],
+    "env_set": {
+        "SDKROOT": "$dir\\Library\\Developer\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk",
+        "DEVELOPER_DIR": "$dir\\Library\\Developer"
+    },
+    "checkver": {
+        "url": "https://dorado-api.deno.dev/swift-tmp",
+        "regex": "swift-DEVELOPMENT-SNAPSHOT-(?<build>[\\w\\-]+)-windows10.exe",
+        "replace": "snapshot-${build}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.swift.org/development/windows10/swift-DEVELOPMENT-SNAPSHOT-$matchBuild/swift-DEVELOPMENT-SNAPSHOT-$matchBuild-windows10.exe"
+            }
+        }
+    }
+}

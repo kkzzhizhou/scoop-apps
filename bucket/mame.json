@@ -1,0 +1,72 @@
+{
+    "homepage": "http://mamedev.org",
+    "description": "Arcade machine emulator",
+    "version": "0.239",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mamedev/mame/releases/download/mame0239/mame0239b_64bit.exe#/dl.7z",
+            "hash": "40d0d4ff514c813026fda3d65035ba51c3966d08778625d2c66daa9aa91f33c7",
+            "pre_install": [
+                "if(!(Test-Path \"$persist_dir\\mame.ini\")) {",
+                "   Start-Process \"$dir\\mame.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"-createconfig\"",
+                "   Start-Sleep -Seconds 5",
+                "}"
+            ],
+            "bin": [
+                [
+                    "mame.exe",
+                    "mame"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "mame.exe",
+                    "MAME"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://file-examples-com.github.io/uploads/2017/02/file_example_JSON_1kb.json",
+            "hash": "aa20e971f6a0a7c482f3ed70cc6edc115eb577f987322ba42e5c3869e1d714d1",
+            "pre_install": [
+                "Write-Host -ForegroundColor Yellow \"WARN: MAME no longer provides up to date 32bit binaries\"",
+                "Write-Host -ForegroundColor Yellow \"Continue installing latest 32bit release (0.217)? \"",
+                "$choice = (Read-Host -Prompt \"[Y / N]\").toLower()",
+                "switch ($choice) {",
+                "   y {scoop uninstall mame",
+                "       scoop install https://raw.githubusercontent.com/Calinou/scoop-games/27ba46f443a3446a70bf1f93eeb09797be0fb286/bucket/mame.json",
+                "       scoop hold mame",
+                "       exit 0",
+                "   }",
+                "   n {Write-Error -Message \"Install aborted.\" -Category NotInstalled",
+                "       scoop uninstall mame",
+                "       exit 1",
+                "   }",
+                "}"
+            ]
+        }
+    },
+    "persist": [
+        "ctrlr",
+        "plugins",
+        "roms",
+        "mame.ini",
+        "ui.ini",
+        "plugin.ini"
+    ],
+    "checkver": {
+        "github": "https://github.com/mamedev/mame",
+        "regex": "MAME ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mamedev/mame/releases/download/mame$cleanVersion/mame$cleanVersionb_64bit.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://file-examples-com.github.io/uploads/2017/02/file_example_JSON_1kb.json"
+            }
+        }
+    }
+}

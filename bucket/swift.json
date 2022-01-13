@@ -1,0 +1,40 @@
+{
+    "homepage": "https://www.swift.org/",
+    "description": "The Swift Programming Language",
+    "license": "Apache-2.0",
+    "version": "5.5.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.swift.org/swift-5.5.2-release/windows10/swift-5.5.2-RELEASE/swift-5.5.2-RELEASE-windows10.exe",
+            "hash": "a664c4d616aed3e6d4d180ec64d1195270d08dbbc1d1eea1f9ca01f1598ebebe"
+        }
+    },
+    "depends": "dark",
+    "installer": {
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\extracted\" -Removal",
+            "Get-ChildItem \"$dir\\extracted\\AttachedContainer\\*.msi\" | ForEach-Object { Expand-MsiArchive $_ \"$dir\" }",
+            "@('extracted') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse }"
+        ]
+    },
+    "env_add_path": [
+        "Library\\Developer\\Toolchains\\unknown-Asserts-development.xctoolchain\\usr\\bin",
+        "Library\\icu-67\\usr\\bin",
+        "Library\\Swift-development\\bin"
+    ],
+    "env_set": {
+        "SDKROOT": "$dir\\Library\\Developer\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk",
+        "DEVELOPER_DIR": "$dir\\Library\\Developer"
+    },
+    "checkver": {
+        "url": "https://dorado-api.deno.dev/swift-tmp",
+        "regex": "(?sm)releases\">Releases</h2>.*?Swift ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.swift.org/swift-$version-release/windows10/swift-$version-RELEASE/swift-$version-RELEASE-windows10.exe"
+            }
+        }
+    }
+}

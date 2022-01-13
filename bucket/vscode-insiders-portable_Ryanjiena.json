@@ -1,0 +1,96 @@
+{
+    "version": "1.64.0-insider",
+    "description": "Visual Studio Code is a code editor redefined and optimized for building and debugging modern web and cloud applications(Insiders, Portable Edition).",
+    "homepage": "https://code.visualstudio.com/insiders/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://code.visualstudio.com/License/"
+    },
+    "notes": [
+        "Visual Studio Code now supports Portable Mode! Please move the following directories:",
+        "From \"$env:USERPROFILE\\.vscode-insiders\\extensions\" to \"$env:SCOOP\\persist\\vscode-insiders-portable\\data\\extensions\"",
+        "From \"$env:APPDATA\\Code - Insiders\" to \"$env:SCOOP\\persist\\vscode-insiders-portable\\data\\user-data\"",
+        "Add Visual Studio Code as a context menu option by running: \"$dir\\install-context.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://update.code.visualstudio.com/latest/win32-x64-archive/insider#/dl.7z",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/install-context.reg",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/uninstall-context.reg"
+            ],
+            "hash": [
+                "a2f6c6760dc74ca868a63a21bc48f599f844bbaeb2d4a2cff3f5a411db83e1bf",
+                "8ef94c82319b69754bdae0099af266d184d179a37af8b8beb11334c6ab639752",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://update.code.visualstudio.com/latest/win32-archive/insider#/dl.7z",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode-install-context.reg",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode-uninstall-context.reg"
+            ],
+            "hash": [
+                "ed33cf8ae3d2c5e617d8761f08e9b085891adf16b8b1fbb6487dd8c1e901e713",
+                "8ef94c82319b69754bdae0099af266d184d179a37af8b8beb11334c6ab639752",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        }
+    },
+    "post_install": [
+        "if (Test-Path \"$dir\\install-context.reg\") {",
+        "  $codepath = \"$dir\\Code - Insiders.exe\".Replace('\\', '\\\\')",
+        "  $content = Get-Content \"$dir\\install-context.reg\"",
+        "  $content = $content.Replace('$code', $codepath)",
+        "  $content = $content.Replace('&Code', 'Code &Insiders')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\install-context.reg\"",
+        "}",
+        "if (Test-Path \"$dir\\uninstall-context.reg\") {",
+        "  $content = Get-Content \"$dir\\uninstall-context.reg\"",
+        "  $content = $content.Replace('&Code', 'Code &Insiders')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\uninstall-context.reg\"",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin\\code-insiders.cmd",
+            "code-insiders"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Code - Insiders.exe",
+            "Visual Studio Code - Insiders"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://code.visualstudio.com/sha?build=insider",
+        "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].name"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://update.code.visualstudio.com/latest/win32-x64-archive/insider#/dl.7z",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=insider",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].sha256hash"
+                }
+            },
+            "32bit": {
+                "url": "https://update.code.visualstudio.com/latest/win32-archive/insider#/dl.7z",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=insider",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-archive')].sha256hash"
+                }
+            }
+        }
+    }
+}

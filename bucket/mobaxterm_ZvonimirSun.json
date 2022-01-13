@@ -1,0 +1,43 @@
+{
+    "version": "21.5",
+    "description": "Enhanced terminal for Windows with X11 server, tabbed SSH client, network tools and much more.",
+    "homepage": "https://mobaxterm.mobatek.net/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://mobaxterm.mobatek.net/license.html"
+    },
+    "url": "https://download.mobatek.net/2152021112100754/MobaXterm_Portable_v21.5.zip",
+    "hash": "ced541ebcf6b00822306481e7924fbabfb0d485abb34e2eb9580e14af5c3e3ac",
+    "pre_install": [
+        "    # Rename executable",
+        "Get-ChildItem \"$dir\" 'mobaxterm*.exe' | Select-Object -First 1 | Rename-Item -NewName 'MobaXterm.exe'",
+        "    # Create files for persisting",
+        "function PersistsFile([String] $file) {",
+        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+        "        New-Item \"$dir\\$file\" -Type File | Out-Null",
+        "    }",
+        "}",
+        "@('MobaXterm backup.zip', 'MobaXterm.ini') | ForEach-Object { PersistsFile $_ }"
+    ],
+    "bin": "MobaXterm.exe",
+    "shortcuts": [
+        [
+            "MobaXterm.exe",
+            "MobaXterm Personal"
+        ]
+    ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\*\" -Include 'Custom.mxtpro,MobaXterm.ini,MobaXterm backup.zip' -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    },
+    "persist": [
+        "MobaXterm.ini",
+        "MobaXterm backup.zip"
+    ],
+    "checkver": {
+        "url": "https://mobaxterm.mobatek.net/download-home-edition.html",
+        "regex": "//download.mobatek.net/(?<random>[\\d]+)/MobaXterm_Portable_v([\\d.]+)\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://download.mobatek.net/$matchRandom/MobaXterm_Portable_v$version.zip"
+    }
+}

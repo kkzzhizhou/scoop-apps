@@ -1,0 +1,48 @@
+{
+    "homepage": "https://desmume.org",
+    "version": "0.9.12-911-747f3694",
+    "license": "GPL-2.0-only",
+    "description": "DeSmuME is a Nintendo DS emulator",
+    "architecture": {
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/o2v7bl8dlju6ksj1/artifacts/desmume/src/frontend/windows/__bins/DeSmuME-VS2019-x64-Release.exe#/DeSmuMe.exe",
+            "hash": "68f361109da37bb6fe6a692900394a2a362ea6dbcd62f7eeb94dbee3e224534e"
+        }
+    },
+    "shortcuts": [
+        [
+            "DeSmuME.exe",
+            "DeSmuME (autobuilds)"
+        ]
+    ],
+    "persist": [
+        "AviFiles",
+        "Battery",
+        "Cheats",
+        "Firmware",
+        "Lua",
+        "Roms",
+        "Screenshots",
+        "SramImportExport",
+        "States",
+        "StateSlots",
+        "desmume.ini"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\desmume.ini\")) {",
+        "    New-Item \"$dir\\desmume.ini\" -Type File | Out-Null",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://ci.appveyor.com/api/projects/zeromus/desmume",
+        "regex": "(?smi)\"jobId\":\"(?<x64jid>[\\da-z]{16})\",\"name\":\"\",\"osType\":\"Windows\".*\"buildNumber\":(?<build>[\\d]+).*\"commitId\":\"(?<commit>[\\da-f]{8})",
+        "replace": "0.9.12-${build}-${commit}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchX64jid/artifacts/desmume/src/frontend/windows/__bins/DeSmuME-VS2019-x64-Release.exe#/DeSmuMe.exe"
+            }
+        }
+    }
+}

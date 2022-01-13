@@ -1,0 +1,48 @@
+{
+    "version": "6.0.1",
+    "description": "The dotnet desktop runtime enables you to run dotnet desktop applications. This release includes the .NET Core Runtime, you do not need to install it separately.",
+    "homepage": "https://dotnet.microsoft.com/",
+    "license": "MIT",
+    "notes": "This package only contains the .NET Core runtime, install 'dotnet-sdk' instead if you need .NET Core SDK",
+    "depends": "dark",
+    "architecture": {
+        "64bit": {
+            "url": "https://dotnetcli.blob.core.windows.net/dotnet/WindowsDesktop/6.0.1/windowsdesktop-runtime-6.0.1-win-x64.exe",
+            "hash": "sha512:36dc038f6ed20b964238d6f1cb8d2248fdf120f53ab412c23d77981a0bc4133be731df7b4d5fec7d29a127ab6d3f0e93a3062eeb3691837d7442e085ee884ebd"
+        },
+        "32bit": {
+            "url": "https://dotnetcli.blob.core.windows.net/dotnet/WindowsDesktop/6.0.1/windowsdesktop-runtime-6.0.1-win-x86.exe",
+            "hash": "sha512:69d5ebc7e8421cd10164fadcf41f05e79c4c5e4fa88107b682ff44e2081e7d7c3427f775ffdba568f532aae24f9773043cdb6354828a8379e54a5404b1739f79"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\extracted\" -Removal",
+            "Get-ChildItem \"$dir\\extracted\\AttachedContainer\\*.msi\" | ForEach-Object { Expand-MsiArchive $_ \"$dir\" }",
+            "Move-Item \"$dir\\dotnet\\*\" \"$dir\" -Force",
+            "@('dotnet', 'extracted') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse }"
+        ]
+    },
+    "bin": "dotnet.exe",
+    "env_set": {
+        "DOTNET_ROOT": "$dir"
+    },
+    "checkver": {
+        "url": "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json",
+        "regex": "(?s)([\\d.]+)[^\\d]*?(?<sdkversion>[\\d.]+)[^\\d]*?(?:current|lts)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dotnetcli.blob.core.windows.net/dotnet/WindowsDesktop/$version/windowsdesktop-runtime-$version-win-x64.exe"
+            },
+            "32bit": {
+                "url": "https://dotnetcli.blob.core.windows.net/dotnet/WindowsDesktop/$version/windowsdesktop-runtime-$version-win-x86.exe"
+            }
+        },
+        "hash": {
+            "url": "https://dotnetcli.blob.core.windows.net/dotnet/checksums/$version-sha.txt",
+            "mode": "extract"
+        }
+    }
+}

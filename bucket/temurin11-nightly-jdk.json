@@ -1,0 +1,47 @@
+{
+    "description": "Eclipse Temurin is a runtime provided by Eclipse Adoptium for general use across the Java ecosystem",
+    "homepage": "https://adoptium.net",
+    "version": "202201120845",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk11u-2022-01-12-08-45-beta/OpenJDK11U-jdk_x64_windows_hotspot_2022-01-12-08-45.zip",
+            "hash": "de249278fbbdb18319959a41891b43bf79f52624190883985a6b9e45ced9cc99"
+        },
+        "32bit": {
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk11u-2022-01-12-08-45-beta/OpenJDK11U-jdk_x86-32_windows_hotspot_2022-01-12-08-45.zip",
+            "hash": "7745c6d2eba6f9c83f29748351c60f614f0be221e806f39087a483f67702b0aa"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "(Get-ChildItem -Directory \"$dir\\tmp\").FullName | % { Move-Item \"$_\\*\" \"$dir\" }",
+            "Remove-Item -Recurse \"$dir\\tmp\""
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.adoptium.net/v3/assets/feature_releases/11/ea?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jdk&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
+        "jsonpath": "$..binaries[0].package.link",
+        "regex": "/temurin(?<major>[\\d]*)-binaries/releases/download/jdk(?<jdk>[\\du]*)-(?<date>(?<year>[\\d]{4})-(?<month>[\\d]{2})-(?<day>[\\d]{2})-(?<hour>[\\d]{2})-(?<minute>[\\d]{2}))(?:-beta?)/(?<prefix>OpenJDK[\\dU]*)",
+        "replace": "${year}${month}${day}${hour}${minute}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$matchJdk-$matchDate-beta/$matchPrefix-jdk_x64_windows_hotspot_$matchDate.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$matchJdk-$matchDate-beta/$matchPrefix-jdk_x86-32_windows_hotspot_$matchDate.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256.txt",
+            "find": "^([a-fA-F0-9]+)\\s"
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "version": "0.19.5",
+    "description": "Clash for Windows 原版简体中文翻译补丁",
+    "homepage": "https://github.com/BoyceLig/Clash_Chinese_Patch",
+    "license": "Unknown",
+    "notes": [
+        "此版本是原版汉化，未删减版本",
+        "软件仅供学习，24小时内删除"
+    ],
+    "depends": "sapps/clash-for-windows-np",
+    "url": "https://github.com/BoyceLig/Clash_Chinese_Patch/releases/download/0.19.5/app.7z",
+    "hash": "8c1cb99822f4d60e5231924e78d9e603f1236de32e08c359e67bdf95d501e62d",
+    "installer": {
+        "script": [
+            "Get-Process clash* | Stop-Process",
+            "Get-ChildItem $dir -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Get-ChildItem \"$(scoop prefix clash-for-windows-np)\\resources\\$($_.Name)\" | Rename-Item -NewName { $_.Name + \".sappsbak\" }",
+            "  Copy-Item $_.FullName -destination \"$(scoop prefix clash-for-windows-np)\\resources\" -Force",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-Process clash* | Stop-Process",
+            "Get-ChildItem \"$dir\" -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Remove-Item \"$(scoop prefix clash-for-windows-np)\\resources\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "  Get-ChildItem \"$(scoop prefix clash-for-windows-np)\\resources\\$($_.Name).sappsbak\" | Rename-Item -NewName { $_.Name -replace '.sappsbak','' }",
+            "}",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/BoyceLig/Clash_Chinese_Patch/releases/download/$version/app.7z"
+    }
+}

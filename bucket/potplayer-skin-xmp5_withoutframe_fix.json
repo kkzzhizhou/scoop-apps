@@ -1,0 +1,39 @@
+{
+    "version": "210813",
+    "description": "PotPlayer 皮肤 XMP5 修复版(by smilefly & 断剑留痕)",
+    "homepage": "https://pan.lanzoui.com/b0i38vsd",
+    "license": "Unknown",
+    "notes": "最新修复版地址: <https://pan.lanzoui.com/b0i38vsd>",
+    "depends": "sapps/potplayer-noad-portable",
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/PotPlayer/PotPlayer_skin_XMP5_WithoutFrame_Fix_210813.zip",
+    "hash": "d6cc220ac1993ba357a3dfd27039fc48b759329c86d722db79bddabe9a157c93",
+    "installer": {
+        "script": [
+            "Get-ChildItem $dir -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Get-ChildItem \"$(scoop prefix potplayer-noad-portable)\\Skins\\$($_.Name)\" | Rename-Item -NewName { $_.Name + \".sappsbak\" }",
+            "  Copy-Item $_.FullName -destination \"$(scoop prefix potplayer-noad-portable)\\Skins\" -Force",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-ChildItem \"$dir\" -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Remove-Item \"$(scoop prefix potplayer-noad-portable)\\Skins\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "  Get-ChildItem \"$(scoop prefix potplayer-noad-portable)\\Skins\\$($_.Name).sappsbak\" | Rename-Item -NewName { $_.Name -replace '.sappsbak','' }",
+            "}",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/JaimeZeng/scoop-apps-version/main/PotPlayer",
+        "regex": "(?s)(?<filename>PotPlayer_skin_XMP5_WithoutFrame_Fix_(?<version>[\\d]+)\\.(?:zip|7z))"
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/PotPlayer/$matchFilename",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/JaimeZeng/scoop-apps-version/main/PotPlayer",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}

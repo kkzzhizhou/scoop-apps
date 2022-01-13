@@ -1,0 +1,64 @@
+{
+    "##": "'rootfs' must be a 'real' directory (at least on Windows 10 RS4)",
+    "version": "8.5-20211114",
+    "description": "A GitHub Actions automated Rocky Linux RootFS to use with WSL",
+    "homepage": "https://github.com/mishamosher/RL-WSL",
+    "license": "MIT",
+    "notes": "Even when you are logging in as 'root', some operations (like service command) require Windows administrator privileges",
+    "url": "https://github.com/mishamosher/RL-WSL/releases/download/8.5-20211114/RL8.zip",
+    "hash": "f83e4fea78728247c4884b319501c2b279d9fa7419efc507a5d73b0d1d53022f",
+    "post_install": [
+        "$installable = $true",
+        "$user = [Security.Principal.WindowsIdentity]::GetCurrent() -as [Security.Principal.WindowsPrincipal]",
+        "$permission = Get-Acl $persist_dir | Select-Object -ExpandProperty Access | Where-Object {",
+        "    ($user.IsInRole($_.IdentityReference)) -and `",
+        "    ($_.FileSystemRights.ToString() -eq 'FullControl') -and `",
+        "    ($_.InheritanceFlags -band 3) -and `",
+        "    ($_.PropagationFlags.ToString() -ne 'NoPropagateInherit')",
+        "}",
+        "if ($null -eq $permission) {",
+        "   warn 'Full Control access to the scoop directory is necessary to install WSL distribution.'",
+        "   warn 'Change directory security and reinstall Rocky-Linux-WSL.'",
+        "   $installable = $false",
+        "}",
+        "if ($null -eq (Get-Command 'wslconfig' -ErrorAction SilentlyContinue)) {",
+        "    warn 'WSL appears not to be enabled!'",
+        "    warn 'Run ''Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux'''",
+        "    warn 'from an elevated PowerShell. Restart your computer when prompted and reinstall Rocky-Linux-WSL.'",
+        "    $installable = $false",
+        "}",
+        "$installable = $installable -and !(Invoke-ExternalCommand \"$dir\\Rocky8.exe\" 'isregd')",
+        "if ($installable) {",
+        "    warn 'DO NOT KILL THE PROCESS. Installation is still running!'",
+        "    Copy-Item \"$dir\\Rocky8.exe\" \"$persist_dir\\data\\Rocky8.exe\"",
+        "    $res = Invoke-ExternalCommand \"$persist_dir\\data\\Rocky8.exe\" 'install', \"$dir\\rootfs.tar.gz\"",
+        "    Remove-Item \"$persist_dir\\data\\Rocky8.exe\" -Force",
+        "    if(!$res) { error 'Rocky-Linux-WSL installation failed!'; return }",
+        "}",
+        "Remove-Item \"$dir\\rootfs.tar.gz\" -Force"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($cmd -ne 'uninstall') { return }",
+            "$res = Invoke-ExternalCommand \"$dir\\Rocky8.exe\" 'isregd'",
+            "if(!$res) { error 'Rocky-Linux-WSL is not registered!'; return }",
+            "Invoke-ExternalCommand \"$dir\\Rocky8.exe\" 'clean', '-y' | Out-Null"
+        ]
+    },
+    "bin": "Rocky8.exe",
+    "shortcuts": [
+        [
+            "Rocky8.exe",
+            "Rocky Linux"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://github.com/mishamosher/RL-WSL/releases/latest",
+        "regex": "(?s)(?<tag>href=\"/mishamosher/RL-WSL/releases/tag/(?<version>[\\d.-]+))",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/mishamosher/RL-WSL/releases/download/$version/RL8.zip"
+    }
+}

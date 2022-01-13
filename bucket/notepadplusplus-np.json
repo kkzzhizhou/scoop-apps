@@ -1,0 +1,54 @@
+{
+    "version": "8.2",
+    "description": "Text and source code editor.",
+    "homepage": "https://notepad-plus-plus.org/",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.2/npp.8.2.Installer.x64.exe#/installer.exe",
+            "hash": "0ba94c551d07de2194f87c086952f5d78a213e4423265a4a394cf98acd4edb59"
+        },
+        "32bit": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.2/npp.8.2.Installer.exe#/installer.exe",
+            "hash": "9e2eca17a0ce0ccd222ae32db1fe9b8473dbf97236880fbbd17949a98564e522"
+        }
+    },
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Notepad++.lnk\"",
+            "if (Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\")) { Copy-Item \"$env:AppData\\Notepad++_Scoop_backup\\*\" \"$Env:AppData\\Notepad++\" -Force -Recurse }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\"))) { New-Item \"$env:AppData\\Notepad++_Scoop_backup\" -ItemType Directory }",
+            "Copy-Item \"$Env:AppData\\Notepad++\\*\" \"$env:AppData\\Notepad++_Scoop_backup\" -Force -Recurse",
+            "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList @('/S') -RunAs | Out-Null",
+            "Stop-Process -Name explorer"
+        ]
+    },
+    "bin": "notepad++.exe",
+    "shortcuts": [
+        [
+            "notepad++.exe",
+            "Notepad++"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/notepad-plus-plus/notepad-plus-plus"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.Installer.x64.exe#/installer.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.Installer.exe#/installer.exe"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.checksums.sha256"
+        }
+    }
+}

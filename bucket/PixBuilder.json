@@ -1,0 +1,48 @@
+﻿{
+    "version": "2.2.0",
+    "description": "PixBuilder Studio is a free image editing software program for digital photo editing, images processing, and resizing.",
+    "homepage": "https://www.wnsoft.com/en/pixbuilder/",
+    "license": "Freeware",
+    "url": "https://files.wnsoft.com/pixbuilder/pixbuilder_setup.exe",
+    "hash": "8b68dda39f291cb10e06424ac334baff9e34c7226bb61058e8001f50321d3d9e",
+    "depends": "innounp",
+    "installer": {
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\"",
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{app}' -Removal",
+            "#Create placeholder files",
+            "function CreateFile([String]$file, [String]$content = $null) {",
+            "    if(!(Test-Path \"$persist_dir\\$file\")) {",
+            "        Write-Host \"Create placeholder for PixBuilderStudio: $file\"",
+            "        New-Item -Force -Path \"$persist_dir\\$file\" -ItemType File -Value $content | Out-Null",
+            "    }",
+            "}",
+            "CreateFile 'Brush.ini'",
+            "CreateFile 'NewImages.ini'",
+            "CreateFile 'PixBuilder.ini'",
+            "New-Item -Force -Path \"$dir\\PortableFlag\" -ItemType File -Value \"[portable]`r`nportable=1\" | Out-Null",
+            "#Fix Chinese Simplified Translation",
+            "if ((Get-WinSystemLocale).Name -eq 'zh-CN') {",
+            "    $chsTranslation = Get-Content \"$dir\\lng\\Chinese Simplified.lng\" -Raw",
+            "    $chsTranslation = $chsTranslation -replace '无权操作', '无标题' -replace '旋转180°\\?', '旋转180°' -replace '填充倾斜度', '填充渐变色' -replace '倾斜度更改', '渐变更改' -replace '倾斜度', '渐变工具'",
+            "    $chsTranslation = $chsTranslation.TrimEnd(\"`r`n\")",
+            "    [System.IO.File]::WriteAllLines(\"$dir\\lng\\Chinese Simplified.lng\", $chsTranslation, [System.Text.ASCIIEncoding]::GetEncoding(936))",
+            "}"
+        ]
+    },
+    "persist": [
+        "Brush.ini",
+        "NewImages.ini",
+        "PixBuilder.ini"
+    ],
+    "uninstaller": {
+        "script": "Get-ChildItem \"$dir\\*.ini\" | Where-Object { !$_.LinkType } | Copy-Item -Destination $persist_dir"
+    },
+    "bin": "PixBuilder.exe",
+    "shortcuts": [
+        [
+            "PixBuilder.exe",
+            "PixBuilder"
+        ]
+    ]
+}

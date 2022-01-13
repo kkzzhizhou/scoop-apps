@@ -1,0 +1,44 @@
+{
+    "homepage": "https://slproweb.com/products/Win32OpenSSL.html",
+    "version": "3.0.1",
+    "license": "Apache-2.0",
+    "description": "TLS/SSL toolkit (Light)",
+    "architecture": {
+        "64bit": {
+            "url": "https://slproweb.com/download/Win64OpenSSL_Light-3_0_1.exe",
+            "hash": "8d0ec8e03c9deb26989f850f64f30ac27e700c0c61e14f73dc530e16ad338a87"
+        },
+        "32bit": {
+            "url": "https://slproweb.com/download/Win32OpenSSL_Light-3_0_1.exe",
+            "hash": "558e344aab4ce9d855bef800ab30550ec881d1dc282d4899b8f44561c7bd835f"
+        }
+    },
+    "depends": "innounp",
+    "installer": {
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\"",
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\\bin\" -ExtractDir '{cf}' -Removal",
+            "Rename-Item \"$dir\\bin\\SSL\" 'cnf' -Force"
+        ]
+    },
+    "bin": "bin\\openssl.exe",
+    "env_set": {
+        "OPENSSL_CONF": "$dir\\bin\\cnf\\openssl.cnf"
+    },
+    "checkver": "Win32 OpenSSL v([^\\s]+)\\s+Light",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://slproweb.com/download/Win64OpenSSL_Light-$underscoreVersion.exe"
+            },
+            "32bit": {
+                "url": "https://slproweb.com/download/Win32OpenSSL_Light-$underscoreVersion.exe"
+            }
+        },
+        "hash": {
+            "mode": "json",
+            "jp": "$.files.['$basename'].sha256",
+            "url": "https://raw.githubusercontent.com/slproweb/opensslhashes/master/win32_openssl_hashes.json"
+        }
+    }
+}

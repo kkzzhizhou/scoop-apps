@@ -1,0 +1,47 @@
+{
+    "version": "2.0.1",
+    "description": "A javaagent framework",
+    "homepage": "https://zhile.io/2021/11/29/ja-netfilter-javaagent-lib.html",
+    "license": "GPL-3.0-only",
+    "url": [
+        "https://github.com/ja-netfilter/ja-netfilter/releases/download/v2.0.1/ja-netfilter-v2.0.1.zip",
+        "https://pan.jiemi.workers.dev/?file=/scoop/patch/plugins/mymap.jar"
+    ],
+    "hash": [
+        "f4ae9e8837893e70ece13b2555512b1fb97d0b69860598e916e99913b2e67be3",
+        "48f627919c46ec345119b05afbd18b2a443d47223533f21a64792302ffcd223d"
+    ],
+    "extract_dir": "ja-netfilter",
+    "pre_install": [
+        "foreach ($config in @('mymap.conf', 'url.conf', 'dns.conf')) {",
+        "    if (!(Test-Path \"$dir\\config\\$config\")) {",
+        "        New-Item -Path \"$dir\\config\" -Name \"$config\" -ItemType File | Out-Null ",
+        "    }",
+        "}",
+        "Set-Content \"$dir\\config\\dns.conf\" @('[DNS]', 'EQUAL,jetbrains.com') -Encoding Ascii",
+        "Set-Content \"$dir\\config\\url.conf\" @('[URL]', 'PREFIX,https://dbeaver.com/lmp/checkLicense', 'PREFIX,https://store.smartgit.com/check', 'PREFIX,https://account.jetbrains.com/lservice/rpc/validateKey.action') -Encoding Ascii",
+        "$cont = @(",
+        "    '[MyMap]'",
+        "    \"EQUAL,licenseeName->$env:USERNAME\"",
+        "    'EQUAL,gracePeriodDays->100000'",
+        "    'EQUAL,paidUpTo->2022-12-31'",
+        ")",
+        "Set-Content \"$dir\\config\\mymap.conf\" -Value $cont -Encoding Ascii",
+        "foreach ($name in @('mymap.jar')) {",
+        "    Move-Item -Path \"$dir\\$name\" -Destination \"$dir\\plugins\" -Force",
+        "}"
+    ],
+    "post_install": [
+        "$text = \"Add Content '-javaagent:$dir\\ja-netfilter.jar' \"",
+        "if (Test-Path \"$scoopdir\\apps\\smartgit\") { $text = \"$text `r`n SmartGit: $(scoop prefix smartgit)\\bin\\smartgit.vmoptions\" }",
+        "if (Test-Path \"$scoopdir\\apps\\dbeaver-ee\") { $text = \"$text `r`n DBEaverEE:  $(scoop prefix dbeaver-ee)\\Eclipse\\dbeaver.ini\" }",
+        "$text = \"$text `r`n JetBrains:  IDE Menu -> Help -> Edit Custom VM Options\"",
+        "warn $text"
+    ],
+    "checkver": {
+        "github": "https://github.com/ja-netfilter/ja-netfilter/"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ja-netfilter/ja-netfilter/releases/download/v$version/ja-netfilter-v$version.zip"
+    }
+}
