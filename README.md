@@ -71,8 +71,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
 - wangzq/scoop-bucket
-- dodorz/scoop
 - ScoopInstaller/PHP
+- dodorz/scoop
 - kiennq/scoop-misc
 - scoopcn/scoopcn
 - wzv5/ScoopBucket
