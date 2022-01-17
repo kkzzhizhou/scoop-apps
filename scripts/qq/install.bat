@@ -64,7 +64,7 @@ rd /s /q "%CommonProgramFiles%\Tencent\QQProtect"2>NUL
 rd /s /q "%CommonProgramFiles(x86)%\Tencent\QQProtect"2>NUL
 reg delete HKLM\SYSTEM\CurrentControlSet\services\QQProtect /F>NUL 2>NUL
 
-:: 注册协议：关联网页会话、表情包关联、音乐收听等
+:: 注册协议: 关联网页会话、表情包关联、音乐收听等
 if exist Bin\Timwp.dll regsvr32 /s Bin\Timwp.dll
 if exist Bin\AppCom.dll regsvr32 /s Bin\AppCom.dll
 if exist Bin\Common.dll regsvr32 /s Bin\Common.dll
@@ -106,7 +106,7 @@ if exist "%WinDir%\SysWOW64" reg add HKLM\Software\Wow6432Node\Tencent\QQ2009 /v
 @REM :DesktopLnk
 @REM ::提示安装完成了，可选创建桌面快捷方式。
 @REM ECHO.&ECHO.绿化安装完成! 是否创建桌面快捷方式？
-@REM ECHO.&ECHO.[是] 请按任意键，[否] 直接关掉本窗口！&PAUSE >NUL 2>NUL
+@REM ECHO.&ECHO.[是] 请按任意键，[否] 直接关掉本窗口!&PAUSE >NUL 2>NUL
 @REM mshta VBScript:Execute("Set a=CreateObject(""WScript.Shell""):Set b=a.CreateShortcut(a.SpecialFolders(""Desktop"") & ""\腾讯QQ.lnk""):b.TargetPath=""%~dp0Bin\QQScLauncher.exe"":b.WorkingDirectory=""%~dp0Bin"":b.Save:close")
 @REM ECHO.&ECHO.完成! &PAUSE >NUL 2>NUL
 

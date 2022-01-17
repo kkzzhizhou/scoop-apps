@@ -45,4 +45,4 @@ If Not Exist "%Public%" Rundll32 setupapi.dll,InstallHinfSection DefaultInstall 
 
 ::创建桌面快捷方式
 @REM mshta VBScript:Execute("Set a=CreateObject(""WScript.Shell""):Set b=a.CreateShortcut(a.SpecialFolders(""Desktop"") & ""\Internet Download Manager.lnk""):b.TargetPath=""%~dp0IDMan.exe"":b.WorkingDirectory=""%~dp0"":b.Save:close")
-ECHO.&ECHO 绿化完成，按任意键返回！
+ECHO.&ECHO 绿化完成，按任意键返回!

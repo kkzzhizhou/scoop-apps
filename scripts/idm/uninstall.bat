@@ -37,4 +37,4 @@ reg delete "HKLM\SOFTWARE\Wow6432Node\Internet Download Manager" /f>NUL 2>NUL
 
 taskkill /f /im explorer.exe >NUL 2>NUL & start explorer
 reg delete "HKCU\Software\DownloadManager" /f>NUL 2>NUL
-ECHO.&ECHO 卸载完成（重启电脑才能删除目录），按任意键返回！
+ECHO.&ECHO 卸载完成（重启电脑才能删除目录），按任意键返回!
