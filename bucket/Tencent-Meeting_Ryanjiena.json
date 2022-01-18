@@ -1,0 +1,37 @@
+{
+    "version": "3.3.4.444",
+    "description": "Based on Tencent's 20 years of experience in audio and video communications, Tencent Meeting provides one-stop audio and video conferencing solutions that enable you to experience high-definition and smooth meetings and conference collaboration anytime and anywhere.",
+    "homepage": "https://meeting.tencent.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://meeting.tencent.com/declare.html"
+    },
+    "notes": "We don't persist your Tencent Meeting data, they are still storaged in \"$env:APPDATA\\Tencent\\WeMeet\".",
+    "url": "https://updatecdn.meeting.qq.com/cos/ce515ae2a884821b62f94cb0b24a68cd/TencentMeeting_0300000000_3.3.4.444.publish.exe#/dl.7z",
+    "hash": "b1b50419765c311333486414f478ed073a08776f19fc4fac0d1a42f0e1e61c98",
+    "pre_install": "Rename-Item -Path \"$dir\\`$_*\" -NewName \"$version\" -Force",
+    "post_install": [
+        "Remove-Item \"$dir\\$*\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\wemeetapp_new.exe\" -Force -ErrorAction SilentlyContinue"
+    ],
+    "bin": [
+        [
+            "wemeetapp.exe",
+            "tencent-meeting"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "wemeetapp.exe",
+            "Tencent Meeting"
+        ]
+    ],
+    "checkver": {
+        "url": "https://meeting.tencent.com/wemeet-webapi/v2/config/query-download-info",
+        "script": "(Invoke-WebRequest -Body '[{\"instance\":\"windows\",\"type\":\"0300000000\"}]' -Method 'POST' -Uri $url).Content",
+        "regex": "https://(?<url>.*?\\.exe).*?version\".*?\"([\\d.]+)\""
+    },
+    "autoupdate": {
+        "url": "https://$matchUrl#/dl.7z"
+    }
+}
