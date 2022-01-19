@@ -89,8 +89,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - excitoon/scoop-user
 - ChinLong/scoop-customize
 - batkiz/backit
-- 42wim/scoop-bucket
 - Darkatse/Scoop-Darkatse
+- 42wim/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - krproject/qi-windows
 - Ryanjiena/scoop-apps
