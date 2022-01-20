@@ -1,0 +1,58 @@
+{
+    "version": "20220118",
+    "description": "Open source home theater/media center software and entertainment hub for digital media",
+    "homepage": "https://kodi.tv/",
+    "license": "GPL-2.0-or-later",
+    "suggest": {
+        "Visual C++ Redistributable": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://mirrors.kodi.tv/nightlies/windows/win64/master/KodiSetup-20220118-ef472bca-master-x64.exe#/dl.7z",
+            "hash": "d6e8d935b1b98216ebc2fbdca8217d0780e315cc43f80d93b33d16a5e64334a2"
+        },
+        "32bit": {
+            "url": "https://mirrors.kodi.tv/nightlies/windows/win32/master/KodiSetup-20220118-ef472bca-master-x86.exe#/dl.7z",
+            "hash": "819c4572a416d31a555dda59e3822e71b893043b78fa6a97ff31a244056a9786"
+        }
+    },
+    "post_install": "'$PLUGINSDIR', '$TEMP', 'AppxManifest.xml', 'Uninstall.exe' | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force }",
+    "shortcuts": [
+        [
+            "kodi.exe",
+            "Kodi Dev",
+            "-p"
+        ]
+    ],
+    "persist": "portable_data",
+    "checkver": {
+        "script": [
+            "$builds = 'win32', 'win64'",
+            "$script_ver = ''",
+            "$urls =  @()",
+            "foreach ($build in $builds) {",
+            "   $base_url = 'https://mirrors.kodi.tv/nightlies/windows/'+ $build + '/master/'",
+            "   $dl_page = Invoke-WebRequest $base_url -UseBasicParsing",
+            "   $full_version = $dl_page.links | Where-Object href -match '\\.exe$' | Select-Object -first 1 -expand href",
+            "   $script_ver = $full_version -split '-' | Select-Object -Skip 1 | Select-Object -First 1",
+            "   $urls += $full_version",
+            "}",
+            "Write-Output ('version:\"' + $script_ver + '\"') ('urls:\"' + $urls + '\"')"
+        ],
+        "regex": "version:\"(?<version>\\d+)\"\\surls:\"(?<win32bit>.+)\\s(?<win64bit>.+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://mirrors.kodi.tv/nightlies/windows/win64/master/$matchWin64bit#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://mirrors.kodi.tv/nightlies/windows/win32/master/$matchWin32bit#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$url?mirrorlist",
+            "regex": "$sha256"
+        }
+    }
+}
