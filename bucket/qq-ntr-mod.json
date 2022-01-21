@@ -1,0 +1,71 @@
+{
+    "version": "9.5.5.28104",
+    "description": "腾讯 QQ PC 版去广告特别版，由 @Dreamcast 组装打包而成",
+    "homepage": "https://im.qq.com/pcqq",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://ti.qq.com/agreement/index.html"
+    },
+    "notes": [
+        "① 所有的修改版都有被锁的风险，是否使用自己斟酌，本人不承担任何责任!",
+        "② 安装使用 QQ 前请先自行安装齐全 Visual C++ 和 Universal C 运行库，最新运行库合集下载: https://wwa.lanzoui.com/b0b8rs19a 密码: 9527",
+        "③ 安装使用 QQ 前请先自行安装好 Adobe Flash Player 最新版组件，QQ 秀正常显示必备，但非必需，最新和谐版下载: https://wwa.lanzoui.com/b0b8rsdmf 密码: 6666",
+        "④ 默认去除了主面板 <QQ 空间>< 勋章墙 >< 腾讯文档 > 三个功能图标，需要的自己勾选相关选项安装 (安装版)，或组件功能切换里开启 (绿色版)",
+        "⑤ 9.3.8 开始官方对撤回消息相关做了很多改动，所以目前的防撤回修改默认使用有 bug，启用后会导致群内撤回消息重新编辑不能用，好友对话则无此问题",
+        "   └— 解决办法是进 QQ 的系统设置  — 会话窗口 — 勾选 “撤回消息设置” ，然后“自定义消息撤回” 里选择除了《无》之外的其他任意选项即可",
+        "⑥ 默认整合的 NtrQQ 可能会被一些杀软误报和拦截，至于怎么做我就不多说了，相关使用上的问题不要问我，有问题请到官方论坛 https://iya.app 反馈",
+        "   NtrQQ 里关闭了主面板最小高宽的选项，想要缩的更窄更小的手动去 NtrQQ.ini 里开启: KillMainPanelSize=1",
+        "   更多 NtrQQ 选项设置可以自行翻阅 NtrQQ.ini，Lance.Moe 都有详细说明",
+        "",
+        "使用 'scoop install vcredist-aio' 或 'scoop install vcredist-mix' 安装运行库"
+    ],
+    "depends": "sudo",
+    "suggest": {
+        "vcredist": [
+            "sapps/vcredist-aio",
+            "sapps/vcredist-mix"
+        ]
+    },
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/QQ_9.5.5_(28104)_Installer_With_NtrQQ_7.1.2.rar",
+    "hash": "e13a5aabdd572fc1fcb322c0abafa9cb434d4fa841b717de8da3ebbef1742486",
+    "installer": {
+        "script": [
+            "Stop-Process -Name \"TXP*\" \"tad*\" \"QQP*\" \"QQC*\" \"QQ\" -Force | Out-Null",
+            "Rename-Item \"$dir\\*.exe\" 'installer.exe'",
+            "sudo Start-Process -filepath \"$dir\\installer.exe\" -ArgumentList /DIR=\"$dir\",/SILENT -WorkingDirectory \"$dir\" -Wait"
+        ]
+    },
+    "post_install": "@('installer.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
+    "uninstaller": {
+        "script": [
+            "Stop-Process -Name \"TXP*\" \"tad*\" \"QQP*\" \"QQC*\" \"QQ\" -Force | Out-Null",
+            "sudo Start-Process -filepath \"$dir\\unins000.exe\" -ArgumentList /VERYSILENT -WorkingDirectory \"$dir\" -Wait",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "bin": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "QQ"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "QQ"
+        ]
+    ],
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/JaimeZeng/scoop-apps-version/main/QQ",
+        "regex": "(?s)(?<filename>QQ_(?<ver>([\\d.]+))_[(](?<build>([\\d]+))[)]_Installer_With_NtrQQ_.*?\\.rar)",
+        "replace": "${ver}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/$matchFilename",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/JaimeZeng/scoop-apps-version/main/QQ",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}
