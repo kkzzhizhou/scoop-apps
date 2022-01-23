@@ -84,13 +84,13 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - jfut/scoop-jfut
 - BjoernPetersen/scoop-misc-bucket
 - excitoon/scoop-user
+- Ryanjiena/scoop-apps
 - ChinLong/scoop-customize
 - batkiz/backit
 - Darkatse/Scoop-Darkatse
 - 42wim/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - krproject/qi-windows
-- Ryanjiena/scoop-apps
 - nickbudi/scoop-bucket
 - Velgus/Scoop-Portapps
 - liaoya/scoop-bucket
