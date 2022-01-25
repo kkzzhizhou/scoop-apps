@@ -1,0 +1,57 @@
+{
+    "version": "0.4.6.9",
+    "description": "Enables anonymous communication over the onion network (expert mode).",
+    "homepage": "https://www.torproject.org",
+    "license": "BSD-3-Clause",
+    "notes": [
+        "You will need to configure Tor before using, as it does not come pre-configured.",
+        "See https://tb-manual.torproject.org/ for details."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://dist.torproject.org/torbrowser/11.0.3/tor-win64-0.4.6.9.zip",
+            "hash": "fabb46fb0b82c7cd3592c96554ffd8c0766b2e467559e3613b3e14ac191aed19"
+        },
+        "32bit": {
+            "url": "https://dist.torproject.org/torbrowser/11.0.3/tor-win32-0.4.6.9.zip",
+            "hash": "1a89145369c489b73b86db401d1a1232bf4901d6067c926e32f519ea1655026e"
+        }
+    },
+    "pre_install": [
+        "$current = current_dir $dir",
+        "$content = @(",
+        "    \"DataDirectory `\"$current\\Data\\Data`\"\"",
+        "    \"GeoIPFile `\"$current\\Data\\Tor\\geoip`\"\"",
+        "    \"GeoIPv6File `\"$current\\Data\\Tor\\geoip6`\"\"",
+        ")",
+        "if (!(Test-Path \"$persist_dir\\torrc\")) {",
+        "    Add-Content \"$dir\\torrc\" $content.Replace('\\', '/') -Encoding ASCII -Force",
+        "}"
+    ],
+    "bin": [
+        [
+            "Tor\\tor.exe",
+            "tor",
+            "-f \"$dir\\torrc\""
+        ],
+        "Tor\\tor-gencert.exe"
+    ],
+    "persist": [
+        "Data\\Data",
+        "torrc"
+    ],
+    "checkver": {
+        "url": "https://www.torproject.org/download/tor/",
+        "regex": "dist/torbrowser/(?<browser>[\\d.]+)/tor-win32-(?<version>[\\d.]+)\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dist.torproject.org/torbrowser/$matchBrowser/tor-win64-$version.zip"
+            },
+            "32bit": {
+                "url": "https://dist.torproject.org/torbrowser/$matchBrowser/tor-win32-$version.zip"
+            }
+        }
+    }
+}

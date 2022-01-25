@@ -1,35 +1,70 @@
 {
-    "homepage": "http://www.bandisoft.com/bandizip",
-    "description": "Bandizip 是一个强大的多功能压缩文件管理工具，可提供很快的解压缩速度和其他各种实用功能",
-    "version": "7.21",
+    "version": "7.23",
+    "description": "Yet another typical ZIP archiver",
+    "homepage": "http://www.bandisoft.com/bandizip/",
     "license": {
-        "identifier": "Freeware",
+        "identifier": "EULA",
         "url": "https://en.bandisoft.com/bandizip/eula/"
     },
-    "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP",
-    "hash": "cac94cd35840817b75a79e7eee7663878c8bc5f604a3b2797cd372563b0148b9",
-    "architecture": {
-        "64bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'"
-        },
-        "32bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'"
-        }
-    },
+    "url": [
+        "http://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE",
+        "https://pan.jiemi.workers.dev/?file=/scoop/Bandizip/Bandizip_v7.xx_x32-x64_Patch_20201104.7z#dl.7z_"
+    ],
+    "hash": [
+        "f9cfdca07f260124d02832752a17033743d148b9e36b55dd2d34b488fe6882da",
+        "342325dd3c9212fce9b4dbf01d1009155110ea3078887a09304e4323f754686b"
+    ],
+    "pre_install": [
+        "$7z=(Get-ChildItem $dir\\Bandizip_v7.xx_x32-x64_Patch*).Name",
+        "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
+    ],
     "installer": {
         "script": [
-            "Get-ChildItem \"$dir\\Bandizip.x*.exe\" | Remove-Item",
-            "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
+            "Start-Process -filepath \"$dir\\BANDIZIP-SETUP-STD-ALL.EXE\" -WorkingDirectory \"$dir\" -ArgumentList \"/D:$dir /auto\" -Wait"
         ]
     },
-    "bin": "Bandizip.exe",
-    "shortcuts": [["Bandizip.exe", "Bandizip"]],
+    "architecture": {
+        "64bit": {
+            "post_install": [
+                "Start-Process -filepath \"$dir\\Bandizip.v7.xx.x64.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null",
+                "Remove-Item $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
+                "Remove-Item $dir\\Bandizip.v7.xx.x32.Patch* -Force -ErrorAction SilentlyContinue",
+                "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+            ]
+        },
+        "32bit": {
+            "post_install": [
+                "Start-Process -filepath \"$dir\\Bandizip.v7.xx.x32.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null",
+                "Remove-Item $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
+                "Remove-Item $dir\\Bandizip.v7.xx.x64.Patch* -Force -ErrorAction SilentlyContinue",
+                "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+            ]
+        }
+    },
+    "bin": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ],
+        [
+            "bz.exe",
+            "bz"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ]
+    ],
     "persist": "Bandizip.ini",
+    "env_add_path": ".",
     "checkver": {
         "url": "https://en.bandisoft.com/bandizip/history/",
         "regex": "v([\\d.]+)</font"
     },
     "autoupdate": {
-        "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP"
+        "url": "http://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE"
     }
 }

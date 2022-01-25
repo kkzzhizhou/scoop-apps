@@ -1,0 +1,47 @@
+{
+    "version": "14.1",
+    "description": "Object-relational database management system based on POSTGRES.",
+    "homepage": "https://www.postgresql.org",
+    "license": "PostgreSQL",
+    "notes": [
+        "Run run 'pg_ctl start' or 'pg_ctl stop' to start and stop the database or",
+        "register it as a service by running 'pg_ctl register -N PostgreSQL' from an elevated shell.",
+        "Default superuser login: postgres, password: <blank>"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://get.enterprisedb.com/postgresql/postgresql-14.1-1-windows-x64-binaries.zip",
+            "hash": "7c8aeca0329d8b86c42579d849d061a7b60173de9156d7b43cf09d1e54f4f533"
+        }
+    },
+    "extract_dir": "pgsql",
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\pg_hba.conf\")) {",
+        "   Invoke-ExternalCommand -FilePath \"$dir\\bin\\initdb.exe\" -ArgumentList \"--username=postgres --encoding=UTF8 --locale=en --lc-collate=C\" | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "pgAdmin 4\\bin\\pgAdmin4.exe",
+            "pgAdmin 4"
+        ]
+    ],
+    "env_add_path": "bin",
+    "env_set": {
+        "PGDATA": "$dir\\data",
+        "PG_LIB_DIR": "$dir\\lib",
+        "PG_INCLUDE_DIR": "$dir\\include"
+    },
+    "persist": "data",
+    "checkver": {
+        "url": "https://www.enterprisedb.com/download-postgresql-binaries",
+        "regex": "Binaries from installer .+ Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://get.enterprisedb.com/postgresql/postgresql-$version-1-windows-x64-binaries.zip"
+            }
+        }
+    }
+}
