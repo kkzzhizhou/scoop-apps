@@ -79,6 +79,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - hoilc/scoop-lemon
 - ChungZH/peach
 - AStupidBear/scoop-bear
+- 42wim/scoop-bucket
 - iquiw/scoop-bucket
 - naderi/scoop-bucket
 - jfut/scoop-jfut
@@ -88,7 +89,6 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - batkiz/backit
 - Darkatse/Scoop-Darkatse
-- 42wim/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - krproject/qi-windows
 - nickbudi/scoop-bucket
