@@ -1,0 +1,38 @@
+{
+    "version": "3.20.0",
+    "description": "SteelSeries Engine. One application for all your settings",
+    "homepage": "https://steelseries.com/engine",
+    "license": "Propritary",
+    "notes": "SteelSeries Engine has been replaced by SteelSeries GG",
+    "changelog": "https://techblog.steelseries.com/",
+    "url": "https://engine.steelseriescdn.com/SteelSeriesEngine3.20.0Setup.exe#/setup.exe",
+    "hash": "7527895c81cb5c42ce51f5463fa7fab79766952e1f8f34b5e6f1268cd2681ea0",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"SteelSeriesEngine3\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"SteelSeries Engine*\"",
+            "$regPath = \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{99999999-9999-9999-9999-999999999999}\"",
+            "if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    }
+}

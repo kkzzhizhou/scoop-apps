@@ -1,0 +1,51 @@
+{
+    "version": "4.59",
+    "description": "PlugIns will be installed into IrfanView \"PlugIns\" directory",
+    "homepage": "https://www.irfanview.com/plugins.htm",
+    "license": {
+        "identifier": "Various",
+        "url": "https://www.irfanview.com/plugins.htm"
+    },
+    "depends": "scoop-apps/irfanview-install",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.irfanview.info/files/iview459_plugins_x64_setup.exe#/setup.exe",
+            "hash": "7742d47f49293f885c42d6b566d2d55335b79d454a024bff3ee113dd8b8bb41c"
+        },
+        "32bit": {
+            "url": "https://www.irfanview.info/files/iview459_plugins_setup.exe#/setup.exe",
+            "hash": "5902029c4698b2e69198e58381c7725271320dc3523fa2b74a89d2929aac3b52"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"IrfanView*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\IrfanView\\Plugins\\Formats.dll\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /silent /desktop=0 /thumbs=0 /group=1 /allusers=1 /assoc=0 | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.irfanview.com/",
+        "regex": ">\\s*version\\s+([\\d\\.-]+)\\s*<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_plugins_x64_setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_plugins_setup.exe#/setup.exe"
+            }
+        }
+    }
+}

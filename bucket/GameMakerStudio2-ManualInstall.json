@@ -1,0 +1,57 @@
+{
+    "version": "2022.1.0.609",
+    "description": "GameMaker Studio 2. GameMaker has helped developers create much-loved and multi-million seller games",
+    "homepage": "https://www.yoyogames.com/en/gamemaker",
+    "license": "Proprietary",
+    "changelog": "https://gms.yoyogames.com/ReleaseNotes.html",
+    "architecture": {
+        "64bit": {
+            "url": "https://gms.yoyogames.com/GameMakerStudio-Installer-2022.1.0.609.exe#/setup.exe",
+            "hash": "277ed10cb90834a87f641ced6762737eab4448304ac78f097abb1a34a273de13"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"GameMakerStudio\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\GameMaker Studio 2\\GameMakerStudio.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"GameMaker Studio 2\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://gmapi.gnysek.pl/",
+        "regex": "Current version is <b>([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://gms.yoyogames.com/GameMakerStudio-Installer-$version.exe#/setup.exe"
+            }
+        }
+    }
+}

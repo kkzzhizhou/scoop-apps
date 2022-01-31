@@ -1,0 +1,58 @@
+{
+    "version": "2.9.6",
+    "description": "Extend your GitHub workflow beyond your browser.",
+    "homepage": "https://desktop.github.com/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://central.github.com/deployments/desktop/desktop/latest/win32?format=msi#/dl.7z",
+            "hash": "bf7fa85a4f0c051d90d379403a93ea16e60a01c9393a3853f974310eed8db990"
+        }
+    },
+    "##": [
+        "$processname = \"GitHubDesktop\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"GitHub Desktop\"",
+            "$installpath = \"$dir\\GitHubDesktop.exe\"",
+            "$LocalAppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$regPath = \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GitHubDesktop\"",
+            "if(((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\") -or !(Test-Path \"$LocalAppData\\GitHubDesktop\\app-$version\\GitHubDesktop.exe\"))",
+            "{",
+            "   &\"$installpath\" -s | Out-Null",
+            "   Start-Sleep -s 30",
+            "   if(((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\") -or !(Test-Path \"$LocalAppData\\GitHubDesktop\\app-$version\\GitHubDesktop.exe\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\GitHubDesktop.exe\") { Remove-Item \"$dir\\GitHubDesktop.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$DesktopDirectory = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopDirectory\\GitHub Desktop.lnk\") {Remove-Item \"$DesktopDirectory\\GitHub Desktop.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://central.github.com/api/deployments/desktop/desktop/latest/RELEASES",
+        "regex": "GitHubDesktop-([\\d.]+)-full.nupkg",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://central.github.com/deployments/desktop/desktop/latest/win32?format=msi#/dl.7z"
+            }
+        }
+    }
+}

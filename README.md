@@ -91,6 +91,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Darkatse/Scoop-Darkatse
 - Apocalypsor/My-Scoop-Bucket
 - krproject/qi-windows
+- ACooper81/scoop-apps
 - nickbudi/scoop-bucket
 - Velgus/Scoop-Portapps
 - liaoya/scoop-bucket

@@ -1,0 +1,56 @@
+{
+    "version": "5.14.9.516",
+    "description": "Detecting and updating outdated software",
+    "homepage": "https://www.kcsoftwares.com/?sumo",
+    "license": {
+        "identifier": "Freeware",
+        "url": "http://www.kcsoftwares.com/legal/ToU.pdf"
+    },
+    "url": "https://www.kcsoftwares.com/files/sumo_lite.exe#/setup.exe",
+    "hash": "410672e09c721130d6e1850e0ec37aa5da1d6d702f26cde27cafaf991edbdbf6",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"SUMo\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"KC Softwares SUMo*\"",
+            "$processname = \"SUMo.exe\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\KC Softwares\\SUMo\\SUMo.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }",
+            "while ((Get-Process -Name 'SUMo' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "   Start-Sleep -Milliseconds 50",
+            "}",
+            "taskkill /F /IM $processname /FI 'status eq running'"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\SUMo.lnk\") {Remove-Item \"$DesktopPath\\SUMo.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.kcsoftwares.com/?download",
+        "regex": "<h3>SUMo</h3>\\s+<small>Version : <code>([\\d.]+)</code>"
+    },
+    "autoupdate": {
+        "url": "https://www.kcsoftwares.com/files/sumo_lite.exe#/setup.exe"
+    }
+}

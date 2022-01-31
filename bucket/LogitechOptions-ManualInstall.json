@@ -1,0 +1,45 @@
+{
+    "version": "9.50.269.0",
+    "description": "Logitech Options software lets you customize your device's settings",
+    "homepage": "https://www.logitech.com/en-us/product/options",
+    "license": "",
+    "notes": "",
+    "url": "https://download01.logi.com/web/ftp/pub/techsupport/options/options_installer.exe#/setup.exe",
+    "hash": "524934e0d0daaa572ab7a43d15bf619fe2e864a2d46ee12a6be71f4f319f56dc",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"LogiOptions\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Logitech Options*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Logitech\\LogiOptions\\LogiOptions.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "http://www.softwarerating.info/programs/?id=1397147448494364",
+        "regex": "<title>Download Logitech Options ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download01.logi.com/web/ftp/pub/techsupport/options/options_installer.exe#/setup.exe"
+    }
+}

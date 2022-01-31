@@ -1,0 +1,64 @@
+{
+    "version": "1.4.00.35564",
+    "description": "DescriptionMicrosoft Teams is a unified communication and collaboration platform that combines persistent workplace chat, video meetings, file storage, and application integration",
+    "homepage": "https://products.office.com/en-AU/microsoft-teams/group-chat-software",
+    "license": "",
+    "architecture": {
+        "64bit": {
+            "url": "https://statics.teams.cdn.office.net/production-windows-x64/1.4.00.35564/Teams_windows_x64.exe#/setup.exe",
+            "hash": "c157b4d73fdbf264e3aa2c61dafc02eb07abb9f33d1ae9d2034b7f8a9088b8df"
+        },
+        "32bit": {
+            "url": "https://statics.teams.cdn.office.net/production-windows/1.4.00.35564/Teams_windows.exe#/setup.exe",
+            "hash": "3b74fe83389bb7d9bd2ca4f6a97a829a00593ff2a8fc2954896460e11603ee26"
+        }
+    },
+    "pre_install": [
+        "$processname = \"Teams\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft Teams*\"",
+            "$AppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$filepath = \"$AppData\\Microsoft\\Teams\\current\\Teams.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" --silent | Out-Null",
+            "   Start-Sleep 60",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Microsoft Teams\"",
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\$programname.lnk\") {Remove-Item \"$DesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://chocolatey.org/packages/microsoft-teams",
+        "regex": "Microsoft Teams Desktop App ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://statics.teams.cdn.office.net/production-windows-x64/$version/Teams_windows_x64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://statics.teams.cdn.office.net/production-windows/$version/Teams_windows.exe#/setup.exe"
+            }
+        }
+    }
+}
