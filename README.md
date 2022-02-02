@@ -52,8 +52,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - TheCjw/scoop-retools
 - ivaquero/scoopet
 - kodybrown/scoop-nirsoft
-- Ash258/Scoop-JetBrains
 - ScoopInstaller/Versions
+- Ash258/Scoop-JetBrains
 - L-Trump/scoop-raresoft
 - littleli/scoop-clojure
 - kidonng/sushi
@@ -85,8 +85,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - Darkatse/Scoop-Darkatse
 - Apocalypsor/My-Scoop-Bucket
-- littleli/Scoop-littleli
 - ACooper81/scoop-apps
+- littleli/Scoop-littleli
 - nickbudi/scoop-bucket
 - Velgus/Scoop-Portapps
 - liaoya/scoop-bucket
