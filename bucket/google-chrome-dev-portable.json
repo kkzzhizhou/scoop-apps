@@ -1,64 +1,63 @@
 {
-    "version": "99.0.4844.11",
+    "version": "99.0.4844.16",
     "description": "Fast, secure, and free web browser, built for the modern web(Dev, Portable Edition).",
     "homepage": "https://www.google.com/chrome/",
     "license": {
         "identifier": "Freeware",
         "url": "https://www.google.com/chrome/privacy/eula_text.html"
     },
-    "notes": "Chromium 内核浏览器实验室功能特性运行参数: <https://peter.sh/experiments/chromium-command-line-switches>",
     "architecture": {
         "64bit": {
-            "url": "https://dl.google.com/release2/chrome/a7blzs7ksd2mxzthqjt5cpge2a_99.0.4844.11/99.0.4844.11_chrome_installer.exe#/dl.7z",
-            "hash": "6131da8c27179c3dbfc250b1376abfe2b3716bba7d7526ec3e479ce8ce073943"
+            "url": "https://redirector.gvt1.com/edgedl/release2/chrome/aczbub2u3erbgdybwtl37rw6z66a_99.0.4844.16/99.0.4844.16_chrome_installer.exe#/dl.7z",
+            "hash": "117028b463ac89f4735f5359128c6733fc2a961698f25b9161eec60684c7e3a4"
         },
         "32bit": {
-            "url": "https://dl.google.com/release2/chrome/gkkuc72ql7ha72wg37p3j2wx6m_99.0.4844.11/99.0.4844.11_chrome_installer.exe#/dl.7z",
-            "hash": "3e7e0929ef6acc3fc5d01482bae596abf83583c003202352aaf649d18050db6f"
+            "url": "https://redirector.gvt1.com/edgedl/release2/chrome/kiggwfs5qlp2dh3mqbsekfuje4_99.0.4844.16/99.0.4844.16_chrome_installer.exe#/dl.7z",
+            "hash": "1566bbf37dd66e65c6f1b43448abec45671462a960a1d6133a2b1d9aeaf28fe8"
         }
     },
-    "pre_install": "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -Removal",
+    "installer": {
+        "script": "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -Removal"
+    },
     "bin": [
         [
             "chrome.exe",
             "chrome-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
-        ],
-        [
-            "chrome.exe",
-            "google-chrome-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
             "chrome.exe",
             "Google Chrome Dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "persist": [
-        "User Data",
-        "Cache"
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Google\\Chrome\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Google\\Chrome\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
     ],
+    "persist": "User Data",
     "checkver": {
-        "url": "https://scoopinstaller.github.io/UpdateTracker/googlechrome/chrome.min.xml",
-        "regex": "(?sm)<dev32><version>(?<version>[\\d.]+)</version>.+release2/chrome/(?<32>[\\w-]+)_.+<dev64>.+release2/chrome/(?<64>[\\w-]+)_.+</dev64>"
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/chrome",
+        "regex": "(?sm)dev.*?win-x86.*?(?<86>chrome/[\\w-]+_(?<version>[\\d.]+).*?_chrome_installer.exe).*?win-x64.*?(?<64>chrome/[\\w-]+_(?<version>[\\d.]+).*?_chrome_installer.exe)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dl.google.com/release2/chrome/$match64_$version/$version_chrome_installer.exe#/dl.7z",
+                "url": "https://redirector.gvt1.com/edgedl/release2/$match64#/dl.7z",
                 "hash": {
-                    "url": "https://scoopinstaller.github.io/UpdateTracker/googlechrome/chrome.min.xml",
-                    "xpath": "/chromechecker/dev64[version='$version']/sha256"
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/chrome",
+                    "jsonpath": "$[?(@.Product == 'dev')].Release[?(@.Architecture == 'win-x64')].Hash"
                 }
             },
             "32bit": {
-                "url": "https://dl.google.com/release2/chrome/$match32_$version/$version_chrome_installer.exe#/dl.7z",
+                "url": "https://redirector.gvt1.com/edgedl/release2/$match86#/dl.7z",
                 "hash": {
-                    "url": "https://scoopinstaller.github.io/UpdateTracker/googlechrome/chrome.min.xml",
-                    "xpath": "/chromechecker/dev32[version='$version']/sha256"
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/chrome",
+                    "jsonpath": "$[?(@.Product == 'dev')].Release[?(@.Architecture == 'win-x86')].Hash"
                 }
             }
         }
