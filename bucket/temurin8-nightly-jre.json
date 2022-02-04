@@ -1,16 +1,16 @@
 {
     "description": "Eclipse Temurin is a runtime provided by Eclipse Adoptium for general use across the Java ecosystem",
     "homepage": "https://adoptium.net",
-    "version": "202202010520",
+    "version": "8.0.332-1.0.202202021811",
     "license": "GPL-2.0-only WITH Classpath-exception-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u-2022-02-01-05-20-beta/OpenJDK8U-jre_x64_windows_hotspot_2022-02-01-05-20.zip",
-            "hash": "7706f37b1f2369b2b180e6d058a5e4684cd5d1c0080ad02ffb6be53d62b2b8fe"
+            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u-2022-02-03-05-07-beta/OpenJDK8U-jre_x64_windows_hotspot_2022-02-03-05-07.zip",
+            "hash": "da3bfbaeb7deb6af0380f4a2d550f0ad08c24af5259b6650e741d13dada48225"
         },
         "32bit": {
-            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u-2022-02-01-05-20-beta/OpenJDK8U-jre_x86-32_windows_hotspot_2022-02-01-05-20.zip",
-            "hash": "6f9ddb8549ac7ec7418eb21c7ebb83d958f7516a7c3ee6dae528fd2c6187b793"
+            "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u-2022-02-03-05-07-beta/OpenJDK8U-jre_x86-32_windows_hotspot_2022-02-03-05-07.zip",
+            "hash": "3e3174b902b89d8afc44e844180ae7c4dd6604c665a2491fa2eba9c8fea69c98"
         }
     },
     "extract_to": "tmp",
@@ -26,17 +26,22 @@
     },
     "checkver": {
         "url": "https://api.adoptium.net/v3/assets/feature_releases/8/ea?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jre&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
-        "jsonpath": "$..binaries[0].package.link",
-        "regex": "/temurin(?<major>[\\d]*)-binaries/releases/download/jdk(?<jdk>[\\du]*)-(?<date>(?<year>[\\d]{4})-(?<month>[\\d]{2})-(?<day>[\\d]{2})-(?<hour>[\\d]{2})-(?<minute>[\\d]{2}))(?:-beta?)/(?<prefix>OpenJDK[\\dU]*)",
-        "replace": "${year}${month}${day}${hour}${minute}"
+        "script": [
+            "$ver = (json_path $page $..version_data.semver).replace('+', '-').replace('-beta','')",
+            "$link = (json_path $page $..release_link).replace('%2B', '+')",
+            "$name = json_path $page $..binaries[0].package.name",
+            "Write-Output \"$ver $link $name\""
+        ],
+        "regex": "(?<ver>.*?) https://github.com/(?<link>.*?)/tag/(?<tag>.*?) (?<name>(?<prefix>OpenJDK[\\dU]*-[dejkr]{3})_x64_(?<suffix>.*))",
+        "replace": "${ver}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$matchJdk-$matchDate-beta/$matchPrefix-jre_x64_windows_hotspot_$matchDate.zip"
+                "url": "https://github.com/$matchLink/download/$matchTag/$matchName"
             },
             "32bit": {
-                "url": "https://github.com/adoptium/temurin$matchMajor-binaries/releases/download/jdk$matchJdk-$matchDate-beta/$matchPrefix-jre_x86-32_windows_hotspot_$matchDate.zip"
+                "url": "https://github.com/$matchLink/download/$matchTag/$matchPrefix_x86-32_$matchSuffix"
             }
         },
         "hash": {

@@ -1,27 +1,33 @@
 {
     "description": "Eclipse Temurin is a runtime provided by Eclipse Adoptium for general use across the Java ecosystem",
     "homepage": "https://adoptium.net",
-    "version": "11.0.14-9",
+    "version": "18.0.0-33.0.202202022349",
     "license": "GPL-2.0-only WITH Classpath-exception-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14+9/OpenJDK11U-jdk_x64_windows_hotspot_11.0.14_9.zip",
-            "hash": "74cacadc37e5ba33e0055bf1de1a0754635fa70f9762c46c38e884158ad74e6a"
+            "url": "https://github.com/adoptium/temurin18-binaries/releases/download/jdk18-2022-02-03-05-48-beta/OpenJDK18-jdk_x64_windows_hotspot_2022-02-03-05-48.zip",
+            "hash": "75c9be5724d405ead2a7da6b9dcdfee5e9a8762fca4f4526eec4aad48956cfa9"
         },
         "32bit": {
-            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14+9/OpenJDK11U-jdk_x86-32_windows_hotspot_11.0.14_9.zip",
-            "hash": "f10bac3381e6cc79420f9945c2454e03a01f1f22e2e137f363ea42f428be891e"
+            "url": "https://github.com/adoptium/temurin18-binaries/releases/download/jdk18-2022-02-03-05-48-beta/OpenJDK18-jdk_x86-32_windows_hotspot_2022-02-03-05-48.zip",
+            "hash": "afd1a62890ffd6b8a903ab2e10d891ef395f8b359a0428786381073d0efd3058"
         }
     },
-    "extract_dir": "jdk-11.0.14+9",
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "(Get-ChildItem -Directory \"$dir\\tmp\").FullName | % { Move-Item \"$_\\*\" \"$dir\" }",
+            "Remove-Item -Recurse \"$dir\\tmp\""
+        ]
+    },
     "env_add_path": "bin",
     "env_set": {
         "JAVA_HOME": "$dir"
     },
     "checkver": {
-        "url": "https://api.adoptium.net/v3/assets/feature_releases/11/ga?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jdk&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
+        "url": "https://api.adoptium.net/v3/assets/feature_releases/18/ea?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jdk&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
         "script": [
-            "$ver = (json_path $page $..version_data.semver).replace('+', '-')",
+            "$ver = (json_path $page $..version_data.semver).replace('+', '-').replace('-beta','')",
             "$link = (json_path $page $..release_link).replace('%2B', '+')",
             "$name = json_path $page $..binaries[0].package.name",
             "Write-Output \"$ver $link $name\""
@@ -41,7 +47,6 @@
         "hash": {
             "url": "$url.sha256.txt",
             "find": "^([a-fA-F0-9]+)\\s"
-        },
-        "extract_dir": "$matchTag"
+        }
     }
 }

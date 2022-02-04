@@ -5,11 +5,11 @@
     "license": "GPL-2.0-only WITH Classpath-exception-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14%2B9/OpenJDK11U-jre_x64_windows_hotspot_11.0.14_9.zip",
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14+9/OpenJDK11U-jre_x64_windows_hotspot_11.0.14_9.zip",
             "hash": "d8993b00db75a69c6ea4778b6c79d26a1297cbbb14ab02765e102e0ce79c2653"
         },
         "32bit": {
-            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14%2B9/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.14_9.zip",
+            "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.14+9/OpenJDK11U-jre_x86-32_windows_hotspot_11.0.14_9.zip",
             "hash": "2ad6617fb505498254672dd4704b86a55903cbe16a7c23e0400de09ea1dbc709"
         }
     },
@@ -20,23 +20,28 @@
     },
     "checkver": {
         "url": "https://api.adoptium.net/v3/assets/feature_releases/11/ga?jvm_impl=hotspot&heap_size=normal&os=windows&architecture=x64&image_type=jre&project=jdk&vendor=eclipse&page_size=1&sort_order=DESC",
-        "jsonpath": "$..binaries[0].package.link",
-        "regex": "https://github.com/(?<url>.*?(?<tag>jdk-(?<major>(?<jdk>[\\d]+)[\\d.]*)(?:\\%2B|\\+)(?<build>[\\d]+)(?<patch>[\\d.]*)))/OpenJDK(?:[\\d]+)(?<update>U?)",
-        "replace": "${major}-${build}${patch}"
+        "script": [
+            "$ver = (json_path $page $..version_data.semver).replace('+', '-')",
+            "$link = (json_path $page $..release_link).replace('%2B', '+')",
+            "$name = json_path $page $..binaries[0].package.name",
+            "Write-Output \"$ver $link $name\""
+        ],
+        "regex": "(?<ver>.*?) https://github.com/(?<link>.*?)/tag/(?<tag>.*?) (?<name>(?<prefix>OpenJDK[\\dU]*-[dejkr]{3})_x64_(?<suffix>.*))",
+        "replace": "${ver}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/$matchUrl/OpenJDK$matchJdk$matchUpdate-jre_x64_windows_hotspot_$matchMajor_$matchBuild.zip"
+                "url": "https://github.com/$matchLink/download/$matchTag/$matchName"
             },
             "32bit": {
-                "url": "https://github.com/$matchUrl/OpenJDK$matchJdk$matchUpdate-jre_x86-32_windows_hotspot_$matchMajor_$matchBuild.zip"
+                "url": "https://github.com/$matchLink/download/$matchTag/$matchPrefix_x86-32_$matchSuffix"
             }
         },
         "hash": {
             "url": "$url.sha256.txt",
             "find": "^([a-fA-F0-9]+)\\s"
         },
-        "extract_dir": "jdk-$matchMajor+$matchBuild-jre"
+        "extract_dir": "$matchTag-jre"
     }
 }

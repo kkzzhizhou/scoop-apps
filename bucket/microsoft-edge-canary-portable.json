@@ -1,8 +1,11 @@
 {
     "homepage": "https://www.microsoft.com/en-us/edge",
-    "description": "The chromium based Microsoft Edge browser(Dev Channel, Portable Edition).",
-    "version": "100.0.1154.0",
-    "license": "Freeware",
+    "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Canary Channel, Portable Edition).",
+    "version": "100.0.1155.0",
+    "license": {
+        "identifier": "Freeware",
+        "url": "edge://terms/"
+    },
     "notes": [
         "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
         "Please utilize aria2 to use multi-connection downloads.",
@@ -12,39 +15,37 @@
     "architecture": {
         "64bit": {
             "url": "https://scoop-apps.vercel.app/msedge-canary-win-X64#/dl.7z",
-            "hash": "0572d29cdb05a21c2054c10fbd8fb08ff36f774f09416ebe7bd5d885e347b912"
+            "hash": "1e051b711e0e953446f5db9e288482cc64b3571135bcfa31aac4890badef5ebf"
         },
         "32bit": {
             "url": "https://scoop-apps.vercel.app/msedge-canary-win-X86#/dl.7z",
-            "hash": "000f28cc1de891c60cfa0ae7e8caf65148675cbb673a2edf6127846be691d561"
+            "hash": "1272c9e0c88dd9599a698b441e0d6d9659c79101cacf97bfaff0d44868c70ae8"
         }
     },
     "installer": {
         "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
     },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
     "bin": [
         [
             "msedge.exe",
-            "msedge-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
-        ],
-        [
-            "msedge.exe",
-            "microsoft-edge-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "msedge-canary",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
             "msedge.exe",
-            "Microsoft Edge Dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "Microsoft Edge Canary",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "persist": [
-        "User Data",
-        "Cache"
-    ],
+    "persist": "User Data",
     "checkver": {
         "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
         "jsonpath": "$[?(@.Product == 'canary')].Version"
@@ -55,16 +56,14 @@
                 "url": "https://scoop-apps.vercel.app/msedge-canary-win-X64#/dl.7z",
                 "hash": {
                     "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
-                    "mode": "json",
-                    "jsonpath": "$[?(@.Product == 'canary')].Release[?(@.Architecture == 'x64')].Hash"
+                    "regex": "(?sm)canary.*?x64.*?Sha256.*?$base64"
                 }
             },
             "32bit": {
                 "url": "https://scoop-apps.vercel.app/msedge-canary-win-X86#/dl.7z",
                 "hash": {
                     "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
-                    "mode": "json",
-                    "jsonpath": "$[?(@.Product == 'canary')].Release[?(@.Architecture == 'x86')].Hash"
+                    "regex": "(?sm)canary.*?x86.*?Sha256.*?$base64"
                 }
             }
         }

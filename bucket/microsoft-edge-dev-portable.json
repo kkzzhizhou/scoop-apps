@@ -1,8 +1,11 @@
 {
     "homepage": "https://www.microsoft.com/en-us/edge",
-    "description": "The chromium based Microsoft Edge browser(Dev Channel, Portable Edition).",
+    "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Dev Channel, Portable Edition).",
     "version": "99.0.1150.2",
-    "license": "Freeware",
+    "license": {
+        "identifier": "Freeware",
+        "url": "edge://terms/"
+    },
     "notes": [
         "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
         "Please utilize aria2 to use multi-connection downloads.",
@@ -22,29 +25,27 @@
     "installer": {
         "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
     },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
     "bin": [
         [
             "msedge.exe",
             "msedge-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
-        ],
-        [
-            "msedge.exe",
-            "microsoft-edge-dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
             "msedge.exe",
             "Microsoft Edge Dev",
-            "--user-data-dir=\"$dir\\User Data\" --disk-cache-dir=\"$dir\\Cache\" --no-first-run --enable-ftp --enable-gpu-rasterization --enable-leak-detection --enable-potentially-annoying-security-features --disable-component-update --disable-crash-reporter --disable-breakpad --disable-background-networking --disable-logging --disable-notifications --no-report-upload --print-to-pdf-no-header --save-page-as-mhtml --site-per-process --crash-server-url=\"0.0.0.0\" --force-update-remote-url=\"0.0.0.0\" --google-url=\"0.0.0.0\" --trace-upload-url=\"0.0.0.0\""
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "persist": [
-        "User Data",
-        "Cache"
-    ],
+    "persist": "User Data",
     "checkver": {
         "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
         "jsonpath": "$[?(@.Product == 'dev')].Version"
@@ -55,16 +56,14 @@
                 "url": "https://scoop-apps.vercel.app/msedge-dev-win-X64#/dl.7z",
                 "hash": {
                     "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
-                    "mode": "json",
-                    "jsonpath": "$[?(@.Product == 'dev')].Release[?(@.Architecture == 'x64')].Hash"
+                    "regex": "(?sm)dev.*?x64.*?Sha256.*?$base64"
                 }
             },
             "32bit": {
                 "url": "https://scoop-apps.vercel.app/msedge-dev-win-X86#/dl.7z",
                 "hash": {
                     "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
-                    "mode": "json",
-                    "jsonpath": "$[?(@.Product == 'dev')].Release[?(@.Architecture == 'x86')].Hash"
+                    "regex": "(?sm)dev.*?x86.*?Sha256.*?$base64"
                 }
             }
         }
