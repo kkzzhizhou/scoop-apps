@@ -6,7 +6,7 @@
     "changelog": "https://github.com/microsoft/PowerToys/releases/tag/v0.55.1",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/microsoft/PowerToys/releases/download/v0.55.1/PowerToysSetup-0.55.1-x64.exe#/setup.exe",
+            "url": "https://github.com/microsoft/PowerToys/releases/download/v0.55.1/PowerToysSetup-0.55.1-x64.exe",
             "hash": "c470eeca26aebbdb28bf7d35694065c1897a123a64fb5103033fc23207d6c4a5"
         }
     },
@@ -31,7 +31,8 @@
             "$filepath = \"$ProgramFiles\\PowerToys\\PowerToys.exe\"",
             "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "{",
-            "   &\"$dir\\setup.exe\" --silent --skip_dotnet_install | Out-Null",
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\.tmp\"",
+            "msiexec /i \"$dir\\.tmp\\AttachedContainer\\PowerToysSetup-$version-x64.msi\" /qn",
             "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "   {",
             "       exit 1",
@@ -45,7 +46,11 @@
         "changelog": "https://github.com/microsoft/PowerToys/releases/tag/v$version",
         "architecture": {
             "64bit": {
-                "url": "https://github.com/microsoft/PowerToys/releases/download/v$version/PowerToysSetup-$version-x64.exe#/setup.exe"
+                "url": "https://github.com/microsoft/PowerToys/releases/download/v$version/PowerToysSetup-$version-x64.exe",
+                "hash": {
+                    "url": "https://github.com/microsoft/PowerToys/releases/tag/v$version",
+                    "regex": ">$sha256<"
+                }
             }
         }
     }
