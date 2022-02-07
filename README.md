@@ -79,6 +79,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - 42wim/scoop-bucket
 - iquiw/scoop-bucket
 - naderi/scoop-bucket
+- liaoya/scoop-bucket
 - jfut/scoop-jfut
 - Ryanjiena/scoop-apps
 - ChinLong/scoop-customize
@@ -89,6 +90,5 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ACooper81/scoop-apps
 - nickbudi/scoop-bucket
 - Velgus/Scoop-Portapps
-- liaoya/scoop-bucket
 - MCOfficer/scoop-bucket
 - Darkatse/Scoop-KanColle
