@@ -72,8 +72,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - scoopcn/scoopcn
 - borger/scoop-emulators
 - wzv5/ScoopBucket
-- TheRandomLabs/Scoop-Python
 - Paxxs/Cluttered-bucket
+- TheRandomLabs/Scoop-Python
 - hoilc/scoop-lemon
 - ChungZH/peach
 - 42wim/scoop-bucket
@@ -86,8 +86,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - Darkatse/Scoop-Darkatse
 - Apocalypsor/My-Scoop-Bucket
-- littleli/Scoop-littleli
 - ACooper81/scoop-apps
+- littleli/Scoop-littleli
 - nickbudi/scoop-bucket
 - Velgus/Scoop-Portapps
 - MCOfficer/scoop-bucket
