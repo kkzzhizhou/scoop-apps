@@ -6,28 +6,12 @@
     "notes": "Run '$dir\\install-context.reg' to add Everything to right-click context menu.",
     "architecture": {
         "64bit": {
-            "url": [
-                "https://www.voidtools.com/Everything-1.5.0.1300a.x64.zip",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/install-context.reg",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/uninstall-context.reg"
-            ],
-            "hash": [
-                "8268b1ed68bcd8f2d1033f6ceaeb747dfa66f7d7b4ca3c784475a5a03378b269",
-                "6b27de9e61ff039bf42cd07f4da23034c4678a8968403913ba29fa5c5a3b457a",
-                "4904157dfa505d9d97764fe871c22012c9292fc4d1bccb56d7daa6b5b40a89ad"
-            ]
+            "url": "https://www.voidtools.com/Everything-1.5.0.1300a.x64.zip",
+            "hash": "8268b1ed68bcd8f2d1033f6ceaeb747dfa66f7d7b4ca3c784475a5a03378b269"
         },
         "32bit": {
-            "url": [
-                "https://www.voidtools.com/Everything-1.5.0.1300a.x86.zip",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/install-context.reg",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/uninstall-context.reg"
-            ],
-            "hash": [
-                "cc1f84887e90b0b2e3321039c1308fe64f8395a7c4facc65fa2fa3e328442051",
-                "6b27de9e61ff039bf42cd07f4da23034c4678a8968403913ba29fa5c5a3b457a",
-                "4904157dfa505d9d97764fe871c22012c9292fc4d1bccb56d7daa6b5b40a89ad"
-            ]
+            "url": "https://www.voidtools.com/Everything-1.5.0.1300a.x86.zip",
+            "hash": "cc1f84887e90b0b2e3321039c1308fe64f8395a7c4facc65fa2fa3e328442051"
         }
     },
     "pre_install": [
@@ -35,16 +19,14 @@
         "if (Test-Path \"$dir\\Everything64.exe\") { Rename-Item \"$dir\\Everything64.exe\" 'Everything.exe' }",
         "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Invoke-ExternalCommand \"$dir\\Everything.exe\" -Args @('-install-config null') | Out-Null }",
         "Get-ChildItem \"$persist_dir\\*\" -Include 'Everything.db', 'Bookmarks.csv', 'Everything.ini' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue",
+        "Copy-Item \"$bucketsdir\\versions\\scripts\\everything\\uninstall-context.reg\" \"$dir\\\"",
         "$app_path = \"$dir\\Everything.exe\".Replace('\\', '\\\\')",
-        "$reg_content = (Get-Content \"$dir\\install-context.reg\")",
+        "$reg_content = Get-Content \"$bucketsdir\\versions\\scripts\\everything\\install-context.reg\"",
         "$reg_content = $reg_content.replace('$app_path', $app_path)",
         "Set-Content \"$dir\\install-context.reg\" $reg_content -Encoding ASCII"
     ],
     "uninstaller": {
-        "script": [
-            "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Everything.db', 'Bookmarks.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
-            "reg import \"$dir\\uninstall-context.reg\""
-        ]
+        "script": "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Everything.db', 'Bookmarks.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
     },
     "bin": "Everything.exe",
     "shortcuts": [
