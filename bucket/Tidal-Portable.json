@@ -12,11 +12,24 @@
             "Expand-7zipArchive \"$dir\\TIDAL-2.29.7-full.nupkg\" -ExtractDir 'lib\\net45' -Removal"
         ]
     },
-    "bin": "TIDAL.exe",
+    "post_install": "Remove-Item \"$dir\\TIDALSetup.exe\" -Force",
     "shortcuts": [
         [
             "TIDAL.exe",
             "TIDAL"
         ]
-    ]
+    ],
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://download.tidal.com/desktop/TIDALSetup.exe'",
+            "$dl = cache_path 'Tidal' 'unknown' $dl_url",
+            "do_dl $dl_url $dl",
+            "$version = (Get-Item $dl).VersionInfo.ProductVersion",
+            "Move-Item -Force $dl -Destination (cache_path 'Tidal' $version $dl_url)",
+            "return $version"
+        ]
+    },
+    "autoupdate": {
+        "url": "https://download.tidal.com/desktop/TIDALSetup.exe"
+    }
 }

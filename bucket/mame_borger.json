@@ -1,36 +1,71 @@
 {
     "homepage": "http://mamedev.org/",
     "license": "GPL-2.0-or-later",
-    "version": "0.236",
+    "version": "0.240",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mamedev/mame/releases/download/mame0236/mame0236b_64bit.exe#/dl.7z",
-            "hash": "031f3b97be1f047ec08643d877859409c67e30173e18c74eadd9d028b4d0ca6c",
+            "url": "https://github.com/mamedev/mame/releases/download/mame0240/mame0240b_64bit.exe#/dl.7z",
+            "hash": "216d3a4546ce1b5b2eb4415ae1c424d4408360c351b8cea9dda9a1a662f1c6ea",
+            "pre_install": [
+                "if(!(Test-Path \"$persist_dir\\mame.ini\")) {",
+                "   Start-Process \"$dir\\mame.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"-createconfig\"",
+                "   Start-Sleep -Seconds 5",
+                "}"
+            ],
             "bin": [
                 [
-                    "mame64.exe",
+                    "mame.exe",
                     "mame"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "mame.exe",
+                    "MAME"
                 ]
             ]
         },
         "32bit": {
-            "url": "https://github.com/mamedev/mame/releases/download/mame0236/mame0236b_64bit.exe#/dl.7z",
-            "hash": "031f3b97be1f047ec08643d877859409c67e30173e18c74eadd9d028b4d0ca6c",
-            "bin": "mame.exe"
+            "url": "https://file-examples-com.github.io/uploads/2017/02/file_example_JSON_1kb.json",
+            "hash": "aa20e971f6a0a7c482f3ed70cc6edc115eb577f987322ba42e5c3869e1d714d1",
+            "pre_install": [
+                "Write-Host -ForegroundColor Yellow \"WARN: MAME no longer provides up to date 32bit binaries\"",
+                "Write-Host -ForegroundColor Yellow \"Continue installing latest 32bit release (0.217)? \"",
+                "$choice = (Read-Host -Prompt \"[Y / N]\").toLower()",
+                "switch ($choice) {",
+                "   y {scoop uninstall mame",
+                "       scoop install https://raw.githubusercontent.com/Calinou/scoop-games/27ba46f443a3446a70bf1f93eeb09797be0fb286/bucket/mame.json",
+                "       scoop hold mame",
+                "       exit 0",
+                "   }",
+                "   n {Write-Error -Message \"Install aborted.\" -Category NotInstalled",
+                "       scoop uninstall mame",
+                "       exit 1",
+                "   }",
+                "}"
+            ]
         }
     },
-    "pre_install": "Add-Content $dir\\mame.ini $null",
-    "post_install": [
-        "Push-Location \"$dir\"",
-        "mame -createconfig",
-        "Pop-Location"
+    "persist": [
+        "ctrlr",
+        "plugins",
+        "roms",
+        "mame.ini",
+        "ui.ini",
+        "plugin.ini"
     ],
-    "persist": "mame.ini",
     "checkver": {
-        "url": "https://github.com/mamedev/mame/releases/latest",
-        "re": "<a href=\"/mamedev/mame/releases/tag/mame(?<clean>[\\d]+)\">MAME ([\\d.]+)</a>"
+        "github": "https://github.com/mamedev/mame",
+        "regex": "MAME ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/mamedev/mame/releases/download/mame$cleanVersion/mame$cleanVersionb_64bit.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mamedev/mame/releases/download/mame$cleanVersion/mame$cleanVersionb_64bit.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://file-examples-com.github.io/uploads/2017/02/file_example_JSON_1kb.json"
+            }
+        }
     }
 }
