@@ -71,10 +71,10 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - scoopcn/scoopcn
 - kiennq/scoop-misc
 - borger/scoop-emulators
+- hoilc/scoop-lemon
 - wzv5/ScoopBucket
 - Paxxs/Cluttered-bucket
 - TheRandomLabs/Scoop-Python
-- hoilc/scoop-lemon
 - ChungZH/peach
 - ACooper81/scoop-apps
 - 42wim/scoop-bucket
