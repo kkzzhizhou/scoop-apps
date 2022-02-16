@@ -54,8 +54,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Versions
 - kodybrown/scoop-nirsoft
 - Ash258/Scoop-JetBrains
-- L-Trump/scoop-raresoft
 - littleli/scoop-clojure
+- L-Trump/scoop-raresoft
 - kidonng/sushi
 - rasa/scoops
 - MCOfficer/scoop-nirsoft
