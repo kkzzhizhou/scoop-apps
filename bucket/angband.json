@@ -1,27 +1,44 @@
 {
-    "version": "4.2.0",
-    "description": "A free single-player dungeon exploration game",
+    "version": "4.2.3",
+    "description": "A free single-player dungeon exploration Roguelike",
     "homepage": "https://rephial.org/",
     "license": "GPL-2.0",
-    "url": "https://github.com/angband/angband/releases/download/4.2.0/angband-win-4.2.0.zip",
-    "hash": "5d4527fbf4ff1ebdd7acbe60d5942c235fe4d0efe3b29e7e5bbaca088be9e44e",
-    "bin": "angband.exe",
-    "extract_dir": "angband-4.2.0",
+    "url": "https://github.com/angband/angband/releases/download/4.2.3/angband-4.2.3-win.zip",
+    "hash": "fb25c5e538fea8008b180c3c0194e548554e1af848cf3f8b29992a90169e7c1d",
+    "extract_dir": "angband-4.2.3",
     "shortcuts": [
         [
             "angband.exe",
-            "Angband"
+            "Angband\\Angband"
         ],
         [
-            "Manual.pdf",
-            "Angband Manual"
+            "docs\\index.html",
+            "Angband\\Angband Manual"
         ]
     ],
+    "persist": "lib\\user",
     "checkver": {
-        "github": "https://github.com/angband/angband"
+        "github": "https://github.com/angband/angband/"
     },
     "autoupdate": {
-        "url": "https://github.com/angband/angband/releases/download/$version/angband-win-$version.zip",
+        "url": "https://github.com/angband/angband/releases/download/$version/angband-$version-win.zip",
         "extract_dir": "angband-$version"
-    }
+    },
+    "post_install": [
+        "'angband.INI' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "'angband.INI' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "notes": "Configuration files cannot be persisted, but will be retained during package updates."
 }

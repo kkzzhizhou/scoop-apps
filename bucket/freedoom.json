@@ -1,21 +1,29 @@
 {
     "homepage": "https://freedoom.github.io/",
-    "description": "Free content replacements for Doom and Doom II",
-    "version": "0.11.3",
+    "description": "Free content replacements for Doom and Doom II single-player game",
+    "version": "0.12.1",
     "license": "BSD-3-Clause",
-    "url": [
-        "https://github.com/freedoom/freedoom/releases/download/v0.11.3/freedoom-0.11.3.zip",
-        "https://github.com/freedoom/freedoom/releases/download/v0.11.3/freedm-0.11.3.zip"
-    ],
-    "hash": [
-        "28a5eafbb1285b78937bd408fcdd8f25f915432340eee79da692eae83bce5e8a",
-        "2af698fb028ccc95993827f88679ea9b246116c2966894a51578755cad800ce0"
-    ],
+    "url": "https://github.com/freedoom/freedoom/releases/download/v0.12.1/freedoom-0.12.1.zip",
+    "hash": "f42c6810fc89b0282de1466c2c9c7c9818031a8d556256a6db1b69f6a77b5806",
+    "extract_dir": "freedoom-0.12.1",
+    "installer": {
+        "script": [
+            "$dlFile = 'dl.zip'",
+            "$archiveUrls = @(",
+            "   \"https://github.com/freedoom/freedoom/releases/download/v$version/freedm-$version.zip\"",
+            ")",
+            "$archiveUrls | ForEach-Object {",
+            "   dl_with_cache $app $version \"$_\" \"$dir\\$dlFile\"",
+            "   Expand-7zipArchive \"$dir\\$dlFile\" \"$dir\" -Removal",
+            "}"
+        ]
+    },
     "post_install": [
         "New-Item -Type Directory -Force -Path \"$persist_dir\\..\\_doom\"",
-        "Move-Item \"$dir\\freedoom-$version\\freedoom1.wad\" \"$persist_dir\\..\\_doom\"",
-        "Move-Item \"$dir\\freedoom-$version\\freedoom2.wad\" \"$persist_dir\\..\\_doom\"",
-        "Move-Item \"$dir\\freedm-$version\\freedm.wad\" \"$persist_dir\\..\\_doom\""
+        "Move-Item \"$dir\\freedoom1.wad\" \"$persist_dir\\..\\_doom\"",
+        "Move-Item \"$dir\\freedoom2.wad\" \"$persist_dir\\..\\_doom\"",
+        "Move-Item \"$dir\\freedm-$version\\freedm.wad\" \"$persist_dir\\..\\_doom\"",
+        "Remove-Item -Force -Recurse \"$dir\\freedm-$version\""
     ],
     "uninstaller": {
         "script": [
@@ -24,8 +32,18 @@
             "Remove-Item \"$persist_dir\\..\\_doom\\freedm.wad\""
         ]
     },
+    "shortcuts": [
+        [
+            "freedoom-manual.pdf",
+            "Freedoom Manual"
+        ]
+    ],
     "checkver": {
         "github": "https://github.com/freedoom/freedoom"
+    },
+    "autoupdate": {
+        "url": "https://github.com/freedoom/freedoom/releases/download/v$version/freedoom-$version.zip",
+        "extract_dir": "freedoom-$version"
     },
     "suggest": {
         "Doom source port": [
@@ -37,5 +55,6 @@
             "odamex",
             "qzdoom"
         ]
-    }
+    },
+    "notes": "GZDoom is a recommended Doom source port by the Freedoom project"
 }
