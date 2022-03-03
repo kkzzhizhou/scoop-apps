@@ -49,6 +49,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Java
 - Calinou/scoop-games
 - TheRandomLabs/scoop-nonportable
+- borger/scoop-galaxy-integrations
 - TheCjw/scoop-retools
 - ivaquero/scoopet
 - ScoopInstaller/Versions
@@ -59,9 +60,9 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - rasa/scoops
 - MCOfficer/scoop-nirsoft
+- echoiron/echo-scoop
 - everyx/scoop-bucket
 - KNOXDEV/wsl
-- echoiron/echo-scoop
 - hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - Qv2ray/mochi
