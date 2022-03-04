@@ -60,10 +60,10 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - rasa/scoops
 - MCOfficer/scoop-nirsoft
+- hermanjustnu/scoop-emulators
 - echoiron/echo-scoop
 - everyx/scoop-bucket
 - KNOXDEV/wsl
-- hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - Qv2ray/mochi
 - dodorz/scoop
