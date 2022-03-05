@@ -1,10 +1,41 @@
 {
     "homepage": "https://dolphin-emu.org/",
-    "version": "5.0-15993",
-    "license": "GPL-2.0",
-    "url": "https://dl.dolphin-emu.org/builds/25/4a/dolphin-master-5.0-15993-x64.7z",
-    "hash": "ae6ee2d6252b3e4745128fd6957308320c3c13d68a47d995dcf84e1d7d390895",
+    "description": "A Nintendo GameCube and Wii emulator",
+    "version": "5.0-16116",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING"
+    },
+    "url": "https://dl.dolphin-emu.org/builds/fe/0c/dolphin-master-5.0-16116-x64.7z",
+    "hash": "328c02513f465760847906718226f8e8038f0adf937c635f300954f09fc86249",
+    "autoupdate": {
+        "url": "https://dl.dolphin-emu.org/builds/$matchRand1/$matchRand2/dolphin-master-$matchMajor-$matchBuild-x64.7z"
+    },
+    "bin": [
+        [
+            "Dolphin.exe",
+            "dolphin-dev"
+        ]
+    ],
+    "checkver": {
+        "url": "https://dolphin-emu.org/download/list/master/1/",
+        "regex": "\\/(?<rand1>.{2})\\/(?<rand2>.{2})\\/dolphin-master-(?<major>[\\d\\.]+)-(?<build>[\\d]+)",
+        "replace": "${major}-${build}"
+    },
     "extract_dir": "Dolphin-x64",
+    "persist": "User",
+    "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\User\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\\*\" -Destination \"$persist_dir\\User\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\" -Recurse",
+        "   }",
+        "}"
+    ],
     "shortcuts": [
         [
             "Dolphin.exe",
@@ -12,13 +43,6 @@
         ]
     ],
     "suggest": {
-        "vcredist": "extras/vcredist2015"
-    },
-    "checkver": {
-        "url": "https://dolphin-emu.org/download/",
-        "re": "https://dl.dolphin-emu.org/builds/(?<path>[A-Fa-f\\d]{2}/[A-Fa-f\\d]{2})/dolphin-master-(?<version>[\\d.]+-[\\d]+)-x64.7z"
-    },
-    "autoupdate": {
-        "url": "https://dl.dolphin-emu.org/builds/$matchPath/dolphin-master-$version-x64.7z"
+        "vcredist": "extras/vcredist2019"
     }
 }

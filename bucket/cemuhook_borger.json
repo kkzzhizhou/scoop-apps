@@ -1,25 +1,38 @@
 {
     "homepage": "https://cemuhook.sshnuke.net/",
-    "version": "0.5.7.3",
-    "url": "https://files.sshnuke.net/cemuhook_1159_0573.zip",
-    "hash": "21288935d934d5f02052dd2acdef82c71c4e090a7d7e6dffbdc64c2cbd1afef5",
+    "description": "Plugin for the Cemu emulator enabling H.264 decoding, gamepad input source overrides and game code/data patching at load-time",
+    "version": "0.5.7.7",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://files.sshnuke.net/cemuhook_1262d_0577.zip",
+            "hash": "62c47873eaa2f1f07f80e207ebbbf122648623ed2639ca137c6c1be1ac3172b7"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://files.sshnuke.net/cemuhook_$matchCemu.zip"
+            }
+        }
+    },
+    "checkver": {
+        "regex": "cemuhook_(?<cemu>[\\d_a-z]+).zip\">Cemu hook ([\\d.]+) for"
+    },
     "depends": "cemu",
     "installer": {
         "script": [
-            "Copy-Item \"$dir\\keystone.dll\" \"$(versiondir 'cemu' 'current' $global)\"",
-            "Copy-Item \"$dir\\dbghelp.dll\" \"$(versiondir 'cemu' 'current' $global)\""
+            "Copy-Item \"$dir\\cemuhook.dll\" \"$(versiondir 'cemu' 'current' $global)\" -Force",
+            "Copy-Item \"$dir\\keystone.dll\" \"$(versiondir 'cemu' 'current' $global)\" -Force"
         ]
     },
     "uninstaller": {
         "script": [
-            "Remove-Item \"$(versiondir 'cemu' 'current' $global)\\keystone.dll\"",
-            "Remove-Item \"$(versiondir 'cemu' 'current' $global)\\dbghelp.dll\""
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemu' 'current' $global)\\$_\") {",
+            "       Remove-Item \"$(versiondir 'cemu' 'current' $global)\\$_\"",
+            "   }",
+            "}"
         ]
-    },
-    "checkver": {
-        "re": "cemuhook_(?<cemu>[\\d_]+).zip\">Cemu hook ([\\d.]+) for"
-    },
-    "autoupdate": {
-        "url": "https://files.sshnuke.net/cemuhook_$matchCemu.zip"
     }
 }
