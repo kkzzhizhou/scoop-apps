@@ -1,15 +1,30 @@
 {
-    "version": "1.3.0",
-    "description": "A roguelike in the first age of Middle-earth, variant of Angband",
     "homepage": "http://www.amirrorclear.net/flowers/game/sil/",
+    "description": "A roguelike in the first age of Middle-earth, variant of Angband",
+    "version": "1.3.0",
     "license": "GPL-2.0-only",
+    "notes": "Configuration files cannot be persisted, but will be retained during the update",
     "url": "http://www.amirrorclear.net/flowers/game/sil/Sil-130-Win.zip",
     "hash": "613a9bbd6dc9869fe6fd352f6e3af21060421ab5c56cf27db3f1c2ce49b5a908",
+    "autoupdate": {
+        "url": "http://www.amirrorclear.net/flowers/game/sil/Sil-$cleanVersion-Win.zip"
+    },
     "bin": "sil.exe",
+    "checkver": {
+        "regex": "Sil-(?<major>[\\d])(?<minor>[\\d])(?<patch>[\\d])-Win.zip",
+        "replace": "${major}.${minor}.${patch}"
+    },
     "extract_dir": "sil",
     "persist": [
         "lib\\save",
         "lib\\user"
+    ],
+    "post_install": [
+        "'sil.INI' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
     ],
     "shortcuts": [
         [
@@ -21,26 +36,11 @@
             "Sil Manual"
         ]
     ],
-    "checkver": {
-        "regex": "Sil-(?<major>[\\d])(?<minor>[\\d])(?<patch>[\\d])-Win.zip",
-        "replace": "${major}.${minor}.${patch}"
-    },
-    "autoupdate": {
-        "url": "http://www.amirrorclear.net/flowers/game/sil/Sil-$cleanVersion-Win.zip"
-    },
-    "post_install": [
-        "'sil.INI' | ForEach-Object {",
-        "    if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
-        "    }",
-        "}"
-    ],
     "uninstaller": {
         "script": [
             "'sil.INI' | ForEach-Object {",
             "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
             "}"
         ]
-    },
-    "notes": "Configuration files cannot be persisted, but will be retained during the update"
+    }
 }

@@ -1,11 +1,29 @@
 {
-    "version": "4.2.4",
-    "description": "A free single-player dungeon exploration Roguelike",
     "homepage": "https://rephial.org/",
+    "description": "A free single-player dungeon exploration Roguelike",
+    "version": "4.2.4",
     "license": "GPL-2.0",
+    "notes": "Configuration files cannot be persisted, but will be retained during package updates.",
     "url": "https://github.com/angband/angband/releases/download/4.2.4/angband-4.2.4-win.zip",
     "hash": "efd1932ca0d266fd0d785b7c41a60979be20709f8cd0571387976eae74379ed7",
+    "autoupdate": {
+        "url": "https://github.com/angband/angband/releases/download/$version/angband-$version-win.zip",
+        "extract_dir": "angband-$version"
+    },
+    "checkver": {
+        "github": "https://github.com/angband/angband/"
+    },
     "extract_dir": "angband-4.2.4",
+    "persist": "lib\\user",
+    "post_install": [
+        "'angband.INI' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
     "shortcuts": [
         [
             "angband.exe",
@@ -16,29 +34,11 @@
             "Angband\\Angband Manual"
         ]
     ],
-    "persist": "lib\\user",
-    "checkver": {
-        "github": "https://github.com/angband/angband/"
-    },
-    "autoupdate": {
-        "url": "https://github.com/angband/angband/releases/download/$version/angband-$version-win.zip",
-        "extract_dir": "angband-$version"
-    },
-    "post_install": [
-        "'angband.INI' | ForEach-Object {",
-        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
-        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
-        "    } else {",
-        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
-        "    }",
-        "}"
-    ],
     "uninstaller": {
         "script": [
             "'angband.INI' | ForEach-Object {",
             "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
             "}"
         ]
-    },
-    "notes": "Configuration files cannot be persisted, but will be retained during package updates."
+    }
 }

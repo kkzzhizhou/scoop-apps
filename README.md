@@ -89,6 +89,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
 - Apocalypsor/My-Scoop-Bucket
+- rivy/scoop-bucket
 - littleli/Scoop-littleli
 - nickbudi/scoop-bucket
 - MCOfficer/scoop-bucket

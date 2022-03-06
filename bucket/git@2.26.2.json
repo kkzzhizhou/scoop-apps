@@ -1,0 +1,43 @@
+{
+	"version": "2.26.2.windows.1",
+	"homepage": "https://gitforwindows.org",
+	"description": "Distributed version control system.",
+	"license": "GPL-2.0-only",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.26.2.windows.1/PortableGit-2.26.2-64-bit.7z.exe#/dl.7z",
+			"hash": "dd36f76a815b993165e67ad3cbc8f5b2976e5757a0c808a4a92fb72d1000e1c8"
+		},
+		"32bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.26.2.windows.1/PortableGit-2.26.2-32-bit.7z.exe#/dl.7z",
+			"hash": "e18f75db932ab314263c5f7fca7a9d638df3539629dbf5248a4089beb4e03685"
+		}
+	},
+	"bin": ["cmd\\git.exe", "cmd\\gitk.exe", "cmd\\git-gui.exe", "usr\\bin\\tig.exe", "git-bash.exe"],
+	"shortcuts": [["git-bash.exe", "Git Bash", "--cd-to-home"], ["cmd\\git-gui.exe", "Git GUI"]],
+	"post_install": [
+		"# ref: [PortableGit post-install]<https://github.com/git-for-windows/build-extra/tree/33ce2964376587bbe7fcf97789470701178087af/portable/root>[`@`](https://archive.is/BSBYG)",
+		"#  ... from CMD: `start \"\" /min \"%COMSPEC%\" /d/c \"DIR\\post-install.bat\"`",
+		"if (test-path \"$dir\\post-install.bat\") { start-process \"$dir\\post-install.bat\" -WindowStyle hidden }",
+		"git config --global credential.helper manager"
+	],
+	"checkver": {
+		"github": "https://github.com/git-for-windows/git",
+		"regex": "v([\\w.]+)/PortableGit-(?<ver>[\\d\\w.]+)-64-bit"
+	},
+	"env_set": { "GIT_INSTALL_ROOT": "$dir" },
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchVer-64-bit.7z.exe#/dl.7z"
+			},
+			"32bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchVer-32-bit.7z.exe#/dl.7z"
+			}
+		},
+		"hash": {
+			"url": "https://github.com/git-for-windows/git/releases/latest",
+			"regex": "<td>$basename</td>\\s*<td>$sha256</td>"
+		}
+	}
+}

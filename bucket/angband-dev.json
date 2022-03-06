@@ -1,11 +1,31 @@
 {
-    "version": "4.2.3-264-g8a44ec496",
-    "description": "A free single-player dungeon exploration Roguelike (Pre-release)",
     "homepage": "https://rephial.org/",
+    "description": "A free single-player dungeon exploration Roguelike (Pre-release)",
+    "version": "4.2.3-264-g8a44ec496",
     "license": "GPL-2.0",
+    "notes": "Configuration files cannot be persisted, but will be retained during the update",
     "url": "https://github.com/angband/angband/releases/download/4.2.3-264-g8a44ec496/Angband-4.2.3-264-g8a44ec496-win.zip",
     "hash": "53deec2232aeb2dace6b3009097d773b242e53bec553bb885b9106e3a268bd9b",
+    "autoupdate": {
+        "url": "https://github.com/angband/angband/releases/download/$version/Angband-$version-win.zip",
+        "extract_dir": "angband-$version"
+    },
+    "checkver": {
+        "url": "https://github.com/angband/angband/releases",
+        "regex": "Angband-(?<major>[\\d]+)\\.(?<minor>[\\d]+)\\.(?<patch>[\\d]+)-(?<build>[\\d]+)-g(?<commit>[\\da-z]+)-win\\.zip",
+        "replace": "${major}.${minor}.${patch}-${build}-g${commit}"
+    },
     "extract_dir": "angband-4.2.3-264-g8a44ec496",
+    "persist": "lib\\user",
+    "post_install": [
+        "'angband.INI' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
     "shortcuts": [
         [
             "angband.exe",
@@ -16,31 +36,11 @@
             "Angband\\Angband Manual (Pre-release)"
         ]
     ],
-    "persist": "lib\\user",
-    "checkver": {
-        "url": "https://github.com/angband/angband/releases",
-        "regex": "Angband-(?<major>[\\d]+)\\.(?<minor>[\\d]+)\\.(?<patch>[\\d]+)-(?<build>[\\d]+)-g(?<commit>[\\da-z]+)-win\\.zip",
-        "replace": "${major}.${minor}.${patch}-${build}-g${commit}"
-    },
-    "autoupdate": {
-        "url": "https://github.com/angband/angband/releases/download/$version/Angband-$version-win.zip",
-        "extract_dir": "angband-$version"
-    },
-    "post_install": [
-        "'angband.INI' | ForEach-Object {",
-        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
-        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
-        "    } else {",
-        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
-        "    }",
-        "}"
-    ],
     "uninstaller": {
         "script": [
             "'angband.INI' | ForEach-Object {",
             "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
             "}"
         ]
-    },
-    "notes": "Configuration files cannot be persisted, but will be retained during the update"
+    }
 }

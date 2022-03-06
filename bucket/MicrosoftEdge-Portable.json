@@ -1,41 +1,71 @@
 {
-    "homepage": "https://www.microsoft.com/en-us/edge",
-    "description": "Microsoft Edge. The chromium based Microsoft Edge browser",
     "version": "99.0.1150.30",
-    "license": "Freeware",
+    "description": "Microsoft Edge. Fast and secure browser that helps you protect your data and save time and money(Stable Channel, Portable Edition).",
+    "homepage": "https://www.microsoft.com/en-us/edge",
+    "license": {
+        "identifier": "Freeware",
+        "url": "edge://terms/"
+    },
     "changelog": "https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+    "notes": [
+        "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
+        "Please utilize aria2 to use multi-connection downloads.",
+        "   scoop install aria2",
+        "   scoop config aria2-warning-enabled true"
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://dorado-api.deno.dev/edge?arch=64&channel=stable&dl#/MicrosoftEdge-99.0.1150.30-x64.7z",
-            "hash": "20c2ee6b1872ce7968fe4da84b2d21859b538daf7018400992e6ec3d1a9a11ed"
+            "url": "https://scoop-apps.vercel.app/msedge-stable-win-X64#/dl.7z",
+            "hash": "e9ee673cc8d0c5655193f15884b64e406751d76eb436ff3aa5e675ba6d811067"
         },
         "32bit": {
-            "url": "https://dorado-api.deno.dev/edge?arch=86&channel=stable&dl#/MicrosoftEdge-99.0.1150.30-x86.7z",
-            "hash": "b763551858f6f3adcef0786d70873a20c0aba2b22cac0f4e5cf3017e4607a2cc"
+            "url": "https://scoop-apps.vercel.app/msedge-stable-win-X86#/dl.7z",
+            "hash": "16becb1a7d50af363e76ba2454bbdaaab2bc81d5538c9f8c1de1ef7861c3669a"
         }
     },
     "installer": {
         "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
     },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "msedge.exe",
+            "msedge",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
     "shortcuts": [
         [
             "msedge.exe",
-            "Microsoft Edge Portable",
+            "Microsoft Edge",
             "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "persist": "User Data",
     "checkver": {
-        "url": "https://edgeupdates.microsoft.com/api/products",
-        "jsonpath": "$[?(@.Product == 'Stable')].Releases[?(@.Platform == 'Windows' && @.Architecture == 'x64')].ProductVersion"
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+        "jsonpath": "$[?(@.Product == 'stable')].Version"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dorado-api.deno.dev/edge?arch=64&channel=stable&dl#/MicrosoftEdge-$version-x64.7z"
+                "url": "https://scoop-apps.vercel.app/msedge-stable-win-X64#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)stable.*?x64.*?Sha256.*?$base64"
+                }
             },
             "32bit": {
-                "url": "https://dorado-api.deno.dev/edge?arch=86&channel=stable&dl#/MicrosoftEdge-$version-x86.7z"
+                "url": "https://scoop-apps.vercel.app/msedge-stable-win-X86#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)stable.*?x86.*?Sha256.*?$base64"
+                }
             }
         }
     }

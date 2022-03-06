@@ -1,22 +1,62 @@
 {
     "homepage": "https://pcsx2.net/",
     "description": "A feature rich FOSS PlayStation 2 emulator (development version)",
+    "version": "1.7.2414",
     "license": "LGPL-3.0-or-later",
-    "version": "1.7-2412",
-    "url": "https://buildbot.orphis.net/pcsx2/index.php?m=dl&rev=v1.7.2412&platform=windows-x86#/dl.7z",
-    "hash": "cac31f731cfc4a9dad77de08042c91dbd49bd6d4a868551ab8c1f5e919cdf63d",
-    "extract_dir": "pcsx2-v1.7.2412-windows-x86",
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
-        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
-        "   }",
-        "}"
+    "notes": [
+        "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
+        "Place the BIOS file in $persist_dir\\bios",
+        "Learn more at https://wiki.pcsx2.net/Setting_up_Windows_version#BIOS"
     ],
-    "bin": "pcsx2.exe",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/PCSX2/pcsx2/releases/download/v1.7.2414/pcsx2-v1.7.2414-windows-32bit-AVX2.7z",
+            "hash": "b237bed3f9a164d3871789de14661c57a622e08df883cfbdbe8204c33d7ccc6b",
+            "bin": [
+                [
+                    "pcsx2-avx2.exe",
+                    "pcsx2-dev"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "pcsx2-avx2.exe",
+                    "PCSX2 (development)"
+                ]
+            ]
+        },
+        "64bit": {
+            "url": "https://github.com/PCSX2/pcsx2/releases/download/v1.7.2414/pcsx2-v1.7.2414-windows-64bit-AVX2.7z",
+            "hash": "d22ce1322c6aaac382eb6f1a11f622d29693aacfb53a77de973c27acabd494cf",
+            "bin": [
+                [
+                    "pcsx2x64-avx2.exe",
+                    "pcsx2-dev"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "pcsx2x64-avx2.exe",
+                    "PCSX2 (development)"
+                ]
+            ]
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/PCSX2/pcsx2/releases/download/v$version/pcsx2-v$version-windows-32bit-AVX2.7z"
+            },
+            "64bit": {
+                "url": "https://github.com/PCSX2/pcsx2/releases/download/v$version/pcsx2-v$version-windows-64bit-AVX2.7z"
+            }
+        }
+    },
+    "checkver": {
+        "url": "https://github.com/PCSX2/pcsx2/releases.atom",
+        "regex": "v(?<basever>\\d+\\.\\d+)\\.(?<build>\\d+)",
+        "replace": "${basever}.${build}"
+    },
     "persist": [
         "bios",
         "cheats",
@@ -29,30 +69,17 @@
         "sstates",
         "portable.ini"
     ],
-    "shortcuts": [
-        [
-            "pcsx2.exe",
-            "PCSX2-dev"
-        ]
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
+        "   }",
+        "}"
     ],
     "suggest": {
-        "Visual Studio redist 2015": [
-            "vcredist",
-            "vcredist2015"
-        ]
-    },
-    "checkver": {
-        "url": "https://buildbot.orphis.net/pcsx2/index.php",
-        "regex": "v(?<basever>\\d+\\.\\d+)\\.(?<build>\\d+)",
-        "replace": "${basever}-${build}"
-    },
-    "autoupdate": {
-        "url": "https://buildbot.orphis.net/pcsx2/index.php?m=dl&rev=v$matchBasever.$matchBuild&platform=windows-x86#/dl.7z",
-        "extract_dir": "pcsx2-v$matchBasever.$matchBuild-windows-x86"
-    },
-    "notes": [
-        "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
-        "Place the BIOS file in $persist_dir\\bios",
-        "Learn more at https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios"
-    ]
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
+    }
 }

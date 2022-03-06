@@ -11,7 +11,7 @@
             "shortcuts": [
                 [
                     "snes9x.exe",
-                    "Snes9X"
+                    "Snes9X (dev)"
                 ]
             ]
         },
@@ -27,19 +27,10 @@
             "shortcuts": [
                 [
                     "snes9x-x64.exe",
-                    "Snes9X"
+                    "Snes9X (dev)"
                 ]
             ]
         }
-    },
-    "pre_install": "If(!(Test-Path(\"$persist_dir\\snes9x.conf\"))){New-Item -ItemType File \"$dir\\snes9x.conf\" | Out-Null }",
-    "persist": [
-        "Saves",
-        "snes9x.conf"
-    ],
-    "checkver": {
-        "url": "https://ci.appveyor.com/api/projects/snes9x/snes9x",
-        "regex": "\"jobId\":\"(?<win32>.*?)\".*?arch=win32,.*?\"jobId\":\"(?<x64>.*?)\".*?arch=win32-x64,.*\"version\":\"(?<version>.*?)\".*\"commitId\":\"(?<commit>.{7}).*\""
     },
     "autoupdate": {
         "architecture": {
@@ -50,5 +41,18 @@
                 "url": "https://ci.appveyor.com/api/buildjobs/$matchX64/artifacts/snes9x-$matchVersion-$matchCommit-win32-x64.zip"
             }
         }
-    }
+    },
+    "checkver": {
+        "url": "https://ci.appveyor.com/api/projects/snes9x/snes9x",
+        "regex": "\"jobId\":\"(?<win32>.*?)\".*?arch=win32,.*?\"jobId\":\"(?<x64>.*?)\".*?arch=win32-x64,.*\"version\":\"(?<version>.*?)\".*\"commitId\":\"(?<commit>.{7}).*\""
+    },
+    "persist": [
+        "Saves",
+        "snes9x.conf"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\snes9x.conf\")) {",
+        "    New-Item \"$dir\\snes9x.conf\" -Type File | Out-Null",
+        "}"
+    ]
 }

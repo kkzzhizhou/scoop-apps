@@ -9,37 +9,6 @@
             "hash": "b0e3abf5048f78e352b42c3e1660a2c6e85d6905cd9f60d06ca2f2318fa3152c"
         }
     },
-    "extract_dir": "cemu_1.26.2",
-    "shortcuts": [
-        [
-            "cemu.exe",
-            "Cemu"
-        ]
-    ],
-    "installer": {
-        "script": [
-            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
-            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
-            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
-            "   }",
-            "}"
-        ]
-    },
-    "persist": [
-        "controllerProfiles",
-        "gameProfiles",
-        "graphicPacks",
-        "mlc01",
-        "sharedFonts",
-        "shaderCache\\transferable"
-    ],
-    "suggest": {
-        "vcredist": "extras/vcredist2015",
-        "cemuhook": "cemuhook"
-    },
-    "checkver": {
-        "regex": "Download latest version \\(v((?<version>[\\d.]+)[\\w]*?),"
-    },
     "autoupdate": {
         "architecture": {
             "64bit": {
@@ -48,21 +17,40 @@
         },
         "extract_dir": "cemu_$matchVersion"
     },
-    "post_install": [
-        "'settings.xml' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\"  -Force",
-        "   } else {",
-        "       New-Item -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
-        "}"
-    ],
-    "uninstaller": {
+    "bin": "Cemu.exe",
+    "checkver": {
+        "regex": "Download latest version \\(v((?<version>[\\d.]+)[\\w]*?),"
+    },
+    "extract_dir": "cemu_1.26.2",
+    "installer": {
         "script": [
-            "'settings.xml' | ForEach-Object {",
-            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
+            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
+            "   }",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\settings.xml\")) {",
+            "    New-Item \"$dir\\settings.xml\" -Type File | Out-Null",
             "}"
         ]
     },
-    "notes": "Configuration files cannot be persisted, but will be retained during the update"
+    "persist": [
+        "settings.xml",
+        "controllerProfiles",
+        "gameProfiles",
+        "graphicPacks",
+        "mlc01",
+        "sharedFonts",
+        "shaderCache\\transferable"
+    ],
+    "shortcuts": [
+        [
+            "cemu.exe",
+            "Cemu"
+        ]
+    ],
+    "suggest": {
+        "cemuhook": "cemuhook",
+        "vcredist": "extras/vcredist2015"
+    }
 }
