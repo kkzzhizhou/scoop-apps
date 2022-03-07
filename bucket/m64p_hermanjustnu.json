@@ -1,0 +1,49 @@
+{
+    "version": "2021.12.29",
+    "description": "Nintendo 64 emulator",
+    "homepage": "https://m64p.github.io/",
+    "license": {
+        "url": "https://github.com/m64p/m64p/blob/main/LICENSE",
+        "identifier": "GPL-3.0"
+    },
+    "notes": "Configuration files cannot be persisted, but will be retained during the update",
+    "url": "https://github.com/loganmc10/m64p/releases/download/v2021.12.29/m64p-win64-7045d7a.zip",
+    "hash": "d99f9bcc7219c55473ac991a1dc17ea783f0a2270ee1ec63b3e101fcb7645415",
+    "extract_dir": "mupen64plus",
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\mupen64plus-gui.ini.bak\")) {",
+        "   Set-Content \"$dir\\mupen64plus-gui.ini\" '[General]'",
+        "   Add-Content \"$dir\\mupen64plus-gui.ini\" 'version=2'",
+        "   Add-Content \"$dir\\mupen64plus-gui.ini\" 'configDirPath=$APP_PATH$/config'",
+        "} else {",
+        "   Copy-Item \"$persist_dir\\mupen64plus-gui.ini.bak\" \"$dir\\mupen64plus-gui.ini\" -Force",
+        "}"
+    ],
+    "bin": [
+        [
+            "mupen64plus-gui.exe",
+            "m64p"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "mupen64plus-gui.exe",
+            "m64p"
+        ]
+    ],
+    "persist": "config",
+    "uninstaller": {
+        "script": [
+            "'mupen64plus-gui.ini' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/loganmc10/m64p/releases",
+        "regex": "releases\\/download\\/v([\\d.]{10})\\/m64p-win64-(?<commit>[\\da-f]{7})\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://github.com/loganmc10/m64p/releases/download/v$version/m64p-win64-$matchCommit.zip"
+    }
+}

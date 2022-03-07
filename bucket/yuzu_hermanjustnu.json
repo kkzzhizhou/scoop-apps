@@ -1,19 +1,36 @@
 {
+    "version": "0-943",
+    "description": "Nintendo Switch emulator",
     "homepage": "https://yuzu-emu.org/",
-    "version": "0-942",
-    "license": "GPL-2.0-only",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-0-942/yuzu-windows-msvc-20220305-ed691f09c.7z",
-            "hash": "b027a000d7d2e6ce79ae0fd3121bd76c4470235ed32511f55dbcdfb23902b70c"
-        }
+    "license": {
+        "url": "https://github.com/yuzu-emu/yuzu-mainline/blob/master/license.txt",
+        "identifier": "GPL-2.0"
     },
     "extract_dir": "yuzu-windows-msvc",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\yuzu\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\yuzu\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\yuzu\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": [
+        "yuzu.exe",
+        "yuzu-cmd.exe"
+    ],
     "shortcuts": [
         [
             "yuzu.exe",
             "Yuzu"
         ]
+    ],
+    "persist": [
+        "user",
+        "plugins"
     ],
     "checkver": {
         "github": "https://github.com/yuzu-emu/yuzu-mainline",
@@ -24,6 +41,12 @@
             "64bit": {
                 "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-$version/yuzu-windows-msvc-$matchDate-$matchCommit.7z"
             }
+        }
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-0-943/yuzu-windows-msvc-20220306-3a401ca22.7z",
+            "hash": "77a10c8b46c0663b241458675a068e761845578f9b2d1a8f99bb100f3f82ab1c"
         }
     }
 }
