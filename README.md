@@ -70,8 +70,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
-- scoopcn/scoopcn
 - hoilc/scoop-lemon
+- scoopcn/scoopcn
 - borger/scoop-emulators
 - Paxxs/Cluttered-bucket
 - wzv5/ScoopBucket
