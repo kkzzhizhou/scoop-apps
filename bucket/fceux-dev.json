@@ -1,5 +1,5 @@
 {
-    "version": "84cf82cb",
+    "version": "1360-bef4e80e",
     "description": "Nintendo NES and Famicom emulator",
     "homepage": "http://www.fceux.com",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "32bit": {
-            "url": "https://ci.appveyor.com/api/projects/zeromus/fceux/artifacts/fceux.zip?branch=master&job=Windows%2032#/fceux.zip",
-            "hash": "ba1f024f4d3d410e2c63858eff6d59572a3e55ff57c9dda2970c9430dd384953",
+            "url": "https://ci.appveyor.com/api/buildjobs/rrfsttxumuo7yr9o/artifacts/fceux.zip",
+            "hash": "429a8bb7b2cb4be6d4cbd04768fddef56f6a349a469989776c313e86e19847aa",
             "bin": [
                 [
                     "fceux.exe",
@@ -24,8 +24,8 @@
             ]
         },
         "64bit": {
-            "url": "https://ci.appveyor.com/api/projects/zeromus/fceux/artifacts/fceux64.zip?branch=master&job=Windows%2064#/fceux64.zip",
-            "hash": "b60bd5172f0ee0a9e28d736a933a95c74c29c97a526c066c322022acc43b18ce",
+            "url": "https://ci.appveyor.com/api/buildjobs/3ook8m0cg4bd1u37/artifacts/qfceux64.zip",
+            "hash": "d4e87af6bf593ce05e12b1e49f9609569d175f624d6dbd9412e4a94bf5d59b87",
             "extract_dir": "bin",
             "bin": [
                 [
@@ -56,15 +56,24 @@
     ],
     "checkver": {
         "url": "https://ci.appveyor.com/api/projects/zeromus/fceux",
-        "regex": "commitId\":\"([a-f0-9]{8})"
+        "script": [
+            "$job32 = json_path $page $.build.jobs[0].jobId",
+            "$job64 = json_path $page $.build.jobs[2].jobId",
+            "$build = json_path $page $.build.buildNumber",
+            "$commit = json_path $page $.build.commitId",
+            "Write-Output $job32 $job64 $build $commit >D:\\Temp\\output.txt",
+            "Write-Output \"$job32 $job64 $build $commit\""
+        ],
+        "regex": "(?<job32>[\\w]{16}) (?<job64>[\\w]{16}) (?<build>[\\d]+) (?<commit>[a-f0-9]{8})",
+        "replace": "${build}-${commit}"
     },
     "autoupdate": {
         "architecture": {
             "32bit": {
-                "url": "https://ci.appveyor.com/api/projects/zeromus/fceux/artifacts/fceux.zip?branch=master&job=Windows%2032#/fceux.zip"
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob32/artifacts/fceux.zip"
             },
             "64bit": {
-                "url": "https://ci.appveyor.com/api/projects/zeromus/fceux/artifacts/fceux64.zip?branch=master&job=Windows%2064#/fceux64.zip"
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob64/artifacts/fceux64.zip"
             }
         }
     }
