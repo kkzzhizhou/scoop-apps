@@ -3,34 +3,49 @@
     "description": "A fast, accurate, and portable GBA emulator (development version)",
     "homepage": "https://mgba.io/",
     "license": {
-        "url": "https://github.com/mgba-emu/mgba/blob/master/LICENSE",
-        "identifier": "MPL-2.0"
+        "identifier": "MPL-2.0",
+        "url": "https://github.com/mgba-emu/mgba/blob/master/LICENSE"
     },
-    "installer": {
-        "script": [
-            "Move-Item -Path \"$(Get-ChildItem -Path $dir)\\*\" -Destination \"$dir\"",
-            "Set-Location -Path $dir",
-            "Remove-Item -Path $(Get-ChildItem -Path $dir -Name -Include mGBA-build*)",
-            "if (!(Test-Path \"$persist_dir\\qt.ini\")) {",
-            "   New-Item \"$dir\\qt.ini\" -ItemType \"file\" | Out-Null ",
-            "}",
-            "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
-            "   Set-Content \"$dir\\config.ini\" '[ports.qt]'",
-            "   'cheats', 'patch', 'savegame', 'savestate', 'screenshot' | ForEach-Object {",
-            "       Add-Content -Path \"$dir\\config.ini\" -Value $_`Path`=$persist_dir\\$_ }",
-            "}"
-        ]
+    "architecture": {
+        "32bit": {
+            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2022-03-08-win32-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38.7z",
+            "hash": "aa695fcfc1d6d1e68e90e588b75ef998f37cf9706f4525ad06845d9919fdffa8",
+            "extract_dir": "mGBA-build-2022-03-08-win32-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38"
+        },
+        "64bit": {
+            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2022-03-08-win64-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38.7z",
+            "hash": "fc07e1615a65956f0b73e79b5b62265eac2f67e3f4afd2a213a6b32f7e2b740f",
+            "extract_dir": "mGBA-build-2022-03-08-win64-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38"
+        }
     },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\qt.ini\")) {",
+        "   New-Item \"$dir\\qt.ini\" -Type File | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
+        "   New-Item \"$dir\\config.ini\" -Type File | Out-Null",
+        "   Set-Content \"$dir\\config.ini\" '[ports.qt]'",
+        "   Add-Content \"$dir\\config.ini\" 'savestatePath=savestate'",
+        "   Add-Content \"$dir\\config.ini\" 'patchPath=patch'",
+        "   Add-Content \"$dir\\config.ini\" 'screenshotPath=screenshot'",
+        "   Add-Content \"$dir\\config.ini\" 'cheatsPath=cheats'",
+        "   Add-Content \"$dir\\config.ini\" 'savegamePath=savestate'",
+        "}"
+    ],
     "bin": [
         [
             "mGBA.exe",
-            "mgba-sdl.exe"
+            "mgba-dev"
+        ],
+        [
+            "mgba-sdl.exe",
+            "mgba-sdl-dev"
         ]
     ],
     "shortcuts": [
         [
             "mGBA.exe",
-            "mGBA (Development)"
+            "mGBA (dev)"
         ]
     ],
     "persist": [
@@ -41,7 +56,8 @@
         "screenshot",
         "shaders",
         "qt.ini",
-        "config.ini"
+        "config.ini",
+        "portable.ini"
     ],
     "checkver": {
         "url": "https://mgba.io/builds/1/",
@@ -51,21 +67,13 @@
     "autoupdate": {
         "architecture": {
             "32bit": {
-                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win32-$matchVer-$matchGit.7z"
+                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win32-$matchVer-$matchGit.7z",
+                "extract_dir": "mGBA-build-$matchYear-$matchMonth-$matchDay-win32-$matchVer-$matchGit"
             },
             "64bit": {
-                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win64-$matchVer-$matchGit.7z"
+                "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-$matchYear-$matchMonth-$matchDay-win64-$matchVer-$matchGit.7z",
+                "extract_dir": "mGBA-build-$matchYear-$matchMonth-$matchDay-win64-$matchVer-$matchGit"
             }
-        }
-    },
-    "architecture": {
-        "32bit": {
-            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2022-03-08-win32-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38.7z",
-            "hash": "aa695fcfc1d6d1e68e90e588b75ef998f37cf9706f4525ad06845d9919fdffa8"
-        },
-        "64bit": {
-            "url": "https://s3.amazonaws.com/mgba/build/mGBA-build-2022-03-08-win64-7296-54bccfd2cdd128fc35cc73fcd5aab8f4c0334b38.7z",
-            "hash": "fc07e1615a65956f0b73e79b5b62265eac2f67e3f4afd2a213a6b32f7e2b740f"
         }
     }
 }
