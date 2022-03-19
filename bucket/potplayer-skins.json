@@ -1,0 +1,58 @@
+{
+    "version": "20220319",
+    "description": "PotPlayer skin",
+    "homepage": "https://www.deviantart.com/mr-web/art/Modern-W10-Skin-for-PotPlayer-ITA-ENG-678381013",
+    "license": "Unknown",
+    "suggest": {
+        "potplayer": [
+            "potplayer",
+            "sapps/potplayer-noad-portable",
+            "sapps/potplayer-dev-noad-portable"
+        ]
+    },
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/PotPlayer/potplayer-skin-20220319.7z",
+    "hash": "02fa02af3845480d85677ecbe731b5c9dbc914519ae490dd068660f091399d39",
+    "installer": {
+        "script": [
+            "function CopyFile([String] $potplayer_file_dest) {",
+            "   if (Test-Path \"$(scoop prefix $potplayer_file_dest)\") {",
+            "       Get-ChildItem $dir -Exclude install.json,manifest.json | ForEach-Object {",
+            "           Get-ChildItem \"$(scoop prefix $potplayer_file_dest)\\Skins\\$($_.Name)\" -ErrorAction Ignore | Rename-Item -NewName { $_.Name + \".sappsbak\" } -Force",
+            "           Copy-Item $_.FullName -destination \"$(scoop prefix $potplayer_file_dest)\\Skins\"  -Force -ErrorAction Ignore | Out-Null",
+            "       }",
+            "   }",
+            "}",
+            "CopyFile \"potplayer\"",
+            "CopyFile \"potplayer-noad-portable\"",
+            "CopyFile \"potplayer-dev-noad-portable\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "function RemoveFile([String] $potplayer_file_dest) {",
+            "  if (Test-Path \"$(scoop prefix $potplayer_file_dest)\") {",
+            "    Get-ChildItem \"$dir\" -Exclude install.json,manifest.json | ForEach-Object {",
+            "      Remove-Item \"$(scoop prefix $potplayer_file_dest)\\Skins\\$($_.Name)\" -Force -ErrorAction Ignore | Out-Null",
+            "      Get-ChildItem \"$(scoop prefix $potplayer_file_dest)\\Skins\\$($_.Name).sappsbak\" -ErrorAction Ignore | Rename-Item -NewName { $_.Name -replace '.sappsbak','' } -Force -ErrorAction Ignore | Out-Null",
+            "    }",
+            "  }",
+            "}",
+            "RemoveFile \"potplayer\"",
+            "RemoveFile \"potplayer-noad-portable\"",
+            "RemoveFile \"potplayer-dev-noad-portable\"",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/potplayer",
+        "regex": "(?s)(?<filename>potplayer-skin-(?<version>[\\d]+)\\.(?:zip|7z))"
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/PotPlayer/$matchFilename",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/potplayer",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}
