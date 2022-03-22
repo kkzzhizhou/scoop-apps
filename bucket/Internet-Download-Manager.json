@@ -1,16 +1,15 @@
 {
-    "version": "6.40.8",
+    "version": "6.40.9",
     "description": "Internet Download Manager (IDM) is a tool to increase download speeds by up to 5 times, resume and schedule downloads.",
     "homepage": "http://internetdownloadmanager.com/index.html",
     "license": {
         "identifier": "Freeware"
     },
     "depends": "sudo",
-    "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/internet_download_manager_6.40.8.zip",
-    "hash": "e3fba1e7eaf7ae6bd6946095fc9bee931873ccb26044757c0ff4ef9f413fd449",
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/internet_download_manager_6.40.9.zip",
+    "hash": "c517ef42ca8f47f0af16018ac9500d881d021b2e077fbe56c0d6b29b0a1085a6",
     "pre_install": [
-        "Get-Process IDM* | Stop-Process -Force",
-        "Get-Process IEMon* | Stop-Process -Force",
+        "sudo Get-Process IDM*,IEMon* | Stop-Process -Force -ErrorAction Ignore | Out-Null",
         "Rename-Item \"$dir\\Internet Download Manager*.exe\" 'Installer.exe'",
         "Get-ChildItem $dir -Exclude Installer.exe, install.json, manifest.json | ForEach-Object {  Remove-Item \"$dir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue }"
     ],
@@ -23,7 +22,7 @@
     "post_install": "Remove-Item $dir\\Installer.exe -Force",
     "uninstaller": {
         "script": [
-            "Stop-Process -Name explorer, IDM*, IEMonitor*, IDMMsgHost*, MediumILStart*, IDMIntegrator64* -Force -ErrorAction Ignore | Out-Null",
+            "sudo Stop-Process -Name explorer, IDM*, IEMonitor*, IDMMsgHost*, MediumILStart*, IDMIntegrator64* -Force -ErrorAction Ignore | Out-Null",
             "Remove-Item IDMShellExt*.dll -Force -ErrorAction SilentlyContinue",
             "Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList /SILENT -WorkingDirectory \"$dir\" -Wait | Out-Null",
             "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
@@ -31,7 +30,8 @@
     },
     "checkver": {
         "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/idm",
-        "regex": "(?<filename>internet_download_manager_(?<version>[\\d.]+)\\.zip)"
+        "regex": "(?<filename>internet_download_manager_(?<version>[\\d.]+)\\.zip)",
+        "reverse": true
     },
     "autoupdate": {
         "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/$matchFilename",
