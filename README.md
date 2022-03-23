@@ -83,6 +83,7 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - ACooper81/scoop-apps
 - iquiw/scoop-bucket
+- mogeko/scoop-sysinternals
 - Velgus/Scoop-Portapps
 - liaoya/scoop-bucket
 - jfut/scoop-jfut
