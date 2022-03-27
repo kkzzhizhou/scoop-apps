@@ -77,11 +77,11 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - ChungZH/peach
+- ACooper81/scoop-apps
 - Ryanjiena/scoop-apps
 - naderi/scoop-bucket
 - 42wim/scoop-bucket
 - batkiz/backit
-- ACooper81/scoop-apps
 - iquiw/scoop-bucket
 - mogeko/scoop-sysinternals
 - Velgus/Scoop-Portapps
