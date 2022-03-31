@@ -1,41 +1,37 @@
 {
     "version": "3.5.6.416",
-    "description": "Video conferencing app by Tencent",
+    "description": "Tencent Meeting provides one-stop audio and video conferencing solutions.",
     "homepage": "https://meeting.tencent.com/",
     "license": {
-        "identifier": "EULA",
+        "identifier": "Proprietary",
         "url": "https://meeting.tencent.com/declare.html"
     },
     "notes": "We don't persist your Tencent Meeting data, they are still storaged in \"$env:APPDATA\\Tencent\\WeMeet\".",
     "url": "https://updatecdn.meeting.qq.com/cos/8d470eda782890abc7cc8cc3c2629cb3/TencentMeeting_0300000000_3.5.6.416.publish.exe#/dl.7z",
-    "hash": "md5:8d470eda782890abc7cc8cc3c2629cb3",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive (Join-Path $dir '$_5_\\weMeet.*.zip') -DestinationPath $dir",
-            "New-Item HKCU:\\SOFTWARE\\Tencent\\WeMeet | Out-Null",
-            "New-ItemProperty HKCU:\\SOFTWARE\\Tencent\\WeMeet -Name 'Dependence' -Value $dir | Out-Null",
-            "Remove-Item (Join-Path $dir '$PLUGINSDIR') -Recurse",
-            "Remove-Item (Join-Path $dir '$TEMP') -Recurse",
-            "Remove-Item (Join-Path $dir '$_5_') -Recurse"
+    "hash": "dacd74f99d97c1776b28a971b63818c0afe51146824c242bb826987526222d4e",
+    "pre_install": "Rename-Item -Path \"$dir\\`$_*\" -NewName \"$version\" -Force",
+    "post_install": [
+        "Remove-Item \"$dir\\$*\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\wemeetapp_new.exe\" -Force -ErrorAction SilentlyContinue"
+    ],
+    "bin": [
+        [
+            "wemeetapp.exe",
+            "tencent-meeting"
         ]
-    },
-    "uninstaller": {
-        "script": "Remove-Item HKCU:\\SOFTWARE\\Tencent\\WeMeet | Out-Null"
-    },
+    ],
     "shortcuts": [
         [
             "wemeetapp.exe",
-            "腾讯会议"
+            "Tencent Meeting"
         ]
     ],
     "checkver": {
-        "url": "https://api.xuann.wang/api/tencent-meeting",
-        "regex": "([\\d.]+) (?<url>.+)"
+        "url": "https://meeting.tencent.com/wemeet-webapi/v2/config/query-download-info",
+        "script": "(Invoke-WebRequest -Body '[{\"instance\":\"windows\",\"type\":\"0300000000\"}]' -Method 'POST' -Uri $url).Content",
+        "regex": "https://(?<url>.*?\\.exe).*?version\".*?\"([\\d.]+)\""
     },
     "autoupdate": {
-        "url": "$matchUrl",
-        "hash": {
-            "url": "https://api.xuann.wang/api/tencent-meeting?hash=1"
-        }
+        "url": "https://$matchUrl#/dl.7z"
     }
 }

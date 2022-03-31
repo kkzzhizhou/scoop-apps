@@ -1,51 +1,51 @@
 {
-    "version": "0.2022.03.24",
-    "description": "A extract & decryption and pack & encryption tools for typora.",
-    "homepage": "https://github.com/Mas0nShi/typoraCracker",
+    "version": "1.2.4",
+    "description": "Some file working well from Typora v1.1, Powered by TyporaCracker.",
+    "homepage": "https://github.com/SnapdragonLee/TyporaCrack",
     "license": {
         "identifier": "MIT",
-        "url": "https://github.com/Mas0nShi/typoraCracker/blob/master/LICENSE"
+        "url": "https://github.com/SnapdragonLee/TyporaCrack/blob/master/LICENSE"
     },
-    "notes": [
-        "typoraCracker doesn't provide support for crack.",
-        "FOR STUDY AND DISCUSSION ONLY, PLEASE DO NOT ENGAGE IN ANY ILLEGAL ACTS.",
-        "ANY PROBLEMS ARISING FROM THIS WILL BE BORNE BY THE USER (YOU).",
-        "",
-        "typoraCracker 不会提供破解相关支持，包括但不限于思路、流程、成品。",
-        "仅供学习和讨论，请不要从事任何非法行为。",
-        "由此产生的任何问题都将由用户（您）承担。"
-    ],
-    "depends": "typora",
-    "url": "https://github.com/Mas0nShi/typoraCracker/archive/f44e9355fb040b7bac32390ba47e384c2dd26e3d.zip",
-    "hash": "94b34062406aaa0002f422a54809197805dc7648a884683923575d81f716f413",
-    "extract_dir": "typoraCracker-f44e9355fb040b7bac32390ba47e384c2dd26e3d",
-    "pre_install": [
-        "$cont = @(",
-        "    'if (-not $env:SCOOP_APPS) { $env:SCOOP_APPS = \"$env:SCOOP\\apps\" }'",
-        "    'Set-Location $env:SCOOP_APPS/typoraCracker/current/'",
-        "    'if ($null -eq (Get-Command \"python\" -ErrorAction SilentlyContinue)) { Write-Host \"Python appears not to be installed!\" -Foreground Magenta }'",
-        "    'if ($null -eq (Get-Command \"pip\" -ErrorAction SilentlyContinue)) { Write-Host \"Pip appears not to be installed!\" -Foreground Magenta }'",
-        "    'if ($null -ne (Get-Command \"Get-Process typora\" -ErrorAction SilentlyContinue)) { Get-Process typora | Stop-Process }'",
-        "    'pip install -r requirements.txt'",
-        "    'Copy-Item -Path example/patch/License.js -Destination $env:SCOOP_APPS/typora/current/resources/node_modules -Force'",
-        "    'python typora.py $env:SCOOP_APPS/typora/current/resources/app.asar workstation/outfile/'",
-        "    'python typora.py -u workstation/outfile/dec_app workstation/outappasar'",
-        "    'Rename-Item -Path $env:SCOOP_APPS/typora/current/resources/app.asar -NewName $env:SCOOP_APPS/typora/current/resources/app.asar.bak -Force'",
-        "    'Move-Item -Path workstation/outappasar/app.asar -Destination $env:SCOOP_APPS/typora/current/resources/app.asar -Force'",
-        "    'node example/keygen.js | Set-Clipboard'",
-        "    'Start-Process -FilePath $env:SCOOP_APPS/typora/current/Typora.exe'",
-        ")",
-        "if (!(Test-Path \"$dir\\typoraCracker.ps1\")) { New-Item -Path \"$dir\\typoraCracker.ps1\" -ItemType file | Out-Null  }",
-        "Set-Content \"$dir\\typoraCracker.ps1\" -Value $cont -Encoding Ascii"
-    ],
-    "bin": "typoraCracker.ps1",
-    "checkver": {
-        "url": "https://github.com/Mas0nShi/typoraCracker/commits/master.atom",
-        "regex": "(?s)>(\\d+)-(\\d+)-(\\d+)T.*?/(?<sha>[0-9a-f]{40})",
-        "replace": "0.${1}.${2}.${3}"
+    "notes": "Although TyporaCrack provide support for crack, we encourage buying license, in order to Support Genuine Software Development.",
+    "depends": "extras/typora",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/SnapdragonLee/TyporaCrack/releases/download/v1.2.4/app_asar_file_v1.2.4-windows-x64.zip",
+            "hash": "480bd4700f9698ed35aa08ac5f778eb6fcd8b5c59fae89451bcf6faed09c690a"
+        },
+        "32bit": {
+            "url": "https://github.com/SnapdragonLee/TyporaCrack/releases/download/v1.2.4/app_asar_file_v1.2.4-windows-x86.zip",
+            "hash": "8eaa112cc1550186ef329e5e6e3b05509094603e5460fbe33778363a1bb75848"
+        }
     },
+    "installer": {
+        "script": [
+            "sudo Stop-Process -Name Typora -Force -ErrorAction Ignore | Out-Null",
+            "Get-ChildItem $dir -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Get-ChildItem \"$env:SCOOP_APPS\\typora\\$version\\resources\\$($_.Name)\" | Rename-Item -NewName { $_.Name + \".sappsbak\" }",
+            "  Copy-Item $_.FullName -destination \"$env:SCOOP_APPS\\typora\\$version\\resources\" -Force",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "sudo Stop-Process -Name Typora -Force -ErrorAction Ignore | Out-Null",
+            "Get-ChildItem \"$dir\" -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Remove-Item \"$env:SCOOP_APPS\\typora\\$version\\resources\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "  Get-ChildItem \"$env:SCOOP_APPS\\typora\\$version\\resources\\$($_.Name).sappsbak\" | Rename-Item -NewName { $_.Name -replace '.sappsbak','' }",
+            "}",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/Mas0nShi/typoraCracker/archive/$matchSha.zip",
-        "extract_dir": "typoraCracker-$matchSha"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/SnapdragonLee/TyporaCrack/releases/download/v$version/app_asar_file_v$version-windows-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/SnapdragonLee/TyporaCrack/releases/download/v$version/app_asar_file_v$version-windows-x86.zip"
+            }
+        }
     }
 }
