@@ -4,7 +4,7 @@ $dir = Convert-Path ($scoopDir + "/apps/sentinel-dashboard/current/")
 $version = $Matches[0]
 $customArgs = $args
 if (!"$args".Contains("-Dserver.port=")) {
-    $port = 31286
+    $port = 8718
     $customArgs = "-Dserver.port=$port $args"
 }
 $jarPath = $dir + "sentinel-dashboard-$version.jar"
