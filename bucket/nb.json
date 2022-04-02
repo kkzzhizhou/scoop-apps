@@ -1,17 +1,36 @@
 {
     "homepage": "https://github.com/xwmx/nb",
     "license": "AGPL-3.0",
-    "version": "6.9.5",
+    "version": "6.10.0",
+    "depends": "main/unzip",
     "suggest": {
         "git": "git"
     },
-    "url": "https://github.com/xwmx/nb/archive/refs/tags/6.9.5.zip",
-    "hash": "2a8e73df6421a670ec5e1d77788cf05b8f063b634a907f554568ef4fc98d7e1b",
-    "extract_dir": "nb-6.9.5",
+    "url": "https://github.com/xwmx/nb/archive/refs/tags/6.10.0.zip#",
+    "hash": "1ee86d9cb18881750a2796cd2d705c51ac375d0a92df6354eb97604ee51cd346",
     "installer": {
-        "script": "Set-Content \"$dir\\nb.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0nb %*\" -Encoding ASCII"
+        "script": [
+            "$zipfile = (Get-ChildItem \"$dir\" '*.zip#' | Select-Object -First 1).FullName",
+            "Start-Process -Wait -FilePath \"unzip.exe\" -ArgumentList \"$zipfile -d $dir\" -WindowStyle Hidden",
+            "$folder = (Get-Childitem -Directory \"$dir\"| Select-Object -First 1).FullName",
+            "Move-Item \"$folder\\*\" \"$dir\"",
+            "Remove-Item \"$folder\"",
+            "Set-Content \"$dir\\nb.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0nb %*\" -Encoding ASCII",
+            "Set-Content \"$dir\\bookmark.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0bin\\bookmark %*\" -Encoding ASCII",
+            "Remove-Item \"$zipfile\" -Force",
+            "Remove-Item \"$dir\\.github\" -Force -Recurse",
+            "Remove-Item \"$dir\\nb.go\" -Force -Recurse",
+            "Remove-Item \"$dir\\test\" -Force -Recurse",
+            "Remove-Item \"$dir\\.gitignore\" -Force",
+            "Remove-Item \"$dir\\.shellcheckrc\" -Force",
+            "Remove-Item \"$dir\\Makefile\" -Force",
+            "Remove-Item \"$dir\\Baskfile\" -Force"
+        ]
     },
-    "bin": "nb.bat",
+    "bin": [
+        "nb.bat",
+        "bookmark.bat"
+    ],
     "checkver": {
         "url": "https://github.com/xwmx/nb/tags",
         "regex": "Update version to ([\\d.]+)."
