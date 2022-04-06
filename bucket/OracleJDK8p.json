@@ -1,0 +1,67 @@
+{
+    "version": "8u311",
+    "description": "Oracle JDK 8.",
+    "homepage": "https://www.oracle.com/java/technologies/downloads/#java8",
+    "license": {
+        "identifier": "Oracle Technology Network License Agreement for Oracle Java SE",
+        "url": "https://www.oracle.com/downloads/licenses/javase-license1.html"
+    },
+    "notes": "Java SE subscribers will receive JDK 8 updates until at least December of 2030.",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.macromedia.com/pub/coldfusion/java/java8/8u311/jdk/jdk-8u311-windows-x64.exe#/dl.7z",
+            "hash": "39ac62c8ce2ca74b348120981739837552d9d928c8eaf4fd46a3e345c96c6a67"
+        },
+        "32bit": {
+            "url": "https://download.macromedia.com/pub/coldfusion/java/java8/8u311/jdk/jdk-8u311-windows-i586.exe#/dl.7z",
+            "hash": "419cbd4e69cc65ce76f953274f0e74d8aef9f866116963ee0794e8cc8f6d9928"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "# Java Source (src.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB9\\110\" \"$dir\"",
+            "# JDK (tools.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB10\\111\" \"$dir\\tmp\"",
+            "Expand-7zipArchive \"$dir\\tmp\\tools.zip\" \"$dir\"",
+            "# Copyright (COPYRIGHT)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB11\\112\" \"$dir\"",
+            "# Convert .pack to .jar, and remove .pack",
+            "pushd \"$dir\"",
+            "ls \"$dir\" -recurse | ? name -match '^[^_].*?\\.(?i)pack$' | % {",
+            "    $name = $_.fullname -replace '\\.(?i)pack$', ''",
+            "    $pack = \"$name.pack\"",
+            "    $jar = \"$name.jar\"",
+            "    & \"bin\\unpack200.exe\" \"-r\" \"$pack\" \"$jar\"",
+            "}",
+            "rm -r tmp | out-null",
+            "popd"
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://helpx.adobe.com/coldfusion/kb/coldfusion-downloads.html",
+        "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36 Edg/99.0.1150.55",
+        "regex": "/java8/8u(?<build>\\d{3})/(?<path>.*?)/(?<file>jdk-([a-z\\d]+)-windows-x64\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.macromedia.com/pub/coldfusion/java/java8/$version/jdk/jdk-$version-windows-x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download.macromedia.com/pub/coldfusion/java/java8/$version/jdk/jdk-$version-windows-i586.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "https://download.macromedia.com/pub/coldfusion/java/java8/8u$matchBuild/$matchPath/jdk8u$matchBuild-checksum.txt",
+            "mode": "extract",
+            "regex": "$basename.*?$sha256"
+        }
+    }
+}
