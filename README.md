@@ -65,8 +65,8 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - hermanjustnu/scoop-emulators
 - everyx/scoop-bucket
 - cderv/r-bucket
-- Qv2ray/mochi
 - hoilc/scoop-lemon
+- Qv2ray/mochi
 - dodorz/scoop
 - zhoujin7/tomato
 - ZvonimirSun/scoop-iszy
