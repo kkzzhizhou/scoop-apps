@@ -1,8 +1,11 @@
 {
-    "homepage": "https://u.tools/",
-    "description": "Your productive tools set and launcher.",
-    "license": "Freeware",
     "version": "2.6.2",
+    "description": "Your productive tools set and launcher.",
+    "homepage": "https://u.tools/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "http://u.tools/agreement.html"
+    },
     "architecture": {
         "64bit": {
             "url": "https://publish.u-tools.cn/version2/uTools-2.6.2.exe#/dl.7z",
@@ -19,13 +22,20 @@
             }
         }
     },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall uTools.exe\" -Force -Recurse",
+    "post_install": [
+        "@('$PLUGINSDIR', '[NSIS].nsi', 'Uninstall uTools.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\uTools\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\uTools\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
     "shortcuts": [
         [
             "uTools.exe",
             "uTools"
         ]
     ],
+    "persist": "User Data",
     "checkver": {
         "url": "https://u.tools/",
         "regex": "uTools-([\\d.]+).exe"
