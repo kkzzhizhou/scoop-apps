@@ -1,7 +1,8 @@
-{
+﻿{
     "homepage": "https://popo.netease.com/",
     "version": "3.46.1",
     "description": "网易泡泡",
+    "depends": "sudo",
     "url": "https://popo.netease.com/file/popowin/POPO-setup_3_46_1.exe?need_rewrite=1#/popo.zip",
     "hash": "151ef3aab4f2b191d3e7e8ada7860446a65e9ab627d30048610e2baf7c4b38e3",
     "checkver": {
@@ -13,7 +14,12 @@
         "url": "https://popo.netease.com/file/popowin/POPO-setup_$majorVersion_$minorVersion_$patchVersion.exe?need_rewrite=1#/popo.zip"
     },
     "installer": {
-        "script": "Move-Item -Path $dir\\popo* $dir\\popo -Force"
+        "script": [
+            "Move-Item -Path $dir\\popo* $dir\\popo -Force",
+            "sudo New-Item Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\netease-popoapp -Force -ItemType String -Value 'URL:Netease Popo Protocol' -ErrorAction SilentlyContinue",
+            "sudo New-ItemProperty Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\netease-popoapp -Force -PropertyType string -Name 'URL Protocol' -Value ' ' -ErrorAction SilentlyContinue",
+            "sudo New-Item Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\netease-popoapp\\shell\\open\\command -Force -ItemType String -Value \"`\"$dir\\popo\\Start.exe`\" `\"%1`\"\" -ErrorAction SilentlyContinue"
+        ]
     },
     "shortcuts": [
         [
