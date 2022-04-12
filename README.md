@@ -79,14 +79,14 @@ scoop bucket add apps https://gitee.com/kkzzhizhou/scoop-apps
 - Ryanjiena/scoop-apps
 - ACooper81/scoop-apps
 - ChungZH/peach
-- naderi/scoop-bucket
-- 42wim/scoop-bucket
 - batkiz/backit
+- naderi/scoop-bucket
+- liaoya/scoop-bucket
+- 42wim/scoop-bucket
 - iquiw/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - mogeko/scoop-sysinternals
 - Velgus/Scoop-Portapps
-- liaoya/scoop-bucket
 - jfut/scoop-jfut
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
