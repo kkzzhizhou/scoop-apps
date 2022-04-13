@@ -1,0 +1,57 @@
+{
+    "version": "5.4.0.2538",
+    "description": "搜狗五笔输入法 - QiuQuan 去广告去升级版",
+    "homepage": "https://wubi.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://rule.tencent.com/rule/preview/ff3e4cc2-caf4-4f7b-847e-162158ad2d99"
+    },
+    "notes": [
+        "特点描述: <http://www.qiuquan.cc/input/sogouwb.html>",
+        "基于官方安装包制作(并非重新打包,优点:更强的兼容性)",
+        "禁止程序自动检测更新",
+        "禁止右下角广告推荐弹窗",
+        "预设文字输入模式为 '五笔拼音混输'",
+        "预设候选词数目为 '9'",
+        "预设输入框样式为 '竖排显示'"
+    ],
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouWBInput_5.4.0.2538_qiuquan_noad-20220317.exe#/installer.exe",
+    "hash": "145039cf71403d9a443a47c353f3dda9d46b9a67161482de20fcd1167122cbf9",
+    "installer": {
+        "file": "Installer.exe",
+        "args": [
+            "/SILENT",
+            "/DIR=\"$dir\"",
+            "/SUPPRESSMSGBOXES"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$dir\\User Data\" -Recurse",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info 'Manually persist 'User Data'...'",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$persist_dir\\User Data\" -Recurse",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$persist_dir\\User Data\" -Recurse",
+            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+        "regex": "(?s)(?<filename>SogouWBInput_([\\d.]+)_qiuquan_noad-[\\d]+\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/$matchFilename#/installer.exe",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}

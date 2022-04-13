@@ -1,0 +1,46 @@
+{
+    "version": "11.9.0.5688",
+    "description": "搜狗拼音输入法官方版",
+    "homepage": "https://pinyin.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pinyin.sogou.com/help.php?list=9&q=1"
+    },
+    "url": "http://cdn1.ime.sogou.com/_sogou_pinyin_[Release]_11.9.0.5688_0.exe#/installer.exe",
+    "hash": "md5:00671878e4d9f2fb20fa93126664ff24",
+    "installer": {
+        "file": "Installer.exe",
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$dir\\User Data\" -Recurse",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info 'Manually persist 'User Data'...'",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$persist_dir\\User Data\" -Recurse",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$persist_dir\\User Data\" -Recurse",
+            "Start-Process -filepath \"$dir\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"-y\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "http://ime.sogou.com/version.txt",
+        "regex": "(?sm)product0.*?version=([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "http://cdn1.ime.sogou.com/_sogou_pinyin_[Release]_$version_0.exe#/installer.exe",
+        "hash": {
+            "url": "http://ime.sogou.com/version.txt",
+            "mode": "extract",
+            "regex": "(?sm)product0.*?md5=$md5"
+        }
+    }
+}

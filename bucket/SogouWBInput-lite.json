@@ -1,0 +1,55 @@
+{
+    "version": "5.5.0.2552",
+    "description": "搜狗五笔输入法 - 星空不寂寞精简版",
+    "homepage": "https://wubi.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://rule.tencent.com/rule/preview/ff3e4cc2-caf4-4f7b-847e-162158ad2d99"
+    },
+    "notes": [
+        "特点描述: <https://www.xingkbjm.com/sogouwubi/>",
+        "  - 移除升级与广告文件;",
+        "  - 支持 32\\64 位 Windows 系统;",
+        "  - 默认设置为纯五笔拼音混合、坚排版、启用联想词、四码提示、不升级;",
+        "  - 优化安装后不必重启系统。修复一个 64 位系统卸载后图标没能清除的问题;",
+        "  - 禁止右下角弹窗(删除搜狗五笔输入法工具)、解决官方原版切换输入法卡顿的 BUG;"
+    ],
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouWBInput_v5.5a(5.5.0.2552)_xingkbjm_noad.exe#/installer.exe",
+    "hash": "bcbcb78721baa27c0d80675a15993beb0d1881d9ee95c66e54d9c80904c5c4a4",
+    "installer": {
+        "file": "Installer.exe",
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$dir\\User Data\" -Recurse",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info 'Manually persist 'User Data'...'",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$persist_dir\\User Data\" -Recurse",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$persist_dir\\User Data\" -Recurse",
+            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+        "regex": "(?s)(?<filename>SogouWBInput_v(?<shortVersion>[\\w.]+)[(]([\\d.]+)[)]_xingkbjm_noad\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/$matchFilename#/installer.exe",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}

@@ -1,0 +1,60 @@
+{
+    "version": "11.9.0.5688",
+    "description": "搜狗拼音输入法 - zd423 去广告精简优化版",
+    "homepage": "https://pinyin.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pinyin.sogou.com/help.php?list=9&q=1"
+    },
+    "notes": [
+        "特点描述: <https://www.423down.com/587.html>",
+        "去广告, 精简优化, 彻底屏蔽升级、删除阻止广告弹窗!",
+        "纯净无广告, 无干扰提示, 默认无不必要程序驻留进程!",
+        "完全有效阻止下载释放广告程序收集相关信息推送广告行为!",
+        "可选:云计算候选、词库同步及账户配置同步、工具箱扩展管理器组件",
+        "删除:所有搜狗广告程序（广告获取模块、搜狐新闻弹窗、勋章推荐弹窗）",
+        "删除:搜索提示, 颜文字, 修复器, 核心服务, 网络更新, 辅助工具, 崩溃反馈等组件",
+        "移除:智能输入助手, 图片表情, 皮肤盒子/推荐/flash 皮肤等(可在扩展管理器安装)",
+        "优化:搜索候选, 体验计划, 账户提醒, 皮肤推荐, 检测升级, 活跃天数等各种干扰提示",
+        "安装程序: 可选自定义组件、支持 Windows 10 Metro 模式,支持检测可覆盖安装",
+        "特别处理: 即使安装了账户同步及扩展下载等联网组件, 无需防火墙阻止也永不升级"
+    ],
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouInput_v11.9.0.5688_zd423_noad_lite.exe#/installer.exe",
+    "hash": "879b93d046185b956a5a73e28f2e8a186cbd13bd8aa76d72f3aa8e06002fcdbd",
+    "installer": {
+        "file": "Installer.exe",
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$dir\\User Data\" -Recurse",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info 'Manually persist 'User Data'...'",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$persist_dir\\User Data\" -Recurse",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$persist_dir\\User Data\" -Recurse",
+            "Start-Process -filepath \"$dir\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"-y\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+        "regex": "(?s)(?<filename>SogouInput_v([\\d.]+)_zd423_noad_lite\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/$matchFilename#/installer.exe",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}

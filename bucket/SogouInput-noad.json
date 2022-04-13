@@ -1,0 +1,57 @@
+{
+    "version": "11.9.0.5687",
+    "description": "搜狗拼音输入法 - 星空不寂寞去广告版",
+    "homepage": "https://pinyin.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pinyin.sogou.com/help.php?list=9&q=1"
+    },
+    "notes": [
+        "特点描述: <https://www.xingkbjm.com/sogopy/>",
+        "  - 去除多余皮肤、在线安装浏览器、升级、反馈等组件;",
+        "  - 安装后默认设置、不自动升级、开启模糊功能、不开启细胞和升级、不开启地址搜索与节日等功能;",
+        "  - 去除皮肤与手写选项，只留图片表情和禁止网络组件，需要更多插件请安装后打开扩展进行安装即可;",
+        "  - 默认不安装搜狗皮肤盒子、Flash 皮肤;",
+        "  - 新增去除网址直达、搜索提示组件;",
+        "  - 对卸载、安装进一步改善，完全支持不同版本覆盖安装、并且支持细胞词库更新;",
+        "  - 全面支持 64\\32 位系统。保留工具箱。简体美式键盘改为可选安装;"
+    ],
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouInput_v11.9a(11.9.0.5687)_xingkbjm_lite.exe#/installer.exe",
+    "hash": "84b83db276dc044fa88cf375e642b42c7a3a3a77fa40fb5b756327c163052f78",
+    "installer": {
+        "file": "Installer.exe",
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$dir\\User Data\" -Recurse",
+        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info 'Manually persist 'User Data'...'",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$persist_dir\\User Data\" -Recurse",
+            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$persist_dir\\User Data\" -Recurse",
+            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+        "regex": "(?s)(?<filename>SogouInput_v(?<shortVersion>[\\w.]+)[(]([\\d.]+)[)]_xingkbjm_lite\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/$matchFilename#/installer.exe",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/sogou",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}
