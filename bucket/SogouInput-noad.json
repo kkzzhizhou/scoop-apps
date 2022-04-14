@@ -14,30 +14,19 @@
         "  - 默认不安装搜狗皮肤盒子、Flash 皮肤;",
         "  - 新增去除网址直达、搜索提示组件;",
         "  - 对卸载、安装进一步改善，完全支持不同版本覆盖安装、并且支持细胞词库更新;",
-        "  - 全面支持 64\\32 位系统。保留工具箱。简体美式键盘改为可选安装;"
+        "  - 全面支持 64\\32 位系统。保留工具箱。简体美式键盘改为可选安装;",
+        "",
+        "We don't persist your data, they are still storaged in '$env:USERPROFILE\\AppData\\LocalLow\\SogouPY' and '$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users'."
     ],
     "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouInput_v11.9a(11.9.0.5687)_xingkbjm_lite.exe#/installer.exe",
     "hash": "84b83db276dc044fa88cf375e642b42c7a3a3a77fa40fb5b756327c163052f78",
     "installer": {
-        "file": "Installer.exe",
-        "args": [
-            "/S",
-            "/D=$dir"
-        ]
+        "script": "sudo Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
     },
-    "post_install": [
-        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\")) {",
-        "    info '[Portable Mode]: Copying user data...'",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$dir\\User Data\" -Recurse",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$dir\\User Data\" -Recurse",
-        "}"
-    ],
+    "post_install": "Remove-Item \"$dir\\installer.exe\" -Force",
     "uninstaller": {
         "script": [
-            "info 'Manually persist 'User Data'...'",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY\" \"$persist_dir\\User Data\" -Recurse",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users\" \"$persist_dir\\User Data\" -Recurse",
-            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "sudo Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
             "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
         ]
     },

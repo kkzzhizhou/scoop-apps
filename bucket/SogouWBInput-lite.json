@@ -12,30 +12,19 @@
         "  - 支持 32\\64 位 Windows 系统;",
         "  - 默认设置为纯五笔拼音混合、坚排版、启用联想词、四码提示、不升级;",
         "  - 优化安装后不必重启系统。修复一个 64 位系统卸载后图标没能清除的问题;",
-        "  - 禁止右下角弹窗(删除搜狗五笔输入法工具)、解决官方原版切换输入法卡顿的 BUG;"
+        "  - 禁止右下角弹窗(删除搜狗五笔输入法工具)、解决官方原版切换输入法卡顿的 BUG;",
+        "",
+        "We don't persist your data, they are still storaged in '$env:USERPROFILE\\AppData\\LocalLow\\SogouWB' and '$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users'."
     ],
     "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouWBInput_v5.5a(5.5.0.2552)_xingkbjm_noad.exe#/installer.exe",
     "hash": "bcbcb78721baa27c0d80675a15993beb0d1881d9ee95c66e54d9c80904c5c4a4",
     "installer": {
-        "file": "Installer.exe",
-        "args": [
-            "/S",
-            "/D=$dir"
-        ]
+        "script": "sudo Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
     },
-    "post_install": [
-        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\")) {",
-        "    info '[Portable Mode]: Copying user data...'",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$dir\\User Data\" -Recurse",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$dir\\User Data\" -Recurse",
-        "}"
-    ],
+    "post_install": "Remove-Item \"$dir\\installer.exe\" -Force",
     "uninstaller": {
         "script": [
-            "info 'Manually persist 'User Data'...'",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$persist_dir\\User Data\" -Recurse",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$persist_dir\\User Data\" -Recurse",
-            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "sudo Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
             "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
         ]
     },

@@ -12,20 +12,20 @@
     "pre_install": [
         "sudo Get-Process IDM*,IEMon* | Stop-Process -Force -ErrorAction Ignore | Out-Null",
         "Rename-Item \"$dir\\Internet Download Manager*.exe\" 'Installer.exe'",
-        "Get-ChildItem $dir -Exclude Installer.exe, install.json, manifest.json | ForEach-Object {  Remove-Item \"$dir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue }"
+        "Get-ChildItem $dir -Exclude Installer.exe, install.json, manifest.json | ForEach-Object { Remove-Item \"$dir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue }"
     ],
     "installer": {
         "script": [
-            "Start-Process -filepath \"$dir\\Installer.exe\" -ArgumentList \"/DIR=$dir /NoIcons=1 /SILENT\"",
+            "sudo Start-Process -filepath \"$dir\\Installer.exe\" -ArgumentList \"/DIR=$dir /NoIcons=1 /SILENT /NORESTART\"",
             "Start-Sleep -s 60"
         ]
     },
-    "post_install": "Remove-Item $dir\\Installer.exe -Force",
+    "post_install": "Remove-Item \"$dir\\Installer.exe\" -Force",
     "uninstaller": {
         "script": [
             "sudo Stop-Process -Name explorer, IDM*, IEMonitor*, IDMMsgHost*, MediumILStart*, IDMIntegrator64* -Force -ErrorAction Ignore | Out-Null",
             "Remove-Item IDMShellExt*.dll -Force -ErrorAction SilentlyContinue",
-            "Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList /SILENT -WorkingDirectory \"$dir\" -Wait | Out-Null",
+            "sudo Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList \"/SILENT /NORESTART\" -WorkingDirectory \"$dir\" -Wait | Out-Null",
             "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
         ]
     },

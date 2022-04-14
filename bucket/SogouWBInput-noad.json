@@ -6,38 +6,27 @@
         "identifier": "Proprietary",
         "url": "https://rule.tencent.com/rule/preview/ff3e4cc2-caf4-4f7b-847e-162158ad2d99"
     },
+    "depends": "sudo",
     "notes": [
         "特点描述: <http://www.qiuquan.cc/input/sogouwb.html>",
-        "基于官方安装包制作(并非重新打包,优点:更强的兼容性)",
-        "禁止程序自动检测更新",
-        "禁止右下角广告推荐弹窗",
-        "预设文字输入模式为 '五笔拼音混输'",
-        "预设候选词数目为 '9'",
-        "预设输入框样式为 '竖排显示'"
+        "  - 基于官方安装包制作(并非重新打包,优点:更强的兼容性)",
+        "  - 禁止程序自动检测更新",
+        "  - 禁止右下角广告推荐弹窗",
+        "  - 预设文字输入模式为 '五笔拼音混输'",
+        "  - 预设候选词数目为 '9'",
+        "  - 预设输入框样式为 '竖排显示'",
+        "",
+        "We don't persist your data, they are still storaged in '$env:USERPROFILE\\AppData\\LocalLow\\SogouWB' and '$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users'."
     ],
     "url": "https://pan.jiemi.workers.dev/?file=/scoop/sogou/SogouWBInput_5.4.0.2538_qiuquan_noad-20220317.exe#/installer.exe",
     "hash": "145039cf71403d9a443a47c353f3dda9d46b9a67161482de20fcd1167122cbf9",
     "installer": {
-        "file": "Installer.exe",
-        "args": [
-            "/SILENT",
-            "/DIR=\"$dir\"",
-            "/SUPPRESSMSGBOXES"
-        ]
+        "script": "sudo Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
     },
-    "post_install": [
-        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\") -and (Test-Path \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\")) {",
-        "    info '[Portable Mode]: Copying user data...'",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$dir\\User Data\" -Recurse",
-        "    Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$dir\\User Data\" -Recurse",
-        "}"
-    ],
+    "post_install": "Remove-Item \"$dir\\installer.exe\" -Force",
     "uninstaller": {
         "script": [
-            "info 'Manually persist 'User Data'...'",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB\" \"$persist_dir\\User Data\" -Recurse",
-            "Copy-Item \"$env:USERPROFILE\\AppData\\LocalLow\\SogouWB.users\" \"$persist_dir\\User Data\" -Recurse",
-            "Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
+            "sudo Start-Process -filepath \"$dir\\$version\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -PassThru -NoNewWindow | Wait-Process",
             "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
         ]
     },
