@@ -1,0 +1,42 @@
+{
+    "version": "0.0.49.0",
+    "description": "Exclusive voice and teaming tools for gamers, safe and free, no ads, low footprint and high quality.",
+    "homepage": "https://www.kaiheila.cn",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.kaiheila.cn/protocol.html"
+    },
+    "url": "https://img.kaiheila.cn/assets/release/html_pc/72/KaiHeiLa_PC_Setup_v0.0.49.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe#dl.7z",
+    "hash": "46e8a8174533f765051d254d007f6894edeef9126d107a2fdd2c3b827fab2439",
+    "pre_install": "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\" -Removal",
+    "post_install": [
+        "@('$PLUGINSDIR', '[NSIS].nsi', 'uninst.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force }",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\kaiheila\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\kaiheila\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "kaiheila.exe",
+            "kaiheila",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "kaiheila.exe",
+            "kaiheila",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://www.kaiheila.cn/api/v2/updates?v=0.0.49.0&platform=windows",
+        "jsonpath": "$.current.url",
+        "regex": "https://(?<url>img.kaiheila.cn.*?v([\\d.]+).*?\\.exe)"
+    },
+    "autoupdate": {
+        "url": "https://$matchUrl#dl.7z"
+    }
+}
