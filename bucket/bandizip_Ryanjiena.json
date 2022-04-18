@@ -3,9 +3,10 @@
     "description": "Yet another typical ZIP archiver",
     "homepage": "http://www.bandisoft.com/bandizip/",
     "license": {
-        "identifier": "EULA",
+        "identifier": "Freeware",
         "url": "https://en.bandisoft.com/bandizip/eula/"
     },
+    "depends": "sudo",
     "url": [
         "http://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE",
         "https://pan.jiemi.workers.dev/?file=/scoop/Bandizip/Bandizip_v7.xx_x32-x64_Patch_20201104.7z#dl.7z_"
@@ -19,36 +20,43 @@
         "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
         "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
     ],
-    "installer": {
-        "script": "Start-Process -filepath \"$dir\\BANDIZIP-SETUP-STD-ALL.EXE\" -WorkingDirectory \"$dir\" -ArgumentList \"/D:$dir /auto\" -Wait"
-    },
     "architecture": {
         "64bit": {
+            "installer": {
+                "script": [
+                    "sudo Start-Process -filepath \"$dir\\BANDIZIP-SETUP-STD-ALL.EXE\" -WorkingDirectory \"$dir\" -ArgumentList \"/D:$dir /auto\" -Wait",
+                    "sudo Start-Process -filepath \"$dir\\Bandizip.v7.xx.x64.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null"
+                ]
+            },
             "post_install": [
-                "Start-Process -filepath \"$dir\\Bandizip.v7.xx.x64.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null",
-                "Remove-Item $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
-                "Remove-Item $dir\\Bandizip.v7.xx.x32.Patch* -Force -ErrorAction SilentlyContinue",
-                "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+                "Remove-Item $dir\\BANDIZIP-SETUP-STD-ALL.EXE, $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
+                "Remove-Item $dir\\Bandizip.v7.xx.x32.Patch* -Force -ErrorAction SilentlyContinue"
             ]
         },
         "32bit": {
+            "installer": {
+                "script": [
+                    "sudo Start-Process -filepath \"$dir\\BANDIZIP-SETUP-STD-ALL.EXE\" -WorkingDirectory \"$dir\" -ArgumentList \"/D:$dir /auto\" -Wait",
+                    "sudo Start-Process -filepath \"$dir\\Bandizip.v7.xx.x32.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null"
+                ]
+            },
             "post_install": [
-                "Start-Process -filepath \"$dir\\Bandizip.v7.xx.x32.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null",
-                "Remove-Item $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
-                "Remove-Item $dir\\Bandizip.v7.xx.x64.Patch* -Force -ErrorAction SilentlyContinue",
-                "Start-Process -filepath \"$dir\\Bandizip.exe\" -ArgumentList \"/setup\""
+                "Remove-Item $dir\\BANDIZIP-SETUP-STD-ALL.EXE, $dir\\*dl.7z_ -Force -ErrorAction SilentlyContinue",
+                "Remove-Item $dir\\Bandizip.v7.xx.x64.Patch* -Force -ErrorAction SilentlyContinue"
             ]
         }
     },
-    "bin": [
-        [
-            "Bandizip.exe",
-            "Bandizip"
-        ],
-        [
-            "bz.exe",
-            "bz"
+    "uninstaller": {
+        "script": [
+            "Push-Location \"$dir\"",
+            "sudo Start-Process -filepath \"$dir\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait",
+            "Write-Host \"You may need to restart the system to delete the directory.\" -Foreground Magenta",
+            "Pop-Location"
         ]
+    },
+    "bin": [
+        "Bandizip.exe",
+        "bz.exe"
     ],
     "shortcuts": [
         [

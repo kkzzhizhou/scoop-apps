@@ -61,13 +61,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - hermanjustnu/scoop-emulators
 - everyx/scoop-bucket
-- cderv/r-bucket
 - hoilc/scoop-lemon
+- cderv/r-bucket
 - Qv2ray/mochi
 - dodorz/scoop
+- kiennq/scoop-misc
 - zhoujin7/tomato
 - ZvonimirSun/scoop-iszy
-- kiennq/scoop-misc
 - Paxxs/Cluttered-bucket
 - borger/scoop-emulators
 - scoopcn/scoopcn

@@ -1,0 +1,59 @@
+{
+    "version": "7.25",
+    "description": "Yet another typical ZIP archiver.",
+    "homepage": "http://www.bandisoft.com/bandizip/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://en.bandisoft.com/bandizip/eula/"
+    },
+    "depends": "sudo",
+    "url": [
+        "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP",
+        "https://pan.jiemi.workers.dev/?file=/scoop/Bandizip/Bandizip_v7.xx_x32-x64_Patch_20201104.7z#dl.7z_"
+    ],
+    "hash": [
+        "a11db9dd3a941ad22b8083c49430fbc9ef5cec4f6556bac279e5b5aaf57bf394",
+        "342325dd3c9212fce9b4dbf01d1009155110ea3078887a09304e4323f754686b"
+    ],
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'",
+                "$7z=(Get-ChildItem $dir\\Bandizip_v7.xx_x32-x64_Patch*).Name",
+                "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+                "Remove-Item $dir\\Bandizip.v7.xx.x32.Patch* -Force -ErrorAction SilentlyContinue",
+                "sudo Start-Process -filepath \"$dir\\Bandizip.v7.xx.x64.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null"
+            ]
+        },
+        "32bit": {
+            "pre_install": [
+                "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'",
+                "$7z=(Get-ChildItem $dir\\Bandizip_v7.xx_x32-x64_Patch*).Name",
+                "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+                "Remove-Item $dir\\Bandizip.v7.xx.x64.Patch* -Force -ErrorAction SilentlyContinue",
+                "sudo Start-Process -filepath \"$dir\\Bandizip.v7.xx.x32.Patch.20201104.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/silent\" -Wait | Out-Null"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem \"$dir\\Bandizip.x*.exe\" | Remove-Item",
+            "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
+        ]
+    },
+    "bin": "Bandizip.exe",
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ]
+    ],
+    "persist": "Bandizip.ini",
+    "checkver": {
+        "url": "https://en.bandisoft.com/bandizip/history/",
+        "regex": "v([\\d.]+)</font"
+    },
+    "autoupdate": {
+        "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-PORTABLE.ZIP"
+    }
+}
