@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0.48",
+    "description": "Eagle helps you become a happier, better designer. A new way to collect, search and organize your image files in a logical way and all in one place.",
+    "homepage": "https://en.eagle.cool/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://en.eagle.cool/privacy"
+    },
+    "depends": "sudo",
+    "url": "https://eaglefile.oss-cn-shenzhen.aliyuncs.com/releases/Eagle-2.0-build48.exe#installer.exe",
+    "hash": "bade70bb867e7875bc8f08661f0e6c3f701b4747e2b75bb6254f0e3f5048ce89",
+    "installer": {
+        "script": "sudo Start-Process -Filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+    },
+    "post_install": [
+        "sudo Remove-Item -path \"$dir\\Installer.exe\" -Force",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\Eagle\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Eagle\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "Eagle.exe",
+            "Eagle",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Eagle.exe",
+            "Eagle",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://en.eagle.cool/check-for-update",
+        "jsonpath": "$.links.windows",
+        "regex": "//(?<url>eaglefile.oss-cn-shenzhen.aliyuncs.com/releases/Eagle-(?<ver>[\\d.]+)-build(?<build>\\d+)\\.exe)",
+        "replace": "${ver}.0.${build}"
+    },
+    "autoupdate": {
+        "url": "https://$matchUrl#installer.exe"
+    }
+}
