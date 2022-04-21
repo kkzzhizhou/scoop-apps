@@ -9,7 +9,26 @@
     "notes": "Hints: <https://github.com/Blinue/Magpie/blob/main/README_EN.md#hints>",
     "url": "https://github.com/Blinue/Magpie/releases/download/v0.8.1/Magpie_v0.8.1.zip",
     "hash": "c7bfd23886b8ad3bdb540437f6d4a32ab8b0f03dd198e693744bc187bac619c2",
-    "pre_install": "if (!(Test-Path \"$persist_dir\\ScaleModels.json\")) { New-Item \"$dir\\ScaleModels.json\" -ItemType File | Out-Null }",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\ScaleModels.json\") {",
+        "    Copy-Item \"$persist_dir\\ScaleModels.json\" \"$dir\\\" | Out-Null",
+        "}",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Magpie\\\" -Recurse -Force | Out-Null",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$dir\\ScaleModels.json\") {",
+            "    Copy-Item \"$dir\\ScaleModels.json\" \"$persist_dir\\\" | Out-Null",
+            "}",
+            "if (Test-Path \"$env:AppData\\Magpie\\*\") {",
+            "    Copy-Item \"$env:AppData\\Magpie\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+            "}"
+        ]
+    },
     "bin": "Magpie.exe",
     "shortcuts": [
         [
@@ -17,7 +36,6 @@
             "Magpie"
         ]
     ],
-    "persist": "ScaleModels.json",
     "checkver": "github",
     "autoupdate": {
         "url": "https://github.com/Blinue/Magpie/releases/download/v$version/Magpie_v$version.zip"
