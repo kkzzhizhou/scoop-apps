@@ -1,45 +1,69 @@
 {
-    "version": "101.0.1210.19",
-    "description": "Fast, secure, and free web browser, built for the modern web based",
     "homepage": "https://www.microsoft.com/en-us/edge",
+    "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Beta Channel, Portable Edition).",
+    "version": "101.0.1210.19",
     "license": {
-        "identifier": "Proprietary Software"
+        "identifier": "Freeware",
+        "url": "edge://terms/"
     },
+    "notes": [
+        "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
+        "Please utilize aria2 to use multi-connection downloads.",
+        "   scoop install aria2",
+        "   scoop config aria2-warning-enabled true"
+    ],
     "architecture": {
         "64bit": {
-            "url": "http://msedge.f.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/c752b1f7-33e8-4fd4-a3da-18a7296afdb9?P1=1650945981&P2=404&P3=2&P4=kjdHgt8vtdmTf7oeKGVLmCW65TssLukMLTGriM55tUSxL1KNawVoNjixty3kfh7nIbci7VqWCjC1DrYdLYROzg%3d%3d3d%3d%3d3dd3d#/dl.7z",
+            "url": "https://scoop-apps.vercel.app/msedge-beta-win-X64#/dl.7z",
             "hash": "7b0da6fd8e56e35acd79cc17ebc8ca6c4d5cee8a19e7d89d51ce43a54ab297b0"
+        },
+        "32bit": {
+            "url": "https://scoop-apps.vercel.app/msedge-beta-win-X86#/dl.7z",
+            "hash": "bccd7c956a42c1d32d547423268bfd2161f4385cb4d0b93fa620f93ddc4122f4"
         }
     },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\MSEDGE.7z\" -ExtractDir 'Chrome-bin' -Removal",
-        "Rename-Item \"$dir\\$version\" \"$dir\\current\" "
+    "installer": {
+        "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
     ],
     "bin": [
         [
-            "current\\msedge.exe",
+            "msedge.exe",
             "msedge-beta",
             "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
-            "current\\msedge.exe",
-            "Edge Beta",
+            "msedge.exe",
+            "Microsoft Edge Beta",
             "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "persist": "User Data",
     "checkver": {
-        "url": "https://42wim.github.io/edgeupdates/beta.txt",
-        "regex": "(?sm)(?<version>(.*?)):http://(?<64>(.*))"
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+        "jsonpath": "$[?(@.Product == 'beta')].Version"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://$match64#/dl.7z",
+                "url": "https://scoop-apps.vercel.app/msedge-beta-win-X64#/dl.7z",
                 "hash": {
-                    "url": "https://42wim.github.io/edgeupdates/beta.sha256"
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)beta.*?x64.*?Sha256.*?$base64"
+                }
+            },
+            "32bit": {
+                "url": "https://scoop-apps.vercel.app/msedge-beta-win-X86#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)beta.*?x86.*?Sha256.*?$base64"
                 }
             }
         }

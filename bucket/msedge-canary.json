@@ -1,45 +1,69 @@
 {
-    "version": "102.0.1233.0",
-    "description": "Fast, secure, and free web browser, built for the modern web based",
     "homepage": "https://www.microsoft.com/en-us/edge",
+    "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Canary Channel, Portable Edition).",
+    "version": "102.0.1234.0",
     "license": {
-        "identifier": "Proprietary Software"
+        "identifier": "Freeware",
+        "url": "edge://terms/"
     },
+    "notes": [
+        "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
+        "Please utilize aria2 to use multi-connection downloads.",
+        "   scoop install aria2",
+        "   scoop config aria2-warning-enabled true"
+    ],
     "architecture": {
         "64bit": {
-            "url": "http://msedge.f.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/836fafe9-ca93-4bf9-9954-18c8ef59066d?P1=1651119165&P2=404&P3=2&P4=nGYh5ZBgCOi%2fUX8EMQqMFESGOAhskpOvDCkd4SqQUHSlR7cvWByjODztT74oysSVE5zJavBhHVI1SmI46WWN4A%3d%3d3d3d3dd%3ddd#/dl.7z",
-            "hash": "1a2e7bac27db726f5aed24966f74c413cc151919749ba851685ade13f17fa2fa"
+            "url": "https://scoop-apps.vercel.app/msedge-canary-win-X64#/dl.7z",
+            "hash": "b9dd38a42fc2df5be7bbc9c14a228458e5d283b1f62bbfd947f79ffe95f94c3b"
+        },
+        "32bit": {
+            "url": "https://scoop-apps.vercel.app/msedge-canary-win-X86#/dl.7z",
+            "hash": "b28d365824a591e8f6a4afd45d5a18f1d86facae1f593a630c2b5526eab354df"
         }
     },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\MSEDGE.7z\" -ExtractDir 'Chrome-bin' -Removal",
-        "Rename-Item \"$dir\\$version\" \"$dir\\current\" "
+    "installer": {
+        "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
     ],
     "bin": [
         [
-            "current\\msedge.exe",
+            "msedge.exe",
             "msedge-canary",
             "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
-            "current\\msedge.exe",
-            "Edge Canary",
+            "msedge.exe",
+            "Microsoft Edge Canary",
             "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "persist": "User Data",
     "checkver": {
-        "url": "https://42wim.github.io/edgeupdates/canary.txt",
-        "regex": "(?sm)(?<version>(.*?)):http://(?<64>(.*))"
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+        "jsonpath": "$[?(@.Product == 'canary')].Version"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://$match64#/dl.7z",
+                "url": "https://scoop-apps.vercel.app/msedge-canary-win-X64#/dl.7z",
                 "hash": {
-                    "url": "https://42wim.github.io/edgeupdates/canary.sha256"
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)canary.*?x64.*?Sha256.*?$base64"
+                }
+            },
+            "32bit": {
+                "url": "https://scoop-apps.vercel.app/msedge-canary-win-X86#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+                    "regex": "(?sm)canary.*?x86.*?Sha256.*?$base64"
                 }
             }
         }

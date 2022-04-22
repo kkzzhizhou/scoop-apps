@@ -1,0 +1,49 @@
+{
+    "version": "1.8",
+    "description": "A clash client for Windows, support clash core and Clash.Meta core",
+    "homepage": "https://github.com/2dust/clashN",
+    "license": {
+        "identifier": "GPL-3.0-only",
+        "url": "https://github.com/2dust/clashN/blob/main/LICENSE"
+    },
+    "depends": "sudo",
+    "suggest": {
+        "dotnet-runtime": "sapps/dotnet-runtime"
+    },
+    "url": "https://github.com/2dust/clashN/releases/download/1.8/clashN-Core.zip",
+    "hash": "196655dbc306dd88df1b77f5bb8595360501aa155410ac99920d0d13f16c6f1a",
+    "extract_dir": "clashN-Core",
+    "pre_install": [
+        "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -Force | Out-Null }",
+        "}",
+        "Set-Content \"$dir\\clashN.ps1\" -Value 'sudo Start-Process -FilePath \"$env:SCOOP\\apps\\clashn-core\\current\\clashN.exe\" -WorkingDirectory \"$env:SCOOP\\apps\\clashn-core\\current\\\" -WindowStyle Hidden' -Encoding Ascii"
+    ],
+    "uninstaller": {
+        "script": [
+            "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+            "    if (Test-Path \"$dir\\$_\") { Copy-Item \"$dir\\$_\" \"$persist_dir\\\" -Force | Out-Null }",
+            "}"
+        ]
+    },
+    "bin": "clashN.ps1",
+    "shortcuts": [
+        [
+            "clashN.ps1",
+            "clashN"
+        ]
+    ],
+    "persist": [
+        "guiBackups",
+        "guiConfigs",
+        "guiLogs",
+        "data"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/clashN/releases",
+        "jsonpath": "$[0].tag_name"
+    },
+    "autoupdate": {
+        "url": "https://github.com/2dust/clashN/releases/download/$version/clashN-Core.zip"
+    }
+}
