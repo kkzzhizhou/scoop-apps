@@ -1,0 +1,54 @@
+{
+    "version": "100.0.1185.50",
+    "description": "msedge-stable + msedge-plus.",
+    "homepage": "https://www.microsoft.com/en-us/edge",
+    "license": {
+        "identifier": "Freeware",
+        "url": "edge://terms/"
+    },
+    "depends": [
+        "sudo",
+        "sapps/msedge-stable",
+        "sapps/msedge-plus"
+    ],
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/shuax/Edge.7z",
+    "hash": "c2fd0884682d06bb8a3ad84c82e9a33093fdf14fe11c5f0fec0277717052bada",
+    "pre_install": [
+        "Get-ChildItem \"$(appdir msedge-stable $global)\\current\\\" -Exclude *install.json,*manifest.json,*Data | ForEach-Object { Copy-Item $_.FullName \"$dir\" -Recurse -Force -ErrorAction SilentlyContinue }",
+        "Get-ChildItem \"$(appdir msedge-plus $global)\\current\\\" -Exclude *install.json,*manifest.json | ForEach-Object { Copy-Item $_.FullName \"$dir\" -Recurse -Force -ErrorAction SilentlyContinue }"
+    ],
+    "installer": {
+        "script": "sudo Start-Process \"$dir\\setdll.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/d:version.dll msedge.exe\" -Wait"
+    },
+    "uninstaller": {
+        "script": "sudo Start-Process \"$dir\\清理.bat\" -WorkingDirectory \"$dir\" -Wait"
+    },
+    "bin": [
+        [
+            "msedge.exe",
+            "msedge-stable-plus"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "msedge.exe",
+            "Microsoft Edge Stable Plus"
+        ]
+    ],
+    "persist": [
+        "Cache",
+        "Portable"
+    ],
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/msedge",
+        "jsonpath": "$[?(@.Product == 'stable')].Version"
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/shuax/Edge.7z",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/shuax",
+            "mode": "extract",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}
