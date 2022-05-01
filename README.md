@@ -83,12 +83,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - batkiz/backit
 - naderi/scoop-bucket
+- mogeko/scoop-sysinternals
 - jfut/scoop-jfut
 - liaoya/scoop-bucket
 - 42wim/scoop-bucket
 - iquiw/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
-- mogeko/scoop-sysinternals
 - Velgus/Scoop-Portapps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
