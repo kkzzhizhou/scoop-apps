@@ -1,0 +1,33 @@
+{
+    "version": "2.10.2",
+    "description": "PowerShell Universal. Universal is a cross-platform solution for developing web-based tools with PowerShell. It currently provides three main features which include APIs, Automation and Dashboards",
+    "homepage": "https://docs.powershelluniversal.com/",
+    "license": "Proprietary",
+    "changelog": "https://docs.powershelluniversal.com/changelog",
+    "url": "https://imsreleases.blob.core.windows.net/universal/production/2.10.2/PowerShellUniversal.2.10.2.msi#/setup.msi_",
+    "hash": "926dd082152032b5954d07b17198506806b38986533c565347ff67be0b0a2711",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"PowerShell Universal*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$regPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B14BA50D-778F-4D99-A348-4B45909F0069}\"",
+            "if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart') -RunAs | Out-Null",
+            "   if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.powershellgallery.com/packages/Universal/",
+        "regex": " Universal ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://imsreleases.blob.core.windows.net/universal/production/$version/PowerShellUniversal.$version.msi#/setup.msi_"
+    }
+}
