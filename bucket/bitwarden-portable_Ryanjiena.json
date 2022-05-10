@@ -1,0 +1,64 @@
+{
+    "version": "1.32.1",
+    "description": "Password management solutions for individuals, teams, and business organizations",
+    "homepage": "https://bitwarden.com",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/bitwarden/desktop/blob/master/LICENSE.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/bitwarden/desktop/releases/download/v1.32.1/Bitwarden-1.32.1-x64.nsis.7z",
+            "hash": "sha512:ce7fbbc64677c694041b68195ad6b7d202fae99946fbc976b80bbe9cdfa5c8609660ec49222feb48d7627d1a860ae553fd9183835e9133c6b717b862f68fdbf9"
+        },
+        "32bit": {
+            "url": "https://github.com/bitwarden/desktop/releases/download/v1.32.1/Bitwarden-1.32.1-ia32.nsis.7z",
+            "hash": "sha512:5ce8c0a1a66224a516c8cdd8a770f8d721be742b79c22a7dd3ea688c1689d1fa2bb60d16b319bb9eac49be8ce3ef1f4c889b78db33fe3c4814a6ff7d39c08c0c"
+        }
+    },
+    "pre_install": [
+        "# copy config from non-portable version",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:Appdata\\Bitwarden\")) {",
+        "    if (!(Test-Path \"$dir\\User Data\")) { New-Item \"$dir\\User Data\" -ItemType Directory | Out-Null }",
+        "    Copy-Item \"$env:Appdata\\Bitwarden\\*\" \"$dir\\User Data\\\" -Recurse -Force",
+        "}"
+    ],
+    "bin": [
+        [
+            "Bitwarden.exe",
+            "bitwarden",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Bitwarden.exe",
+            "Bitwarden",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "github": "https://github.com/bitwarden/desktop"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/bitwarden/desktop/releases/download/v$version/Bitwarden-$version-x64.nsis.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)x64.+sha512:\\s+$base64.+$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/bitwarden/desktop/releases/download/v$version/Bitwarden-$version-ia32.nsis.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)ia32.+sha512:\\s+$base64.+$basename"
+                }
+            }
+        }
+    }
+}

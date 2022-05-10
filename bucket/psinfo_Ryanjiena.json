@@ -1,0 +1,53 @@
+{
+    "version": "1.78",
+    "description": "PsInfo. Local and remote system information viewer",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psinfo",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsInfo64.exe",
+            "hash": "ef5cf80c8448bf0907c634a3251cc348b1d36bb5ad8f31f23b11d12aa7f63bcb",
+            "bin": [
+                "PsInfo64.exe",
+                [
+                    "PsInfo64.exe",
+                    "PsInfo"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsInfo.exe",
+            "hash": "8f401dc021e20ff3abc64a2d346ef6a792a5643ca04ffd1f297e417532acaa06",
+            "bin": "PsInfo.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsInfo\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsInfo\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsInfo\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsInfo64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsInfo.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "version": "3.89",
+    "description": "ProcessMonitor. Monitors file system, registry, process, thread and DLL activity in real-time.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/procmon",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/ProcessMonitor.zip",
+    "hash": "99b5bc8dc724b1629354f9ff235818be3428ddcb36438eb9825f3ae270f708ae",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\Process Monitor\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Process Monitor\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "Procmon64.exe",
+                [
+                    "Procmon64.exe",
+                    "Procmon"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "Procmon64.exe",
+                    "SysInternals\\ProcessMonitor"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "Procmon.exe",
+            "shortcuts": [
+                [
+                    "Procmon.exe",
+                    "SysInternals\\ProcessMonitor"
+                ]
+            ]
+        },
+        "arm64": {
+            "bin": [
+                "Procmon64a.exe",
+                [
+                    "Procmon64a.exe",
+                    "Procmon"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "Procmon64a.exe",
+                    "SysInternals\\ProcessMonitor"
+                ]
+            ]
+        }
+    },
+    "checkver": "Process Monitor\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/ProcessMonitor.zip"
+    }
+}

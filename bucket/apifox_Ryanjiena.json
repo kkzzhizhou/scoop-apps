@@ -1,0 +1,57 @@
+{
+    "version": "2.1.14",
+    "description": "Apifox = Postman + Swagger + Mock + JMeter",
+    "homepage": "https://www.apifox.cn/",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "depends": "sudo",
+    "architecture": {
+        "64bit": {
+            "url": "http://cdn.apifox.cn/download/2.1.14/Apifox-2.1.14.exe#/installer.exe",
+            "hash": "sha512:c9a1c6be3cc3515cf39aa093dbc157d44be5c93336e26ea4a4fe4ec7d1c55b6a45f89cf6e1ce52795ca88baef85a9e608bae44622d3b1981eb27b400e9f05896",
+            "pre_install": [
+                "info 'Copying user data...'",
+                "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+                "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\apifox\\\" -Recurse -Force | Out-Null",
+                "}"
+            ],
+            "installer": {
+                "script": "Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+            },
+            "post_install": "@('installer.exe', 'uninstallerIcon.ico') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
+            "uninstaller": {
+                "script": [
+                    "Start-Process -filepath \"$dir\\Uninstall Apifox.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait",
+                    "info 'Backing up user data...'",
+                    "if (Test-Path \"$env:AppData\\apifox\\*\") {",
+                    "    Copy-Item \"$env:AppData\\apifox\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+                    "}"
+                ]
+            }
+        }
+    },
+    "bin": "Apifox.exe",
+    "shortcuts": [
+        [
+            "Apifox.exe",
+            "Apifox"
+        ]
+    ],
+    "checkver": {
+        "url": "http://cdn.apifox.cn/download/latest.yml",
+        "regex": "(?sm)version:[\\s]+([\\d.]+).*?http://(?<url>.*?\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://$matchUrl#/installer.exe",
+                "hash": {
+                    "url": "http://cdn.apifox.cn/download/latest.yml",
+                    "mode": "extract",
+                    "regex": "sha512.*?$base64"
+                }
+            }
+        }
+    }
+}

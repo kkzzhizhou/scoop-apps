@@ -1,0 +1,34 @@
+{
+    "version": "11.9.0.5784",
+    "description": "搜狗拼音输入法官方版",
+    "homepage": "https://pinyin.sogou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pinyin.sogou.com/help.php?list=9&q=1"
+    },
+    "notes": "We don't persist your data, they are still storaged in '$env:USERPROFILE\\AppData\\LocalLow\\SogouPY' and '$env:USERPROFILE\\AppData\\LocalLow\\SogouPY.users'.",
+    "url": "http://cdn1.ime.sogou.com/_sogou_pinyin_[Release]_11.9.0.5784_0.exe#/installer.exe",
+    "hash": "md5:629b2509813967f5aac4d69bee9f7959",
+    "installer": {
+        "script": "sudo Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+    },
+    "post_install": "Remove-Item \"$dir\\installer.exe\" -Force",
+    "uninstaller": {
+        "script": [
+            "sudo Start-Process -filepath \"$dir\\Uninstall.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"-y\" -PassThru -NoNewWindow | Wait-Process",
+            "Write-Host \"'A restart is required to complete the uninstallation.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "http://ime.sogou.com/version.txt",
+        "regex": "(?sm)product0.*?version=([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "http://cdn1.ime.sogou.com/_sogou_pinyin_[Release]_$version_0.exe#/installer.exe",
+        "hash": {
+            "url": "http://ime.sogou.com/version.txt",
+            "mode": "extract",
+            "regex": "(?sm)product0.*?md5=$md5"
+        }
+    }
+}

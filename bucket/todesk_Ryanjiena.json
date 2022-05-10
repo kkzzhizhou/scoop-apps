@@ -1,0 +1,45 @@
+{
+    "version": "4.2.9",
+    "description": "ToDesk is a stable and smooth remote control, remote office and remote assistance software. With end-to-end encryption, it makes every remote access safe and secure.",
+    "homepage": "https://www.todesk.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.todesk.com/licence.html"
+    },
+    "url": "https://dl.todesk.com/windows/ToDesk_Setup.exe#/dl.7z",
+    "hash": "56e9fe4421725422a9e840875e4d7a66db70657014cfb024cb04a818f881bb83",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "'config.ini' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -Force | Out-Null }",
+        "}"
+    ],
+    "post_install": "@('$PLUGINSDIR', '[NSIS].nsi', 'uninst.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }",
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "'config.ini' | ForEach-Object {",
+            "    if (Test-Path \"$dir\\$_\") { Copy-Item \"$dir\\$_\" \"$persist_dir\\\" -Force | Out-Null }",
+            "}"
+        ]
+    },
+    "bin": "ToDesk.exe",
+    "shortcuts": [
+        [
+            "ToDesk.exe",
+            "ToDesk"
+        ]
+    ],
+    "persist": [
+        "ImageResources",
+        "Logs",
+        "record"
+    ],
+    "checkver": {
+        "url": "https://www.todesk.com/js/common.js",
+        "regex": "WIN_VERSION = '([\\d.]+)'"
+    },
+    "autoupdate": {
+        "url": "https://dl.todesk.com/windows/ToDesk_Setup.exe#/dl.7z"
+    }
+}

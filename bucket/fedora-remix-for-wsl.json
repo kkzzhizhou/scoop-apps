@@ -1,0 +1,55 @@
+{
+    "version": "35.12.3",
+    "description": "Fedora Remix for WSL is a remix of upstream Fedora software for Windows Subsystem for Linux on Windows 10 and Windows 10 Server.",
+    "homepage": "https://www.whitewaterfoundry.com/fedora-remix-for-wsl",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://github.com/WhitewaterFoundry/Fedora-Remix-for-WSL/blob/master/LICENSE.md"
+    },
+    "depends": "sudo",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/WhitewaterFoundry/Fedora-Remix-for-WSL/releases/download/35.12.3/Fedora-Remix-for-WSL-SL_35.12.3.0_x64_arm64.msixbundle#/dl.7z",
+            "hash": "33d85f57c0cb25414ac26a05943aefffd00c78239f124b023bf28c309dab2130"
+        }
+    },
+    "pre_install": "Expand-7zipArchive \"$dir\\Fedora-Remix-for-WSL-SL_$version.0_x64.msix\" -Removal",
+    "post_install": [
+        "Start-Process -FilePath \"$dir\\fedoraremix.exe\" -ArgumentList \"install\" -Wait",
+        "Remove-Item \"$dir\\Fedora-Remix-for-WSL-SL_$version.0_ARM64.msix\" -Force",
+        "$text = @(",
+        "    \"Installation failed with error 0x8007007e: \"",
+        "    \"    If you receive this error, then your system doesn't support WSL.\"",
+        "    \"    Ensure that you're running Windows build 16215 or later.\"",
+        "    \"    Also check to confirm that WSL is enabled and your computer was restarted after the feature was enabled.\"",
+        "",
+        "    'Find your Windows Server build number: `systeminfo | Select-String \"^OS Name\",\"^OS Version\"`'",
+        "    'Enable the \"Windows Subsystem for Linux\" optional feature: `sudo dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart`'",
+        "    'Enable the \"Virtual Machine Platform\" optional feature: `sudo dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart`'",
+        ")",
+        "warn $($text -join \"`r`n\")"
+    ],
+    "uninstaller": {
+        "script": [
+            "wsl --unregister fedoraremix",
+            "Write-Host \"The '$app' linux distribution has been uninstalled on your windows machine.\" -Foreground Magenta"
+        ]
+    },
+    "bin": "fedoraremix.exe",
+    "shortcuts": [
+        [
+            "fedoraremix.exe",
+            "Fedora Remix for WSL"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/WhitewaterFoundry/Fedora-Remix-for-WSL"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/WhitewaterFoundry/Fedora-Remix-for-WSL/releases/download/$version/Fedora-Remix-for-WSL-SL_$version.0_x64_arm64.msixbundle#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,52 @@
+{
+    "version": "6.5.10.4259103",
+    "description": "DingTalk is an intelligent working platform created by Alibaba Group to support tens of millions of enterprises to achieve higher working efficiency with the new digitalized working method.",
+    "homepage": "https://www.dingtalk.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://page.dingtalk.com/wow/dingtalk/act/service-en-lite"
+    },
+    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v6.5.10.4259103.exe#/dl.7z",
+    "hash": "md5:3b5fe217caea4bc397c08206e564e8c4",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\DingTalk\\\" -Recurse -Force | Out-Null",
+        "}"
+    ],
+    "post_install": "@('$PLUGINSDIR', '[NSIS].nsi', 'uninst.exe.nsis') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }",
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:AppData\\DingTalk\\*\") {",
+            "    Copy-Item \"$env:AppData\\DingTalk\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "DingtalkLauncher.exe",
+            "dingtalk"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "DingtalkLauncher.exe",
+            "Alibaba\\DingTalk"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/alibaba.json",
+        "jsonpath": "$[?(@.name == 'DingTalk')].version",
+        "regex": "(?<main>[\\d.]+)-Release.(?<build>\\d+)",
+        "replace": "${main}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/alibaba.json",
+            "mode": "json",
+            "jsonpath": "$[?(@.name == 'DingTalk')].hash"
+        }
+    }
+}

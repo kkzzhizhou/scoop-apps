@@ -1,0 +1,76 @@
+{
+    "version": "103.0.1252.0",
+    "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Canary Channel, Portable Edition).",
+    "homepage": "https://www.microsoft.com/en-us/edge",
+    "license": {
+        "identifier": "Freeware",
+        "url": "edge://terms/"
+    },
+    "notes": [
+        "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
+        "Please utilize aria2 to use multi-connection downloads.",
+        "   scoop install aria2",
+        "   scoop config aria2-warning-enabled true"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json-canary-win-X64#/dl.7z",
+            "hash": "459e9e0a303d393b4ee42673bf8489dae3e541b2b6f146db02cf8f5f7818568a"
+        },
+        "32bit": {
+            "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json-canary-win-X86#/dl.7z",
+            "hash": "113eb53af1b4a584d21019681f0d6766be467e61f5c08df68a16fc2e7f5cf09f"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\" -Removal",
+            "@('msedge.exe', 'msedge_proxy.exe') | ForEach-Object { Move-Item \"$dir\\$version\\$_\" \"$dir\" -Force -ErrorAction SilentlyContinue }"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "msedge.exe",
+            "msedge-canary",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "msedge.exe",
+            "Microsoft Edge Canary",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json",
+        "jsonpath": "$.Version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json-canary-win-X64#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json",
+                    "mode": "json",
+                    "jsonpath": "$.Release[?(@.Architecture == 'x64')].Hash"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json-canary-win-X86#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/msedge-canary.json",
+                    "mode": "json",
+                    "jsonpath": "$.Release[?(@.Architecture == 'x86')].Hash"
+                }
+            }
+        }
+    }
+}

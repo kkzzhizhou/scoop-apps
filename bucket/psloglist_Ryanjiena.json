@@ -1,0 +1,53 @@
+{
+    "version": "2.81",
+    "description": "PsLogList. Local and remote event log viewer",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psloglist",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://live.sysinternals.com/PsLogList64.exe",
+            "hash": "e2587dd0aa50d75b545e2100fb2bab0b0607ff7e87b264339c7fb695b8572342",
+            "bin": [
+                "PsLogList64.exe",
+                [
+                    "PsLogList64.exe",
+                    "PsLogList"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://live.sysinternals.com/PsLogList.exe",
+            "hash": "57dc27269669402152518dc7683e0a9cc372a3c3125efe1c7ecd8e8516f556f3",
+            "bin": "PsLogList.exe"
+        }
+    },
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsLoglist\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsLoglist\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "checkver": "PsLogList\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsLogList64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsLogList.exe"
+            }
+        }
+    }
+}

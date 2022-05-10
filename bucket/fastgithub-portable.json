@@ -1,0 +1,70 @@
+{
+    "version": "2.1.4",
+    "description": "A tool that can solve problems such as github can't be opened, user avatar can't be loaded, releases can't be uploaded and downloaded, git-clone, git-pull, git-push fails, etc.",
+    "homepage": "https://github.com/dotnetcore/FastGithub",
+    "license": {
+        "identifier": "MIT"
+    },
+    "notes": "Usages: <https://github.com/dotnetcore/FastGithub#3-%E8%BD%AF%E4%BB%B6%E5%8A%9F%E8%83%BD>",
+    "depends": "sudo",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/dotnetcore/FastGithub/releases/download/2.1.4/fastgithub_win-x64.zip",
+            "hash": "b439afc7b730766aed894876696e9aeb411e3b45f60ebdcfdff247890742c0f6"
+        }
+    },
+    "extract_dir": "fastgithub_win-x64",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "'appsettings.json' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -Force | Out-Null }",
+        "}"
+    ],
+    "installer": {
+        "script": "sudo Start-Process \"$dir\\fastgithub.exe\" -ArgumentList \"start\" -Wait"
+    },
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "'appsettings.json' | ForEach-Object {",
+            "    if (Test-Path \"$dir\\$_\") { Copy-Item \"$dir\\$_\" \"$persist_dir\\\" -Force | Out-Null }",
+            "}",
+            "sudo Start-Process \"$dir\\fastgithub.exe\" -ArgumentList \"stop\" -Wait"
+        ]
+    },
+    "bin": [
+        [
+            "fastgithub.exe",
+            "fastgithub",
+            "start"
+        ],
+        [
+            "FastGithub.UI.exe",
+            "fastgithub-ui"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "fastgithub.exe",
+            "FastGithub",
+            "start"
+        ],
+        [
+            "FastGithub.UI.exe",
+            "FastGithub UI"
+        ]
+    ],
+    "persist": [
+        "appsettings",
+        "cacert",
+        "logs"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/dotnetcore/FastGithub/releases/download/$version/fastgithub_win-x64.zip"
+            }
+        }
+    }
+}

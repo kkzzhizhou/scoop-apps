@@ -1,0 +1,64 @@
+{
+    "version": "9.5.9.28625",
+    "description": "Tencent QQ third-party modified version, maintained by Dreamcast.",
+    "homepage": "https://im.qq.com/pcqq",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://ti.qq.com/agreement/index.html"
+    },
+    "notes": [
+        "All modifications have the risk of being locked, whether to use their own discretion, I do not assume any responsibility!",
+        "Use 'scoop install vcredist-aio' 或 'scoop install vcredist-dreamcast' install the runtime library",
+        "Please read the instructions in the installation directory carefully before use."
+    ],
+    "depends": "sudo",
+    "suggest": {
+        "vcredist": [
+            "meta/vcredist-aio",
+            "meta/vcredist-dreamcast"
+        ]
+    },
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/QQ_9.5.9_(28625)_Installer.rar",
+    "hash": "157a02cfbf8c3fc73abb616b857057574cb19e0859b714c65ad489010cb775fc",
+    "installer": {
+        "script": [
+            "Stop-Process -Name TXP*,tad*,QQP*,QQC*,QQ -Force -ErrorAction Ignore | Out-Null",
+            "Rename-Item \"$dir\\*.exe\" 'installer.exe'",
+            "sudo Start-Process -filepath \"$dir\\installer.exe\" -ArgumentList /DIR=\"$dir\",/SILENT -WorkingDirectory \"$dir\" -Wait"
+        ]
+    },
+    "post_install": "@('installer.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
+    "uninstaller": {
+        "script": [
+            "Stop-Process -Name TXP*,tad*,QQP*,QQC*,QQ -Force -ErrorAction Ignore | Out-Null",
+            "sudo Start-Process -filepath \"$dir\\unins000.exe\" -ArgumentList /VERYSILENT -WorkingDirectory \"$dir\" -Wait",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "bin": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "QQ"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "Tencent\\QQ"
+        ]
+    ],
+    "checkver": {
+        "url": "https://scoop-apps.vercel.app/qq",
+        "regex": "(?s)(?<filename>QQ_(?<ver>([\\d.]+))_[(](?<build>([\\d]+))[)]_Installer\\.rar)",
+        "replace": "${ver}.${build}",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/$matchFilename",
+        "hash": {
+            "url": "https://scoop-apps.vercel.app/qq",
+            "mode": "extract",
+            "regex": "^$sha256\\s+$basename"
+        }
+    }
+}

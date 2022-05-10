@@ -1,0 +1,34 @@
+{
+    "version": "0.19.17",
+    "description": "Clash for Windows Original Simplified Chinese Translation Patch",
+    "homepage": "https://github.com/BoyceLig/Clash_Chinese_Patch",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "depends": "meta/clash-for-windows-portable",
+    "url": "https://github.com/BoyceLig/Clash_Chinese_Patch/releases/download/0.19.17/app.7z",
+    "hash": "8ad2bb8f7b73ae74a8b9a7e9b02a6867cf218e6e1f0b109ccf6bec1db9e81e9e",
+    "installer": {
+        "script": [
+            "Get-Process clash* | Stop-Process -Force",
+            "Get-ChildItem $dir -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Get-ChildItem \"$(scoop prefix clash-for-windows-portable)\\resources\\$($_.Name)\" | Rename-Item -NewName { $_.Name + \".metabak\" }",
+            "  Copy-Item $_.FullName -destination \"$(scoop prefix clash-for-windows-portable)\\resources\" -Force",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Get-Process clash* | Stop-Process -Force",
+            "Get-ChildItem \"$dir\" -Exclude install.json,manifest.json | ForEach-Object {",
+            "  Remove-Item \"$(scoop prefix clash-for-windows-portable)\\resources\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "  Get-ChildItem \"$(scoop prefix clash-for-windows-portable)\\resources\\$($_.Name).metabak\" | Rename-Item -NewName { $_.Name -replace '.metabak','' }",
+            "}",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/BoyceLig/Clash_Chinese_Patch/releases/download/$version/app.7z"
+    }
+}

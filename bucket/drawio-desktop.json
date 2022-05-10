@@ -1,0 +1,65 @@
+{
+    "version": "18.0.1",
+    "description": "a diagramming and whiteboarding desktop app based on Electron that wraps the core draw.io editor.",
+    "homepage": "https://www.diagrams.net",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/jgraph/drawio-desktop/blob/dev/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v18.0.1/draw.io-x64-18.0.1.exe#/dl.7z",
+            "hash": "66a1fbe62564219857af2f24bd3ab6436d0c13b80de502b1ae22939c2686d0ac",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+            ]
+        },
+        "32bit": {
+            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v18.0.1/draw.io-ia32-18.0.1.exe#/dl.7z",
+            "hash": "2daf92e27da4309ca8bdd1e4a80b14c1a082f75ff10d8a6869117ea7e0b22fd8",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+            ]
+        }
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\draw.io\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\draw.io\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "draw.io.exe",
+            "draw.io",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "draw.io.exe",
+            "draw.io",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "github": "https://github.com/jgraph/drawio-desktop"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/jgraph/drawio-desktop/releases/download/v$version/draw.io-x64-$version.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/jgraph/drawio-desktop/releases/download/v$version/draw.io-ia32-$version.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Files-SHA256-Hashes.txt",
+            "regex": "$basename\\s*?$sha256"
+        }
+    }
+}

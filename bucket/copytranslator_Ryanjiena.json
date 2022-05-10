@@ -1,0 +1,55 @@
+{
+    "version": "10.0.0",
+    "description": "Foreign language reading and translation assistant based on copy and translate.",
+    "homepage": "https://copytranslator.gitee.io",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/CopyTranslator/CopyTranslator/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/CopyTranslator/CopyTranslator/releases/download/v10.0.0/copytranslator.Setup.10.0.0.exe#/dl.7z",
+            "hash": "sha512:87892423bdeba8a3b5a7298dc111b5a5d42d68792b3563db5a17f1d8867cdd0ca0807f45bb35ca0a8357d4f4e87d512cb7adc65e5f339f93e94d8dbaa2972a41",
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR/app-64.7z\" \"$dir\""
+            }
+        }
+    },
+    "post_install": [
+        "@('$PLUGINSDIR', '[NSIS].nsi', 'Uninstall copytranslator.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\copytranslator\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\copytranslator\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "bin": [
+        [
+            "copytranslator.exe",
+            "copytranslator",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "copytranslator.exe",
+            "CopyTranslator",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "github": "https://github.com/CopyTranslator/CopyTranslator"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/CopyTranslator/CopyTranslator/releases/download/v$version/copytranslator.Setup.$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

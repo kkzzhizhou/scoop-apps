@@ -1,0 +1,65 @@
+{
+    "version": "102.0.5005.40",
+    "description": "Fast, secure, and free web browser, built for the modern web(Beta, Portable Edition).",
+    "homepage": "https://www.google.com/chrome/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.google.com/chrome/privacy/eula_text.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://redirector.gvt1.com/edgedl/release2/chrome/acxbxxlc22rou5m54kvm5yavpxfq_102.0.5005.40/102.0.5005.40_chrome_installer.exe#/dl.7z",
+            "hash": "2c8d4a51918291e0db28c6ad078a49e14ac944d609ef189f5e994a287d2fb315"
+        },
+        "32bit": {
+            "url": "https://redirector.gvt1.com/edgedl/release2/chrome/acmuhtvhvv7zxxccuhlilpxnbfiq_102.0.5005.40/102.0.5005.40_chrome_installer.exe#/dl.7z",
+            "hash": "fedfb409832678e74fa3907d5a1956f351acfbf45d1d4c8141fcd73769322474"
+        }
+    },
+    "installer": {
+        "script": "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -Removal"
+    },
+    "bin": [
+        [
+            "chrome.exe",
+            "chrome-beta",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "chrome.exe",
+            "Google Chrome Beta",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Google\\Chrome\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Google\\Chrome\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/chrome.json",
+        "regex": "(?sm)beta.*?win-x86.*?(?<86>chrome/[\\w-]+_(?<version>[\\d.]+).*?_chrome_installer.exe).*?win-x64.*?(?<64>chrome/[\\w-]+_(?<version>[\\d.]+).*?_chrome_installer.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://redirector.gvt1.com/edgedl/release2/$match64#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/chrome.json",
+                    "jsonpath": "$[?(@.Product == 'beta')].Release[?(@.Architecture == 'win-x64')].Hash"
+                }
+            },
+            "32bit": {
+                "url": "https://redirector.gvt1.com/edgedl/release2/$match86#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/Ryanjiena/MetaVersion/raw/main/chrome.json",
+                    "jsonpath": "$[?(@.Product == 'beta')].Release[?(@.Architecture == 'win-x86')].Hash"
+                }
+            }
+        }
+    }
+}

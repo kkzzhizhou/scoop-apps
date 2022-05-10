@@ -1,0 +1,57 @@
+{
+    "version": "1.1.4",
+    "description": "Personal notetaking, knowledge creation, group collaboration, and knowledge management.",
+    "homepage": "https://www.yuque.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.yuque.com/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://app.nlark.com/yuque-desktop/1.1.4/Yuque-1.1.4.exe#/installer.exe",
+            "hash": "5f0096fdd4c01f1b30bfd24880119086c82a88962c2cbd6da2095ffb03657feb",
+            "pre_install": [
+                "info 'Copying user data...'",
+                "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+                "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\yuque-desktop\\\" -Recurse -Force | Out-Null",
+                "}"
+            ],
+            "installer": {
+                "script": "Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+            }
+        }
+    },
+    "post_install": "@('installer.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
+    "uninstaller": {
+        "script": [
+            "Start-Process -filepath \"$dir\\Uninstall 语雀.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait",
+            "info 'Backing up user data...'",
+            "if (Test-Path \"$env:AppData\\yuque-desktop\\*\") {",
+            "    Copy-Item \"$env:AppData\\yuque-desktop\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "语雀.exe",
+            "yuque"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "语雀.exe",
+            "Alibaba\\Yuque"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.yuque.com/download",
+        "regex": "desktopDownloadVersion%22%3A%22([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://app.nlark.com/yuque-desktop/$version/Yuque-$version.exe#/installer.exe"
+            }
+        }
+    }
+}

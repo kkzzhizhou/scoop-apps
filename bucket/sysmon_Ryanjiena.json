@@ -1,0 +1,44 @@
+{
+    "version": "13.33",
+    "description": "Sysmon. Windows system service and device driver that, once installed on a system, remains resident across system reboots to monitor and log system activity to the Windows event log.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/sysmon",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/Sysmon.zip",
+    "hash": "04d17192e881dc18da55031e2c65e70d0cd8623d5b92b317bd6a7b0858c61b43",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\System Monitor\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\System Monitor\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "Sysmon64.exe",
+                [
+                    "Sysmon64.exe",
+                    "Sysmon"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "Sysmon.exe"
+        }
+    },
+    "checkver": "Sysmon\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/Sysmon.zip"
+    }
+}

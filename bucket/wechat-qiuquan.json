@@ -1,0 +1,60 @@
+{
+    "version": "3.5.0.29",
+    "description": "WeChat third party modified version, maintained by qiuquan.",
+    "homepage": "https://weixin.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://weixin.qq.com/cgi-bin/readtemplate?lang=zh_CN&t=weixin_agreement&s=default"
+    },
+    "notes": [
+        "Since WeChat has strong payment properties, the third-party version has certain risks, so it is recommended to use the official wechat package (scoop install wechat-portable) if you don't just need it.",
+        "Features: <http://www.qiuquan.cc/chat/wechat.html>"
+    ],
+    "depends": "sudo",
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/WeChat_v3.5.0.29_QiuQuan_20220112.exe#/Installer.exe",
+    "hash": "4f8cbb95f1b205707e64d484476f3e6b28348c5a55aabd33d3714f5aa68f26d5",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Tencent\\WeChat\\\" -Recurse -Force | Out-Null",
+        "}"
+    ],
+    "installer": {
+        "script": "sudo Start-Process -FilePath \"$dir\\Installer.exe\" -ArgumentList /DIR=\"$dir\",/SILENT -Wait"
+    },
+    "post_install": "sudo Remove-Item $dir\\Installer.exe -Force",
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:AppData\\Tencent\\WeChat\\*\") {",
+            "    Copy-Item \"$env:AppData\\Tencent\\WeChat\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+            "}",
+            "sudo Start-Process -FilePath \"$dir\\UninsFile\\unins000.exe\" -ArgumentList /VERYSILENT -Wait"
+        ]
+    },
+    "bin": [
+        [
+            "WeChat.exe",
+            "wechat-qiuquan"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "WeChat.exe",
+            "Tencent\\WeChat QIUQUAN"
+        ]
+    ],
+    "checkver": {
+        "url": "https://scoop-apps.vercel.app/qq",
+        "regex": "(?<filename>WeChat_v(?<version>[\\d.]+).*?\\.exe)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/QQ/$matchFilename#/Installer.exe",
+        "hash": {
+            "url": "https://scoop-apps.vercel.app/qq",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}
