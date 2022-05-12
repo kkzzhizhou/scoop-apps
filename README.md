@@ -16,7 +16,7 @@
 
 - 每天更新
 - 仓库列表根据项目[scoop-directory](https://github.com/rasa/scoop-directory)动态生成
-- 自动处理同名文件，同名文件以及"软件-贡献人ID"重命名
+- 自动处理同名文件，优先采用同名文件的较新版本, 重名文件以"软件-贡献人ID"重命名
 - 自动去重（基于md5)
 - json格式检验
 
