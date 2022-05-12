@@ -166,7 +166,7 @@ merge_buckets(){
             if [ "$?" -eq 0 ]
             then
                 app_version=$(cat $file | jq -r '.version')
-                if [ ${bucket_app_version} == "nightly" ]
+                if [ ${app_version} == "nightly" ]
                 then
                     app_version="0"
                 fi
