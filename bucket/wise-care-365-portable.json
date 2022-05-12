@@ -1,41 +1,50 @@
 {
-    "version": "6.2.1.607",
-    "description": "Wise Care 365 is an all-in-one system tune up tool. Speed up slow computer (laptop and desktop). Clean registry and junk files from your PC. Protect your privacy and make your PC more secure(Portable Edition).",
+    "version": "6.2.2.608",
+    "description": "Clean registry and junk files from your PCs. Protect your privacy and make your PCs more secure.",
     "homepage": "https://www.wisecleaner.com/wise-care-365.html",
     "license": {
-        "identifier": "Proprietary",
+        "identifier": "Proprietary|Shareware",
         "url": "https://www.wisecleaner.com/eula.html"
     },
-    "url": "https://pan.jiemi.workers.dev/?file=/scoop/CCleaner/WiseCare365_6.2.1.607_Green.7z",
-    "hash": "efaf9815049be724776effa6855db8f02f41647a0902b7d45157306fec6b1526",
-    "extract_dir": "WiseCare365_6.2.1.607_Green",
-    "uninstaller": {
-        "script": "Start-Process -filepath \"$dir\\移除残留.bat\" -WorkingDirectory \"$dir\" -Wait -Verb RunAs"
+    "depends": "sudo",
+    "url": [
+        "https://downloads.wisecleaner.com/soft/WiseCare365_6.2.2.608.zip",
+        "https://pan.jiemi.workers.dev/?file=/scoop/patch/wisecare365.7z#dl.7z_"
+    ],
+    "hash": [
+        "c2d1253c1133dfcf17b7bb583aaba514579e1cf1e6e3f0f591d9b8af23a0e5f3",
+        "65d3521a86a464a8cd75a4c628beeed936bf96029d7520b73afce41033eec348"
+    ],
+    "extract_dir": "Wise Care 365",
+    "pre_install": [
+        "$7z=(Get-ChildItem $dir\\wisecare365.7z*).Name",
+        "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+        "@('config.ini', 'DefragOptions.ini') | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -ErrorAction 'SilentlyContinue' -Force | Out-Null }",
+        "}"
+    ],
+    "installer": {
+        "script": "sudo Start-Process -filepath \"$dir\\WiseCare365Pro.v5.x.Patch.210326.exe\" -WorkingDirectory \"$dir\" -ArgumentList '/silent' -Wait | Out-Null"
     },
-    "bin": "WiseCare365.exe",
+    "post_install": "Remove-Item $dir\\*dl.7z_ -ErrorAction 'SilentlyContinue' -Force",
+    "uninstaller": {
+        "script": [
+            "@('config.ini', 'DefragOptions.ini') | ForEach-Object {",
+            "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -ErrorAction 'SilentlyContinue' -Force | Out-Null }",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "WiseCare365.exe",
             "Wise Care 365"
         ]
     ],
-    "persist": [
-        "config.ini",
-        "Config_tray.ini",
-        "DefragOptions.ini"
-    ],
     "checkver": {
-        "url": "https://scoop-apps.vercel.app/ccleaner",
-        "regex": "(?<filename>WiseCare365_(?<version>[\\d.]+)_Green\\.(?:zip|7z))",
-        "reverse": true
+        "url": "https://www.wisecleaner.com/download.html",
+        "regex": "href=\"https://downloads.wisecleaner.com/soft/WiseCare365_([\\d.]+).zip"
     },
     "autoupdate": {
-        "url": "https://pan.jiemi.workers.dev/?file=/scoop/CCleaner/$matchFilename",
-        "hash": {
-            "url": "https://scoop-apps.vercel.app/ccleaner",
-            "mode": "extract",
-            "regex": "^$sha256([\\s]+)$basename"
-        },
-        "extract_dir": "WiseCare365_$version_Green"
+        "url": "https://downloads.wisecleaner.com/soft/WiseCare365_$version.zip"
     }
 }
