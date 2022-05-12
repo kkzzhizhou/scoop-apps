@@ -44,6 +44,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 
 ## 合并仓库列表
 
+- kkzzhizhou/scoop-zapps
 - ScoopInstaller/Extras
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
