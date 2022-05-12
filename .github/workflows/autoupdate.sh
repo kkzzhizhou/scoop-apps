@@ -7,27 +7,6 @@
  # @FilePath: /data/scoop-apps/autoupdate.sh
 ###
 
-# force use scoop-zapps
-force_use_scoop-zapps(){
-    rm -rf ${cache_dir}/scoop-zapps
-    git clone --depth=1 https://github.com/kkzzhizhou/scoop-zapps  ${cache_dir}/scoop-zapps
-    files=$(find ${cache_dir}/scoop-zapps -type f -name *.json ! -name ".*" -not -path "${cache_dir}/scoop-zapps/.vscode/*")
-    for file in ${files[@]}
-    do
-        file_name=$(echo $file | awk -F'/' '{print $NF}')
-        file_id=$(echo $file_name | tr 'A-Z' 'a-z')
-        check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l)
-        if [ "$check_file_id" -eq 0 ]
-        then
-            echo $file_id >> ${cache_dir}/file_ids
-        fi
-        add_to_bucket "$file" "${file_name}" "kkzzhizhou/scoop-zapps"
-        # record file_md5
-        echo $file_md5 >> ${cache_dir}/file_md5
-    done
-    cp -rf ${cache_dir}/scoop-zapps/scripts/* ./scripts/
-}
-
 # get bucket from rasa/scoop-directory
 gen_bucket_config(){
     rm -f bucket.config
@@ -46,6 +25,7 @@ gen_bucket_config(){
             echo "add bucket:$bucket_name"
             echo "$bucket_name" >> bucket.config
         done
+        sed -i '1ikkzzhizhou/scoop-zapps' bucket.config
     fi
 }
 
@@ -250,12 +230,11 @@ main(){
     setting_working_dir
     create_cache_dir
     apt_init
-    init_main # 生成main仓库的file_id列表
+    init_main # 生成用于过滤main仓库的file_id列表
     gen_bucket_config
     download_bucket
     merge_scripts
     merge_buckets
-    force_use_scoop-zapps # 强制使用该仓库的软件
     fix_confuse_manifest
     update_readme
     fix_nothing_submit
