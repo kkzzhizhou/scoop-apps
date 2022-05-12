@@ -202,7 +202,7 @@ merge_buckets(){
                     then
                         echo "bucket_app_name:${bucket_app_name}  bucket_app_version:${bucket_app_version} bucket_app_new_name:${bucket_app_new_name} app_version:${app_version} app_bucket:${bucket}"
                         mv -f bucket/${bucket_app_name} bucket/${bucket_app_new_name}
-                        sed -i "s/$bucket_app_new_name/$file_name/" ${cache_dir}/file_id_name
+                        sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
                         add_to_bucket "$file" "$file_name" "$bucket"
                     else
                         add_to_bucket "$file" "$new_name" "$bucket"
