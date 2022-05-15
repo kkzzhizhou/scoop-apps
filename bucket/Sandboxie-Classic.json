@@ -1,7 +1,8 @@
 {
+    "version": "5.55.21",
+    "description": "The open-source version of Sandboxie, a sandbox-based isolation software for 32- and 64-bit Windows NT-based operating systems.",
     "homepage": "https://github.com/sandboxie-plus/Sandboxie",
-    "description": "Sandboxie uses isolation technology to separate programs from your underlying operating system preventing unwanted changes from happening to your personal data, programs and applications that rest safely on your hard drive.",
-    "version": "5.45.0",
+    "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
             "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v0.5.0/SandboxieInstall64-v5.45.0.exe#/setup.exe",
@@ -33,6 +34,23 @@
                     "$uninstaller = (Get-Item Env:windir).Value+'\\installer\\SandboxieInstall.exe'",
                     "Invoke-ExternalCommand \"$uninstaller\" -ArgumentList @('/remove','/S') -RunAs | Out-Null"
                 ]
+            }
+        }
+    },
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\Sandboxie-Plus.ini\", \"$dir\\Sandboxie.ini\", \"$dir\\Sandbox.ini\" -Destination \"$persist_dir\\\" | Out-Null"
+    },
+    "checkver": {
+        "url": "https://github.com/sandboxie-plus/Sandboxie/releases/latest",
+        "regex": "/download/(?<plusver>[\\d\\w.]+?)/Sandboxie-Classic-x64-v([\\d\\w.]+?).exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchPlusver/Sandboxie-Classic-x64-v$version.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchPlusver/Sandboxie-Classic-x86-v$version.exe"
             }
         }
     }
