@@ -1,0 +1,54 @@
+{
+    "version": "3.6.0.18",
+    "description": "WeChat third-party modified version, maintained by 423down.com.",
+    "homepage": "https://weixin.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
+    },
+    "notes": "Feature: <https://www.423down.com/12027.html>",
+    "url": [
+        "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
+        "https://pan.jiemi.workers.dev/?file=/scoop/patch/WeChat_v3.x_Patch.7z#dl.7z_"
+    ],
+    "hash": [
+        "039a9dea901301d057db147a9971a2c2a2dc45084049c62b9104a8e76d47d68f",
+        "02f5c4a6ae6a7e410cd4f828f1862a8887ed3032ac350a8cb67f4a79d4ba249b"
+    ],
+    "pre_install": [
+        "$7z=(Get-ChildItem $dir\\WeChat_v3.x_Patch.7z*).Name",
+        "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+        "sudo Start-Process -filepath \"$dir\\WeChat_v3.x_Patch.exe\" -ArgumentList @(\"/startupworkdir $dir\\`[$version`]\\\", '/silent') -Wait | Out-Null",
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    ensure \"$env:AppData\\Tencent\\WeChat\"",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Tencent\\WeChat\\\" -ErrorAction 'SilentlyContinue' -Force -Recurse | Out-Null",
+        "}",
+        "Copy-Item \"$bucketsdir\\meta\\scripts\\wechat\\uninstall.bat\" \"$dir\\uninstall.bat\" -ErrorAction 'SilentlyContinue' -Force | Out-Null"
+    ],
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\WeChat_v3.x_Patch.7z*\", \"$dir\\Uninstall.exe\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:AppData\\Tencent\\WeChat\\*\") {",
+            "    ensure \"$persist_dir\\User Data\"",
+            "    Copy-Item \"$env:AppData\\Tencent\\WeChat\\*\" \"$persist_dir\\User Data\\\" -ErrorAction 'SilentlyContinue' -Force -Recurse | Out-Null",
+            "}",
+            "sudo Start-Process -filepath \"$dir\\uninstall.bat\" -WorkingDirectory \"$dir\" -Wait | Out-Null"
+        ]
+    },
+    "bin": "WeChat.exe",
+    "shortcuts": [
+        [
+            "WeChat.exe",
+            "Tencent\\WeChat Mod"
+        ]
+    ],
+    "checkver": {
+        "url": "https://baoku.360.cn/soft/show/appid/103595847",
+        "regex": "<dd>([\\d.]+)</dd>"
+    },
+    "autoupdate": {
+        "url": "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z"
+    }
+}

@@ -1,32 +1,53 @@
 {
-    "homepage": "https://docs.microsoft.com/en-us/sysinternals/",
-    "description": "Displays the named pipes on your system, including the number of maximum instances and active instances for each pipe.",
+    "version": "1.02",
+    "description": "PipeList. Displays the named pipes on system, including the number of maximum instances and active instances for each pipe.",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist",
     "license": {
         "identifier": "Freeware",
         "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
     },
-    "version": "1.02",
     "url": "https://download.sysinternals.com/files/PipeList.zip",
-    "hash": "e9c8d86659cfa1a89890d92036ff8989c1be12dfdcfbe2a1f1961fe15f8bc306",
-    "checkver": {
-        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist",
-        "re": "PipeList\\s(?:v|V)?([\\d.]+)"
-    },
-    "autoupdate": {
-        "url": "https://download.sysinternals.com/files/PipeList.zip"
+    "hash": "7bfef3046bfcce3efa666c4ae235b3a903ddc8ddba830a5c3ee4178e0a712b8d",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PipeList\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PipeList\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
     },
     "architecture": {
-        "32bit": {
-            "bin": "pipelist.exe"
-        },
         "64bit": {
             "bin": [
+                "pipelist64.exe",
                 [
                     "pipelist64.exe",
                     "pipelist"
-                ],
-                "pipelist64.exe"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "pipelist.exe"
+        },
+        "arm64": {
+            "bin": [
+                "pipelist64a.exe",
+                [
+                    "pipelist64a.exe",
+                    "pipelist"
+                ]
             ]
         }
+    },
+    "checkver": "PipeList\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/PipeList.zip"
     }
 }

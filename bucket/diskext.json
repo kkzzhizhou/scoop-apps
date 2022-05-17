@@ -1,32 +1,53 @@
 {
-    "homepage": "https://docs.microsoft.com/en-us/sysinternals/",
-    "description": "Display volume disk-mappings.",
+    "version": "1.2",
+    "description": "DiskExt. Disk extent dumper",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/diskext",
     "license": {
         "identifier": "Freeware",
         "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
     },
-    "version": "1.2",
     "url": "https://download.sysinternals.com/files/DiskExt.zip",
-    "hash": "b93bb3c1fca68a2ce6c52f273fa80ea841e20fd85a6579e68a0fe7106f16ee73",
-    "checkver": {
-        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/diskext",
-        "re": "DiskExt\\s(?:v|V)?([\\d.]+)"
-    },
-    "autoupdate": {
-        "url": "https://download.sysinternals.com/files/DiskExt.zip"
+    "hash": "b201c8424aecb60d7aab6079e86acad550d9d21e7833861995b0c1faca9ada39",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\DiskExt\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\DiskExt\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
     },
     "architecture": {
-        "32bit": {
-            "bin": "diskext.exe"
-        },
         "64bit": {
             "bin": [
+                "diskext64.exe",
                 [
                     "diskext64.exe",
                     "diskext"
-                ],
-                "diskext64.exe"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "diskext.exe"
+        },
+        "arm64": {
+            "bin": [
+                "diskext64a.exe",
+                [
+                    "diskext64a.exe",
+                    "diskext"
+                ]
             ]
         }
+    },
+    "checkver": "DiskExt\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/DiskExt.zip"
     }
 }

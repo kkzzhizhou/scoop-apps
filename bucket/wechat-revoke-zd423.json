@@ -1,0 +1,48 @@
+{
+    "version": "3.3.0.115",
+    "description": "WeChat is more than a messaging and social media app - it is a lifestyle for over one billion users across the world.",
+    "homepage": "https://weixin.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
+    },
+    "notes": "Feature: <https://www.423down.com/12027.html>",
+    "depends": "sudo",
+    "url": [
+        "https://dl.softmgr.qq.com/original/im/WeChatSetup_3.3.0.115.exe#/dl.7z",
+        "https://pan.jiemi.workers.dev/?file=/scoop/patch/WeChat_v3.x_Patch.7z#dl.7z_"
+    ],
+    "hash": [
+        "b55482ebbc8c380bcb7f1a78ffbe78e189bbbb04789022ac110a28e2303c4bb1",
+        "02f5c4a6ae6a7e410cd4f828f1862a8887ed3032ac350a8cb67f4a79d4ba249b"
+    ],
+    "pre_install": [
+        "$7z=(Get-ChildItem $dir\\WeChat_v3.x_Patch.7z*).Name",
+        "7z x -p2022 $dir\\$7z $('-o' + $dir) | Out-Null",
+        "sudo Start-Process -filepath \"$dir\\WeChat_v3.x_Patch.exe\" -WorkingDirectory \"$dir\" -ArgumentList '/silent' -Wait | Out-Null",
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    ensure \"$env:AppData\\Tencent\\WeChat\"",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Tencent\\WeChat\\\" -ErrorAction 'SilentlyContinue' -Force -Recurse | Out-Null",
+        "}",
+        "Copy-Item \"$bucketsdir\\meta\\scripts\\wechat\\uninstall.bat\" \"$dir\\uninstall.bat\" -ErrorAction 'SilentlyContinue' -Force | Out-Null"
+    ],
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\WeChat_v3.x_Patch.7z*\", \"$dir\\Uninstall.exe\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:AppData\\Tencent\\WeChat\\*\") {",
+            "    ensure \"$persist_dir\\User Data\"",
+            "    Copy-Item \"$env:AppData\\Tencent\\WeChat\\*\" \"$persist_dir\\User Data\\\" -ErrorAction 'SilentlyContinue' -Force -Recurse | Out-Null",
+            "}",
+            "sudo Start-Process -filepath \"$dir\\uninstall.bat\" -WorkingDirectory \"$dir\" -Wait | Out-Null"
+        ]
+    },
+    "bin": "WeChat.exe",
+    "shortcuts": [
+        [
+            "WeChat.exe",
+            "Tencent\\WeChat Revoke"
+        ]
+    ]
+}
