@@ -1,37 +1,53 @@
 {
     "version": "1.03",
-    "description": "See what files are opened remotely.",
+    "description": "PsFile. Lists files and directories opened remotely.",
     "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psfile",
     "license": {
-        "identifier": "Proprietary",
+        "identifier": "Freeware",
         "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
     },
-    "notes": "Introduction: <https://docs.microsoft.com/en-us/sysinternals/downloads/psfile#introduction>",
-    "url": "https://download.sysinternals.com/files/PSTools.zip",
-    "hash": "102576f2df817427fee2804380ef8904afb7b46d73d56d1a60e7721d668b6555",
     "architecture": {
         "64bit": {
-            "post_install": [
-                "@('psfile.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
-                "Rename-Item \"$dir\\psfile64.exe\" 'psfile.exe' -Force -ErrorAction SilentlyContinue"
+            "url": "https://live.sysinternals.com/PsFile64.exe",
+            "hash": "033b81744e0bd4219a4d698894b8403bb67b525c96049cbfef34677d4d6fc85c",
+            "bin": [
+                "PsFile64.exe",
+                [
+                    "PsFile64.exe",
+                    "PsFile"
+                ]
             ]
         },
         "32bit": {
-            "post_install": "@('psfile64.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }"
+            "url": "https://live.sysinternals.com/PsFile.exe",
+            "hash": "9d45453285ff3b4a41056317c96866d06481751307d703e3355b18d5eeb092ad",
+            "bin": "PsFile.exe"
         }
     },
-    "bin": "psfile.exe",
-    "shortcuts": [
-        [
-            "psfile.exe",
-            "SysInternals\\PsFile"
-        ]
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\PsFile\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
     ],
-    "checkver": {
-        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/psfile",
-        "regex": "PsFile v([\\d.]+)"
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\PsFile\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
     },
+    "checkver": "PsFile\\s+v([\\d.]+)</h1",
     "autoupdate": {
-        "url": "https://download.sysinternals.com/files/PSTools.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://live.sysinternals.com/PsFile64.exe"
+            },
+            "32bit": {
+                "url": "https://live.sysinternals.com/PsFile.exe"
+            }
+        }
     }
 }

@@ -98,6 +98,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Velgus/Scoop-Portapps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
+- ddavness/scoop-roblox
 - alextwothousand/scoop-bucket
 - nickbudi/scoop-bucket
 - MCOfficer/scoop-bucket

@@ -4,25 +4,23 @@
     "homepage": "https://weixin.qq.com/",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://weixin.qq.com/cgi-bin/readtemplate?lang=zh_CN&t=weixin_agreement&s=default"
+        "url": "https://www.wechat.com/en/service_terms.html"
     },
     "url": "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
     "hash": "039a9dea901301d057db147a9971a2c2a2dc45084049c62b9104a8e76d47d68f",
     "pre_install": [
         "info '[Portable Mode]: Copying user data...'",
         "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    ensure \"$env:AppData\\Tencent\\WeChat\"",
         "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Tencent\\WeChat\\\" -Recurse -Force | Out-Null",
         "}"
     ],
-    "post_install": [
-        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
-        "Remove-Item \"$dir\\`$_15_\" -Force -Recurse",
-        "Remove-Item \"$dir\\`$R5\" -Force -Recurse"
-    ],
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall.exe\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
     "uninstaller": {
         "script": [
             "info '[Portable Mode]: Backing up user data...'",
             "if (Test-Path \"$env:AppData\\Tencent\\WeChat\\*\") {",
+            "    ensure \"$persist_dir\\User Data\"",
             "    Copy-Item \"$env:AppData\\Tencent\\WeChat\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
             "}"
         ]
@@ -36,7 +34,7 @@
     ],
     "checkver": {
         "url": "https://baoku.360.cn/soft/show/appid/103595847",
-        "regex": "<dd>([\\d.]+)</dd>"
+        "regex": "(?sm)版本.*?([\\d.]+)"
     },
     "autoupdate": {
         "url": "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z"

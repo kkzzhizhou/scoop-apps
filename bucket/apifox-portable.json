@@ -5,7 +5,6 @@
     "license": {
         "identifier": "Freeware"
     },
-    "depends": "sudo",
     "architecture": {
         "64bit": {
             "url": "http://cdn.apifox.cn/download/2.1.17/Apifox-2.1.17.exe#/dl.7z",
@@ -13,23 +12,23 @@
             "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal"
         }
     },
-    "hash": "",
     "pre_install": [
         "info '[Portable Mode]: Copying user data...'",
         "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    ensure \"$env:AppData\\apifox\" | Out-Null",
         "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\apifox\\\" -Recurse -Force | Out-Null",
         "}"
     ],
-    "post_install": "@('$PLUGINSDIR', '[NSIS].nsi', 'Uninstall Apifox.exe', 'uninstallerIcon.ico') | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force -ErrorAction SilentlyContinue }",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
     "uninstaller": {
         "script": [
             "info '[Portable Mode]: Backing up user data...'",
             "if (Test-Path \"$env:AppData\\apifox\\*\") {",
+            "    ensure \"$persist_dir\\User Data\" | Out-Null",
             "    Copy-Item \"$env:AppData\\apifox\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
             "}"
         ]
     },
-    "bin": "Apifox.exe",
     "shortcuts": [
         [
             "Apifox.exe",

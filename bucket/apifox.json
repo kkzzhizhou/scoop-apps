@@ -5,33 +5,26 @@
     "license": {
         "identifier": "Freeware"
     },
-    "depends": "sudo",
     "architecture": {
         "64bit": {
             "url": "http://cdn.apifox.cn/download/2.1.17/Apifox-2.1.17.exe#/installer.exe",
             "hash": "sha512:c91f680bc7ebf73e43c718fbca1ee86b18938ef3085c4b10c6cd7b026d29b5f965bdd946ab77177a48c3efbce6f181d248856a8810842d68afc8da076f64bf81",
-            "pre_install": [
-                "info 'Copying user data...'",
-                "if (Test-Path \"$persist_dir\\User Data\\*\") {",
-                "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\apifox\\\" -Recurse -Force | Out-Null",
-                "}"
-            ],
             "installer": {
-                "script": "Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+                "script": [
+                    "ensure \"$persist_dir\" | Out-Null",
+                    "New-Item \"$env:AppData\\apifox\" -ItemType Junction -Target \"$persist_dir\" | Out-Null",
+                    "Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+                ]
             },
-            "post_install": "@('installer.exe', 'uninstallerIcon.ico') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
+            "post_install": "Remove-Item \"$dir\\installer.exe\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
             "uninstaller": {
                 "script": [
-                    "Start-Process -filepath \"$dir\\Uninstall Apifox.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait",
-                    "info 'Backing up user data...'",
-                    "if (Test-Path \"$env:AppData\\apifox\\*\") {",
-                    "    Copy-Item \"$env:AppData\\apifox\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
-                    "}"
+                    "Remove-Item \"$env:AppData\\apifox\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+                    "Start-Process -filepath \"$dir\\Uninstall Apifox.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait"
                 ]
             }
         }
     },
-    "bin": "Apifox.exe",
     "shortcuts": [
         [
             "Apifox.exe",
