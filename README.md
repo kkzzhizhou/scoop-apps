@@ -82,8 +82,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wzv5/ScoopBucket
 - ACooper81/scoop-apps
 - ChungZH/peach
-- Ryanjiena/Meta
 - excitoon/scoop-user
+- Ryanjiena/Meta
 - naderi/scoop-bucket
 - 42wim/scoop-bucket
 - batkiz/backit
