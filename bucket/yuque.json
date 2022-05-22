@@ -1,57 +1,39 @@
 {
-    "version": "1.2.5",
-    "description": "Personal notetaking, knowledge creation, group collaboration, and knowledge management.",
-    "homepage": "https://www.yuque.com",
+    "homepage": "https://www.yuque.com/",
+    "description": "Professional note and document repositories",
+    "version": "1.0.3",
     "license": {
-        "identifier": "Proprietary",
+        "identifier": "EULA",
         "url": "https://www.yuque.com/terms"
     },
     "architecture": {
         "64bit": {
-            "url": "https://app.nlark.com/yuque-desktop/1.2.5/Yuque-1.2.5.exe#/installer.exe",
-            "hash": "1a06919c8594e442bba31fcdb13fc9464d7ff35f9d094e5d52b67284c53513b1",
-            "pre_install": [
-                "info 'Copying user data...'",
-                "if (Test-Path \"$persist_dir\\User Data\\*\") {",
-                "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\yuque-desktop\\\" -Recurse -Force | Out-Null",
-                "}"
-            ],
+            "url": "https://app.nlark.com/yuque-desktop/Yuque-1.0.3.exe#/Yuque_1.0.3.7z",
+            "hash": "4ef84c02a1248fb6dc7ac3e960d6f7f809869cbfe2bb94242610bc29dc96700b",
             "installer": {
-                "script": "Start-Process -filepath \"$dir\\installer.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S /D=$dir\" -Wait"
+                "script": [
+                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR/app-64.7z\" \"$dir\" -Removal",
+                    "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse"
+                ]
             }
         }
     },
-    "post_install": "@('installer.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
-    "uninstaller": {
-        "script": [
-            "Start-Process -filepath \"$dir\\Uninstall 语雀.exe\" -WorkingDirectory \"$dir\" -ArgumentList \"/S\" -Wait",
-            "info 'Backing up user data...'",
-            "if (Test-Path \"$env:AppData\\yuque-desktop\\*\") {",
-            "    Copy-Item \"$env:AppData\\yuque-desktop\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
-            "}"
-        ]
-    },
-    "bin": [
-        [
-            "语雀.exe",
-            "yuque"
-        ]
-    ],
     "shortcuts": [
         [
             "语雀.exe",
-            "Alibaba\\Yuque"
+            "语雀"
         ]
     ],
     "checkver": {
-        "url": "https://www.yuque.com/download",
-        "regex": "desktopDownloadVersion%22%3A%22([\\d.]+)"
+        "url": "https://www.yuque.com/install/desktop",
+        "regex": "Yuque-([\\d.]+).exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://app.nlark.com/yuque-desktop/$version/Yuque-$version.exe#/installer.exe"
+                "url": "https://app.nlark.com/yuque-desktop/Yuque-$version.exe#/Yuque_$version.7z"
             }
         }
-    }
+    },
+    "notes": "Your Yuque data are not persisted by Scoop and still storaged in '%APPDATA%\\yuque-desktop'."
 }

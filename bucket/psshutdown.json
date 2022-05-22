@@ -1,31 +1,33 @@
 {
-    "version": "2.53",
-    "description": "PsShutdown. Shutdown, logoff and power manage local and remote systems.",
-    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/psshutdown",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/",
+    "description": "Shuts down and optionally reboots a computer.",
     "license": {
         "identifier": "Freeware",
         "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
     },
-    "url": "https://live.sysinternals.com/PsShutdown.exe",
-    "hash": "f01468012f5de0fdbfa71202786085e7ef15237c80c9a9faaa5c30a3188cf385",
-    "pre_install": [
-        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
-        "$fin = \"$sysint\\PsShutdown\"",
-        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
-        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
-    ],
-    "uninstaller": {
-        "script": [
-            "if ($purge) {",
-            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
-            "    Remove-Item \"$sysInt\\PsShutdown\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
-            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
-            "}"
-        ]
+    "version": "2.52",
+    "url": "https://download.sysinternals.com/files/PSTools.zip",
+    "hash": "b9f404d4c7b6bf3a37746c66bcd014e75859d2fcf887b1db527ec3ed2ccdeb30",
+    "pre_install": "Get-ChildItem \"$dir\" | Where-Object {($_.Name -notlike 'psshutdown*') -and ($_.Name -notlike 'Eula.txt') -and $_.Name -notlike '*.chm'} | Remove-Item",
+    "checkver": {
+        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/psshutdown",
+        "re": "PsShutdown\\s(?:v|V)?([\\d.]+)"
     },
-    "bin": "PsShutdown.exe",
-    "checkver": "PsShutdown\\s+v([\\d.]+)</h1",
     "autoupdate": {
-        "url": "https://live.sysinternals.com/PsShutdown.exe"
+        "url": "https://download.sysinternals.com/files/PSTools.zip"
+    },
+    "architecture": {
+        "32bit": {
+            "bin": "psshutdown.exe"
+        },
+        "64bit": {
+            "bin": [
+                [
+                    "psshutdown64.exe",
+                    "psshutdown"
+                ],
+                "psshutdown64.exe"
+            ]
+        }
     }
 }
