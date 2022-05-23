@@ -71,10 +71,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - hoilc/scoop-lemon
 - Qv2ray/mochi
+- dodorz/scoop
 - Paxxs/Cluttered-bucket
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
-- dodorz/scoop
 - zhoujin7/tomato
 - scoopcn/scoopcn
 - borger/scoop-emulators
