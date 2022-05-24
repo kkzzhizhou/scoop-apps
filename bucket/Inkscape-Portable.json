@@ -1,19 +1,19 @@
 {
-    "version": "1.1.2",
+    "version": "1.2_2022-05-15",
     "description": "Inkscape. Professional vector graphics editor",
     "homepage": "https://inkscape.org",
     "license": "GPL-3.0-or-later",
     "changelog": "https://inkscape.org/release/",
     "architecture": {
         "64bit": {
-            "url": "https://inkscape.org/en/gallery/item/31717/inkscape-1.1.2_2022-02-04_0a00cf5339-x64.7z",
-            "hash": "6148552b90b27db8a096c4af1b75929111c7917fb23e1d155a5f8fd1c14e5494",
-            "extract_dir": "inkscape-1.1.2_2022-02-04_0a00cf5339-x64"
+            "url": "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64.7z",
+            "hash": "38b5b7687aeca2762e4026fbf5f4586582b5c832cc6a30f8bca608c509e8ac31",
+            "extract_dir": "inkscape-1.2_2022-05-15_dc2aedaf03-x64"
         },
         "32bit": {
-            "url": "https://inkscape.org/en/gallery/item/31711/InkscapePortable_1.1.2.paf.exe#/dl.7z",
-            "hash": "7af66101e3fc273a519a7a039611ea323f9f2b152ae4a7afbf7eb3e4a7d2c1f7",
-            "extract_dir": "App\\Inkscape"
+            "url": "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x86.7z",
+            "hash": "2befe7b80be2f101ed0d1e223730c0dd39746b230029b622607d832303be2f22",
+            "extract_dir": "inkscape-1.2_2022-05-15_dc2aedaf03-x86"
         }
     },
     "bin": [
@@ -29,24 +29,29 @@
     "checkver": {
         "script": [
             "$redirUrl = [System.Net.HttpWebRequest]::Create('https://inkscape.org/en/release').GetResponse().ResponseUri.AbsoluteUri",
-            "$scriptver = $redirUrl -split '\\/(inkscape-)?' | Select-Object -last 1 -skip 1",
-            "$32bit_dl = Invoke-WebRequest ($redirUrl + '/windows/32-bit/portable-app/dl/') -UseBasicParsing",
-            "$64bit_dl = Invoke-WebRequest ($redirUrl + '/windows/64-bit/compressed-7z/dl/') -UseBasicParsing",
-            "$32bit_url = $32bit_dl.links | Where-Object href -match '\\.exe$' | Select-Object -first 1 -expand href",
-            "$64bit_url = $64bit_dl.links | Where-Object href -match '\\.7z$' | Select-Object -first 1 -expand href",
-            "$inkscape_dir = ($64bit_url -split '/' | Select-Object -last 1) -split '.7z' | Select-Object -first 1",
-            "Write-Output $version $32bit_url $64bit_url $inkscape_dir"
+            "$test_dl = Invoke-WebRequest ($redirUrl + '/windows/64-bit/compressed-7z/dl/') -UseBasicParsing",
+            "$filename = ($test_dl.links | Where-Object href -match '\\.7z$' | Select-Object -first 1 -expand href) -split '/' | Select-Object -last 1",
+            "$clean_filename = $filename -replace '-(x86|x64)_\\w+\\.7z$'",
+            "$ink_version = $clean_filename -replace '^inkscape-([0-9_\\-.]+)_\\w+$','$1'",
+            "Write-Output $ink_version $clean_filename"
         ],
-        "regex": "(?<version>[\\d.]+)\\s(?<win32biturl>.+)\\s(?<win64biturl>.+)\\s(?<inkscapedir>.+)"
+        "regex": "(?<version>.+)\\s(?<cleanfilename>.+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://inkscape.org/en$matchWin64biturl",
-                "extract_dir": "$matchInkscapedir"
+                "url": "https://media.inkscape.org/dl/resources/file/$matchCleanfilename-x64.7z",
+                "extract_dir": "$matchCleanfilename-x64",
+                "hash": {
+                    "url": "https://media.inkscape.org/media/resources/sigs/$matchCleanfilename-x64.7z.sha256"
+                }
             },
             "32bit": {
-                "url": "https://inkscape.org/en$matchWin32biturl#/dl.7z"
+                "url": "https://media.inkscape.org/dl/resources/file/$matchCleanfilename-x86.7z",
+                "extract_dir": "$matchCleanfilename-x86",
+                "hash": {
+                    "url": "https://media.inkscape.org/media/resources/sigs/$matchCleanfilename-x86.7z.sha256"
+                }
             }
         }
     }

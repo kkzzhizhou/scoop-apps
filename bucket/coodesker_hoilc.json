@@ -1,0 +1,56 @@
+{
+    "version": "1.0.2.6",
+    "description": "Automatically organize your desktop shortcuts icons and running tasks.",
+    "homepage": "https://www.coodesker.com/",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/coodesker/coodesker-desktop/releases/download/v1.0.2.6/Coodesker-Portable-x64_1.0.2.6.zip",
+            "hash": "9688bbbc4f8727fb59641c047bb4e39b916444da1ad11df8593b36c08f8af81f",
+            "pre_install": "Rename-Item -Path \"$dir\\coodesker-x64.exe\" -NewName 'coodesker.exe'"
+        },
+        "32bit": {
+            "url": "https://github.com/coodesker/coodesker-desktop/releases/download/v1.0.2.6/Coodesker-Portable-x86_1.0.2.6.zip",
+            "hash": "c0b3ad87e38803ec195645bc9da5974dbb485b67c0d7efca259b1d15e2fb84d4"
+        }
+    },
+    "persist": "appdata",
+    "shortcuts": [
+        [
+            "coodesker.exe",
+            "Coodesker"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "if (Test-Path \"$persist_dir\\coodesker.reg\") { Write-Host 'Restoring config entries' ; try { reg import \"$persist_dir\\coodesker.reg\" 2>&1 1>$null } catch {} }",
+            "if (Test-Path \"$persist_dir\\appdata\\\") { Write-Host 'Restoring app data' ; ensure \"$env:APPDATA\\Coodesker\\\" ; Copy-Item -Recurse -Force \"$persist_dir\\appdata\\*\" \"$env:APPDATA\\Coodesker\\\"  | Out-Null }",
+            "Write-Host 'Disabling autoupdate'",
+            "try { reg add 'HKEY_CURRENT_USER\\Software\\Coodesker\\config' /v 'autoUpdate' /t 'REG_DWORD' /d '0' /f 2>&1 1>$null } catch {}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Write-Host 'Removing autorun entries'",
+            "try { reg delete 'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' /v 'Coodesker' /f 2>&1 1>$null } catch {}",
+            "Write-Host 'Backuping config entries'",
+            "try { reg export 'HKEY_CURRENT_USER\\Software\\Coodesker' \"$persist_dir\\coodesker.reg\" /y 2>&1 1>$null } catch {}",
+            "try { reg delete 'HKEY_CURRENT_USER\\Software\\Coodesker' /f 2>&1 1>$null } catch {}",
+            "Write-Host 'Backuping app data'",
+            "if (Test-Path \"$env:APPDATA\\Coodesker\") { Copy-Item -Recurse -Force \"$env:APPDATA\\Coodesker\\*\" \"$persist_dir\\appdata\\\" | Out-Null ; Remove-Item -Recurse -Force \"$env:APPDATA\\Coodesker\" }"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/coodesker/coodesker-desktop"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/coodesker/coodesker-desktop/releases/download/v$version/Coodesker-Portable-x64_$version.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/coodesker/coodesker-desktop/releases/download/v$version/Coodesker-Portable-x86_$version.zip"
+            }
+        }
+    }
+}
