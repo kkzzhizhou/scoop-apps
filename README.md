@@ -63,8 +63,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - rasa/scoops
 - MCOfficer/scoop-nirsoft
-- echoiron/echo-scoop
 - KNOXDEV/wsl
+- echoiron/echo-scoop
 - hermanjustnu/scoop-emulators
 - everyx/scoop-bucket
 - cderv/r-bucket
@@ -92,11 +92,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - liaoya/scoop-bucket
 - iquiw/scoop-bucket
 - littleli/Scoop-littleli
-- rivy/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
+- rivy/scoop-bucket
 - ddavness/scoop-roblox
 - alextwothousand/scoop-bucket
 - nickbudi/scoop-bucket
