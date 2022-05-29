@@ -69,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - everyx/scoop-bucket
 - cderv/r-bucket
 - TheRandomLabs/Scoop-Bucket
-- hoilc/scoop-lemon
 - Qv2ray/mochi
+- hoilc/scoop-lemon
 - dodorz/scoop
 - Paxxs/Cluttered-bucket
 - ZvonimirSun/scoop-iszy
@@ -91,6 +91,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - liaoya/scoop-bucket
 - iquiw/scoop-bucket
+- MCOfficer/scoop-bucket
 - littleli/Scoop-littleli
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
@@ -100,5 +101,4 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ddavness/scoop-roblox
 - alextwothousand/scoop-bucket
 - nickbudi/scoop-bucket
-- MCOfficer/scoop-bucket
 - Darkatse/Scoop-KanColle
