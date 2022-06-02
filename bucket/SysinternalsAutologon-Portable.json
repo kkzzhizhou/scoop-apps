@@ -1,0 +1,71 @@
+{
+    "version": "3.10",
+    "description": "Autologon. Windows built-in autologon mechanism configurator",
+    "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/autologon",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+    },
+    "url": "https://download.sysinternals.com/files/AutoLogon.zip",
+    "hash": "9a477624ea6488acfbd2cefcc392fac082383a3a8db1c6d867af1b410f4731b7",
+    "pre_install": [
+        "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+        "$fin = \"$sysint\\Autologon\"",
+        "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+        "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($purge) {",
+            "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+            "    Remove-Item \"$sysInt\\Autologon\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+            "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "Autologon64.exe",
+                [
+                    "Autologon64.exe",
+                    "Autologon"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "Autologon64.exe",
+                    "SysInternals\\Autologon"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "Autologon.exe",
+            "shortcuts": [
+                [
+                    "Autologon.exe",
+                    "SysInternals\\Autologon"
+                ]
+            ]
+        },
+        "arm64": {
+            "bin": [
+                "Autologon64a.exe",
+                [
+                    "Autologon64a.exe",
+                    "Autologon"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "Autologon64a.exe",
+                    "SysInternals\\Autologon"
+                ]
+            ]
+        }
+    },
+    "checkver": "Autologon\\s+v([\\d.]+)</h1",
+    "autoupdate": {
+        "url": "https://download.sysinternals.com/files/AutoLogon.zip"
+    }
+}

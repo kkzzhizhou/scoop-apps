@@ -69,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - everyx/scoop-bucket
 - cderv/r-bucket
 - TheRandomLabs/Scoop-Bucket
-- Qv2ray/mochi
 - hoilc/scoop-lemon
+- Qv2ray/mochi
 - Paxxs/Cluttered-bucket
 - dodorz/scoop
 - scoopcn/scoopcn
