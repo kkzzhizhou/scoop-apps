@@ -78,13 +78,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kiennq/scoop-misc
 - zhoujin7/tomato
 - borger/scoop-emulators
-- wzv5/ScoopBucket
 - ACooper81/scoop-apps
+- wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - ChungZH/peach
-- krproject/qi-windows
 - excitoon/scoop-user
+- krproject/qi-windows
 - 42wim/scoop-bucket
 - batkiz/backit
 - jfut/scoop-jfut
