@@ -1,26 +1,20 @@
 {
-    "version": "2022.06.0-daily+469",
-    "description": "An IDE for R with console, syntax-highlighting, editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
+    "version": "2022.06.0-daily+476",
     "homepage": "https://www.rstudio.com/",
+    "description": "An IDE for R, which includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
     "license": "AGPL-3.0-only",
-    "depends": "r",
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2022.06.0-daily-469.exe#/dl.7z",
-            "hash": "31d608222463bf3ea3063f3d891eb77ef4fbc82a47a11d846fc5e65a2ae1940e",
-            "post_install": [
-                "Remove-Item \"$dir\\`$*\" -Recurse",
-                "if (!(Test-Path \"$env:Appdata\\RStudio\")) {",
-                "    New-Item \"$env:Appdata\\RStudio\" -ItemType Directory -Force | Out-Null",
-                "    @(",
-                "        '[General]'",
-                "        \"RBinDir=`\"$(appdir r $global)\\current\\bin\\x64`\"\".Replace('\\', '/')",
-                "    ) | Add-Content -Path \"$env:Appdata\\RStudio\\desktop.ini\" -Encoding UTF8 -Force",
-                "}"
-            ]
+            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2022.06.0-daily-476.zip",
+            "hash": "e0e14e8f2d1c40ae4f35186582f165314e40c39135ad40f7345695d9de1cba44"
         }
     },
-    "bin": "bin\\rstudio.exe",
+    "bin": [
+        [
+            "bin\\rstudio.exe",
+            "rstudio-daily"
+        ]
+    ],
     "shortcuts": [
         [
             "bin\\rstudio.exe",
@@ -28,20 +22,21 @@
         ]
     ],
     "checkver": {
-        "url": "https://dailies.rstudio.com/version/",
-        "regex": "([\\d.]+)-daily&#43;(\\d+)",
-        "replace": "${1}-daily+${2}"
+        "url": "https://dailies.rstudio.com/rstudio/latest/index.json",
+        "jsonpath": ".products.desktop.platforms['windows-xcopy'].version",
+        "regex": "(?<date>[\\d.]+)(?<type>-(daily|preview))?\\+(?<build>\\d+)",
+        "replace": "${date}${type}+${build}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$match1-daily-$match2.exe#/dl.7z",
+                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$matchDate$matchType-$matchBuild.zip",
                 "hash": {
-                    "url": "https://dailies.rstudio.com/rstudio/prairie-trillium/desktop/windows/$majorVersion-$minorVersion-$patchVersion-daily-$match2/",
-                    "regex": "$sha256"
+                    "mode": "json",
+                    "jsonpath": ".products.desktop.platforms['windows-xcopy'].sha256",
+                    "url": "https://dailies.rstudio.com/rstudio/latest/index.json"
                 }
             }
         }
-    },
-    "##": "'autoupdate.architecture.64bit.hash.url' must be updated when RStudio daily builds' branch has been changed."
+    }
 }

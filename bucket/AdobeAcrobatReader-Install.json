@@ -9,8 +9,8 @@
     },
     "changelog": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html#AcrobatDCandAcrobatReaderDCContinuousTrackreleasenotes",
     "notes": "This manifest only installs and updates Adobe Acrobat Reader DC",
-    "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2200120117/AcroRdrDCUpd2200120117.msp#/setup.msp_",
-    "hash": "63e05b7f3f5a91371c1554613338d01265fff38fcc52c9aaf27a7fb220fb5c49",
+    "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2200120117/AcroRdrDCUpd2200120117_MUI.msp#/setup.msp_",
+    "hash": "89db8ae3537eff8879f3f035cd703595e82012327a170230b4e0deea77e1872d",
     "pre_download": "Assert-Administrator",
     "pre_install": [
         "$processname = \"AcroRd32\"",
@@ -33,17 +33,17 @@
             "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "{",
             "   $ProgramFilesX86Path = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
-            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $true) -and ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "   {",
-            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn') -RunAs | Out-Null",
+            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn', 'REINSTALLMODE=\"ecmus\"', 'REINSTALL=\"ALL\"') -RunAs | Out-Null",
             "   }",
             "   else",
             "   {",
-            "       $url = \"http://ardownload.adobe.com/pub/adobe/reader/win/AcrobatDC/1902120058/AcroRdrDC1902120058_en_US.exe\"",
+            "       $url = \"https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/1500720033/AcroRdrDC1500720033_MUI.exe\"",
             "       $destination = \"$dir\\setup.exe\"",
             "      (New-Object System.Net.WebClient).DownloadFile($url, $destination)",
             "       Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/sAll', '/rs', '/msi', '/qn', '/norestart', 'EULA_ACCEPT=YES') -RunAs | Out-Null",
-            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn') -RunAs | Out-Null",
+            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/qn', 'REINSTALLMODE=\"ecmus\"', 'REINSTALL=\"ALL\"') -RunAs | Out-Null",
             "       if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }",
             "   }",
             "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
@@ -63,6 +63,6 @@
         "regex": "<link rel=\"next\" title=\"([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/$cleanVersion/AcroRdrDCUpd$cleanVersion.msp#/setup.msp_"
+        "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/$cleanVersion/AcroRdrDCUpd$cleanVersion_MUI.msp#/setup.msp_"
     }
 }
