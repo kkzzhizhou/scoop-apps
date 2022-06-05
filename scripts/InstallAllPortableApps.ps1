@@ -1,0 +1,1 @@
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*Portable.json" | Select-Object BaseName | ForEach-Object {scoop install $_.BaseName}
