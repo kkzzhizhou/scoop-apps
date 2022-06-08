@@ -1,18 +1,19 @@
 {
-    "version": "2022.5.1.14",
-    "description": "GameMaker Studio 2. GameMaker has helped developers create much-loved and multi-million seller games",
-    "homepage": "https://www.yoyogames.com/en/gamemaker",
-    "license": "Proprietary",
-    "changelog": "https://gms.yoyogames.com/ReleaseNotes.html",
-    "architecture": {
-        "64bit": {
-            "url": "https://gms.yoyogames.com/GameMaker-Installer-2022.5.1.14.exe#/setup.exe",
-            "hash": "290ef971d0530bd7cd4357fe531159246b09f520a9ba60e7e3f70407c1fa92bb"
-        }
+    "version": "3.29.1",
+    "description": "Scratch. Educational drag-and-drop programming environment",
+    "homepage": "https://scratch.mit.edu/about",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://scratch.mit.edu/info/faq"
     },
-    "pre_download": "Assert-Administrator",
+    "changelog": "https://en.scratch-wiki.info/wiki/Scratch_Update_History",
+    "url": "https://downloads.scratch.mit.edu/desktop/Scratch%203.29.1%20Setup.exe#/setup.exe",
+    "hash": "dfca2f1a842aea69a2b0a22ca66fa7852f86259e3da4f576f8ae7fa16f1e9134",
+    "pre_download":[
+        "Assert-Administrator"
+    ],
     "pre_install": [
-        "$processname = \"GameMakerStudio\"",
+        "$processname = \"Scratch 3\"",
         "$process = Get-Process $processname -ErrorAction SilentlyContinue",
         "if ($process) {",
         "   $process.CloseMainWindow()",
@@ -25,11 +26,12 @@
     ],
     "installer": {
         "script": [
-            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
-            "$filepath = \"$ProgramFiles\\GameMaker Studio 2\\GameMaker.exe\"",
+            "$programname = \"Scratch*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Scratch 3\\Scratch 3.exe\"",
             "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "{",
-            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   &\"$dir\\setup.exe\" /S /allusers | Out-Null",
             "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "   {",
             "       exit 1",
@@ -39,19 +41,15 @@
         ]
     },
     "post_install": [
-        "$programname = \"GameMaker\"",
+        "$programname = \"Scratch*\"",
         "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
         "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
     ],
     "checkver": {
-        "url": "https://gmapi.gnysek.pl/",
-        "regex": "Current version is <b>([\\d.]+)"
+        "url": "https://api.github.com/repos/LLK/scratch-desktop/tags",
+        "regex": "refs/tags/v([\\d.]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://gms.yoyogames.com/GameMaker-Installer-$version.exe#/setup.exe"
-            }
-        }
+        "url": "https://downloads.scratch.mit.edu/desktop/Scratch%20$version%20Setup.exe#/setup.exe"
     }
 }
