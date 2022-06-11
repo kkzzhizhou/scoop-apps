@@ -1,23 +1,33 @@
 {
-    "homepage": "https://www.aliyundrive.com/",
     "version": "3.5.1",
-    "url": "https://tongyongxiezuo.oss-cn-zhangjiakou.aliyuncs.com/desktop/aDrive-desktop/3.5.1/update/win32/ia32/aDrive-3.5.1.exe#/dl.7z",
+    "description": "The official client for Alibaba's cloud dirve service",
+    "homepage": "https://www.aliyundrive.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://www.aliyundrive.com/protocol/service"
+    },
+    "url": "https://tongyongxiezuo.oss-cn-zhangjiakou.aliyuncs.com/desktop/aDrive-desktop/3.5.1/update/win32/ia32/aDrive-3.5.1.exe#/aDrive-3.5.1.7z",
     "hash": "sha512:845c7b718312d15827bfab96a65ebbc05ec9483a3422f81acd1f6786b902784008c865c0eeb9704945f2c235f94822a5ccdad873a9743ccbe49fc208c5523e8c",
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\" -Force -Recurse",
+    "post_install": [
+        "@('$PLUGINSDIR', '$TEMP') | ForEach-Object {",
+        "    Remove-Item \"$dir\\$_\" -Recurse -Force",
+        "}"
+    ],
     "shortcuts": [
         [
             "aDrive.exe",
-            "aliyun drive"
+            "阿里云盘"
         ]
     ],
     "checkver": {
-        "url": "https://api.nicoconi.com/updater/aliyundrive",
-        "regex": "version: (.+)"
+        "script": "return (iwr -useb \"$($(iwr -useb 'https://www.aliyundrive.com/desktop/version/update.json' | ConvertFrom-Json).url)/win32/ia32/latest.yml\")",
+        "re": "version: ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://tongyongxiezuo.oss-cn-zhangjiakou.aliyuncs.com/desktop/aDrive-desktop/$version/update/win32/ia32/aDrive-$version.exe#/dl.7z",
+        "url": "https://tongyongxiezuo.oss-cn-zhangjiakou.aliyuncs.com/desktop/aDrive-desktop/$version/update/win32/ia32/aDrive-$version.exe#/aDrive-$version.7z",
         "hash": {
-            "url": "https://api.nicoconi.com/updater/aliyundrive",
+            "url": "https://g.alicdn.com/aliyun-drive-fe/aliyun-drive-desktop-version/$version/win32/ia32/latest.yml",
+            "mode": "extract",
             "regex": "sha512: $base64"
         }
     }
