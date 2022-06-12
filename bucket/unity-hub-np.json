@@ -1,0 +1,50 @@
+{
+    "version": "3.1.2",
+    "description": "Management tool for Unity installations and projects",
+    "homepage": "https://docs.unity3d.com/Manual/GettingStartedInstallingHub.html",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://unity3d.com/legal/terms-of-service"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe#/setup.exe",
+            "hash": "4599168c0ea297996cc7c38514243fbee681210700e80b0681e65b497e4b00f2"
+        }
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/S', \"/D=`\"$dir`\"\") -RunAs | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Unity Hub.lnk\"",
+            "Remove-Item \"$Env:Public\\Desktop\\Unity Hub.lnk\"",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand \"$dir\\Uninstall Unity Hub.exe\" -ArgumentList @('/S') -RunAs | Out-Null",
+            "while (Get-Process 'Un_A' -ErrorAction SilentlyContinue) {",
+            "    Start-Sleep -Seconds 1",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Unity Hub.exe",
+            "Unity Hub"
+        ]
+    ],
+    "checkver": {
+        "url": "https://unity3d.com/hub/whats-new",
+        "regex": "([\\d.]+)</a></li>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe#/setup.exe"
+            }
+        }
+    }
+}
