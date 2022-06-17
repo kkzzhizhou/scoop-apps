@@ -91,13 +91,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - liaoya/scoop-bucket
 - iquiw/scoop-bucket
+- ScoopInstaller/Nonportable
 - MCOfficer/scoop-bucket
 - littleli/Scoop-littleli
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
-- ScoopInstaller/Nonportable
 - rivy/scoop-bucket
 - ddavness/scoop-roblox
 - alextwothousand/scoop-bucket
