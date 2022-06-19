@@ -19,6 +19,16 @@
             "hash": "c3de1f806d02353d9d70bfe62f3ae18be84c4d02f98f26c393db453abe91b88f"
         }
     },
+    "pre_install": [
+        "# Create directory for custom PHP configuration",
+        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
+    ],
     "bin": [
         "php.exe",
         "php-cgi.exe",
@@ -33,32 +43,5 @@
     ],
     "env_set": {
         "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
-    },
-    "pre_install": [
-        "# Create directory for custom PHP configuration",
-        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
-        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
-        "}"
-    ],
-    "post_install": [
-        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
-        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
-    ],
-    "checkver": {
-        "url": "https://windows.php.net/download/",
-        "regex": "<h3 id=\"php-7.4\".*?>.*?\\(([\\d.-]+)\\)</h3>"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://windows.php.net/downloads/releases/php-$version-Win32-VC15-x64.zip"
-            },
-            "32bit": {
-                "url": "https://windows.php.net/downloads/releases/php-$version-Win32-VC15-x86.zip"
-            }
-        },
-        "hash": {
-            "url": "$baseurl/sha256sum.txt"
-        }
     }
 }

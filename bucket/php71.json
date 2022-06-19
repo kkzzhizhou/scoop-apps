@@ -19,6 +19,16 @@
             "hash": "a2d5370b5d6f9125c3fab937f4b85aea8068875af30b8e3b665c633019a2a718"
         }
     },
+    "pre_install": [
+        "# Create directory for custom PHP configuration",
+        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
+    ],
     "bin": [
         "php.exe",
         "php-cgi.exe",
@@ -33,15 +43,5 @@
     ],
     "env_set": {
         "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
-    },
-    "pre_install": [
-        "# Create directory for custom PHP configuration",
-        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
-        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
-        "}"
-    ],
-    "post_install": [
-        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
-        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
-    ]
+    }
 }

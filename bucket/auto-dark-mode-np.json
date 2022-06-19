@@ -3,31 +3,22 @@
     "description": "Automatically switches between the dark and light theme of Windows 10 at scheduled times.",
     "homepage": "https://github.com/Armin2208/Windows-Auto-Night-Mode",
     "license": "GPL-3.0-only",
-    "url": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode/releases/download/10.1.0.10/AutoDarkModeX_10.1.0.10.exe",
-    "hash": "fa78d748e46fe81e6e3f19a5c54da424a6142f3e8b520684b41774af2e1b93f9",
+    "url": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode/releases/download/10.1.0.10/AutoDarkModeX_10.1.0.10.exe#/setup.exe",
+    "hash": "bb45e187b4842bfc5d25f838d6267c04cad6fbbfbd70f61113598fc243d1db49",
     "notes": "Settings need to be reapplied after updating.",
     "installer": {
         "script": [
-            "if ([Environment]::OSVersion.Version.Major -ne 10) {",
-            "   error \"$app only supports Windows 10.\"",
-            "   exit 1",
-            "}",
-            "",
-            "Invoke-ExternalCommand -FilePath \"$dir\\AutoDarkMode_v3_0_1_Setup.exe\" -ArgumentList @('/SP-', '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', \"/DIR=$dir\") -RunAs | Out-Null",
-            "Remove-Item \"$dir\\AutoDarkMode_v3_0_1_Setup.exe\""
+            "if ([Environment]::OSVersion.Version.Major -lt 10) { error \"$app only supports Windows 10\"; break }",
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/SP-', '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', \"/DIR=`\"$dir`\"\") -RunAs | Out-Null",
+            "Remove-Item \"$dir\\setup.exe\""
         ]
     },
     "uninstaller": {
-        "file": "unins000.exe",
-        "args": [
-            "/VERYSILENT",
-            "/SUPPRESSMSGBOXES",
-            "/NORESTART"
-        ]
+        "script": "Invoke-ExternalCommand \"$dir\\unins000.exe\" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -RunAs | Out-Null"
     },
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode/releases/download/$version/AutoDarkModeX_$version.exe",
+        "url": "https://github.com/AutoDarkMode/Windows-Auto-Night-Mode/releases/download/$version/AutoDarkModeX_$version.exe#/setup.exe",
         "hash": {
             "url": "$baseurl/AutoDarkModeX_$version.sha256"
         }

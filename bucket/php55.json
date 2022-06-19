@@ -6,6 +6,9 @@
         "identifier": "PHP-3.01",
         "url": "https://secure.php.net/license/"
     },
+    "suggest": {
+        "vcredist": "extras/vcredist2012"
+    },
     "architecture": {
         "64bit": {
             "url": "https://windows.php.net/downloads/releases/archives/php-5.5.38-Win32-VC11-x64.zip",
@@ -16,6 +19,16 @@
             "hash": "800a7e2be97aace568848e6bb91c93114ba59793a4f89c8756c66b975f2311be"
         }
     },
+    "pre_install": [
+        "# Create directory for custom PHP configuration",
+        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
+    ],
     "bin": [
         "php.exe",
         "php-cgi.exe",
@@ -30,18 +43,5 @@
     ],
     "env_set": {
         "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
-    },
-    "pre_install": [
-        "# Create directory for custom PHP configuration",
-        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
-        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
-        "}"
-    ],
-    "post_install": [
-        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
-        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
-    ],
-    "suggest": {
-        "vcredist": "extras/vcredist2012"
     }
 }

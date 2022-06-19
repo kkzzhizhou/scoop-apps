@@ -89,7 +89,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - jfut/scoop-jfut
 - mogeko/scoop-sysinternals
-- liaoya/scoop-bucket
 - iquiw/scoop-bucket
 - ScoopInstaller/Nonportable
 - MCOfficer/scoop-bucket
