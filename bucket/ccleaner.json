@@ -1,17 +1,58 @@
 {
-    "version": "6.0.9727",
-    "homepage": "https://www.ccleaner.com/ccleaner",
+    "version": "6.01.9825",
     "description": "Number-one tool for cleaning PC",
-    "license": "BSD-3-Clause",
-    "url": "https://code.aliyun.com/eft/sw/raw/main/src/ccleaner.7z",
-    "bin": "CCleaner.exe",
-    "persist": [
-        "CCleaner.ini"
+    "homepage": "https://www.ccleaner.com/ccleaner",
+    "license": "Freeware",
+    "url": "https://download.ccleaner.com/portable/ccsetup601.zip",
+    "hash": "e5d806dc3a71669850adcf5b06c14d0e65cb8d8f3fa3d4f7351cebec172decf3",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\ccleaner.ini\")) {",
+        "   Set-Content \"$dir\\ccleaner.ini\" @('[Options]', 'UpdateAuto=0', 'UpdateNotify=0', 'UpdateCheck=0', 'HelpImproveCCleaner=0') -Encoding ASCII",
+        "}",
+        "'winapp.ini', 'winreg.ini', 'winsys.ini' | ForEach-Object {",
+        "   if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+        "}",
+        "Copy-Item \"$persist_dir\\*\" \"$dir\" -Include 'branding.dll', 'CCleaner.dat' -ErrorAction SilentlyContinue"
     ],
-    "shortcuts": [
-        [
-            "CCleaner.exe",
-            "CCleaner"
-        ]
-    ]
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\*\" \"$persist_dir\" -Include 'branding.dll', 'CCleaner.dat' -ErrorAction SilentlyContinue -Force"
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                [
+                    "x64\\CCleaner64.exe",
+                    "CCleaner"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "x64\\CCleaner64.exe",
+                    "CCleaner"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "x86\\CCleaner.exe",
+            "shortcuts": [
+                [
+                    "x86\\CCleaner.exe",
+                    "CCleaner"
+                ]
+            ]
+        }
+    },
+    "persist": [
+        "ccleaner.ini",
+        "winapp.ini",
+        "winreg.ini",
+        "winsys.ini"
+    ],
+    "checkver": {
+        "url": "https://www.ccleaner.com/ccleaner/version-history",
+        "regex": ">v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.ccleaner.com/portable/ccsetup$majorVersion$minorVersion.zip"
+    }
 }

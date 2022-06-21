@@ -85,12 +85,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - 42wim/scoop-bucket
 - ChungZH/peach
 - krproject/qi-windows
+- ScoopInstaller/Nonportable
 - excitoon/scoop-user
 - batkiz/backit
 - jfut/scoop-jfut
 - mogeko/scoop-sysinternals
 - iquiw/scoop-bucket
-- ScoopInstaller/Nonportable
 - MCOfficer/scoop-bucket
 - littleli/Scoop-littleli
 - Apocalypsor/My-Scoop-Bucket
