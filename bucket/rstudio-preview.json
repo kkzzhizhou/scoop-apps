@@ -1,27 +1,20 @@
 {
-    "version": "2022.02.3+492",
-    "description": "An IDE for R with console, syntax-highlighting, editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
-    "homepage": "https://www.rstudio.com",
+    "version": "2022.07.0-preview+536",
+    "homepage": "https://www.rstudio.com/",
+    "description": "An IDE for R, which includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
     "license": "AGPL-3.0-only",
-    "notes": "For 32bit, please install 'versions/rstudio11",
-    "depends": "r",
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2022.02.3-492.exe#/dl.7z",
-            "hash": "4b7f0e3e773a7cdb3fb2e24fe66668629104092015d88b67b679ce2c9fb18671",
-            "post_install": [
-                "Remove-Item \"$dir\\`$*\" -Recurse",
-                "if (!(Test-Path \"$env:Appdata\\RStudio\")) {",
-                "    New-Item \"$env:Appdata\\RStudio\" -ItemType Directory -Force | Out-Null",
-                "    @(",
-                "        '[General]'",
-                "        \"RBinDir=`\"$(appdir r $global)\\current\\bin\\x64`\"\".Replace('\\', '/')",
-                "    ) | Add-Content -Path \"$env:Appdata\\RStudio\\desktop.ini\" -Encoding UTF8 -Force",
-                "}"
-            ]
+            "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-2022.07.0-preview-536.zip",
+            "hash": "1290df57128f6d3760326dccbf6d8e1f7a5438643673121fa28252e57c0e78e8"
         }
     },
-    "bin": "bin\\rstudio.exe",
+    "bin": [
+        [
+            "bin\\rstudio.exe",
+            "rstudio-preview"
+        ]
+    ],
     "shortcuts": [
         [
             "bin\\rstudio.exe",
@@ -30,18 +23,18 @@
     ],
     "checkver": {
         "url": "https://www.rstudio.com/products/rstudio/download/preview/",
-        "regex": "windows/RStudio-([\\d.]+)-(\\d+)\\.exe",
-        "replace": "${1}+${2}"
+        "regex": "RStudio (?<date>[\\d.]+)(?<type>-(daily|preview))?(?:&#43;)(?<build>\\d+) - Windows",
+        "replace": "${date}${type}+${build}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$match1-$match2.exe#/dl.7z",
-                "hash": {
-                    "url": "https://www.rstudio.com/products/rstudio/download/preview/",
-                    "regex": "(?s)/windows/.*?exe.*?$sha256"
-                }
+                "url": "https://s3.amazonaws.com/rstudio-ide-build/desktop/windows/RStudio-$matchDate$matchType-$matchBuild.zip"
             }
+        },
+        "hash": {
+            "url": "https://www.rstudio.com/products/rstudio/download/preview/",
+            "find": "(?s)$url.*?data-content=\"$sha256\""
         }
     }
 }
