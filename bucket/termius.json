@@ -1,32 +1,34 @@
 {
-    "homepage": "https://termius.com/",
-    "description": "Termius is a multi-platform SSH client with syncing between mobile and desktop.",
     "version": "7.42.2",
-    "license": "Commercial",
-    "url": "https://autoupdate.termius.com/win/Termius.exe",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive \"$dir\\Termius.exe\" \"$dir\"",
-            "if ([Environment]::Is64BitOperatingSystem) { ",
-            "  Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-            "} else {",
-            "  Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
-            "}"
-        ]
+    "description": "Modern SSH client",
+    "homepage": "https://www.termius.com",
+    "license": "Unknown",
+    "url": "https://autoupdate.termius.com/windows/Termius.exe#/dl.7z",
+    "hash": "sha512:23a2b0780611ca82143ef66a70394ac80eb74057cac0c83ffcb5f19025f427d019f68e791f841bae43f753aa1cf1c48f76612abd3d0ae7d0ad9bbf1732d69a27",
+    "architecture": {
+        "64bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        },
+        "32bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+        }
     },
-    "hash": "8564d681670430ed779f1d1e5529cc27a63b516d9b5f20c29c137a2a50ea7964",
-    "bin": "Termius.exe",
-    "checkver": {
-        "url": "https://termius.com/windows",
-        "regex": "Version ([\\d.]+)"
-    },
-    "autoupdate": {
-        "url": "https://autoupdate.termius.com/win/Termius.exe"
-    },
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse",
     "shortcuts": [
         [
             "Termius.exe",
             "Termius"
         ]
-    ]
+    ],
+    "checkver": {
+        "url": "https://autoupdate.termius.com/windows/latest.yml",
+        "regex": "version:\\s*([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://autoupdate.termius.com/windows/Termius.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
 }

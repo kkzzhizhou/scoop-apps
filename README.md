@@ -45,7 +45,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 
 ## 合并仓库列表
 
-- kkzzhizhou/scoop-zapps
 - ScoopInstaller/Extras
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
@@ -70,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - everyx/scoop-bucket
 - cderv/r-bucket
 - TheRandomLabs/Scoop-Bucket
-- hoilc/scoop-lemon
 - Paxxs/Cluttered-bucket
+- hoilc/scoop-lemon
 - Qv2ray/mochi
 - dodorz/scoop
 - kiennq/scoop-misc
@@ -83,8 +82,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ACooper81/scoop-apps
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
-- 42wim/scoop-bucket
 - ChungZH/peach
+- 42wim/scoop-bucket
 - krproject/qi-windows
 - ScoopInstaller/Nonportable
 - excitoon/scoop-user
