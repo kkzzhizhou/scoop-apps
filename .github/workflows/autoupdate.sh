@@ -10,6 +10,9 @@
 # get bucket from rasa/scoop-directory
 gen_bucket_config(){
     rm -f bucket.config
+    # import bucket-recommand.txt
+    cp -f bucket--recommand.txt bucket.config
+    # get bucket from rasa/scoop-directory
     wget https://github.com/rasa/scoop-directory/raw/master/scoop_directory.db
     if [ $? -eq 0 ];then
         count=$(sqlite3 ./scoop_directory.db "select count(1) from buckets");
@@ -25,7 +28,6 @@ gen_bucket_config(){
             echo "add bucket:$bucket_name"
             echo "$bucket_name" >> bucket.config
         done
-        sed -i '1ikkzzhizhou/scoop-zapps' bucket.config
     fi
 }
 
