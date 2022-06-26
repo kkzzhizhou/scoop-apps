@@ -1,4 +1,4 @@
-Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-UserInstall.json" | Select-Object BaseName | ForEach-Object {scoop install $_.BaseName}
-Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-UserManualInstall.json" | Select-Object BaseName | ForEach-Object {scoop install $_.BaseName}
-Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-Install.json" | Select-Object BaseName | ForEach-Object {scoop install $_.BaseName -g}
-Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-ManualInstall.json" | Select-Object BaseName | ForEach-Object {scoop install $_.BaseName -g}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-UserInstall.json" | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("$env:userprofile\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-UserManualInstall.json" | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("$env:userprofile\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-Install.json" | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("C:\ProgramData\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName -g}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Filter "*-ManualInstall.json" | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("C:\ProgramData\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName -g}}
