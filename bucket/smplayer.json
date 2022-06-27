@@ -1,28 +1,29 @@
 {
-    "version": "22.2.0",
-    "description": "SMPlayer is a free media player for Windows and Linux with built-in codecs that can play virtually all video and audio formats. ",
+    "version": "22.2.0.0",
+    "description": "A video player forked from MPV. It can also play Youtube videos, search and download subtitles, and includes other features like a thumbnail generator and audio and video filters.",
     "homepage": "https://www.smplayer.info/",
-    "license": "GPL-2.0-only",
+    "license": "GPL-2.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://downloads.sourceforge.net/project/smplayer/SMPlayer/22.2.0/smplayer-portable-22.2.0.0-x64.7z",
-            "hash": "sha1:15c6244abfe2f6454485c7fb00b1604749d55eba"
+            "url": "https://www.fosshub.com/SMPlayer.html?dwl=smplayer-portable-22.2.0.0-x64.7z",
+            "hash": "c054f61eddc3ac97b0ce03c3001e6e080a9e6543de999a071df17e2a7fe3618d"
         },
         "32bit": {
-            "url": "https://downloads.sourceforge.net/project/smplayer/SMPlayer/22.2.0/smplayer-portable-22.2.0.0-win32-qt5.6.7z",
-            "hash": "sha1:171ebf05d55c3705b4d838cebe0015404f698896"
+            "url": "https://www.fosshub.com/SMPlayer.html?dwl=smplayer-portable-22.2.0.0-win32-qt5.6.7z",
+            "hash": "be10cdc34a9b6282e1e91e9b789825a11939576750f1d5be839e2a4892532402"
         }
     },
-    "extract_dir": "smplayer-portable",
-    "persist": [
-        "smplayer.ini",
-        "playlist.ini",
-        "player_info.ini",
-        "hdpi.ini",
-        "favorites.m3u8",
-        "radio.m3u8",
-        "tv.m3u8",
-        "file_settings"
+    "pre_install": [
+        "Rename-Item \"$dir\\SMPlayer.html\" 'dl.7z'",
+        "Expand-7zipArchive \"$dir\\dl.7z\" \"$dir\" -ExtractDir 'smplayer-portable' -Removal | Out-Null",
+        "'hdpi.ini', 'playlist.ini', 'favorites.m3u8', 'radio.m3u8', 'tv.m3u8' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+        "}",
+        "if (Test-Path \"$persist_dir\\smplayer.ini\") { Copy-Item \"$persist_dir\\smplayer.ini\" \"$dir\\smplayer.ini\" }"
+    ],
+    "pre_uninstall": [
+        "# The following must be done as SMPlayer deletes the original file which was linked to the persist folder when it saves settings, rather than editing the file.",
+        "Copy-Item \"$dir\\smplayer.ini\" \"$persist_dir\\smplayer.ini\""
     ],
     "shortcuts": [
         [
@@ -30,23 +31,25 @@
             "SMPlayer"
         ]
     ],
+    "persist": [
+        "screenshots",
+        "hdpi.ini",
+        "playlist.ini",
+        "favorites.m3u8",
+        "radio.m3u8",
+        "tv.m3u8"
+    ],
     "checkver": {
-        "url": "https://www.smplayer.info/en/downloads",
-        "regex": "Click here to download SMPlayer ([\\d.]+) \\(64-bit\\)"
+        "url": "https://www.fosshub.com/SMPlayer.html",
+        "regex": "smplayer-portable-([\\d.]+)-win32-qt(?<qtversion>[\\d.]+)\\.7z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://downloads.sourceforge.net/project/smplayer/SMPlayer/$version/smplayer-portable-$version.0-x64.7z",
-                "hash": {
-                    "mode": "fosshub"
-                }
+                "url": "https://www.fosshub.com/SMPlayer.html?dwl=smplayer-portable-$version-x64.7z"
             },
             "32bit": {
-                "url": "https://downloads.sourceforge.net/project/smplayer/SMPlayer/$version/smplayer-portable-$version.0-win32-qt5.6.7z",
-                "hash": {
-                    "mode": "fosshub"
-                }
+                "url": "https://www.fosshub.com/SMPlayer.html?dwl=smplayer-portable-$version-win32-qt$matchQtversion.7z"
             }
         }
     }
