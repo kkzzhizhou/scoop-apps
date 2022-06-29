@@ -1,0 +1,49 @@
+{
+    "version": "63f74691",
+    "description": "Non-linear video editor aiming to provide a fully-featured alternative to high-end professional video editing software.",
+    "homepage": "https://olivevideoeditor.org",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://nightly.link/olive-editor/olive/workflows/ci/master/Olive-63f74691-Windows-x86_64.zip.zip",
+            "hash": "f801cde4dc0727446ec689eaebe2693a1b1b603edacfe580973a1c6c52ad6ebf"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive -Path \"$dir\\Olive*.zip\" -ExtractDir 'olive-editor' -Removal",
+        "if (!(Test-Path \"$persist_dir\\config.xml\")) {",
+        "   '<Configuration></Configuration>' | Out-File -FilePath \"$dir\\config.xml\"",
+        "   New-Item \"$dir\\shortcuts\" -ItemType File | Out-Null",
+        "}",
+        "New-Item \"$dir\\portable\" -ErrorAction SilentlyContinue | Out-Null"
+    ],
+    "pre_uninstall": [
+        "# The following must be done as Olive Editor Nightly deletes the original file which was linked to the persist folder when it saves settings, rather than editing the file. It also deletes the shortcut file if it is empty, previously causing errors on uninstallation.",
+        "Copy-Item \"$dir\\config.xml\" \"$persist_dir\\config.xml\" -ErrorAction SilentlyContinue",
+        "if (!(Test-Path \"$dir\\shortcuts\")) {",
+        "   New-Item \"$dir\\shortcuts\" -ItemType File | Out-Null",
+        "}"
+    ],
+    "bin": "olive-editor.exe",
+    "shortcuts": [
+        [
+            "olive-editor.exe",
+            "Olive Editor Nightly"
+        ]
+    ],
+    "persist": [
+        "config.xml",
+        "shortcuts"
+    ],
+    "checkver": {
+        "url": "https://nightly.link/olive-editor/olive/workflows/ci/master",
+        "regex": ">Olive-([\\d\\w]{8})-Windows-x86_64\\.zip</a>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://nightly.link/olive-editor/olive/workflows/ci/master/Olive-$matchVersion-Windows-x86_64.zip.zip"
+            }
+        }
+    }
+}
