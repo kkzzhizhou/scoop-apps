@@ -24,8 +24,8 @@
 
 - 可接受仓库推荐，提交pr至bucket-recommend.txt即可。
 - 未对仓库软件来源进行安全检验，请自行甄别恶意软件，或者使用杀毒软件
-- 不接受Pull requests，请参考仓库根路径的app-contributor-list.csv到相应的仓库提交pull requests
-- 不接受不维护仓库清理等相关Issues
+- 如果有软件安装问题，请参考仓库根路径的app-contributor-list.csv到相应的仓库提交pull requests
+- 不接受"已不维护的仓库进行清理"的Issues
 
 ## 使用方法
 
