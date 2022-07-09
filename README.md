@@ -66,6 +66,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/scoop-clojure
 - kidonng/sushi
 - rasa/scoops
+- kkzzhizhou/scoop-zapps
 - MCOfficer/scoop-nirsoft
 - echoiron/echo-scoop
 - KNOXDEV/wsl
