@@ -2,7 +2,7 @@
 ###
  # @Author: zzz
  # @Date: 2021-03-03 05:13:39
- # LastEditTime: 2022-05-12 17:15:12
+ # LastEditTime: 2022-07-09 09:56:00
  # @Description: autoupdate bucket:scoop-apps
  # @FilePath: /data/scoop-apps/autoupdate.sh
 ###
@@ -74,6 +74,7 @@ add_to_bucket(){
 
 # init main bucket
 init_main(){
+    clean_workspace
     rm -rf ${cache_dir}/Main
     git clone --depth=1 https://github.com/ScoopInstaller/Main  ${cache_dir}/Main
     files=$(find ${cache_dir}/Main -type f -name *.json -not -path "${cache_dir}/$bucket_dir/.vscode/*")
@@ -130,7 +131,6 @@ create_cache_dir(){
 
 # merge buckets
 merge_buckets(){
-    clean_workspace
     buckets=$(cat bucket.config)
     for bucket in ${buckets[@]}
     do
