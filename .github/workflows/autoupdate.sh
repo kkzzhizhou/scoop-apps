@@ -22,13 +22,22 @@ gen_bucket_config(){
             sqlite3 ./scoop_directory.db "UPDATE buckets SET updated = '$date_recode' where id = $i"
         done
         check_date=$(date +"%y-%m-%d" -d '1 month ago')
-        bucket_urls=$(sqlite3 ./scoop_directory.db "select bucket_url from buckets where packages >= 10 and stars >= 5 and updated > '$check_date' and bucket_url not like '%ScoopInstaller/Main%' and bucket_url not like '%kkzzhizhou/scoop-zapps%' order by stars desc, updated desc, stars desc")
+        bucket_urls=$(sqlite3 ./scoop_directory.db "select bucket_url from buckets where packages >= 10 and stars >= 5 and updated > '$check_date' and bucket_url not like '%ScoopInstaller/Main%' order by stars desc, updated desc, stars desc")
         for bucket_url in ${bucket_urls[@]}; do
             bucket_name=$(echo $bucket_url | awk -F'/' '{print $(NF-1)"/"$NF}')
             echo "add bucket:$bucket_name"
             echo "$bucket_name" >> bucket.config
         done
     fi
+    # bucket remove duplicate
+    awk ' !x[$0]++' bucket.config
+    # remove bucket-not-recommand.txt
+    not_recommand_buckets=$(cat bucket-not-recommand.txt)
+    for bucket in ${not_recommnand_buckets[@]}
+    do
+        echo "remove bucket:$bucket"
+	grep -n "$bucket" bucket.config | awk -F':' '{print $1}' | xargs -n 1 -I num sed -i  'numd' bucket.config
+    done
 }
 
 # download bucket
