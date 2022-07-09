@@ -48,6 +48,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 
 - kkzzhizhou/scoop-zapps
 - HCLonely/my-scoop-bucket
+- Weidows-projects/scoop-3rd
 - ScoopInstaller/Extras
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
@@ -66,8 +67,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - rasa/scoops
 - MCOfficer/scoop-nirsoft
-- KNOXDEV/wsl
 - echoiron/echo-scoop
+- KNOXDEV/wsl
 - hermanjustnu/scoop-emulators
 - everyx/scoop-bucket
 - cderv/r-bucket

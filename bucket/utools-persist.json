@@ -1,0 +1,76 @@
+{
+    "homepage": "https://u.tools/",
+    "description": "新一代效率工具平台",
+    "license": "Unknown",
+    "version": "2.6.3",
+    "architecture": {
+        "64bit": {
+            "url": "https://publish.u-tools.cn/version2/uTools-2.6.3.exe#/dl.7z",
+            "hash": "sha512:23ab2330132ad26fc6a9344d303547948ba1534ac7d5d223cff0a85bf1f4a82087ab5a79ad82a11a0d52276a56b6d2f12fbffe2935665f07f2689148dd62ff43",
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+            }
+        },
+        "32bit": {
+            "url": "https://publish.u-tools.cn/version2/uTools-2.6.3-ia32.exe#/dl.7z",
+            "hash": "sha512:82dc4fb7f898afecae61f7cc895bc4b763e9a4cfbe474a2b0bc126b8bc5e4580d582282d8b014e3caa872285ecb7e4443d720f25a00666b21ee3745af12c7d6f",
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\"",
+        "$runtimeCache = \"$env:APPDATA\\uTools\"",
+        "$runtimeCachePersist = \"$persist_dir\\data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "} else {",
+        "    if (Test-Path $runtimeCache) {",
+        "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\uTools\"",
+            "$runtimeCachePersist = \"$persist_dir\\data\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "uTools.exe",
+            "uTools"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://publish.u-tools.cn/version2/latest.yml",
+        "regex": "version: (.+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://publish.u-tools.cn/version2/uTools-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "https://publish.u-tools.cn/version2/latest.yml",
+                    "regex": "sha512: $base64"
+                }
+            },
+            "32bit": {
+                "url": "https://publish.u-tools.cn/version2/uTools-$version-ia32.exe#/dl.7z",
+                "hash": {
+                    "url": "https://publish.u-tools.cn/version2/latest-ia32.yml",
+                    "regex": "sha512: $base64"
+                }
+            }
+        }
+    }
+}
