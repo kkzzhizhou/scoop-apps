@@ -1,25 +1,34 @@
 {
-    "homepage": "https://github.com/LSPosed/MagiskOnWSA",
+    "homepage": "https://github.com/kkzzhizhou/MagiskOnWSA",
     "description": "Integrate Magisk root and Google Apps (OpenGApps) into WSA (Windows Subsystem for Android)",
-    "version": "2203.40000.1.0",
+    "version": "2204.40000.20.0",
+    "extract_dir": "x64",
     "depends": [
         "sudo",
         "winget"
     ],
-    "url": "https://nchc.dl.sourceforge.net/project/zapps/WSA-with-magisk-GApps-pico/WSA-with-magisk-GApps-pico_2203.40000.1.0_x64_Release-Nightly.zip",
-    "hash": "f6d5e1bf73c94e64494b05c8c00c29043ecafef4f1da5248ca6e2c5261f1b862",
-    "checkver": {
-        "url": "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/versions/WSA-with-magisk-GApps-pico.latest",
-        "regex": "([\\d.]+)"
-    },
+    "url": "https://github.com/kkzzhizhou/MagiskOnWSA/releases/download/2204.40000.20.0/WSA-with-magisk-GApps-pico_2204.40000.20.0_x64_Release-Nightly.zip",
+    "hash": "c931859732143cbbcfe7b7615804d525e7f378474bcd8471c778790fdf045d3f",
+    "checkver": "github",
+    "pre_install": [
+        "if(!(test-path $persist_dir)) { mkdir $persist_dir > $null }",
+        "sudo Add-AppxPackage $dir\\xaml.appx",
+        "sudo Add-AppxPackage $dir\\vclibs.appx"
+    ],
     "autoupdate": {
-        "url": "https://nchc.dl.sourceforge.net/project/zapps/WSA-with-magisk-GApps-pico/WSA-with-magisk-GApps-pico_$version_x64_Release-Nightly.zip"
+        "url": "https://github.com/kkzzhizhou/MagiskOnWSA/releases/download/$version/WSA-with-magisk-GApps-pico_$version_x64_Release-Nightly.zip",
+        "hash": {
+            "url": "$url.sha256",
+            "regex": "$sha256"
+        }
     },
     "installer": {
         "script": "sudo Add-AppxPackage -Register $dir\\AppxManifest.xml"
     },
+    "post_install": "Copy-Item -ErrorAction Ignore $persist_dir\\userdata.vhdx $env:userprofile\\AppData\\Local\\Packages\\MicrosoftCorporationII.WindowsSubsystemForAndroid_8wekyb3d8bbwe\\LocalCache\\ -Force",
     "uninstaller": {
         "script": [
+            "Copy-Item -ErrorAction Ignore $env:userprofile\\AppData\\Local\\Packages\\MicrosoftCorporationII.WindowsSubsystemForAndroid_8wekyb3d8bbwe\\LocalCache\\userdata.vhdx $persist_dir\\ -Force",
             "winget uninstall \"Windows Subsystem for AndroidTM\""
         ]
     }

@@ -13,7 +13,7 @@
     "pre_install": [
         "if (-not $global) {",
         "    Write-Host -Foreground Red \"$app should be installed globally.\"",
-        "    exit 1",
+        "    break",
         "}"
     ],
     "installer": {
@@ -34,7 +34,10 @@
         ]
     },
     "uninstaller": {
-        "script": "Invoke-ExternalCommand pnputil -ArgumentList @('/delete-driver', \"$dir\\btrfs.inf\", '/uninstall', '/force') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null"
+        "script": [
+            "if ($cmd -ne 'uninstall') { return }",
+            "Invoke-ExternalCommand pnputil -ArgumentList @('/delete-driver', \"$dir\\btrfs.inf\", '/uninstall', '/force') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null"
+        ]
     },
     "checkver": "github",
     "autoupdate": {
