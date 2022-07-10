@@ -1,0 +1,74 @@
+{
+    "version": "2.152",
+    "description": "An open-source Traditional Chinese font. Combination of LXGW WenKai TC (霞鹜文楷 TC) and Ysabeau Office",
+    "homepage": "https://github.com/lxgw/LxgwBright",
+    "license": "OFL-1.1",
+    "url": [
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Italic.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Medium.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-MediumItalic.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Regular.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-SemiLight.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-SemiLightItalic.otf"
+    ],
+    "hash": [
+        "82a23d1a2232e37c59d998b9f6f29f8b941e85136b829c3374c62ecbca92b249",
+        "447ea5ef2657f0f68ecfc37393409050624e43fb995bdb9fb8377f1d3c99680d",
+        "df670f43c7956d65b074687c0ae7b937a97a1a4dc6d82c11e06584e7b89dcc63",
+        "4afe87da80ca5fd8a102349dc5994f82b99a42dd4b9881480f93ff7f7993985f",
+        "67b515c814473a940051219ad4a5f98dc68ded3751de382de72db4701104e97c",
+        "f6fc837ecd4c1f458d69e886a91058802bcb8773b551cfa84b6bf23c5a08d072"
+    ],
+    "installer": {
+        "script": [
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+            "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+            "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+            "    Copy-Item $_.FullName -Destination $fontInstallDir",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"Font family 'LXGW Bright Classic' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Italic.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Medium.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-MediumItalic.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-Regular.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-SemiLight.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/main/OTF/LXGWBrightClassic-SemiLightItalic.otf"
+        ]
+    }
+}
