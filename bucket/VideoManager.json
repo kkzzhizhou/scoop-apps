@@ -1,0 +1,51 @@
+{
+    "version": "1.2.5",
+    "description": "视频的裁剪,标记与搜索结合一体的软件",
+    "homepage": "https://github.com/hunmer/VideoManager",
+    "license": "Creative Commons Zero v1.0 Universal",
+    "url": "https://github.com/hunmer/VideoManager/releases/download/v1.2.5/videoManager.Setup.1.2.5.64bit.exe#/dl.7z",
+    "hash": "665b17b21e06c1e0bfa10713a19cd1799d91076ce3b9ad35ed443b83039608f5",
+    "installer": {
+        "script": [
+            "# Expand-7zipArchive",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\videoManager\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\videoManager\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "videoManager.exe",
+            "Video Manager"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/hunmer/VideoManager/releases/download/v$version/videoManager.Setup.$version.64bit.exe#/dl.7z"
+    }
+}

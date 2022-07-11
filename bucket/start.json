@@ -1,0 +1,60 @@
+{
+    "version": "0.11.0.7687",
+    "description": "云游戏, 让好玩触手可及",
+    "homepage": "https://start.qq.com/",
+    "license": "Unknown",
+    "url": "https://imgcdn.start.qq.com/cdn/win.client/installer/START-installer-v0.11.0.7687.exe#/dl.7z",
+    "hash": "md5:2d0255cc0677e19685a6a0efb604f653",
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\"",
+            "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
+            "Remove-Item -Force -Recurse \"$dir\\app.7z\"",
+            "Remove-Item -Force -Recurse \"$dir\\uninst*\"",
+            "Remove-Item -Force -Recurse \"$dir\\logo*\"",
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\Tencent\\START\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\Tencent\\START\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "START.exe",
+            "START"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.start.qq.com/cfg/get?biztypes=windows-update-info-0",
+        "regex": "latestversion.*?([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://imgcdn.start.qq.com/cdn/win.client/installer/START-installer-v$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://api.start.qq.com/cfg/get?biztypes=windows-update-info-0",
+            "regex": "hashcode.*?$md5"
+        }
+    }
+}

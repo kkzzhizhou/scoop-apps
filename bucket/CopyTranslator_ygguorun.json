@@ -1,0 +1,51 @@
+{
+    "version": "10.0.1",
+    "description": "Foreign language reading and translation assistant based on copy and translate.",
+    "homepage": "https://github.com/CopyTranslator/CopyTranslator",
+    "license": "Unknown",
+    "url": "https://github.com/CopyTranslator/CopyTranslator/releases/download/v10.0.1/copytranslator-10.0.1-win.zip",
+    "hash": "865abf294969c45b4b1941b36016d1203adab3a9e751d825c74b2ac4c11e6144",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\copytranslator\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\copytranslator\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "copytranslator.exe",
+            "CopyTranslator"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/CopyTranslator/CopyTranslator/releases",
+        "regex": "\"tag_name\":\"v(.*?)\""
+    },
+    "autoupdate": {
+        "url": "https://github.com/CopyTranslator/CopyTranslator/releases/download/v$version/copytranslator-$version-win.zip"
+    }
+}
