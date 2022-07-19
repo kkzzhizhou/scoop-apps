@@ -1,0 +1,41 @@
+{
+    "version": "1.2-20220715",
+    "description": "Modified spotify client. Blocks ads and updates, and more.",
+    "homepage": "https://github.com/amd64fox/SpotX/",
+    "license": "MIT",
+    "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1",
+    "hash": "830e64d8e9c2d0cceea389ff2123d3ea19edc9ce1783e1b0de12c78fac4f128f",
+    "installer": {
+        "script": [
+            "# older versions of Powershell 5 requires BOM to recognize UTF8 scripts",
+            "$cont = Get-Content \"$dir\\Install.ps1\" -Encoding utf8",
+            "Set-Content \"$dir\\Install.ps1\" $cont -Encoding utf8",
+            "& \"$dir\\Install.ps1\" -confirm_uninstall_ms_spoti -confirm_spoti_recomended_over -podcasts_off -cache_off -block_update_on",
+            "Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\Spotify.lnk\""
+        ]
+    },
+    "uninstaller": {
+        "script": "Invoke-ExternalCommand \"$Env:Appdata\\Spotify\\Spotify.exe\" -ArgumentList @('/uninstall', '/silent') | Out-Null"
+    },
+    "checkver": {
+        "script": [
+            "# Using script to get version number from date, e.g. 6 Mar, 2019 -> 20190306",
+            "$url1 = 'https://api.github.com/repos/amd64fox/SpotX/releases/latest'",
+            "$regex1 = 'tag/([\\d.]+)'",
+            "$cont = $(Invoke-WebRequest $url1).Content",
+            "if(!($cont -match $regex1)) { error \"Could match '$regex1' on '$url1'\"; return }",
+            "$app_ver = $matches[1]",
+            "",
+            "$url2 = 'https://github.com/amd64fox/SpotX/commits/main/Install.ps1'",
+            "$regex2 = 'Commits on ([\\w\\s,]+)</h2>'",
+            "$cont = $(Invoke-WebRequest $url2).Content",
+            "if(!($cont -match $regex2)) { error \"Could match '$regex2' on '$url2'\"; return }",
+            "$script_ver = $(Get-Date $matches[1]).ToString('yyyyMMdd')",
+            "Write-Output \"$app_ver-$script_ver\""
+        ],
+        "regex": "([\\w.-]+)"
+    },
+    "autoupdate": {
+        "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1"
+    }
+}
