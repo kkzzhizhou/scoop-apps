@@ -7,7 +7,7 @@
         "If you using Windows 10 and have Secure Boot enabled, you may have to make a registry change in order for the driver to be loaded.",
         "See https://github.com/maharmstone/btrfs#secureboot."
     ],
-    "depends": "extras/autohotkey",
+    "depends": "extras/nefcon",
     "url": "https://github.com/maharmstone/btrfs/releases/download/v1.8/btrfs-1.8.zip",
     "hash": "eee00e1f9768cbdb939fd51a54e821dd8f3fc75c6c96e216a41d7e1a6144d0d4",
     "pre_install": [
@@ -29,14 +29,14 @@
             "}",
             "",
             "Write-Host \"Installing driver...\"",
-            "InfDefaultInstall \"$dir\\btrfs.inf\"",
-            "Start-Process -Wait autohotkey -ArgumentList \"$bucketsdir\\nonportable\\scripts\\$app\\no-reboot.ahk\""
+            "Invoke-ExternalCommand nefconw -ArgumentList @('--inf-default-install', '--inf-path', \"$dir\\btrfs.inf\") -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null"
         ]
     },
     "uninstaller": {
         "script": [
             "if ($cmd -ne 'uninstall') { return }",
-            "Invoke-ExternalCommand pnputil -ArgumentList @('/delete-driver', \"$dir\\btrfs.inf\", '/uninstall', '/force') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null"
+            "Invoke-ExternalCommand nefconw -ArgumentList @('--remove-device-node', '--hardware-id', 'ROOT\\btrfs', '--class-guid', '71a27cdd-812a-11d0-bec7-08002be2092f') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null",
+            "nefconw --remove-driver-service --service-name btrfs"
         ]
     },
     "checkver": "github",
