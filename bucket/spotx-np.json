@@ -1,5 +1,5 @@
 {
-    "version": "1.3-20220722",
+    "version": "1.3-20220722-754413",
     "description": "Modified spotify client. Blocks ads and updates, and more.",
     "homepage": "https://github.com/amd64fox/SpotX/",
     "license": "MIT",
@@ -26,11 +26,12 @@
             "$app_ver = $matches[1]",
             "",
             "$url2 = 'https://github.com/amd64fox/SpotX/commits/main/Install.ps1'",
-            "$regex2 = 'Commits on ([\\w\\s,]+)</h2>'",
+            "$regex2 = '(?sm)Commits on ([\\w\\s,]+)</h2>.*?SpotX/commits/([0-9a-f]{6})'",
             "$cont = $(Invoke-WebRequest $url2).Content",
             "if(!($cont -match $regex2)) { error \"Could match '$regex2' on '$url2'\"; return }",
-            "$script_ver = $(Get-Date $matches[1]).ToString('yyyyMMdd')",
-            "Write-Output \"$app_ver-$script_ver\""
+            "$update_date = $(Get-Date $matches[1]).ToString('yyyyMMdd')",
+            "$commit_sha = $matches[2]",
+            "Write-Output \"$app_ver-$update_date-$commit_sha\""
         ],
         "regex": "([\\w.-]+)"
     },

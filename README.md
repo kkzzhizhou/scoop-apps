@@ -80,6 +80,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - kiennq/scoop-misc
 - dodorz/scoop
+- wangzq/scoop-bucket
 - zhoujin7/tomato
 - ZvonimirSun/scoop-iszy
 - wzv5/ScoopBucket
@@ -91,10 +92,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - 42wim/scoop-bucket
 - krproject/qi-windows
+- mogeko/scoop-sysinternals
 - excitoon/scoop-user
 - batkiz/backit
 - jfut/scoop-jfut
-- mogeko/scoop-sysinternals
 - iquiw/scoop-bucket
 - MCOfficer/scoop-bucket
 - littleli/Scoop-littleli

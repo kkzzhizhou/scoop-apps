@@ -1,27 +1,8 @@
-{
-    "version": "10.0.40219.473",
-    "description": "Microsoft Visual C++ Redistributable for Visual Studio 2010",
-    "homepage": "https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx"
-    },
-    "notes": "You can now remove this installer with 'scoop uninstall vcredist2010'",
-    "url": [
-        "https://download.microsoft.com/download/E/E/0/EE05C9EF-A661-4D9E-BCE2-6961ECDF087F/vcredist_x64.exe",
-        "https://download.microsoft.com/download/E/E/0/EE05C9EF-A661-4D9E-BCE2-6961ECDF087F/vcredist_x86.exe"
-    ],
-    "hash": [
-        "7ba40e8c2dbcec6d0b83b94e719ea9291c2ebc4fd9d4f34dce6f852739841ed7",
-        "1df24320ae1b974a42fc37f852d962c0e2f0e62bb339585fc862bb15d5a5d216"
-    ],
-    "post_install": [
-        "# For error codes, see https://docs.microsoft.com/en-us/windows/win32/msi/error-codes",
-        "$ec = @{",
-        "    1638 = 'This product is already installed';",
-        "    3010 = 'A restart is required to complete the installation';",
-        "}",
-        "Invoke-ExternalCommand -FilePath \"$dir\\vcredist_x64.exe\" -ArgumentList '/fo', '/quiet', '/norestart' -ContinueExitCodes $ec -RunAs | Out-Null",
-        "Invoke-ExternalCommand -FilePath \"$dir\\vcredist_x86.exe\" -ArgumentList '/fo', '/quiet', '/norestart' -ContinueExitCodes $ec -RunAs | Out-Null"
-    ]
+﻿{
+    "url":  [
+                "http://download.microsoft.com/download/C/6/D/C6D0FD4E-9E53-4897-9B91-836EBA2AACD3/vcredist_x86.exe",
+                "http://download.microsoft.com/download/A/8/0/A80747C3-41BD-45DF-B505-E9710D2744E0/vcredist_x64.exe"
+            ],
+    "post_install":  "function RunInstaller($exe, $arguments) {\n    Write-Host \"Executing $exe $arguments\"\n    Start-Process $exe arguments -Wait\n    Remove-Item $exe\n}\n\nfunction InstallVcredist {\n    \u002786\u0027, \u002764\u0027 | % {\n        RunInstaller \"$dir\\vcredist_x$_.exe\" \u0027/q /norestart\u0027\n    }\n}\nInstallVcredist",
+    "version":  "2010"
 }
