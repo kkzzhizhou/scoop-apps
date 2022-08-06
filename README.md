@@ -80,8 +80,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - kiennq/scoop-misc
 - dodorz/scoop
-- wangzq/scoop-bucket
 - zhoujin7/tomato
+- wangzq/scoop-bucket
 - ZvonimirSun/scoop-iszy
 - borger/scoop-emulators
 - wzv5/ScoopBucket
