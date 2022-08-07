@@ -40,17 +40,18 @@
         "script": [
             "# Using script to solve download url issues ('%20', 'beta->Beta')",
             "$url = 'http://qttabbar.wikidot.com/'",
+            "$cont = (Invoke-WebRequest $url).Content",
             "$regex = '>QTTabBar ver (\\d+)( beta (\\d+))?'",
             "",
             "# match regex in reverse order",
             "$regexp = New-Object System.Text.RegularExpressions.Regex($regex)",
-            "$match = $regexp.Matches($page) | Select-Object -Last 1",
+            "$match = $regexp.Matches($cont) | Select-Object -Last 1",
+            "if (!$match) { error \"Could not match '$regex' in '$url'\" ; break}",
             "$main_ver = $match.Groups[1].Value",
             "$beta_ver = $match.Groups[3].Value",
             "if ($beta_ver) { $app_ver = \"$main_ver-beta$beta_ver\"; $filename = \"QTTabBar%20$main_ver%20Beta$beta_ver.zip\" }",
             "else {  $app_ver = \"$main_ver\"; $filename = \"QTTabBar%20$main_ver.zip\"  }",
-            "Write-Output $app_ver $filename",
-            "Write-Host $app_ver $filename"
+            "Write-Output $app_ver $filename"
         ],
         "regex": "(\\d+-beta\\d+) (?<filename>.*)"
     },
