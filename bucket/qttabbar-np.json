@@ -20,7 +20,7 @@
             "Copy-Item $msi \"$dir\\setup.msi\"",
             "Get-CimInstance Win32_Process -Filter \"name = 'msiexec.exe'\" | Where-Object { $_.CommandLine -match 'QTTabBar Setup\\.msi' } | ForEach-Object { Stop-Process -Id $_.ProcessId }",
             "",
-            "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"`\"$dir\\setup.msi`\"\", '/qn', '/l*v', 'test.log') -RunAs | Out-Null",
+            "Start-Process msiexec -ArgumentList @('/i', \"`\"$dir\\setup.msi`\"\", '/qn', '/l*v', 'test.log') -Wait -Verb RunAs | Out-Null",
             "Stop-Process -Name explorer; Start-Sleep -Seconds 2",
             "info 'Restarting explorer...'",
             "if (!(Get-Process -Name 'explorer' -ErrorAction SilentlyContinue)) { explorer }",
@@ -30,7 +30,7 @@
     "uninstaller": {
         "script": [
             "if (!(is_admin)) { error \"$app requires administrator rights to $cmd\"; break }",
-            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"`\"$dir\\setup.msi`\"\", '/qn') -RunAs | Out-Null",
+            "Start-Process msiexec -ArgumentList @('/x', \"`\"$dir\\setup.msi`\"\", '/qn') -Wait -Verb RunAs | Out-Null",
             "info 'Restarting explorer...'",
             "Stop-Process -Name explorer; Start-Sleep -Seconds 2",
             "if (!(Get-Process -Name 'explorer' -ErrorAction SilentlyContinue)) { explorer }"

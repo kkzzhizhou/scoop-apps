@@ -20,14 +20,13 @@
     "installer": {
         "script": [
             "if (!(is_admin)) { error \"$app requires admin rights to install\"; break }",
-            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/verysilent', \"/dir=`\"$dir`\"\") -RunAs | Out-Null",
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList @('/verysilent', \"/dir=`\"$dir`\"\") -Wait -Verb RunAs | Out-Null",
             "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Sandboxie-Plus\" -Recurse",
-            "'Sandboxie-Plus.lnk', 'Sandboxed Web Browser.lnk' | ForEach-Object {",
-            "    Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\$_\"",
-            "}",
+            "Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\Sandboxie-Plus.lnk\"",
             "Remove-Item \"$dir\\setup.exe\""
         ]
     },
+    "pre_uninstall": "Stop-Process -Name 'SbieSvc' -Force -ErrorAction SilentlyContinue",
     "uninstaller": {
         "script": [
             "if (!(is_admin)) { error \"$app requires admin rights to uninstall\"; break }",
