@@ -101,7 +101,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/Scoop-littleli
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
-- ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
 - NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
