@@ -24,7 +24,7 @@
 ## 说明
 
 - 可接受仓库推荐，提交pr至bucket-recommend.txt即可
-- 可接受"不维护仓库清理”，需在pr中说明理由，提交rp至bucket-not-recommend.txt即可
+- 可接受"不维护仓库清理”，需在pr中说明理由，提交pr至bucket-not-recommend.txt即可
 - **未对仓库软件来源进行安全检验，请自行甄别恶意软件，或者使用杀毒软件**
 - 如果有软件安装问题，请参考仓库根路径的app-contributor-list.csv到相应的仓库提交issues
 
