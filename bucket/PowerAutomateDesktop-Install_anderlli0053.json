@@ -1,0 +1,45 @@
+{
+ "autoupdate": {
+  "url": "https://go.microsoft.com/fwlink/?LinkId=2102613&clcid=0x409#/setup.exe"
+ },
+ "checkver": {
+  "regex": "Microsoft/PowerAutomateDesktop/([\\d.]+)",
+  "reverse": true,
+  "url": "https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerAutomateDesktop"
+ },
+ "description": "Power Automate Desktop. Easily automate anything from your desktop",
+ "hash": "e75378c246cf5b2fde9350456379b9ae7a3bd3dec5be1972d9edc55089a992ed",
+ "homepage": "https://flow.microsoft.com/en-us/desktop/",
+ "installer": {
+  "script": [
+   "$programname = \"Power Automate Desktop*\"",
+   "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+   "$filepath = \"$ProgramFilesX86\\Power Automate Desktop\\PAD.Console.Host.exe\"",
+   "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "{",
+   "   &\"$dir\\setup.exe\" -Install -ACCEPTEULA -Silent -DisablePADShortcut | Out-Null",
+   "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "   {",
+   "       exit 1",
+   "   }",
+   "}",
+   "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+  ]
+ },
+ "license": "",
+ "pre_download": "Assert-Administrator",
+ "pre_install": [
+  "$processname = \"PAD.Console.Host.exe\"",
+  "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+  "if ($process) {",
+  "   $process.CloseMainWindow()",
+  "   Start-Sleep -Seconds 5",
+  "   if (!$process.HasExited) {",
+  "       Start-Sleep -Seconds 25",
+  "       $process | Stop-Process -Force",
+  "   }",
+  "}"
+ ],
+ "url": "https://go.microsoft.com/fwlink/?LinkId=2102613&clcid=0x409#/setup.exe",
+ "version": "2.21.262.22194"
+}

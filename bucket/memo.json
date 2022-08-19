@@ -1,0 +1,47 @@
+{
+ "description": "Take Smarter notes with GitHub Gists.",
+ "hash": "sha256:42589f0a2434223482e4b9400fef3289df0e8873a7462b2d7b6fe95ac2cfa7d8",
+ "homepage": "https://usememo.com/",
+ "installer": {
+  "script": [
+   "if (!(Test-Path \"$persist_dir\\data\")) {",
+   "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+   "}",
+   "$runtimeCache = \"$env:APPDATA\\Memo\"",
+   "$runtimeCachePersist = \"$persist_dir\\memo\"",
+   "if (Test-Path $runtimeCachePersist) {",
+   "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+   "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+   "} else {",
+   "    if (Test-Path $runtimeCache) {",
+   "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+   "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+   "    }",
+   "}"
+  ]
+ },
+ "license": "no",
+ "pre_install": [
+  "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+  "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+ ],
+ "shortcuts": [
+  [
+   "Memo.exe",
+   "Memo"
+  ]
+ ],
+ "uninstaller": {
+  "script": [
+   "$runtimeCache = \"$env:APPDATA\\Memo\"",
+   "$runtimeCachePersist = \"$persist_dir\\memo\"",
+   "if (!(Test-Path $runtimeCachePersist)) {",
+   "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+   "} else {",
+   "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+   "}"
+  ]
+ },
+ "url": "https://usememo.com/MemoSetup.exe#/dl.7z",
+ "version": "1.0.1"
+}

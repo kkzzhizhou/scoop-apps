@@ -1,0 +1,53 @@
+{
+ "##": "Renaming .msi to .msi_ to avoid auto extraction",
+ "architecture": {
+  "32bit": {
+   "hash": "5c4aca7c40ce460969ad4590731fbde42817cedd036fac7cde8e888196d162e6",
+   "url": "https://swupdate.openvpn.org/community/releases/OpenVPN-2.5.7-I602-x86.msi#/setup.msi_"
+  },
+  "64bit": {
+   "hash": "5212a707c137cf8b133a21cab458a03d81592a4b713cfb7bc668a661e604313f",
+   "url": "https://swupdate.openvpn.org/community/releases/OpenVPN-2.5.7-I602-amd64.msi#/setup.msi_"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://swupdate.openvpn.org/community/releases/OpenVPN-$version-I602-x86.msi#/setup.msi_"
+   },
+   "64bit": {
+    "url": "https://swupdate.openvpn.org/community/releases/OpenVPN-$version-I602-amd64.msi#/setup.msi_"
+   }
+  }
+ },
+ "bin": "bin\\openvpn.exe",
+ "checkver": {
+  "regex": "OpenVPN-([\\d.]+)-I602-amd64\\.msi",
+  "url": "https://openvpn.net/index.php/open-source/downloads.html"
+ },
+ "description": "A flexible virtual private network (VPN) solution to secure data communications.",
+ "homepage": "https://openvpn.net",
+ "license": "GPL-2.0-only",
+ "persist": "config",
+ "pre_install": [
+  "if ([Environment]::OSVersion.Version.Major -lt 10) { error 'Windows 10 is required since version 2.4.8. Use \"versions/openvpn-w7\" instead'; break }",
+  "if (-not (is_admin)) { error 'Administrator privileges are needed for installation'; break }",
+  "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"`\"$dir\\setup.msi_`\"\", \"PRODUCTDIR=`\"$dir`\"\", 'ADDLOCAL=OpenVPN.GUI,OpenVPN.Service,OpenVPN.Documentation,OpenVPN.SampleCfg,OpenSSL,EasyRSA,OpenVPN,OpenVPN.GUI.OnLogon,Drivers.TAPWindows6,Drivers,Drivers.Wintun', '/passive') -RunAs | Out-Null"
+ ],
+ "shortcuts": [
+  [
+   "bin\\openvpn-gui.exe",
+   "OpenVPN GUI"
+  ]
+ ],
+ "suggest": {
+  "openssl": "openssl"
+ },
+ "uninstaller": {
+  "script": [
+   "if (-not (is_admin)) { error 'Admin privileges are needed.'; break }",
+   "Invoke-ExternalCommand msiexec -ArgumentList ('/x', \"`\"$dir\\setup.msi_`\"\", '/passive') -RunAs | Out-Null"
+  ]
+ },
+ "version": "2.5.7"
+}

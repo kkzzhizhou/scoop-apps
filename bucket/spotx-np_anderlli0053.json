@@ -1,0 +1,41 @@
+{
+ "autoupdate": {
+  "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1"
+ },
+ "checkver": {
+  "regex": "([\\w.-]+)",
+  "script": [
+   "# Using script to get version number from date, e.g. 6 Mar, 2019 -> 20190306",
+   "$url1 = 'https://api.github.com/repos/amd64fox/SpotX/releases/latest'",
+   "$regex1 = 'tag/([\\d.]+)'",
+   "$cont = $(Invoke-WebRequest $url1).Content",
+   "if(!($cont -match $regex1)) { error \"Could match '$regex1' on '$url1'\"; return }",
+   "$app_ver = $matches[1]",
+   "",
+   "$url2 = 'https://github.com/amd64fox/SpotX/commits/main/Install.ps1'",
+   "$regex2 = '(?sm)Commits on ([\\w\\s,]+)</h2>.*?SpotX/commits/([0-9a-f]{6})'",
+   "$cont = $(Invoke-WebRequest $url2).Content",
+   "if(!($cont -match $regex2)) { error \"Could match '$regex2' on '$url2'\"; return }",
+   "$update_date = $(Get-Date $matches[1]).ToString('yyyyMMdd')",
+   "$commit_sha = $matches[2]",
+   "Write-Output \"$app_ver-$update_date-$commit_sha\""
+  ]
+ },
+ "description": "Modified spotify client. Blocks ads and updates, and more.",
+ "hash": "ef446cf9ad1a30c98eff25b0ed0f03d20bc7f247960d81132aefc24371e269b7",
+ "homepage": "https://github.com/amd64fox/SpotX/",
+ "installer": {
+  "script": [
+   "# older versions of Powershell 5 requires BOM to recognize UTF8 scripts",
+   "$cont = Get-Content \"$dir\\Install.ps1\" -Encoding utf8",
+   "Set-Content \"$dir\\Install.ps1\" $cont -Encoding utf8",
+   "& \"$dir\\Install.ps1\" -confirm_uninstall_ms_spoti -confirm_spoti_recomended_over -podcasts_off -cache_off -block_update_on"
+  ]
+ },
+ "license": "MIT",
+ "uninstaller": {
+  "script": "Invoke-ExternalCommand \"$Env:Appdata\\Spotify\\Spotify.exe\" -ArgumentList @('/uninstall', '/silent') | Out-Null"
+ },
+ "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1",
+ "version": "1.3-20220722-754413"
+}

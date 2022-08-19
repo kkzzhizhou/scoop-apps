@@ -1,0 +1,57 @@
+{
+ "autoupdate": {
+  "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest/download/SourceHanSansJ.zip"
+ },
+ "checkver": {
+  "regex": "Version ([\\d.]+)R",
+  "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest"
+ },
+ "description": "Source Han Sans is a set of OpenType Pan-CJK fonts. (Japanese variant)",
+ "extract_dir": "OTF/Japanese",
+ "hash": "747734b49301784fed68440711a106de42714d3a7dbc79064a30bbb0cac3f986",
+ "homepage": "https://github.com/adobe-fonts/source-han-sans/",
+ "installer": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to install $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+   "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+   "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+   "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+   "    Copy-Item $_.FullName -Destination $fontInstallDir",
+   "}"
+  ]
+ },
+ "license": "OFL-1.1",
+ "uninstaller": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+   "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+   "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+   "}",
+   "Write-Host \"Font family 'Source Han Sans J' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+  ]
+ },
+ "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest/download/SourceHanSansJ.zip",
+ "version": "2.004"
+}

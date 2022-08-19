@@ -1,0 +1,57 @@
+{
+ "autoupdate": {
+  "url": "https://github.com/adobe-fonts/source-han-serif/releases/download/$versionR/08_SourceHanSerifK.zip"
+ },
+ "checkver": {
+  "regex": "/releases/tag/([\\d.]+)R",
+  "url": "https://github.com/adobe-fonts/source-han-serif/releases/latest"
+ },
+ "description": "Source Han Serif is a set of OpenType Pan-CJK fonts. (Korean variant)",
+ "extract_dir": "OTF/Korean",
+ "hash": "2d4f64684b50a910eae7561a294a8e69f5994e70bd561ed706e4a27ee03b391d",
+ "homepage": "https://github.com/adobe-fonts/source-han-serif",
+ "installer": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to install $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+   "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+   "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+   "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+   "    Copy-Item $_.FullName -Destination $fontInstallDir",
+   "}"
+  ]
+ },
+ "license": "OFL-1.1",
+ "uninstaller": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+   "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+   "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+   "}",
+   "Write-Host \"Font family 'Source Han Serif K' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+  ]
+ },
+ "url": "https://github.com/adobe-fonts/source-han-serif/releases/download/2.001R/08_SourceHanSerifK.zip",
+ "version": "2.001"
+}

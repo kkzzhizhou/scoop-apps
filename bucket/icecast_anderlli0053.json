@@ -1,0 +1,67 @@
+{
+ "autoupdate": {
+  "url": "https://ftp.osuosl.org/pub/xiph/releases/icecast/icecast_win32_$version.exe#/dl.7z"
+ },
+ "bin": [
+  [
+   "icecast-scoop-start.bat",
+   "icecast"
+  ]
+ ],
+ "checkver": {
+  "regex": "v([\\d.]+)\"",
+  "url": "https://api.github.com/repos/xiph/Icecast-Server/tags"
+ },
+ "description": "A streaming media (audio/video) server which supports Ogg (Vorbis and Theora), Opus, WebM and MP3 streams.",
+ "hash": "603bb7c94a9248ac104ef84c3e8472949db8bd3c2fcc4ff7a7a34ee98057efe0",
+ "homepage": "https://icecast.org/",
+ "license": "GPL-2.0-only",
+ "notes": [
+  "To install IceCast as Windows service:",
+  "(1) Install nssm",
+  "(2) Run \"$dir\\install-service.bat\" under Admin"
+ ],
+ "persist": [
+  "admin",
+  "log",
+  "icecast.xml"
+ ],
+ "post_install": [
+  "$cont = @(",
+  "    '@echo off'",
+  "    'where nssm >nul'",
+  "    'if %ERRORLEVEL% neq 0 ('",
+  "    '    echo ERROR: cannot find nssm in PATH. Please install nssm before running this script.'",
+  "    '    exit /B'",
+  "    ')'",
+  "    \"nssm install IceCast `\"$dir\\icecast-scoop-start.bat`\"\"",
+  "    'net start IceCast'",
+  ")",
+  "Set-Content \"$dir\\install-service.bat\" ($cont -join \"`r`n\") -Encoding Ascii",
+  "Set-Content \"$dir\\uninstall-service.bat\"  \"@echo off`r`nsc delete IceCast\" -Encoding Ascii"
+ ],
+ "pre_install": [
+  "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall.exe\" -Force -Recurse",
+  "'log\\access.log', 'log\\error.log', 'log\\playlist.log' | ForEach-Object {",
+  "    if(!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" -Force | Out-Null }",
+  "}",
+  "Set-Content \"$dir\\icecast-scoop-start.bat\" \"@echo off`r`ncd /d %~dp0`r`nicecast.bat\" -Encoding Ascii"
+ ],
+ "suggest": {
+  "nssm": "nssm"
+ },
+ "uninstaller": {
+  "script": [
+   "# if user uninstalls (but not updates) the app, then uninstall IceCast service",
+   "if ($cmd -eq 'uninstall') {",
+   "    $service = Get-Service 'IceCast' -ErrorAction SilentlyContinue",
+   "    if ($service) {",
+   "        if(!(is_admin)) { error 'Admin right is required to uninstall IceCast service'; break }",
+   "        sc.exe delete IceCast",
+   "    }",
+   "}"
+  ]
+ },
+ "url": "https://ftp.osuosl.org/pub/xiph/releases/icecast/icecast_win32_2.4.3.exe#/dl.7z",
+ "version": "2.4.3"
+}

@@ -1,0 +1,75 @@
+{
+ "architecture": {
+  "64bit": {
+   "hash": "b0e3abf5048f78e352b42c3e1660a2c6e85d6905cd9f60d06ca2f2318fa3152c",
+   "url": "https://cemu.info/releases/cemu_1.26.2.zip"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "64bit": {
+    "url": "https://cemu.info/releases/cemu_$matchVersion.zip"
+   }
+  },
+  "extract_dir": "cemu_$matchVersion"
+ },
+ "bin": "Cemu.exe",
+ "checkver": {
+  "regex": "Download latest stable version \\(v((?<version>[\\d.]+)[\\w]*?),"
+ },
+ "description": "Experimental software to emulate Wii U applications on PC",
+ "extract_dir": "cemu_1.26.2",
+ "homepage": "https://cemu.info/",
+ "installer": {
+  "script": [
+   "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+   "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
+   "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
+   "   }",
+   "}",
+   "if (!(Test-Path \"$persist_dir\\keys.txt\")) {",
+   "    New-Item \"$dir\\keys.txt\" -Type File | Out-Null",
+   "}"
+  ]
+ },
+ "license": {
+  "identifier": "Freeware",
+  "url": "https://cemu.info"
+ },
+ "persist": [
+  "controllerProfiles",
+  "gameProfiles",
+  "graphicPacks",
+  "mlc01",
+  "sharedFonts",
+  "shaderCache\\transferable",
+  "keys.txt"
+ ],
+ "post_install": [
+  "'settings.xml' | ForEach-Object {",
+  "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+  "       Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\"  -Force",
+  "   } else {",
+  "       New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+  "   }",
+  "}"
+ ],
+ "shortcuts": [
+  [
+   "cemu.exe",
+   "Cemu"
+  ]
+ ],
+ "suggest": {
+  "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022",
+  "cemuhook": "cemuhook"
+ },
+ "uninstaller": {
+  "script": [
+   "'settings.xml' | ForEach-Object {",
+   "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+   "}"
+  ]
+ },
+ "version": "1.26.2f"
+}

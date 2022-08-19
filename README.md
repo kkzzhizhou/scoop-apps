@@ -71,8 +71,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - echoiron/echo-scoop
 - KNOXDEV/wsl
 - everyx/scoop-bucket
-- hermanjustnu/scoop-emulators
 - hoilc/scoop-lemon
+- hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - Paxxs/Cluttered-bucket
 - TheRandomLabs/Scoop-Bucket
@@ -86,8 +86,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ZvonimirSun/scoop-iszy
 - wzv5/ScoopBucket
 - ACooper81/scoop-apps
-- TheRandomLabs/Scoop-Python
 - ScoopInstaller/Nonportable
+- TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - ChungZH/peach
 - 42wim/scoop-bucket
@@ -101,8 +101,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/Scoop-littleli
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
-- ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
+- anderlli0053/DEV-tools
 - NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
 - seumsc/scoop-seu

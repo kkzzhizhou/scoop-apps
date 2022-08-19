@@ -1,0 +1,60 @@
+{
+ "autoupdate": {
+  "extract_dir": "ipaexg$cleanVersion",
+  "url": "https://moji.or.jp/wp-content/ipafont/IPAexfont/ipaexg$cleanVersion.zip"
+ },
+ "checkver": {
+  "regex": "Ver\\.(\\d{3}\\.\\d{2}).*</span>"
+ },
+ "description": "Free CJK font maintained by Japanese government agency. It covers a large set of characters.",
+ "extract_dir": "ipaexg00401",
+ "hash": "4ab6fee94bf6f94b3eeb31be2b73c559f738dc6b336d722d5301b1f3f592f850",
+ "homepage": "https://moji.or.jp/ipafont/",
+ "installer": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to install $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+   "Get-ChildItem $dir -Filter '*.ttf' | ForEach-Object {",
+   "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+   "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+   "    Copy-Item $_.FullName -Destination $fontInstallDir",
+   "}"
+  ]
+ },
+ "license": {
+  "identifier": "Freeware",
+  "url": "https://moji.or.jp/ipafont/license/"
+ },
+ "uninstaller": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "Get-ChildItem $dir -Filter '*.ttf' | ForEach-Object {",
+   "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+   "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+   "}",
+   "Write-Host \"Font 'IPAex Gothic' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+  ]
+ },
+ "url": "https://moji.or.jp/wp-content/ipafont/IPAexfont/ipaexg00401.zip",
+ "version": "004.01"
+}

@@ -1,26 +1,31 @@
 {
-    "homepage": "https://docs.microsoft.com/en-us/sysinternals/",
-    "description": "View information for encrypted files.",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
-    },
-    "version": "1.02",
-    "url": "https://download.sysinternals.com/files/EFSDump.zip",
-    "hash": "3e8551cdfa3420963db99feaf3829e511ac86cdd383ff23d057b375adf144c5f",
-    "checkver": {
-        "url": "https://docs.microsoft.com/en-us/sysinternals/downloads/efsdump",
-        "re": "EFSDump\\s(?:v|V)?([\\d.]+)"
-    },
-    "autoupdate": {
-        "url": "https://download.sysinternals.com/files/EFSDump.zip"
-    },
-    "architecture": {
-        "32bit": {
-            "bin": "efsdump.exe"
-        },
-        "64bit": {
-            "bin": "efsdump.exe"
-        }
-    }
+ "autoupdate": {
+  "url": "https://download.sysinternals.com/files/EFSDump.zip"
+ },
+ "bin": "efsdump.exe",
+ "checkver": "EFSDump\\s+v([\\d.]+)</h1",
+ "description": "EFSDump. View information for encrypted files.",
+ "hash": "9f74b906404402c94af5a3aa04808a07ef1fcc85607c2ea53283cee8b19bc175",
+ "homepage": "https://docs.microsoft.com/en-us/sysinternals/downloads/efsdump",
+ "license": {
+  "identifier": "Freeware",
+  "url": "https://docs.microsoft.com/en-us/sysinternals/license-terms"
+ },
+ "pre_install": [
+  "$sysint = 'HKCU:\\SOFTWARE\\Sysinternals'",
+  "$fin = \"$sysint\\EFSDump\"",
+  "New-Item $sysint, $fin -ErrorAction 'SilentlyContinue' | Out-Null",
+  "Set-ItemProperty -Path $fin -Name 'EulaAccepted' -Value 1 -Type 'DWord' -Force | Out-Null"
+ ],
+ "uninstaller": {
+  "script": [
+   "if ($purge) {",
+   "    $sysInt = 'HKCU:\\SOFTWARE\\Sysinternals'",
+   "    Remove-Item \"$sysInt\\EFSDump\" -ErrorAction 'SilentlyContinue' -Force -Recurse",
+   "    if ((Get-ChildItem $sysInt).Count -eq 0) { Remove-Item $sysInt -ErrorAction 'SilentlyContinue' -Force -Recurse }",
+   "}"
+  ]
+ },
+ "url": "https://download.sysinternals.com/files/EFSDump.zip",
+ "version": "1.03"
 }

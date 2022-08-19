@@ -1,0 +1,71 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "4e517f65a37baa5397684e87ff297ccb8c4a3cbece4fdf2afc127631a3ee1bcb",
+   "shortcuts": [
+    [
+     "Peace.exe",
+     "Peace"
+    ]
+   ],
+   "url": "https://sourceforge.net/projects/peace-equalizer-apo-extension/files/Peace.exe/download"
+  },
+  "64bit": {
+   "hash": "942f1109b6baac868cedadb2a6859f624e90c2ec315d79a31009fa315c584c47",
+   "shortcuts": [
+    [
+     "Peace64.exe",
+     "Peace"
+    ]
+   ],
+   "url": "https://sourceforge.net/projects/peace-equalizer-apo-extension/files/64%20bits%20version/Peace64.exe/download"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://sourceforge.net/projects/peace-equalizer-apo-extension/files/Peace.exe/download"
+   },
+   "64bit": {
+    "url": "https://sourceforge.net/projects/peace-equalizer-apo-extension/files/64%20bits%20version/Peace64.exe/download"
+   }
+  }
+ },
+ "checkver": {
+  "regex": "Version\\s+([\\d.]+)",
+  "url": "https://sourceforge.net/projects/peace-equalizer-apo-extension/files/"
+ },
+ "depends": "equalizer-apo-np",
+ "description": "Peace Equalizer, an user interface for Equalizer APO",
+ "homepage": "https://sourceforge.net/projects/peace-equalizer-apo-extension/",
+ "installer": {
+  "script": [
+   "if (!(is_admin)) {",
+   "    error \"Administrator rights are required to install $app.\"",
+   "    break",
+   "}",
+   "$config_path = (Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\EqualizerAPO' -Name 'ConfigPath')",
+   "$peace_exe = 'Peace' + $(If ($architecture -eq '64bit') {'64'} Else {''}) + '.exe'",
+   "Move-Item -Force \"$dir\\download\" \"$config_path\\$peace_exe\" | Out-Null",
+   "New-Item -ItemType SymbolicLink -Path \"$dir\\$peace_exe\" -Target \"$config_path\\$peace_exe\" | Out-Null",
+   "if (Test-Path \"$([Environment]::GetFolderPath('Desktop'))\\Peace.lnk\") {",
+   "    Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\Peace.lnk\"",
+   "}"
+  ]
+ },
+ "license": "GPL-2.0-only",
+ "uninstaller": {
+  "script": [
+   "if (!(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    break",
+   "}",
+   "$config_path = (Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\EqualizerAPO' -Name 'ConfigPath')",
+   "$peace_name = 'Peace' + $(If ($architecture -eq '64bit') {'64'} Else {''})",
+   "$peace_process = Get-Process | Where-Object { $_.name -eq $peace_name }",
+   "$peace_process | ForEach-Object { Stop-Process -Id $_.Id; Start-Sleep -Milliseconds 250 }",
+   "Remove-Item \"$config_path\\${peace_name}.exe\""
+  ]
+ },
+ "version": "1.6.2.6"
+}

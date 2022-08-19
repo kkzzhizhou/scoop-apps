@@ -1,0 +1,67 @@
+{
+    "architecture": {
+        "32bit": {
+            "pre_install": [
+                "$null, $bucket = find_manifest($app)",
+                "$bucketdir = bucketdir($bucket)",
+                "(Get-Content \"$bucketdir\\..\\scripts\\install-office-365-apps.xml\").Replace('64', '32') | Set-Content -Path \"$dir\\install-office-365-apps.xml\""
+            ]
+        },
+        "64bit": {
+            "pre_install": [
+                "$null, $bucket = find_manifest($app)",
+                "$bucketdir = Find-BucketDirectory($bucket)",
+                "Copy-Item \"$bucketdir\\..\\scripts\\install-office-365-apps.xml\" -Destination \"$dir\\install-office-365-apps.xml\""
+            ]
+        }
+    },
+    "autoupdate": {
+        "url": "https://download.microsoft.com/download/$matchPath/$matchFilename#/dl.7z"
+    },
+    "checkver": {
+        "regex": "([\\d.]+) (?<path>[\\w-/]+) (?<filename>[\\w.-]+)",
+        "script": [
+            "$url1 = 'https://docs.microsoft.com/en-us/officeupdates/odt-release-history'",
+            "$regex1 = '<p>Version ([\\d.]+)'",
+            "$url2 = 'https://www.microsoft.com/en-au/download/confirmation.aspx?id=49117'",
+            "$regex2 = 'download/([\\w/-]+)(officedeploymenttool_[\\d-]+\\.exe)'",
+            "",
+            "$cont = $(Invoke-WebRequest $url1).Content",
+            "if (!($cont -match $regex1)) { Write-Host \"Could not match '$regex1' in '$url1'\"; return }",
+            "$app_ver = $matches[1]",
+            "$cont = $(Invoke-WebRequest $url2).Content",
+            "if (!($cont -match $regex2)) { Write-Host \"Could not match '$regex2' in '$url2'\"; return }",
+            "$path = $matches[1]; $filename = $matches[2]",
+            "Write-Output $app_ver $path $filename"
+        ]
+    },
+    "description": "Family of client software, server software and services developed by Microsoft.",
+    "hash": "e57e3d1d7f09cbc9b4c5596afd861525863e046038b8afa2e9c1d920fbdb9dab",
+    "homepage": "https://www.office.com/",
+    "installer": {
+        "args": [
+            "/configure",
+            "$dir\\install-office-365-apps.xml"
+        ],
+        "file": "setup.exe",
+        "keep": true
+    },
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.microsoft.com/licensing/terms/productoffering/OfficeDesktopApplicationsWindows/MCA"
+    },
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "Copy-Item \"$bucketdir\\..\\scripts\\uninstall-office-365-apps.xml\" -Destination \"$dir\\uninstall-office-365-apps.xml\""
+    ],
+    "uninstaller": {
+        "args": [
+            "/configure",
+            "$dir\\uninstall-office-365-apps.xml"
+        ],
+        "file": "setup.exe"
+    },
+    "url": "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E//officedeploymenttool_15427-20220.exe#/dl.7z",
+    "version": "16.0.15427.20220"
+}

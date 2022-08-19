@@ -1,0 +1,60 @@
+{
+ "autoupdate": {
+  "url": "https://www.videohelp.com/download/Icaros_v$version.zip"
+ },
+ "bin": "IcarosConfig.exe",
+ "checkver": {
+  "regex": "/download/Icaros_v([\\w.]+)\\.zip",
+  "reverse": true,
+  "url": "https://www.videohelp.com/software/Icaros"
+ },
+ "description": "Collection of shell extensions that provide File Explorer thumbnails for a variety of video formats.",
+ "hash": "05072ef9d627fd90ad528f777ebb0e3e5a227f10f87a902fa5a24978c2d79793",
+ "homepage": "https://www.majorgeeks.com/files/details/icaros.html",
+ "license": "Freeware",
+ "post_install": [
+  "regsvr32 /s \"$dir\\32-bit\\IcarosThumbnailProvider.dll\"",
+  "regsvr32 /s \"$dir\\32-bit\\IcarosPropertyHandler.dll\"",
+  "",
+  "if ($architecture -eq '64bit') {",
+  "    regsvr32 /s \"$dir\\64-bit\\IcarosThumbnailProvider.dll\"",
+  "    regsvr32 /s \"$dir\\64-bit\\IcarosPropertyHandler.dll\"",
+  "}",
+  "",
+  "Stop-Process -Name explorer"
+ ],
+ "pre_install": [
+  "if (!(is_admin)) {",
+  "    error \"Administrator rights are required to install $app.\"",
+  "    break",
+  "}"
+ ],
+ "shortcuts": [
+  [
+   "IcarosConfig.exe",
+   "Icaros"
+  ]
+ ],
+ "uninstaller": {
+  "script": [
+   "if (!(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    break",
+   "}",
+   "",
+   "regsvr32 /s /u \"$dir\\32-bit\\IcarosThumbnailProvider.dll\"",
+   "regsvr32 /s /u \"$dir\\32-bit\\IcarosPropertyHandler.dll\"",
+   "",
+   "if ($architecture -eq '64bit') {",
+   "    regsvr32 /s /u \"$dir\\64-bit\\IcarosThumbnailProvider.dll\"",
+   "    regsvr32 /s /u \"$dir\\64-bit\\IcarosPropertyHandler.dll\"",
+   "}",
+   "",
+   "Stop-Process -Name explorer",
+   "# This seems to impede uninstallation sometimes",
+   "Stop-Process -ErrorAction Ignore -Name OpenWith"
+  ]
+ },
+ "url": "https://www.videohelp.com/download/Icaros_v3.3.0_b3.zip",
+ "version": "3.3.0_b3"
+}

@@ -1,0 +1,57 @@
+{
+ "##": "Download URL and Hashes https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI",
+ "architecture": {
+  "32bit": {
+   "hash": "3fc528109ad31ab62dbf6149d273b6071956f5fd66759b078b0f2a30e52a8249",
+   "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup.exe#/setup.exe"
+  },
+  "64bit": {
+   "hash": "bdf72230cd3456a3fa9edfb833e77a94f32ad591c5846970cefd530e0fa16317",
+   "url": "https://download.microsoft.com/download/8/8/0/880BCA75-79DD-466A-927D-1ABF1F5454B0/PBIDesktopSetup_x64.exe#/setup.exe"
+  }
+ },
+ "checkver": {
+  "regex": "/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI/([\\d.]+)",
+  "reverse": true,
+  "url": "https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/PowerBI"
+ },
+ "description": "Power BI Desktop. Create rich, interactive reports with visual analytics at your fingertips",
+ "homepage": "https://powerbi.microsoft.com/en-us/desktop/",
+ "installer": {
+  "script": [
+   "$programname = \"Microsoft PowerBI Desktop*\"",
+   "$regPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6a01366c-d5ae-4092-8454-998c7f584474}\"",
+   "if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+   "{",
+   "   &\"$dir\\setup.exe\" -quiet -norestart ACCEPT_EULA=1 | Out-Null",
+   "   if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+   "   {",
+   "       exit 1",
+   "   }",
+   "}",
+   "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+  ]
+ },
+ "license": {
+  "identifier": "Freeware",
+  "url": "https://www.microsoft.com/en-us/legal/intellectualproperty/copyright/default.aspx"
+ },
+ "post_install": [
+  "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+  "if (Test-Path \"$CommonDesktopPath\\Power BI Desktop.lnk\") {Remove-Item \"$CommonDesktopPath\\Power BI Desktop.lnk\" -Force}"
+ ],
+ "pre_download": "Assert-Administrator",
+ "pre_install": [
+  "$processname = \"PowerBI.exe\"",
+  "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+  "if ($process) {",
+  "   $process.CloseMainWindow()",
+  "   Start-Sleep -Seconds 5",
+  "   if (!$process.HasExited) {",
+  "       Start-Sleep -Seconds 25",
+  "       $process | Stop-Process -Force",
+  "   }",
+  "}"
+ ],
+ "version": "2.104.941.0"
+}

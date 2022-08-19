@@ -1,0 +1,62 @@
+{
+ "autoupdate": {
+  "architecture": {
+   "64bit": {
+    "url": "https://github.com/ClashrAuto/Clashr-Auto-Desktop/releases/download/v$version/Clashr.Auto-amd64.Setup.$version.exe#/dl.7z"
+   }
+  },
+  "hash": {
+   "url": "https://raw.githubusercontent.com/ClashrAuto/Clashr-Auto-Desktop/master/sha.txt"
+  }
+ },
+ "checkver": "github",
+ "description": "A Windows GUI based on Clashr",
+ "hash": "7A4C84A3AB4A95D49E1BB9FEE337433AF1773CF50BBAA2B105DF841048143738",
+ "homepage": "https://github.com/ClashrAuto/Clashr-Auto-Desktop",
+ "installer": {
+  "script": [
+   "if (!(Test-Path \"$persist_dir\\data\")) {",
+   "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+   "    if (Test-Path \"$env:USERPROFILE\\.config\\ClashrAuto\") {",
+   "        Copy-Item -Path \"$env:USERPROFILE\\.config\\ClashrAuto\\*\" -Destination \"$persist_dir\\data\" -Recurse -Container",
+   "    }",
+   "}",
+   "$runtimeCache = \"$env:APPDATA\\clashr-auto\"",
+   "$runtimeCachePersist = \"$persist_dir\\clashr-auto\"",
+   "if (Test-Path $runtimeCachePersist) {",
+   "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+   "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+   "} else {",
+   "    if (Test-Path $runtimeCache) {",
+   "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+   "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+   "    }",
+   "}"
+  ]
+ },
+ "license": "No",
+ "persist": "data",
+ "pre_install": [
+  "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+  "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+ ],
+ "shortcuts": [
+  [
+   "Clashr Auto.exe",
+   "Clashr Auto"
+  ]
+ ],
+ "uninstaller": {
+  "script": [
+   "$runtimeCache = \"$env:APPDATA\\clashr-auto\"",
+   "$runtimeCachePersist = \"$persist_dir\\clashr-auto\"",
+   "if (!(Test-Path $runtimeCachePersist)) {",
+   "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+   "} else {",
+   "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+   "}"
+  ]
+ },
+ "url": "https://github.com/ClashrAuto/Clashr-Auto-Desktop/releases/download/v2.2.10/Clashr.Auto-amd64.Setup.2.2.10.exe#/dl.7z",
+ "version": "2.2.10"
+}

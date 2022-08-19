@@ -1,0 +1,42 @@
+{
+ "architecture": {
+  "64bit": {
+   "hash": "ff64f8e717de6bd357bbaae5b8fc43859c917c3e1ddd1687522c5eb085ef301f",
+   "url": "https://github.com/cheat/cheat/releases/download/4.3.1/cheat-windows-amd64.exe.zip"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "64bit": {
+    "url": "https://github.com/cheat/cheat/releases/download/$version/cheat-windows-amd64.exe.zip"
+   }
+  }
+ },
+ "bin": "cheat.exe",
+ "checkver": "github",
+ "description": "Create and view interactive cheatsheets on the command-line",
+ "env_set": {
+  "CHEAT_CONFIG_PATH": "$dir\\conf.yml"
+ },
+ "homepage": "https://github.com/cheat/cheat",
+ "license": "MIT",
+ "persist": [
+  "conf.yml",
+  "cheatsheets"
+ ],
+ "pre_install": [
+  "Rename-Item \"$dir\\cheat-windows-amd64.exe\" 'cheat.exe'",
+  "$file = 'conf.yml'",
+  "if (!(Test-Path \"$persist_dir\\$file\")) {",
+  "   Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+  "   $CONT = $(& \"$dir\\cheat\" --init) -replace 'editor: vim', 'editor: notepad' -replace 'cheatsheets/', \"$persist_dir/cheatsheets/\"",
+  "   Set-Content \"$dir\\$file\" ($CONT -replace '\\\\', '/') -Encoding ASCII",
+  "}",
+  "if (!(Test-Path \"$persist_dir\\cheatsheets\")) {",
+  "   Write-Host 'Adding community cheatsheets...' -f Yellow",
+  "   New-item -ItemType Directory -Force -Path \"$persist_dir\\cheatsheets\\personal\" | Out-Null",
+  "   git clone -q 'https://github.com/cheat/cheatsheets.git' \"$persist_dir\\cheatsheets\\community\"",
+  "}"
+ ],
+ "version": "4.3.1"
+}

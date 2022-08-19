@@ -1,0 +1,68 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "md5:db6ad9195b3086c6b4cefb9493d738d2",
+   "url": "https://www.python.org/ftp/python/2.7.18/python-2.7.18.msi"
+  },
+  "64bit": {
+   "hash": "md5:a425c758d38f8e28b56f4724b499239a",
+   "url": "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://www.python.org/ftp/python/$version/python-$version.msi"
+   },
+   "64bit": {
+    "url": "https://www.python.org/ftp/python/$version/python-$version.amd64.msi"
+   }
+  },
+  "hash": {
+   "find": "$basename[\\S\\s]+?([A-Fa-f0-9]{32})",
+   "url": "https://www.python.org/downloads/release/python-$cleanVersion/"
+  }
+ },
+ "bin": [
+  [
+   "python.exe",
+   "python2"
+  ],
+  "Lib\\idlelib\\idle.bat",
+  [
+   "Lib\\idlelib\\idle.bat",
+   "idle2"
+  ]
+ ],
+ "checkver": {
+  "regex": "Python (2\\.7\\.[\\d.]+)",
+  "url": "https://www.python.org/downloads/windows/"
+ },
+ "description": "A programming language that lets you work quickly and integrate systems more effectively.",
+ "env_add_path": [
+  "Scripts",
+  "."
+ ],
+ "homepage": "https://www.python.org/",
+ "license": "Python-2.0",
+ "notes": "Python 2 is EOL. Upgrade to Python 3 by running: scoop install python",
+ "post_install": [
+  "python2 -m ensurepip",
+  "",
+  "$create_reg = {",
+  "    param($path, $value)",
+  "",
+  "    $reg_base = \"Registry::HKEY_CURRENT_USER\\Software\"",
+  "",
+  "    new-item -path \"$reg_base\\$path\" -force | out-null",
+  "    new-itemproperty -path \"$reg_base\\$path\" `",
+  "        -name \"(Default)\" -value \"$value\" -force | out-null",
+  "}",
+  "",
+  "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\InstallPath\", `",
+  "    \"$dir\")",
+  "$create_reg.Invoke(\"Python\\PythonCore\\2.7\\PythonPath\", `",
+  "    \"$dir;$dir\\Lib\\;$dir\\DLLs\\\")"
+ ],
+ "version": "2.7.18"
+}

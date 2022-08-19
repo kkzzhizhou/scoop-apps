@@ -1,0 +1,53 @@
+{
+ "autoupdate": {
+  "url": "https://www.chemtable.com/files/fi/files-inspector-setup.exe#/setup.exe"
+ },
+ "changelog": "https://www.chemtable.com/version-history.htm?prod_id=Files%20Inspector",
+ "checkver": {
+  "regex": "<title>Files Inspector ([\\d.]+)",
+  "url": "https://www.chemtable.com/files-inspector.htm"
+ },
+ "description": "Files Inspector. A Free Utility For Freeing Up Disk Space Manually",
+ "hash": "ce7f6651a426debe6549e5516fac354b70ad0cd65b1fc0f0572fdcb865afa836",
+ "homepage": "https://www.chemtable.com/files-inspector.htm",
+ "installer": {
+  "script": [
+   "$programname = \"Files Inspector*\"",
+   "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+   "$filepath = \"$ProgramFiles\\Files Inspector\\FilesInspector.exe\"",
+   "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "{",
+   "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+   "   while ((Get-Process -Name 'FilesInspector' -ErrorAction SilentlyContinue).Count -eq 0) {",
+   "       Start-Sleep -Milliseconds 50",
+   "   }",
+   "   taskkill /F /IM 'FilesInspector' /FI 'status eq running'",
+   "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "   {",
+   "       exit 1",
+   "   }",
+   "}",
+   "Remove-Item \"$dir\\setup.exe\" -Force"
+  ]
+ },
+ "license": "Freeware",
+ "post_install": [
+  "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+  "if (Test-Path \"$CommonDesktopPath\\Files Inspector.lnk\") {Remove-Item \"$CommonDesktopPath\\Files Inspector.lnk\" -Force}"
+ ],
+ "pre_download": "Assert-Administrator",
+ "pre_install": [
+  "$processname = \"FilesInspector\"",
+  "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+  "if ($process) {",
+  "   $process.CloseMainWindow()",
+  "   Start-Sleep -Seconds 5",
+  "   if (!$process.HasExited) {",
+  "       Start-Sleep -Seconds 25",
+  "       $process | Stop-Process -Force",
+  "   }",
+  "}"
+ ],
+ "url": "https://www.chemtable.com/files/fi/files-inspector-setup.exe#/setup.exe",
+ "version": "3.22"
+}

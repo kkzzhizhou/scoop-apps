@@ -1,0 +1,61 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "950112847abe1fb5862bdfa3e75e17330db89f1f57f1666a678ce6aefff7f6a1",
+   "url": "https://windows.php.net/downloads/releases/php-8.1.9-Win32-vs16-x86.zip"
+  },
+  "64bit": {
+   "hash": "bb68c62740565157acc86d57e2c94db9cbeb704a4444c1444014762324981f0f",
+   "url": "https://windows.php.net/downloads/releases/php-8.1.9-Win32-vs16-x64.zip"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://windows.php.net/downloads/releases/php-$version-Win32-vs16-x86.zip"
+   },
+   "64bit": {
+    "url": "https://windows.php.net/downloads/releases/php-$version-Win32-vs16-x64.zip"
+   }
+  },
+  "hash": {
+   "url": "$baseurl/sha256sum.txt"
+  }
+ },
+ "bin": [
+  "php.exe",
+  "php-cgi.exe",
+  "phpdbg.exe"
+ ],
+ "checkver": {
+  "regex": "<h3 id=\"php-[\\d.]+\".*?>.*?\\(([\\d.]+)\\)</h3>",
+  "url": "https://windows.php.net/download/"
+ },
+ "description": "A popular general-purpose scripting language that is especially suited to web development. (thread safe)",
+ "env_set": {
+  "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
+ },
+ "homepage": "https://windows.php.net/",
+ "license": "PHP-3.01",
+ "persist": [
+  "cli",
+  [
+   "php.ini-production",
+   "cli\\php.ini"
+  ]
+ ],
+ "post_install": [
+  "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+  "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
+ ],
+ "pre_install": [
+  "# Create directory for custom PHP configuration",
+  "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+  "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+  "}"
+ ],
+ "suggest": {
+  "vcredist": "extras/vcredist2022"
+ },
+ "version": "8.1.9"
+}

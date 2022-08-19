@@ -1,0 +1,78 @@
+{
+ "##": [
+  "For command-line usage, see: https://sandboxie-plus.com/sandboxie/startcommandline/",
+  "The installer is made with InnoSetup, but the app will not work without installing the drivers (via the installer)"
+ ],
+ "architecture": {
+  "32bit": {
+   "hash": "94f1bca4520a315fc71302bfbf207b4cfb4c1d90cce09946455a3069060d537f",
+   "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.2.6/Sandboxie-Plus-x86-v1.2.6.exe#/setup.exe"
+  },
+  "64bit": {
+   "hash": "5414f96ba6a45814cf3546899d9d86b62c222e1ff7a341ccb67e73a3348ce6bb",
+   "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.2.6/Sandboxie-Plus-x64-v1.2.6.exe#/setup.exe"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$version/Sandboxie-Plus-x86-v$version.exe#/setup.exe"
+   },
+   "64bit": {
+    "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$version/Sandboxie-Plus-x64-v$version.exe#/setup.exe"
+   }
+  }
+ },
+ "bin": [
+  [
+   "start.exe",
+   "sandboxie-start"
+  ]
+ ],
+ "checkver": {
+  "github": "https://github.com/sandboxie-plus/Sandboxie",
+  "regex": "Release v([\\d.]+) / (?<classicver>[\\d.]+)"
+ },
+ "description": "Sandbox isolation software (plus variant)",
+ "homepage": "https://sandboxie-plus.com/",
+ "installer": {
+  "script": [
+   "if (!(is_admin)) { error \"$app requires admin rights to install\"; break }",
+   "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/verysilent', \"/dir=`\"$dir`\"\") -RunAs | Out-Null",
+   "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Sandboxie-Plus\" -Recurse",
+   "'Sandboxie-Plus.lnk', 'Sandboxed Web Browser.lnk' | ForEach-Object {",
+   "    Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\$_\"",
+   "}",
+   "Remove-Item \"$dir\\setup.exe\""
+  ]
+ },
+ "license": "GPL-3.0-or-later",
+ "shortcuts": [
+  [
+   "SandMan.exe",
+   "Sandboxie-Plus"
+  ],
+  [
+   "Start.exe",
+   "Sandboxie Start Menu",
+   "/box:__ask__ start_menu"
+  ],
+  [
+   "Start.exe",
+   "Run any program sandboxed",
+   "/box:__ask__ run_dialog"
+  ],
+  [
+   "Start.exe",
+   "Run Web browser sandboxed",
+   "default_browser"
+  ]
+ ],
+ "uninstaller": {
+  "script": [
+   "if (!(is_admin)) { error \"$app requires admin rights to uninstall\"; break }",
+   "Invoke-ExternalCommand \"$dir\\unins000.exe\" -ArgumentList '/verysilent' -RunAs | Out-Null"
+  ]
+ },
+ "version": "1.2.6"
+}

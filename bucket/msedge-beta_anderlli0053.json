@@ -1,0 +1,74 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "2d1ed5b9195fbe61d031c397b7b12fa5f62bb69214b068f72c3427ca7170d570",
+   "url": "https://scoop-apps.vercel.app/msedge-beta-win-X86#/dl.7z"
+  },
+  "64bit": {
+   "hash": "3ebe5412067bae80be867514f9cf80de24d75aea835475850c264b069e80831d",
+   "url": "https://scoop-apps.vercel.app/msedge-beta-win-X64#/dl.7z"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "hash": {
+     "regex": "(?sm)beta.*?x86.*?Sha256.*?$base64",
+     "url": "https://scoop-apps.vercel.app/msedge"
+    },
+    "url": "https://scoop-apps.vercel.app/msedge-beta-win-X86#/dl.7z"
+   },
+   "64bit": {
+    "hash": {
+     "regex": "(?sm)beta.*?x64.*?Sha256.*?$base64",
+     "url": "https://scoop-apps.vercel.app/msedge"
+    },
+    "url": "https://scoop-apps.vercel.app/msedge-beta-win-X64#/dl.7z"
+   }
+  }
+ },
+ "bin": [
+  [
+   "msedge.exe",
+   "msedge-beta",
+   "--user-data-dir=\"$dir\\User Data\""
+  ]
+ ],
+ "checkver": {
+  "jsonpath": "$[?(@.Product == 'beta')].Version",
+  "url": "https://scoop-apps.vercel.app/msedge"
+ },
+ "description": "Microsoft Edge is the fast and secure browser that helps you protect your data and save time and money(Beta Channel, Portable Edition).",
+ "homepage": "https://www.microsoft.com/en-us/edge",
+ "installer": {
+  "script": [
+   "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\" -Removal",
+   "@('msedge.exe', 'msedge_proxy.exe') | ForEach-Object { Move-Item \"$dir\\$version\\$_\" \"$dir\" -Force -ErrorAction SilentlyContinue }"
+  ]
+ },
+ "license": {
+  "identifier": "Freeware",
+  "url": "edge://terms/"
+ },
+ "notes": [
+  "If you encounter \"URL is not valid. The remote server returned an error: (308) Permanent Redirect.\" error",
+  "Please utilize aria2 to use multi-connection downloads.",
+  "   scoop install aria2",
+  "   scoop config aria2-warning-enabled true"
+ ],
+ "persist": "User Data",
+ "post_install": [
+  "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Microsoft\\Edge\\User Data\")) {",
+  "    info '[Portable Mode]: Copying user data...'",
+  "    Copy-Item \"$env:LocalAppData\\Microsoft\\Edge\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+  "}"
+ ],
+ "shortcuts": [
+  [
+   "msedge.exe",
+   "Microsoft Edge Beta",
+   "--user-data-dir=\"$dir\\User Data\""
+  ]
+ ],
+ "version": "101.0.1210.39"
+}

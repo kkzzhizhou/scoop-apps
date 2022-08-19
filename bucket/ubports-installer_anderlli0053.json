@@ -1,0 +1,48 @@
+{
+ "architecture": {
+  "64bit": {
+   "hash": "fdeccce5842571d67a26475a1523ec01e624b4d0a02ed71d93bcebcdf1a2ebcc",
+   "url": "https://github.com/ubports/ubports-installer/releases/download/0.9.5-beta/ubports-installer_0.9.5-beta_win_x64.exe#/dl.7z"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "64bit": {
+    "hash": {
+     "url": "$url.sha256"
+    },
+    "url": "https://github.com/ubports/ubports-installer/releases/download/$version/ubports-installer_$version_win_x64.exe#/dl.7z"
+   }
+  }
+ },
+ "checkver": {
+  "regex": "ubports-installer_([\\w.-]+)_win_x64\\.exe",
+  "url": "https://github.com/ubports/ubports-installer/releases"
+ },
+ "description": "A friendly cross-platform Installer for Ubuntu Touch.",
+ "homepage": "https://ubuntu-touch.io//ubuntu-touch.io",
+ "license": "GPL-3.0-only",
+ "persist": "APPDATA",
+ "pre_install": [
+  "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+  "Remove-Item \"$dir\\`$*\" -Recurse",
+  "if (!(Test-Path \"$persist_dir\\APPDATA\")) {",
+  "    Write-Host 'Moving settings from APPDATA to Scoop directory' -ForegroundColor Yellow",
+  "    'ubports', 'ubports-installer' | ForEach-Object {",
+  "        New-Item \"$dir\\APPDATA\\$_\" -ItemType Directory | Out-Null",
+  "        if(Test-Path \"$env:APPDATA\\$_\") {Move-Item \"$env:APPDATA\\$_\" \"$dir\\APPDATA\" | Out-Null}",
+  "        New-Item \"$env:APPDATA\\$_\" -ItemType Junction -Target \"$dir\\APPDATA\\$_\" | Out-Null",
+  "    }",
+  "}"
+ ],
+ "shortcuts": [
+  [
+   "ubports-installer.exe",
+   "UBports Installer"
+  ]
+ ],
+ "suggest": {
+  "adb": "adb"
+ },
+ "version": "0.9.5-beta"
+}

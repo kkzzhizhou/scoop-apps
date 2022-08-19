@@ -1,0 +1,56 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "8c550af844da90d05ac6be12f424ac61c6eb074238985e48201f3aa5db37b78b",
+   "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.4/npp.8.4.4.Installer.exe#/installer.exe"
+  },
+  "64bit": {
+   "hash": "638bd860149703820bf605e1098d9fa158982281cc7cfda788416c1fd3093931",
+   "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.4/npp.8.4.4.Installer.x64.exe#/installer.exe"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.Installer.exe#/installer.exe"
+   },
+   "64bit": {
+    "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.Installer.x64.exe#/installer.exe"
+   }
+  },
+  "hash": {
+   "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.checksums.sha256"
+  }
+ },
+ "bin": "notepad++.exe",
+ "checkver": {
+  "github": "https://github.com/notepad-plus-plus/notepad-plus-plus"
+ },
+ "description": "Text and source code editor.",
+ "homepage": "https://notepad-plus-plus.org/",
+ "installer": {
+  "script": [
+   "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+   "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+   "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Notepad++.lnk\"",
+   "if (Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\")) { Copy-Item \"$env:AppData\\Notepad++_Scoop_backup\\*\" \"$Env:AppData\\Notepad++\" -Force -Recurse }"
+  ]
+ },
+ "license": "GPL-2.0-only",
+ "shortcuts": [
+  [
+   "notepad++.exe",
+   "Notepad++"
+  ]
+ ],
+ "uninstaller": {
+  "script": [
+   "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+   "if (!(Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\"))) { New-Item \"$env:AppData\\Notepad++_Scoop_backup\" -ItemType Directory }",
+   "Copy-Item \"$Env:AppData\\Notepad++\\*\" \"$env:AppData\\Notepad++_Scoop_backup\" -Force -Recurse",
+   "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList @('/S') -RunAs | Out-Null",
+   "Stop-Process -Name explorer"
+  ]
+ },
+ "version": "8.4.4"
+}

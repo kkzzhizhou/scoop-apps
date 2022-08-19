@@ -1,0 +1,74 @@
+{
+ "architecture": {
+  "32bit": {
+   "installer": {
+    "script": "regsvr32 /s \"$dir\\LHShellExt32.dll\""
+   },
+   "pre_install": [
+    "if (!(is_admin)) {",
+    "    error \"Administrator rights are required to install $app.\"",
+    "    break",
+    "}",
+    "",
+    "Get-ChildItem \"$dir\" '*,2.*' | Rename-Item -Path { $_.FullName } -NewName { $_.Basename.TrimEnd(',2') + $_.Extension }"
+   ],
+   "uninstaller": {
+    "script": [
+     "if (!(is_admin)) {",
+     "    error \"Administrator rights are required to uninstall $app.\"",
+     "    break",
+     "}",
+     "",
+     "regsvr32 /u /s \"$dir\\LHShellExt32.dll\"",
+     "Stop-Process -Name explorer"
+    ]
+   }
+  },
+  "64bit": {
+   "installer": {
+    "script": "regsvr32 /s \"$dir\\LHShellExt64.dll\""
+   },
+   "pre_install": [
+    "if (!(is_admin)) {",
+    "    error \"Administrator rights are required to install $app.\"",
+    "    break",
+    "}",
+    "",
+    "Get-ChildItem \"$dir\" '*,1.*' | Rename-Item -Path { $_.FullName } -NewName { $_.Basename.TrimEnd(',1') + $_.Extension }"
+   ],
+   "uninstaller": {
+    "script": [
+     "if (!(is_admin)) {",
+     "    error \"Administrator rights are required to uninstall $app.\"",
+     "    break",
+     "}",
+     "",
+     "regsvr32 /u /s \"$dir\\LHShellExt64.dll\"",
+     "Stop-Process -Name explorer"
+    ]
+   }
+  }
+ },
+ "autoupdate": {
+  "url": "https://lockhunter.com/assets/exe/lockhuntersetup_$dashVersion.exe"
+ },
+ "bin": "lockhunter.exe",
+ "checkver": "Version:\\s+([\\d.]+)",
+ "description": "File unlocker",
+ "hash": "982dda5eec52dd54ff6b0b04fd9ba8f4c566534b78f6a46dada624af0316044e",
+ "homepage": "https://lockhunter.com/index.htm",
+ "innosetup": true,
+ "license": "Freeware",
+ "post_install": [
+  "Remove-Item \"$dir\\*,*.*\"",
+  "Stop-Process -Name explorer"
+ ],
+ "shortcuts": [
+  [
+   "lockhunter.exe",
+   "LockHunter"
+  ]
+ ],
+ "url": "https://lockhunter.com/assets/exe/lockhuntersetup_3-4-3.exe",
+ "version": "3.4.3"
+}

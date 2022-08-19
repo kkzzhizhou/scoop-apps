@@ -1,0 +1,55 @@
+{
+ "autoupdate": {
+  "extract_dir": "Sarasa-Mono-SC-Nerd-$version",
+  "url": "https://github.com/laishulu/Sarasa-Mono-SC-Nerd/archive/refs/tags/v$version.zip"
+ },
+ "checkver": "github",
+ "description": "\u7b80\u4f53\u4e2d\u6587\u7b49\u8ddd\u66f4\u7eb1\u9ed1\u4f53+Nerd\u56fe\u6807\u5b57\u4f53\u5e93\uff0c\u4e2d\u82f1\u6587\u5bbd\u5ea6\u5b8c\u7f8e2:1\uff0c\u56fe\u6807\u957f\u5bbd\u7ecf\u8fc7\u8c03\u6574\uff0c\u4e0d\u4f1a\u51fa\u73b0\u5bf9\u9f50\u95ee\u9898\uff0c\u9002\u5408\u4f5c\u4e3a\u7ec8\u7aef\u5b57\u4f53",
+ "extract_dir": "Sarasa-Mono-SC-Nerd-2.1.0",
+ "hash": "6a30117f861dc5ecac9c9684736385be95afdbad229eca20e997b9a577941c79",
+ "homepage": "https://github.com/laishulu/Sarasa-Mono-SC-Nerd",
+ "installer": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to install $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+   "Get-ChildItem $dir -Filter '*.ttf' | ForEach-Object {",
+   "    $value = if ($isFontInstallationForAllUsers) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+   "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+   "    Copy-Item $_.FullName -Destination $fontInstallDir",
+   "}"
+  ]
+ },
+ "license": "OFL-1.1",
+ "uninstaller": {
+  "script": [
+   "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+   "$windows1809BuildNumber = 17763",
+   "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+   "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+   "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+   "    error \"Administrator rights are required to uninstall $app.\"",
+   "    exit 1",
+   "}",
+   "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+   "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+   "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+   "Get-ChildItem $dir -Filter '*.ttf' | ForEach-Object {",
+   "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+   "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+   "}",
+   "Write-Host \"Font family 'Sarasa Mono SC Nerd' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+  ]
+ },
+ "url": "https://github.com/laishulu/Sarasa-Mono-SC-Nerd/archive/refs/tags/v2.1.0.zip",
+ "version": "2.1.0"
+}

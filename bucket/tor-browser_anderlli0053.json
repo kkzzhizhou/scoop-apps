@@ -1,0 +1,61 @@
+{
+ "##": "Multiple components under various open source licenses. Included HTTPS Everywhere extension is the strictest.",
+ "architecture": {
+  "32bit": {
+   "hash": "364a13582236a4fb63db4af2b3508fe97eb4e9691463e306c4ba5e9b8a6f2434",
+   "url": "https://dist.torproject.org/torbrowser/11.5.1/torbrowser-install-11.5.1_en-US.exe"
+  },
+  "64bit": {
+   "hash": "243d9a20b5af1de4be76bb6414a3feeffc0c928eb9b71ec82e4c4282bf5fc6be",
+   "url": "https://dist.torproject.org/torbrowser/11.5.1/torbrowser-install-win64-11.5.1_en-US.exe"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://dist.torproject.org/torbrowser/$version/torbrowser-install-$version_en-US.exe"
+   },
+   "64bit": {
+    "url": "https://dist.torproject.org/torbrowser/$version/torbrowser-install-win64-$version_en-US.exe"
+   }
+  },
+  "hash": {
+   "url": "$baseurl/sha256sums-signed-build.txt"
+  }
+ },
+ "bin": [
+  [
+   "firefox.exe",
+   "tor-browser"
+  ]
+ ],
+ "checkver": {
+  "regex": "torbrowser/([\\d.]+)/torbrowser-install-win64",
+  "url": "https://www.torproject.org/download/"
+ },
+ "description": "Web browser that connects to the internet via the Tor anonymity network",
+ "homepage": "https://www.torproject.org/",
+ "installer": {
+  "script": [
+   "Start-Process \"$dir\\$fname\" \"/S /D=$dir\" -PassThru -NoNewWindow | Wait-Process",
+   "movedir \"$dir\\Browser\" \"$dir\" | Out-Null",
+   "Remove-Item \"$dir\\$fname\", \"$dir\\*.lnk\" -Force",
+   "# Persisting profile breaks Tor-Launcher and makes it fallback to config files in Tor folder: move them there",
+   "movedir \"$dir\\TorBrowser\\Data\\Tor\" \"$dir\\TorBrowser\\Tor\" | Out-Null",
+   "# Update extensions in persisted profile",
+   "movedir \"$dir\\TorBrowser\\Data\\Browser\\profile.default\" \"$persist_dir\\TorBrowser\\Data\\Browser\\profile.default\" | Out-Null"
+  ]
+ },
+ "license": "GPL-3.0-or-later",
+ "persist": [
+  "TorBrowser\\Data\\Browser\\profile.default",
+  "TorBrowser\\Tor\\torrc"
+ ],
+ "shortcuts": [
+  [
+   "firefox.exe",
+   "Tor Browser"
+  ]
+ ],
+ "version": "11.5.1"
+}

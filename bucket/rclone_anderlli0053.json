@@ -1,0 +1,69 @@
+{
+ "architecture": {
+  "32bit": {
+   "extract_dir": "rclone-v1.59.1-windows-386",
+   "hash": "7957e636a8a5a50b4c91c2927483a1c6034a74c722c3a79ea4c8387f01e9810c",
+   "url": "https://github.com/rclone/rclone/releases/download/v1.59.1/rclone-v1.59.1-windows-386.zip"
+  },
+  "64bit": {
+   "extract_dir": "rclone-v1.59.1-windows-amd64",
+   "hash": "54bcac89bc7735d425b3b86f8fee042566e6f02ab69feba29bafcffeec072b20",
+   "url": "https://github.com/rclone/rclone/releases/download/v1.59.1/rclone-v1.59.1-windows-amd64.zip"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "extract_dir": "rclone-v$version-windows-386",
+    "url": "https://github.com/rclone/rclone/releases/download/v$version/rclone-v$version-windows-386.zip"
+   },
+   "64bit": {
+    "extract_dir": "rclone-v$version-windows-amd64",
+    "url": "https://github.com/rclone/rclone/releases/download/v$version/rclone-v$version-windows-amd64.zip"
+   }
+  },
+  "hash": {
+   "url": "$baseurl/SHA256SUMS"
+  }
+ },
+ "bin": "rclone.exe",
+ "checkver": {
+  "github": "https://github.com/rclone/rclone"
+ },
+ "description": "Sync files and directories to and from mulitple cloud / FTP / HTTP hosters.",
+ "homepage": "https://rclone.org",
+ "license": "MIT",
+ "persist": "rclone.conf",
+ "pre_install": [
+  "if (!(Test-Path \"$persist_dir\\rclone.conf\") -or !(Get-Item \"$persist_dir\\rclone.conf\").Length) {",
+  "   New-Item \"$persist_dir\\rclone.conf\" -ItemType File -Force | Out-Null",
+  "",
+  "   $tilde = if ($env:HOME) {",
+  "       $env:HOME",
+  "   } elseif ($env:USERPROFILE) {",
+  "       $env:USERPROFILE",
+  "   } else {",
+  "       \"$env:HOMEDRIVE%\\$env:HOMEPATH\"",
+  "   }",
+  "",
+  "   $importConf = if (Test-Path \"$env:APPDATA\\rclone\\rclone.conf\") {",
+  "       \"$env:APPDATA\\rclone\\rclone.conf\"",
+  "   } elseif (Test-Path \"$env:XDG_CONFIG_HOME\\rclone\\rclone.conf\") {",
+  "       \"$env:XDG_CONFIG_HOME\\rclone\\rclone.conf\"",
+  "   } elseif (Test-Path \"$tilde\\.config\\rclone\\rclone.conf\") {",
+  "       \"$tilde\\.config\\rclone\\rclone.conf\"",
+  "   } elseif (Test-Path \"$tilde\\.rclone.conf\") {",
+  "       \"$tilde\\.rclone.conf\"",
+  "   }",
+  "",
+  "   if ($importConf -and (Test-Path $importConf)) {",
+  "       Copy-Item $importConf \"$persist_dir\\rclone.conf\"",
+  "       Write-Host \"Imported existing rclone.conf from $importConf.\" -ForegroundColor Yellow",
+  "   }",
+  "}"
+ ],
+ "uninstaller": {
+  "script": "if ((Test-Path \"$dir\\rclone.conf\") -and !(Get-Item \"$dir\\rclone.conf\").LinkType -and (Test-Path $persist_dir)) { Copy-Item \"$dir\\rclone.conf\" $persist_dir }"
+ },
+ "version": "1.59.1"
+}

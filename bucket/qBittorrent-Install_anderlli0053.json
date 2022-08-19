@@ -1,0 +1,75 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "35ab8e46152663eab858e902d159f918bc77620db4d9eb5dec85a959b9b99316",
+   "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-4.4.3.1/qbittorrent_4.4.3.1_setup.exe#/setup.exe"
+  },
+  "64bit": {
+   "hash": "07f1777b4508c5629e26bb592050dfd4421169b76de79001d2f0350f92010f23",
+   "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-4.4.3.1/qbittorrent_4.4.3.1_x64_setup.exe#/setup.exe"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "hash": {
+     "regex": "(?sm)td>32-bit Installer.*?<code>$sha256</code>",
+     "url": "https://www.qbittorrent.org/download.php"
+    },
+    "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-$version/qbittorrent_$version_setup.exe#/setup.exe"
+   },
+   "64bit": {
+    "hash": {
+     "regex": "(?sm)td>64-bit Installer.*?<code>$sha256</code>",
+     "url": "https://www.qbittorrent.org/download.php"
+    },
+    "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-$version/qbittorrent_$version_x64_setup.exe#/setup.exe"
+   }
+  }
+ },
+ "checkver": {
+  "regex": "Latest:\\s+v([\\d.]+)",
+  "url": "https://www.qbittorrent.org/download.php"
+ },
+ "description": "qBittorrent. Free and reliable P2P Bittorent client",
+ "homepage": "https://www.qbittorrent.org",
+ "installer": {
+  "script": [
+   "$programname = \"qbittorrent*\"",
+   "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+   "$filepath = \"$ProgramFiles\\qBittorrent\\qbittorrent.exe\"",
+   "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "{",
+   "   &\"$dir\\setup.exe\" /S | Out-Null",
+   "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+   "   {",
+   "       exit 1",
+   "   }",
+   "}",
+   "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+  ]
+ },
+ "license": {
+  "identifier": "GPL-2.0-only",
+  "url": "https://github.com/qbittorrent/qBittorrent/blob/master/COPYING"
+ },
+ "notes": "Web UI Theme https://github.com/WDaan/VueTorrent",
+ "post_install": [
+  "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+  "if (Test-Path \"$CommonDesktopPath\\qbittorrent.lnk\") {Remove-Item \"$CommonDesktopPath\\qbittorrent.lnk\" -Force}"
+ ],
+ "pre_download": "Assert-Administrator",
+ "pre_install": [
+  "$processname = \"qbittorrent\"",
+  "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+  "if ($process) {",
+  "   $process.CloseMainWindow()",
+  "   Start-Sleep -Seconds 5",
+  "   if (!$process.HasExited) {",
+  "       Start-Sleep -Seconds 25",
+  "       $process | Stop-Process -Force",
+  "   }",
+  "}"
+ ],
+ "version": "4.4.3.1"
+}

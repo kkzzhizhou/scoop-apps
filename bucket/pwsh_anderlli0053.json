@@ -1,0 +1,67 @@
+{
+ "architecture": {
+  "32bit": {
+   "hash": "04e0691f7f56388b6396b931cd23aef6e86504b0aa147660317f342538914551",
+   "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/PowerShell-7.2.6-win-x86.zip"
+  },
+  "64bit": {
+   "hash": "4fb17e905b3422df8ee748a1a42826996c0741e3c6affa41371f19b95404db38",
+   "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.2.6/PowerShell-7.2.6-win-x64.zip"
+  }
+ },
+ "autoupdate": {
+  "architecture": {
+   "32bit": {
+    "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x86.zip"
+   },
+   "64bit": {
+    "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x64.zip"
+   }
+  },
+  "hash": {
+   "regex": "$basename\\s*<ul>\\s*<li>$sha256",
+   "url": "https://github.com/PowerShell/PowerShell/releases/tag/v$version/"
+  }
+ },
+ "bin": "pwsh.exe",
+ "checkver": "github",
+ "description": "Cross-platform automation and configuration tool/framework, known as Powershell Core, that works well with existing tools and is optimized for dealing with structured data.",
+ "homepage": "https://github.com/PowerShell/PowerShell",
+ "license": "MIT",
+ "notes": [
+  "Since Scoop uses pwsh.exe internally, to update PowerShell Core itself,",
+  "run `scoop update pwsh` from Windows PowerShell, i.e. powershell.exe.",
+  "",
+  "Add PowerShell Core as a explorer context menu by running: '$dir\\install-explorer-context.reg'",
+  "For file context menu, run '$dir\\install-file-context.reg'"
+ ],
+ "persist": [
+  "Microsoft.PowerShell_profile.ps1",
+  "profile.ps1"
+ ],
+ "post_install": [
+  "if ($architecture -eq '32bit') { $pwshArch = 'x86' } else { $pwshArch = 'x64' }",
+  "$pwshPath = \"$dir\\pwsh.exe\".Replace('\\', '\\\\')",
+  "'install-explorer-context', 'uninstall-explorer-context', 'install-file-context' , 'uninstall-file-context' | ForEach-Object {",
+  "    if (Test-Path \"$bucketsdir\\main\\scripts\\pwsh\\$_.reg\") {",
+  "        $content = (Get-Content \"$bucketsdir\\main\\scripts\\pwsh\\$_.reg\").Replace('$pwshPath', $pwshPath)",
+  "        $content = $content.Replace('$pwshArch', $pwshArch)",
+  "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+  "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+  "    }",
+  "}"
+ ],
+ "pre_install": [
+  "'Microsoft.PowerShell_profile.ps1', 'profile.ps1' | ForEach-Object {",
+  "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+  "}"
+ ],
+ "shortcuts": [
+  [
+   "pwsh.exe",
+   "PowerShell Core",
+   "-WorkingDirectory ~"
+  ]
+ ],
+ "version": "7.2.6"
+}

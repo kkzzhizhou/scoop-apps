@@ -1,0 +1,45 @@
+{
+ "autoupdate": {
+  "hash": {
+   "mode": "extract",
+   "regex": "^$sha256([\\s]+)$basename",
+   "url": "https://scoop-apps.vercel.app/idm"
+  },
+  "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/$matchFilename"
+ },
+ "checkver": {
+  "regex": "(?<filename>internet_download_manager_(?<version>[\\d.]+)\\.zip)",
+  "reverse": true,
+  "url": "https://scoop-apps.vercel.app/idm"
+ },
+ "depends": "sudo",
+ "description": "IDM is a tool to increase download speeds by up to 5 times, resume and schedule downloads.",
+ "hash": "60002f734711f57b05ef6ba1402149e59dcbd1e94fca999f1fbaab474986998b",
+ "homepage": "http://internetdownloadmanager.com/index.html",
+ "installer": {
+  "script": [
+   "sudo Start-Process -filepath \"$dir\\Installer.exe\" -ArgumentList \"/DIR=$dir /NoIcons=1 /SILENT /NORESTART\"",
+   "Start-Sleep -s 60"
+  ]
+ },
+ "license": {
+  "identifier": "Proprietary",
+  "url": "http://internetdownloadmanager.com/support/terms-and-conditions.html"
+ },
+ "post_install": "Remove-Item \"$dir\\Installer.exe\" -Force",
+ "pre_install": [
+  "sudo Get-Process IDM*,IEMon* | Stop-Process -Force -ErrorAction Ignore | Out-Null",
+  "Rename-Item \"$dir\\Internet Download Manager*.exe\" 'Installer.exe'",
+  "Get-ChildItem $dir -Exclude Installer.exe, install.json, manifest.json | ForEach-Object { Remove-Item \"$dir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue }"
+ ],
+ "uninstaller": {
+  "script": [
+   "sudo Stop-Process -Name explorer, IDM*, IEMonitor*, IDMMsgHost*, MediumILStart*, IDMIntegrator64* -Force -ErrorAction Ignore | Out-Null",
+   "Remove-Item IDMShellExt*.dll -Force -ErrorAction SilentlyContinue",
+   "sudo Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList \"/SILENT /NORESTART\" -WorkingDirectory \"$dir\" -Wait | Out-Null",
+   "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+  ]
+ },
+ "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/internet_download_manager_6.40.11.zip",
+ "version": "6.40.11"
+}

@@ -1,0 +1,43 @@
+{
+ "bin": [
+  "bin/gpg.exe",
+  [
+   "bin/gpg.exe",
+   "gpg2"
+  ],
+  "bin/gpgconf.exe",
+  "bin/gpgsm.exe",
+  "bin/gpgv.exe",
+  "bin/gpg-connect-agent.exe",
+  "bin/gpa.exe",
+  "bin/kleopatra.exe"
+ ],
+ "checkver": {
+  "re": "GnuPG ([0-9\\.-]+)",
+  "url": "https://www.gpg4win.org/download.html"
+ },
+ "hash": [
+  "sha256:9fea4add738a373b3c1a304f74eec2d24a8f5fe7ccdf1d8ee090d99de8f51257",
+  "sha256:6c7bbb36c89c83b2432edc9a7fe64c73b26711ca0d3d6a0d55c71aef66ec70f1"
+ ],
+ "homepage": "https://gnupg.org",
+ "license": "GPLv3",
+ "pre_install": "        # GnuPGHOME        # * use 'pre_install' (or 'post_install') instead of 'env_set' so that `scoop` doesn't remove the variable if/when uninstalled        # respect USER value, if defined        if ($env:GnuPGHOME) { } else {            # otherwise, 1st existing known default; otherwise, 1st of known defaults            $default_dirs = @( \"$env:USERPROFILE\\.gnupg\", \"$env:USERPROFILE\\.keydb\" )            $val = @( $($default_dirs |% { get-item $_ -ea silent }), $default_dirs[0] ) | select -first 1            # ensure directory exists            new-item $val -type directory -force | out-null            # add to environment            env GnuPGHOME -t $global $val            env GnuPGHOME $val        }        ",
+ "uninstaller": {
+  "script": [
+   "",
+   "& cmd @('/c','taskkill /F /T /IM gpa.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM kleopatra.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM dbus-daemon.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM dirmngr.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM gpg-agent.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM gpg-connect-agent.exe 1>NUL 2>NUL')",
+   "& cmd @('/c','taskkill /F /T /IM scdaemon.exe 1>NUL 2>NUL')"
+  ]
+ },
+ "url": [
+  "https://gnupg.org/ftp/gcrypt/binary/gnupg-w32-2.2.5_20180222.exe#/dl.7z",
+  "https://files.gpg4win.org/gpg4win-3.1.2.exe#/dl.7z"
+ ],
+ "version": "2.2.5"
+}
