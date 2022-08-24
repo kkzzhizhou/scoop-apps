@@ -1,0 +1,76 @@
+{
+    "version": "1.27.1",
+    "description": "Nintendo Wii U emulator",
+    "homepage": "https://cemu.info/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://cemu.info"
+    },
+    "suggest": {
+        "cemuhook": "cemuhook",
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://cemu.info/releases/cemu_1.27.1.zip",
+            "hash": "d8e72e47f012f6cead4382409f44c3071c20342f9e18ec89235fa5d190404638"
+        }
+    },
+    "extract_dir": "cemu_1.27.1",
+    "pre_install": "if (!(Test-Path \"$persist_dir\\keys.txt\")) { New-Item \"$dir\\keys.txt\" -Type File | Out-Null }",
+    "installer": {
+        "script": [
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
+            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
+            "   }",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\keys.txt\")) {",
+            "    New-Item \"$dir\\keys.txt\" -Type File | Out-Null",
+            "}"
+        ]
+    },
+    "post_install": [
+        "'settings.xml' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\"  -Force",
+        "   } else {",
+        "       New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}"
+    ],
+    "bin": "Cemu.exe",
+    "shortcuts": [
+        [
+            "cemu.exe",
+            "Cemu"
+        ]
+    ],
+    "persist": [
+        "controllerProfiles",
+        "gameProfiles",
+        "graphicPacks",
+        "mlc01",
+        "sharedFonts",
+        "shaderCache\\transferable",
+        "keys.txt"
+    ],
+    "uninstaller": {
+        "script": [
+            "'settings.xml' | ForEach-Object {",
+            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "checkver": {
+        "regex": "Download latest experimental version \\(v((?<version>[\\d.]+)[\\w]*?),"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cemu.info/releases/cemu_$matchVersion.zip"
+            }
+        },
+        "extract_dir": "cemu_$matchVersion"
+    }
+}
