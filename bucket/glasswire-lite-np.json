@@ -11,7 +11,7 @@
     "installer": {
         "script": [
             "if(!(is_admin)) { error \"$app requires admin rights to install\"; break }",
-            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList '/S' -RunAs | Out-Null",
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
             "Remove-Item \"$dir\\setup.exe\"",
             "Remove-Item \"$env:Public\\Desktop\\Glasswire.lnk\""
         ]
@@ -21,7 +21,7 @@
             "if(!(is_admin)) { error \"$app requires admin rights to uninstall\"; break }",
             "if ($architecture -eq '64bit') { $uninstall_exe = \"${Env:ProgramFiles(x86)}\\GlassWire\\uninstall.exe\" }",
             "else { $uninstall_exe = \"$Env:ProgramFiles\\GlassWire\\uninstall.exe\" }",
-            "Invoke-ExternalCommand \"$uninstall_exe\" -ArgumentList '/S' -RunAs | Out-Null",
+            "Start-Process \"$uninstall_exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
             "# wait for uninstall.exe to finish",
             "while (Get-Process 'uninstall' -ErrorAction SilentlyContinue) { Start-Sleep -Second 5 }"
         ]

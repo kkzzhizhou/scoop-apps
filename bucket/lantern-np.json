@@ -16,24 +16,15 @@
     },
     "installer": {
         "script": [
-            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/S', \"/D=$dir\") | Out-Null",
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
             "Remove-Item \"$dir\\setup.exe\"",
-            "Remove-Item -Recurse \"$([Environment]::GetFolderPath('startmenu'))\\Programs\\Lantern\"",
+            "Remove-Item \"$([Environment]::GetFolderPath('startmenu'))\\Programs\\Lantern\\Uninstall Lantern.lnk\"",
             "Remove-Item \"$([Environment]::GetFolderPath('Desktop'))\\Lantern.lnk\""
         ]
     },
     "uninstaller": {
-        "script": "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList '/S' | Out-Null"
+        "script": "Start-Process \"$Env:AppData\\Lantern\\uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null"
     },
-    "bin": "lantern.exe",
-    "shortcuts": [
-        [
-            "lantern.exe",
-            "Lantern",
-            "",
-            "lantern.ico"
-        ]
-    ],
     "checkver": {
         "url": "https://github.com/getlantern/lantern-binaries",
         "regex": "(?sm)lantern-installer-64-bit\\.exe.*?Lantern binaries for version ([\\d.]+)"
