@@ -1,0 +1,46 @@
+{
+    "version": "20220821-2e5e15",
+    "description": "Desktop client for Matrix using Qt and C++17.",
+    "homepage": "https://nheko-reborn.github.io/",
+    "license": "GPL-3.0-or-later",
+    "depends": "7zip19.00-helper",
+    "suggest": {
+        "Visual C++ Redistributable 2015-2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://matrix.neko.dev/_matrix/media/r0/download/neko.dev/dtBUGXyQBGYPcqDCxgrMubWH#/dl.zip",
+            "hash": "e1fc540dff272e1b5388899acb658ae0d6aae27c61f3d993b07dc5b0f424ee6f"
+        }
+    },
+    "shortcuts": [
+        [
+            "nheko.exe",
+            "Nheko"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://matrix-static.neko.dev/room/!TshDrgpBNBDmfDeEGN:neko.dev/'",
+            "$regex = '(?sm)download/neko\\.dev/([A-Za-z]+).*?nheko-master-([0-9a-f]+)-win64\\.zip.*?(\\d{2} [A-Za-z]{3} \\d{4})'",
+            "",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$matches = [regex]::Matches($cont, $regex)",
+            "if (!$matches) { error \"Could not match regex in $url\"; break }",
+            "$match = $matches[$matches.Count-1]",
+            "",
+            "$date = (Get-Date $match.Groups[3].Value).ToString('yyyyMMdd')",
+            "$commitSha = $match.Groups[2].Value.SubString(0,6)",
+            "$fileUrl = $match.Groups[1].Value",
+            "Write-Output $date-$commitSha $fileUrl"
+        ],
+        "regex": "(\\d{8}-\\w+) (?<fileurl>\\w+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://matrix.neko.dev/_matrix/media/r0/download/neko.dev/$matchFileurl#/dl.zip"
+            }
+        }
+    }
+}
