@@ -160,7 +160,7 @@ merge_buckets(){
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/") # id重复时的文件名
             file_id=$(echo $file_name | tr 'A-Z' 'a-z') # json文件id
             check_main_file_id=$(cat ${cache_dir}/main_file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否与main仓库重复
-            if [ "$check_file_md5" != "0" ];then
+            if [ "$check_main_file_id" != "0" ];then
                 echo "${file_id}与main仓库同名"
                 add_to_bucket "$file" "$new_name" "$bucket"
                 continue
