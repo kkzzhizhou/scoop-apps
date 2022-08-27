@@ -171,7 +171,7 @@ merge_buckets(){
                 fi
                 check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否已经存在
                 check_file_md5=$(cat ${cache_dir}/file_md5 | grep -E "^$file_md5$" | wc -l) # 检查文件md5是否已经存在
-                check_file_new_id=$(cat ${cache_dir}/file_dis | grep -E "^$file_new_id$" | wc -l) # 检查新文件名id否已经存在
+                check_file_new_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_new_id$" | wc -l) # 检查新文件名id否已经存在
                 if [ "$check_file_md5" -eq 0 ]
                 then
                     echo $file_md5 >> ${cache_dir}/file_md5
