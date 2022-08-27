@@ -147,7 +147,8 @@ merge_buckets(){
         owner=$(echo $bucket | awk -F'/' '{print $1}')
         echo "正在处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
         files=$(find ${cache_dir}/${bucket_dir} -type f -name *.json ! -name ".*" -not -path "${cache_dir}/$bucket_dir/.vscode/*" )
-        if [ ${#files[*]} -gt 2000 ]
+	files_array=(${files})
+        if [ ${#files_array[*]} -gt 2000 ]
         then
             echo "仓库描述文件过多，忽略: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
             continue
