@@ -150,71 +150,66 @@ merge_buckets(){
         if [ ${#files[*]} -gt 2000 ]
         then
             echo "仓库描述文件过多，忽略: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
-        else
-            for file in ${files[@]}
-            do
-                file_name=$(echo $file | awk -F'/' '{print $NF}') # json文件名
-                new_name=$(echo $file_name | sed "s/.json/_$owner.json/") # id重复时的文件名
-                file_id=$(echo $file_name | tr 'A-Z' 'a-z') # json文件id
-                file_new_id=$(echo $new_name | tr 'A-Z' 'a-z') # new_name json文件id
-                file_md5=$(md5sum $file | awk '{print $1}') # json文件md5
-                jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
-                if [ "$?" -eq 0 ]
+            continue
+        fi
+        for file in ${files[@]}
+        do
+            file_name=$(echo $file | awk -F'/' '{print $NF}') # json文件名
+            new_name=$(echo $file_name | sed "s/.json/_$owner.json/") # id重复时的文件名
+            file_id=$(echo $file_name | tr 'A-Z' 'a-z') # json文件id
+            file_md5=$(md5sum $file | awk '{print $1}') # json文件md5
+            jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
+            if [ "$?" -eq 0 ]
+            then
+                app_version=$(cat $file | jq -r '.version')
+                if [ ${app_version} == "nightly" -o ${app_version} == "latest" ]
                 then
-                    app_version=$(cat $file | jq -r '.version')
-                    if [ ${app_version} == "nightly" -o ${app_version} == "latest" ]
-                    then
-                        app_version="0"
-                    fi
-                else
-                    app_version='0.0.0'
+                    app_version="0"
                 fi
-                check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否已经存在
-                check_file_md5=$(cat ${cache_dir}/file_md5 | grep -E "^$file_md5$" | wc -l) # 检查文件md5是否已经存在
-                check_file_new_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_new_id$" | wc -l) # 检查新文件名id否已经存在
-                if [ "$check_file_md5" -eq 0 ]
+            else
+                app_version='0.0.0'
+            fi
+            check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否已经存在
+            check_file_md5=$(cat ${cache_dir}/file_md5 | grep -E "^$file_md5$" | wc -l) # 检查文件md5是否已经存在
+            if [ "$check_file_md5" -eq 0 ]
+            then
+                echo $file_md5 >> ${cache_dir}/file_md5
+                if [ "$check_file_id" -eq 0 ]
                 then
-                    echo $file_md5 >> ${cache_dir}/file_md5
-                    if [ "$check_file_id" -eq 0 ]
+                    echo $file_id >> ${cache_dir}/file_ids
+                    echo "$file_id $new_name" >> ${cache_dir}/file_id_name
+                    add_to_bucket "$file" "$file_name" "$bucket"
+                else
+                    bucket_app_name=$(ls bucket | grep -Ei "^$file_id$")
+                    jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
+                    if [ "$?" -eq 0 ]
                     then
-                        echo $file_id >> ${cache_dir}/file_ids
-                        echo "$file_id $new_name" >> ${cache_dir}/file_id_name
-                        add_to_bucket "$file" "$file_name" "$bucket"
-                    else
-                        bucket_app_name=$(ls bucket | grep -Ei "^$file_id$")
-                        jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
-                        if [ "$?" -eq 0 ]
+                        bucket_app_version=$(cat "bucket/${bucket_app_name}" | jq -r '.version')
+                        if [ ${bucket_app_version} == "nightly" -o ${bucket_app_version} == "latest" ]
                         then
-                            bucket_app_version=$( （ [ -f "bucket/${bucket_app_name}" ] && "cat "bucket/${bucket_app_name}" | jq -r '.version' ) || echo "0" ) 
-                            if [ ${bucket_app_version} == "nightly" -o ${bucket_app_version} == "latest" ]
-                            then
-                                bucket_app_version="0"
-                            fi
-                        else
                             bucket_app_version="0"
                         fi
-                        bucket_app_new_name=$(cat ${cache_dir}/file_id_name | grep -E "^$file_id "| awk '{print $2}')
-                        version_gt ${app_version} ${bucket_app_version}
-                        if [ $? -eq 0 ]
-                        then
-                            echo "bucket_app_name:${bucket_app_name}  bucket_app_version:${bucket_app_version} bucket_app_new_name:${bucket_app_new_name} app_version:${app_version} app_bucket:${bucket}"
-                            mv -f bucket/${bucket_app_name} bucket/${bucket_app_new_name}
-                            sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
-                            add_to_bucket "$file" "$file_name" "$bucket"
-                        else
-                            if [ "$check_file_id" -eq 0 ]
-                            then
-                                add_to_bucket "$file" "$new_name" "$bucket"
-                            fi
-                        fi
+                    else
+                        bucket_app_version="0"
                     fi
-                # else
-                    # ignore duplicate file
-                    # echo "duplicate file:$bucket   $file"
+                    bucket_app_new_name=$(cat ${cache_dir}/file_id_name | grep -E "^$file_id "| awk '{print $2}')
+                    version_gt ${app_version} ${bucket_app_version}
+                    if [ $? -eq 0 ]
+                    then
+                        echo "bucket_app_name:${bucket_app_name}  bucket_app_version:${bucket_app_version} bucket_app_new_name:${bucket_app_new_name} app_version:${app_version} app_bucket:${bucket}"
+                        mv -f bucket/${bucket_app_name} bucket/${bucket_app_new_name}
+                        sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
+                        add_to_bucket "$file" "$file_name" "$bucket"
+                    else
+                        add_to_bucket "$file" "$new_name" "$bucket"
+                    fi
                 fi
-            done
-            echo "完成处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
-        fi
+            # else
+                # ignore duplicate file
+                # echo "duplicate file:$bucket   $file"
+            fi
+        done
+        echo "完成处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
     done
 }
 
