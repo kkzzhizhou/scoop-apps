@@ -181,28 +181,31 @@ merge_buckets(){
                     echo "$file_id $new_name" >> ${cache_dir}/file_id_name
                     add_to_bucket "$file" "$file_name" "$bucket"
                 else
-                    bucket_app_name=$(ls bucket | grep -Ei "^$file_id$")
-                    jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
-                    if [ "$?" -eq 0 ]
+                    bucket_app_name=$(ls bucket | grep -Ei "^$file_id$" | head -n 1)
+                    if [ -f "${bucket_app_name}" ]
                     then
-                        bucket_app_version=$([ -f "bucket/${bucket_app_name}" ] && cat "bucket/${bucket_app_name}" | jq -r '.version' || echo "0")
-                        if [ ${bucket_app_version} == "nightly" -o ${bucket_app_version} == "latest" ]
+                        jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
+                        if [ "$?" -eq 0 ]ls
                         then
+                            bucket_app_version=$([ -f "bucket/${bucket_app_name}" ] && cat "bucket/${bucket_app_name}" | jq -r '.version' || echo "0")
+                            if [ ${bucket_app_version} == "nightly" -o ${bucket_app_version} == "latest" ]
+                            then
+                                bucket_app_version="0"
+                            fi
+                        else
                             bucket_app_version="0"
                         fi
-                    else
-                        bucket_app_version="0"
-                    fi
-                    bucket_app_new_name=$(cat ${cache_dir}/file_id_name | grep -E "^$file_id "| awk '{print $2}')
-                    version_gt ${app_version} ${bucket_app_version}
-                    if [ $? -eq 0 ]
-                    then
-                        echo "bucket_app_name:${bucket_app_name}  bucket_app_version:${bucket_app_version} bucket_app_new_name:${bucket_app_new_name} app_version:${app_version} app_bucket:${bucket}"
-                        mv -f bucket/${bucket_app_name} bucket/${bucket_app_new_name}
-                        sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
-                        add_to_bucket "$file" "$file_name" "$bucket"
-                    else
-                        add_to_bucket "$file" "$new_name" "$bucket"
+                        bucket_app_new_name=$(cat ${cache_dir}/file_id_name | grep -E "^$file_id "| awk '{print $2}')
+                        version_gt ${app_version} ${bucket_app_version}
+                        if [ $? -eq 0 ]
+                        then
+                            echo "bucket_app_name:${bucket_app_name}  bucket_app_version:${bucket_app_version} bucket_app_new_name:${bucket_app_new_name} app_version:${app_version} app_bucket:${bucket}"
+                            mv -f bucket/${bucket_app_name} bucket/${bucket_app_new_name}
+                            sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
+                            add_to_bucket "$file" "$file_name" "$bucket"
+                        else
+                            add_to_bucket "$file" "$new_name" "$bucket"
+                        fi
                     fi
                 fi
             # else
