@@ -192,7 +192,7 @@ merge_buckets(){
                     if [ -f "bucket/${bucket_app_name}" ]
                     then
                         jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
-                        if [ "$?" -eq 0 ]ls
+                        if [ "$?" -eq 0 ]
                         then
                             bucket_app_version=$([ -f "bucket/${bucket_app_name}" ] && cat "bucket/${bucket_app_name}" | jq -r '.version' || echo "0")
                             if [ ${bucket_app_version} == "nightly" -o ${bucket_app_version} == "latest" ]
