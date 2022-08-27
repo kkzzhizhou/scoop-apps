@@ -90,7 +90,7 @@ init_main(){
     for file in ${files[@]}
     do
         file_name=$(echo $file | awk -F'/' '{print $NF}')
-        echo $file_name | tr 'A-Z' 'a-z' >> ${cache_dir}/file_ids
+        echo $file_name | tr 'A-Z' 'a-z' >> ${cache_dir}/main_file_ids
     done
 }
 
@@ -117,6 +117,7 @@ apt_init() {
 
 clean_workspace() {
     rm -f bucket/*.json
+    cat /dev/null > ${cache_dir}/main_file_ids
     cat /dev/null > ${cache_dir}/file_ids
     cat /dev/null > ${cache_dir}/file_md5
     cat /dev/null > ${cache_dir}/file_id_name
@@ -147,7 +148,7 @@ merge_buckets(){
         owner=$(echo $bucket | awk -F'/' '{print $1}')
         echo "正在处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner 时间: $(date '+%Y-%m-%d %H:%m:%S')"
         files=$(find ${cache_dir}/${bucket_dir} -type f -name *.json ! -name ".*" -not -path "${cache_dir}/$bucket_dir/.vscode/*" )
-	files_array=(${files})
+        files_array=(${files})
         if [ ${#files_array[*]} -gt 2000 ]
         then
             echo "仓库描述文件过多，忽略: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
@@ -158,6 +159,12 @@ merge_buckets(){
             file_name=$(echo $file | awk -F'/' '{print $NF}') # json文件名
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/") # id重复时的文件名
             file_id=$(echo $file_name | tr 'A-Z' 'a-z') # json文件id
+            check_main_file_id=$(cat ${cache_dir}/main_file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否与main仓库重复
+            if [ "$check_file_md5" != "0" ];then
+                echo "${file_id}与main仓库同名"
+                add_to_bucket "$file" "$new_name" "$bucket"
+                continue
+            fi
             file_md5=$(md5sum $file | awk '{print $1}') # json文件md5
             jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
             if [ "$?" -eq 0 ]
@@ -208,7 +215,7 @@ merge_buckets(){
                         fi
                     else
                         echo "${file_id} no found"
-                        ls bucket
+                        #ls bucket
                     fi
                 fi
             # else
