@@ -202,6 +202,7 @@ merge_buckets(){
                         then
                             add_to_bucket "$file" "$new_name" "$bucket"
                         fi
+                    fi
                 fi
             # else
                 # ignore duplicate file
