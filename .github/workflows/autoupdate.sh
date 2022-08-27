@@ -206,6 +206,9 @@ merge_buckets(){
                         else
                             add_to_bucket "$file" "$new_name" "$bucket"
                         fi
+                    else
+                        echo "${file_id} no found"
+                        ls bucket
                     fi
                 fi
             # else
