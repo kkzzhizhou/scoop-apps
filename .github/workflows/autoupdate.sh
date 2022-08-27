@@ -145,7 +145,7 @@ merge_buckets(){
     do
         bucket_dir=$(echo $bucket | sed 's@/@-@g')
         owner=$(echo $bucket | awk -F'/' '{print $1}')
-        echo "正在处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
+        echo "正在处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner 时间: $(date '+%Y-%m-%d %H:%m:%S')"
         files=$(find ${cache_dir}/${bucket_dir} -type f -name *.json ! -name ".*" -not -path "${cache_dir}/$bucket_dir/.vscode/*" )
 	files_array=(${files})
         if [ ${#files_array[*]} -gt 2000 ]
@@ -213,7 +213,7 @@ merge_buckets(){
                 # echo "duplicate file:$bucket   $file"
             fi
         done
-        echo "完成处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner"
+        echo "完成处理仓库: $bucket 仓库名:$bucket_dir 仓库github账号:$owner 时间: $(date '+%Y-%m-%d %H:%m:%S')"
     done
 }
 
