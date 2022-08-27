@@ -1,41 +1,31 @@
 {
- "architecture": {
-  "32bit": {
-   "installer": {
-    "script": [
-     "innounp -x -d\"$dir\" -c\"{sys}\" \"$dir\\setup.exe\" -y",
-     "Move-Item \"$dir\\OpenHashTab,3.dll\" \"$dir\\OpenHashTab.dll\"",
-     "sudo regsvr32 /s \"$dir\\OpenHashTab.dll\""
-    ]
-   },
-   "uninstaller": {
-    "script": "sudo regsvr32 /u /s \"$dir\\OpenHashTab.dll\""
-   }
-  },
-  "64bit": {
-   "installer": {
-    "script": [
-     "innounp -x -d\"$dir\" -c\"{sys}\" \"$dir\\setup.exe\" -y",
-     "Move-Item \"$dir\\OpenHashTab,1.dll\" \"$dir\\OpenHashTab.dll\"",
-     "sudo regsvr32 /s \"$dir\\OpenHashTab.dll\""
-    ]
-   },
-   "uninstaller": {
-    "script": "sudo regsvr32 /u /s \"$dir\\OpenHashTab.dll\""
-   }
-  }
- },
- "autoupdate": {
-  "url": "https://github.com/namazso/OpenHashTab/releases/download/v$version/OpenHashTab_setup.exe#/setup.exe"
- },
- "checkver": "github",
- "depends": [
-  "sudo",
-  "innounp"
- ],
- "description": "\u4e3a\u8d44\u6e90\u7ba1\u7406\u5668\u5c5e\u6027\u52a0\u4e0aHash\u6821\u9a8c",
- "hash": "1b5a0475b0ec3cb211e3f710fa8c0a2cd5ce971475104de91b2aeb7f865b96e6",
- "homepage": "https://github.com/namazso/OpenHashTab",
- "url": "https://github.com/namazso/OpenHashTab/releases/download/v3.0.2/OpenHashTab_setup.exe#/setup.exe",
- "version": "3.0.2"
+    "version": "3.0.1",
+    "description": "A shell extension for conveniently calculating and checking file hashes from file properties",
+    "homepage": "https://github.com/namazso/OpenHashTab",
+    "license": "GPL-3.0-only",
+    "notes": "Due to Scoop's limitations, innounp is listed as a dependency though it is only required for installation.",
+    "depends": [
+        "innounp",
+        "sudo"
+    ],
+    "url": "https://github.com/namazso/OpenHashTab/releases/download/v3.0.1/OpenHashTab_setup_user.exe",
+    "hash": "39f777e93ceb205fb008c936555a13d9a9aeef46e2bdc77b128f1366cb026df0",
+    "installer": {
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\" -Removal",
+            "if ([Environment]::Is64BitOperatingSystem) {",
+            "    Move-Item \"$dir\\OpenHashTab,2.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
+            "} else {",
+            "    Move-Item \"$dir\\OpenHashTab,1.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
+            "}",
+            "sudo \"$env:COMSPEC\" /c \"regsvr32 \"$dir\\OpenHashTab.dll\"\""
+        ]
+    },
+    "uninstaller": {
+        "script": "regsvr32 /u /s \"$dir\\OpenHashTab.dll\""
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/namazso/OpenHashTab/releases/download/v$version/OpenHashTab_setup_user.exe"
+    }
 }

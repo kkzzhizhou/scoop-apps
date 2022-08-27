@@ -1,45 +1,56 @@
 {
- "architecture": {
-  "64bit": {
-   "hash": "1b9ac64c0b725543088ede5843b378ea9de6f973048d06cd1e4b8492b305895c",
-   "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip"
-  }
- },
- "autoupdate": {
-  "architecture": {
-   "64bit": {
-    "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip"
-   }
-  }
- },
- "bin": "Vita3K.exe",
- "checkver": {
-  "github": "https://github.com/Vita3K/Vita3K",
-  "regex": "commit[/:]\\s?([a-f0-9]{7})"
- },
- "description": "PlayStation Vita emulator (Development)",
- "homepage": "https://vita3k.org",
- "license": {
-  "identifier": "GPL-2.0",
-  "url": "https://github.com/Vita3K/Vita3K/blob/master/COPYING.txt"
- },
- "persist": [
-  "data",
-  "lang",
-  "shaders-builtin",
-  "config.yml"
- ],
- "pre_install": [
-  "if (!(Test-Path \"$persist_dir\")) {",
-  "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-  "   New-Item \"$persist_dir\\config.yml\" -Type File | Out-Null",
-  "}"
- ],
- "shortcuts": [
-  [
-   "Vita3K.exe",
-   "Vita3K"
-  ]
- ],
- "version": "3058761"
+    "version": "2803-5a68118",
+    "description": "Experimental PlayStation Vita emulator",
+    "homepage": "https://vita3k.org",
+    "license": "GPL-2.0-only",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip",
+            "hash": "68ddf541b286348e4018bc361ca2024b283d299122d635c1f8ab90df5c5b2034"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config.yml\")) {",
+        "   New-Item \"$dir\\config.yml\" | Out-Null",
+        "}"
+    ],
+    "bin": "Vita3K.exe",
+    "shortcuts": [
+        [
+            "Vita3K.exe",
+            "Vita3K"
+        ]
+    ],
+    "persist": [
+        "cache",
+        "config.yml"
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://github.com/Vita3K/Vita3K/releases/tag/continuous'",
+            "$build_regex = 'Vita3K Build: (\\d+)'",
+            "$commit_regex = 'Corresponding commit: ([a-f0-9]{7})'",
+            "",
+            "$cont = (Invoke-WebRequest $url -UseBasicParsing).Content",
+            "",
+            "if(!($cont -match $build_regex)) { error \"Could match '$build_regex' on '$url'\"; break }",
+            "$build_number = $matches[1]",
+            "if(!($cont -match $commit_regex)) { error \"Could match '$commit_regex' on '$url'\"; break }",
+            "$commit_sha = $matches[1]",
+            "",
+            "$script_ver = \"$build_number-$commit_sha\"",
+            "Write-Output $script_ver"
+        ],
+        "regex": "(\\d+-[a-f0-9]{7})"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip"
+            }
+        }
+    }
 }
