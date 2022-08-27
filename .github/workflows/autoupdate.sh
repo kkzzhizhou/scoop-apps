@@ -182,7 +182,7 @@ merge_buckets(){
                     add_to_bucket "$file" "$file_name" "$bucket"
                 else
                     bucket_app_name=$(ls bucket | grep -Ei "^$file_id$" | head -n 1)
-                    if [ -f "${bucket_app_name}" ]
+                    if [ -f "bucket/${bucket_app_name}" ]
                     then
                         jq -e . >/dev/null 2>&1 <<< $(cat "bucket/${bucket_app_name}")
                         if [ "$?" -eq 0 ]ls
