@@ -162,7 +162,7 @@ merge_buckets(){
             jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
             if [ "$?" -eq 0 ]
             then
-                app_version=$([ -f "${file}" && cat "${file}" | jq -r '.version' || echo "0")
+                app_version=$([ -f "${file}" ] && cat "${file}" | jq -r '.version' || echo "0")
                 if [ ${app_version} == "nightly" -o ${app_version} == "latest" ]
                 then
                     app_version="0"
