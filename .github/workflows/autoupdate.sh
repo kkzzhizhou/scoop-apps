@@ -152,6 +152,7 @@ merge_buckets(){
             file_name=$(echo $file | awk -F'/' '{print $NF}') # json文件名
             new_name=$(echo $file_name | sed "s/.json/_$owner.json/") # id重复时的文件名
             file_id=$(echo $file_name | tr 'A-Z' 'a-z') # json文件id
+	    file_new_id=$(echo $new_name | tr 'A-Z' 'a-z') # new_name json文件id
             file_md5=$(md5sum $file | awk '{print $1}') # json文件md5
             jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
             if [ "$?" -eq 0 ]
@@ -166,6 +167,7 @@ merge_buckets(){
             fi
             check_file_id=$(cat ${cache_dir}/file_ids | grep -E "^$file_id$" | wc -l) # 检查文件id是否已经存在
             check_file_md5=$(cat ${cache_dir}/file_md5 | grep -E "^$file_md5$" | wc -l) # 检查文件md5是否已经存在
+	    check_file_new_id=$(cat ${cache_dir}/file_dis | grep -E "^$file_new_id$" | wc -l) # 检查新文件名id否已经存在
             if [ "$check_file_md5" -eq 0 ]
             then
                 echo $file_md5 >> ${cache_dir}/file_md5
@@ -196,8 +198,10 @@ merge_buckets(){
                         sed -i "s/${bucket_app_new_name}/${new_name}/" ${cache_dir}/file_id_name
                         add_to_bucket "$file" "$file_name" "$bucket"
                     else
-                        add_to_bucket "$file" "$new_name" "$bucket"
-                    fi
+                        if [ "$check_file_id" -eq 0 ]
+                        then
+                            add_to_bucket "$file" "$new_name" "$bucket"
+                        fi
                 fi
             # else
                 # ignore duplicate file
