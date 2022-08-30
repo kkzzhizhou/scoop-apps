@@ -6,7 +6,7 @@
         "identifier": "Freeware",
         "url": "https://www.teamviewer.com/en/eula/"
     },
-    "architecture": {
+    "#architecture": {
         "64bit": {
             "url": "https://download.teamviewer.com/download/version_15x/TeamViewer_Setup_x64.exe#/setup.exe",
             "hash": "2dba15f4a106cc18bbf95dde25b0d29b33d43fe3ff88bdd84c791951fed11009"
@@ -16,9 +16,27 @@
             "hash": "f600caa962df97dc337c4c132a8446dd8b5076fa332694ee3d9c7f9c7f289826"
         }
     },
+    "url": "https://example.com/#/dummy.txt",
+    "hash": "ea8fac7c65fb589b0d53560f5251f74f9e9b243478dcb6b3ea79b5e36449c8d9",
     "installer": {
         "script": [
-            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null",
+            "# TeamViewer's installer adds additional info (changes hash) every time. This is a workaround.",
+            "if ($architecture -eq '64bit') { $url = 'https://download.teamviewer.com/download/version_15x/TeamViewer_Setup_x64.exe' }",
+            "elseif ($architecture -eq '32bit') { $url = 'https://download.teamviewer.com/download/version_15x/TeamViewer_Setup.exe' }",
+            "",
+            "$ProgressPreference = 'SilentlyContinue'",
+            "$retry_count = 0",
+            "warn 'Downloading TeamViewer installer...'",
+            "for (;;) {",
+            "    $retry_count += 1",
+            "    if ($retry_count > 5) { error 'Could not download the installer. The network might be unstable.'; break }",
+            "    $r = Invoke-WebRequest $url -OutFile \"$dir\\setup.exe\"",
+            "    warn 'Checking file integrity...'",
+            "    7z t \"$dir\\setup.exe\" | Out-Null",
+            "    if ($LASTEXITCODE -eq 0) { break }",
+            "    else { warn 'File check failed. Retrying'; return }",
+            "}",
+            "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/S', '/norestart') -Verb RunAs | Out-Null",
             "Remove-Item \"$dir\\setup.exe\""
         ]
     },
@@ -27,7 +45,7 @@
         "script": [
             "$uninstall = \"$env:ProgramFiles\\TeamViewer\\uninstall.exe\"",
             "if (-not (Test-Path $uninstall)) { $uninstall = \"${env:ProgramFiles(x86)}\\TeamViewer\\uninstall.exe\" }",
-            "Invoke-ExternalCommand \"$uninstall\" -ArgumentList @('/S', '/norestart') -RunAs | Out-Null"
+            "Start-Process -Wait \"$uninstall\" -ArgumentList @('/S', '/norestart') -Verb RunAs | Out-Null"
         ]
     },
     "checkver": {
@@ -35,13 +53,6 @@
         "regex": "\\[Windows\\] v([\\d.]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://download.teamviewer.com/download/version_$majorVersionx/TeamViewer_Setup_x64.exe#/setup.exe"
-            },
-            "32bit": {
-                "url": "https://download.teamviewer.com/download/version_$majorVersionx/TeamViewer_Setup.exe#/setup.exe"
-            }
-        }
+        "url": "https://example.com/#/dummy.txt"
     }
 }
