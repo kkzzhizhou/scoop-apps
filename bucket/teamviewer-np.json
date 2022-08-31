@@ -6,23 +6,14 @@
         "identifier": "Freeware",
         "url": "https://www.teamviewer.com/en/eula/"
     },
-    "#architecture": {
-        "64bit": {
-            "url": "https://download.teamviewer.com/download/version_15x/TeamViewer_Setup_x64.exe#/setup.exe",
-            "hash": "2dba15f4a106cc18bbf95dde25b0d29b33d43fe3ff88bdd84c791951fed11009"
-        },
-        "32bit": {
-            "url": "https://download.teamviewer.com/download/version_15x/TeamViewer_Setup.exe#/setup.exe",
-            "hash": "f600caa962df97dc337c4c132a8446dd8b5076fa332694ee3d9c7f9c7f289826"
-        }
-    },
     "url": "https://example.com/#/dummy.txt",
     "hash": "ea8fac7c65fb589b0d53560f5251f74f9e9b243478dcb6b3ea79b5e36449c8d9",
     "installer": {
         "script": [
             "# TeamViewer's installer adds additional info (changes hash) every time. This is a workaround.",
-            "if ($architecture -eq '64bit') { $url = 'https://download.teamviewer.com/download/version_15x/TeamViewer_Setup_x64.exe' }",
-            "elseif ($architecture -eq '32bit') { $url = 'https://download.teamviewer.com/download/version_15x/TeamViewer_Setup.exe' }",
+            "$majorVersion = [version]::new($manifest.version).Major",
+            "if ($architecture -eq '64bit') { $url = \"https://download.teamviewer.com/download/version_${majorVersion}x/TeamViewer_Setup_x64.exe\" }",
+            "elseif ($architecture -eq '32bit') { $url = \"https://download.teamviewer.com/download/version_${majorVersion}x/TeamViewer_Setup.exe\" }",
             "",
             "$ProgressPreference = 'SilentlyContinue'",
             "$retry_count = 0",
@@ -34,10 +25,10 @@
             "    warn 'Checking file integrity...'",
             "    7z t \"$dir\\setup.exe\" | Out-Null",
             "    if ($LASTEXITCODE -eq 0) { break }",
-            "    else { warn 'File check failed. Retrying'; return }",
+            "    else { warn 'File check failed. Retrying' }",
             "}",
             "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/S', '/norestart') -Verb RunAs | Out-Null",
-            "Remove-Item \"$dir\\setup.exe\""
+            "Remove-Item \"$dir\\setup.exe\", \"$dir\\dummy.txt\""
         ]
     },
     "pre_uninstall": "Stop-Process -Name 'teamviewer' -ErrorAction SilentlyContinue",
