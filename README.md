@@ -71,8 +71,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - echoiron/echo-scoop
 - KNOXDEV/wsl
 - everyx/scoop-bucket
-- hermanjustnu/scoop-emulators
 - hoilc/scoop-lemon
+- hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - Paxxs/Cluttered-bucket
 - TheRandomLabs/Scoop-Bucket
@@ -84,8 +84,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ZvonimirSun/scoop-iszy
 - zhoujin7/tomato
 - wangzq/scoop-bucket
-- wzv5/ScoopBucket
 - ACooper81/scoop-apps
+- wzv5/ScoopBucket
 - ScoopInstaller/Nonportable
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
