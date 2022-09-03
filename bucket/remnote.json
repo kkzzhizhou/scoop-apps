@@ -1,19 +1,43 @@
 {
-    "version": "1.8.19",
-    "description": "Organize your thinking. Master your craft. Grow your knowledge.",
-    "homepage": "https://www.remnote.io/",
-    "license": "BSD-3-Clause",
-    "url": "https://www.remnote.io/desktop/windows#/dl.7z",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
-        ]
+    "version": "1.8.20",
+    "description": "The all-in-one tool for thinking and learning.",
+    "homepage": "https://www.remnote.com/",
+    "license": "Shareware",
+    "url": "https://download.remnote.io/RemNote%20Setup%201.8.20.exe#/dl.7z",
+    "hash": "sha512:3b2745f35f0e0cb5cbd1692e8e01c088260269e69504ef91e10853c79abfbc23a111b055388c4408c0ece74caed9e3ceb5804940c115946a591492fb8c675e97",
+    "architecture": {
+        "64bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        },
+        "32bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+        }
     },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\", \"$dir\\resources\\app-update.yml\"  -Force -Recurse",
+    "bin": [
+        [
+            "RemNote.exe",
+            "RemNote",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
     "shortcuts": [
         [
             "RemNote.exe",
-            "RemNote"
+            "RemNote",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
-    ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://download.remnote.io/latest.yml",
+        "regex": "version: ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.remnote.io/RemNote%20Setup%20$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s*$base64"
+        }
+    }
 }
