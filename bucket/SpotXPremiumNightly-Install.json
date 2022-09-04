@@ -1,8 +1,9 @@
 {
     "version": "1.4-20220903-c980de",
-    "description": "Modified spotify client. Blocks ads and updates, and more.",
+    "description": "SpotX. Modified spotify client with premium account. Blocks ads and updates, and more.",
     "homepage": "https://github.com/amd64fox/SpotX/",
     "license": "MIT",
+    "changelog": "https://github.com/amd64fox/SpotX/",
     "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1",
     "hash": "076ef2eed1d8dd40db38acac846e27eb8311b2832f82dd10291000617a5398f7",
     "installer": {
@@ -10,13 +11,14 @@
             "# older versions of Powershell 5 requires BOM to recognize UTF8 scripts",
             "$cont = Get-Content \"$dir\\Install.ps1\" -Encoding utf8",
             "Set-Content \"$dir\\Install.ps1\" $cont -Encoding utf8",
-            "& \"$dir\\Install.ps1\" -confirm_uninstall_ms_spoti -confirm_spoti_recomended_over -podcasts_off -cache_off -block_update_on"
+            "& \"$dir\\Install.ps1\" -confirm_uninstall_ms_spoti -confirm_spoti_recomended_over -podcasts_off -cache_off -block_update_on -enablenavalt -no_shortcut -premium"
         ]
     },
     "uninstaller": {
         "script": "Invoke-ExternalCommand \"$Env:Appdata\\Spotify\\Spotify.exe\" -ArgumentList @('/uninstall', '/silent') | Out-Null"
     },
     "checkver": {
+        "regex": "([\\w.-]+)",
         "script": [
             "# Using script to get version number from date, e.g. 6 Mar, 2019 -> 20190306",
             "$url1 = 'https://api.github.com/repos/amd64fox/SpotX/releases/latest'",
@@ -32,8 +34,7 @@
             "$update_date = $(Get-Date $matches[1]).ToString('yyyyMMdd')",
             "$commit_sha = $matches[2]",
             "Write-Output \"$app_ver-$update_date-$commit_sha\""
-        ],
-        "regex": "([\\w.-]+)"
+        ]
     },
     "autoupdate": {
         "url": "https://raw.githubusercontent.com/amd64fox/SpotX/main/Install.ps1"
