@@ -1,15 +1,28 @@
 {
     "homepage": "https://www.jefftk.com/icdiff",
     "license": "Python-2.0",
-    "version": "2.0.4",
-    "url": "https://github.com/jeffkaufman/icdiff/archive/release-2.0.4.zip",
-    "hash": "88a82f73391ecd6218ebff57494a85a6e5abb399debe7387667c0bf4419ab208",
-    "extract_dir": "icdiff-release-2.0.4",
-    "pre_install": "Set-Content \"$dir\\icdiff.bat\" '@python.exe \"%~dp0icdiff\" %*' -Encoding ASCII",
+    "version": "2.0.5",
+    "depends": "main/unzip",
+    "url": "https://github.com/jeffkaufman/icdiff/archive/release-2.0.5.zip#/dl",
+    "hash": "ff54b66a95950c7e7ec5270a53f9176edd4d511239490e74c206b820022ddd4b",
+    "extract_dir": "icdiff-release-2.0.5",
+    "installer": {
+        "script": [
+            "$zipfile = (Get-ChildItem \"$dir\" 'dl' | Select-Object -First 1).FullName",
+            "Start-Process -Wait -FilePath \"unzip.exe\" -ArgumentList \"$zipfile -d $dir\" -WindowStyle Hidden",
+            "$folder = (Get-Childitem -Directory \"$dir\"| Select-Object -First 1).FullName",
+            "Move-Item \"$folder\\*\" \"$dir\"",
+            "Remove-Item \"$folder\"",
+            "Set-Content \"$dir\\icdiff.bat\" '@python.exe \"%~dp0icdiff\" %*' -Encoding ASCII",
+            "Remove-Item \"$zipfile\" -Force",
+            "Remove-Item \"$dir\\tests\" -Force -Recurse",
+            "Remove-Item \"$dir\\test.sh\" -Force"
+        ]
+    },
     "bin": "icdiff.bat",
     "checkver": {
-        "url": "https://github.com/jeffkaufman/icdiff/releases",
-        "regex": "<a href=\"/jeffkaufman/icdiff/releases/tag/release-([\\d.]+)\">"
+        "url": "https://github.com/jeffkaufman/icdiff/tags",
+        "regex": "release-([\\d.]+)\">"
     },
     "autoupdate": {
         "url": "https://github.com/jeffkaufman/icdiff/archive/release-$version.zip",
