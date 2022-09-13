@@ -5,26 +5,35 @@
     "license": "MIT",
     "changelog": "https://github.com/microsoft/terminal/releases",
     "suggest": {
-        "vcredist": "extras/vcredist2019"
+        "vcredist": "extras/vcredist2022"
     },
     "url": "https://github.com/microsoft/terminal/releases/download/v1.14.2281.0/Microsoft.WindowsTerminal_Win10_1.14.2281.0_8wekyb3d8bbwe.msixbundle",
     "hash": "7109e403cbdaa51e145c81af17f6da65138dc5249889f55283895d7311a046f3",
     "architecture": {
         "64bit": {
-            "pre_install": "Get-ChildItem \"$dir\" -Exclude '*x64.msix' | Remove-Item -Force -Recurse"
+            "pre_install": "Get-ChildItem \"$dir\" -Exclude '*x64.msix' | Remove-Item -Force -Recurse",
+            "installer": {
+                "script": [
+                    "$winVer = [Environment]::OSVersion.Version",
+                    "if (($winver.Major -lt '10') -or ($winVer.Build -lt 18362)) { throw 'At least Windows 10 18362 is required.' }",
+                    "Get-ChildItem \"$dir\" '*x64.msix' | Select-Object -ExpandProperty Fullname | Expand-7zipArchive -DestinationPath \"$dir\"",
+                    "Get-ChildItem \"$dir\\ProfileIcons\" '*.png' | Rename-Item -NewName { $_.Name.Replace('%7B', '{').Replace('%7D', '}') }"
+                ]
+            }
         },
         "32bit": {
-            "pre_install": "Get-ChildItem \"$dir\" -Exclude '*x86.msix' | Remove-Item -Force -Recurse"
+            "pre_install": "Get-ChildItem \"$dir\" -Exclude '*x86.msix' | Remove-Item -Force -Recurse",
+            "installer": {
+                "script": [
+                    "$winVer = [Environment]::OSVersion.Version",
+                    "if (($winver.Major -lt '10') -or ($winVer.Build -lt 18362)) { throw 'At least Windows 10 18362 is required.' }",
+                    "Get-ChildItem \"$dir\" '*x86.msix' | Select-Object -ExpandProperty Fullname | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
+                    "Get-ChildItem \"$dir\\ProfileIcons\" '*.png' | Rename-Item -NewName { $_.Name.Replace('%7B', '{').Replace('%7D', '}') }"
+                ]
+            }
         }
     },
-    "installer": {
-        "script": [
-            "$winVer = [Environment]::OSVersion.Version",
-            "if (($winver.Major -lt '10') -or ($winVer.Build -lt 18362)) { throw 'At least Windows 10 18362 is required.' }",
-            "Get-ChildItem \"$dir\" '*.msix' | Select-Object -ExpandProperty Fullname | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
-            "Get-ChildItem \"$dir\\ProfileIcons\" '*.png' | Rename-Item -NewName { $_.Name.Replace('%7B', '{').Replace('%7D', '}') }"
-        ]
-    },
+    
     "bin": [
         "WindowsTerminal.exe",
         "wt.exe"

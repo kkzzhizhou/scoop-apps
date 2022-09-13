@@ -1,0 +1,59 @@
+{
+    "homepage": "https://github.com/mintty/wsltty",
+    "description": "A terminal for WSL",
+    "license": "GPL-3.0-or-later",
+    "version": "3.6.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mintty/wsltty/releases/download/3.6.0/wsltty-3.6.0-x86_64.cab",
+            "hash": "b5962a13afb45c5c883532532026473b80748bdf6f9bf11acc4517260d1f5a3a"
+        },
+        "32bit": {
+            "url": "https://github.com/mintty/wsltty/releases/download/3.6.0/wsltty-3.6.0-i686.cab",
+            "hash": "09fbe264a90f1c5ea8b9c48911261f8a2fd522378bd200198e5d91e731f5b450"
+        }
+    },
+    "installer": {
+        "script": [
+            "$pkgfile = (Get-ChildItem \"$dir\" '*.cab' | Select-Object -First 1).FullName",
+            "Expand-7ZipArchive \"$pkgfile\" \"$dir\" -Removal",
+            "$folder = (Get-Childitem -Directory \"$dir\"| Select-Object -First 1).FullName",
+            "Move-Item \"$folder\\*\" \"$dir\" | Out-Null",
+            "New-Item \"$dir\\bin\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\*.exe\" \"$dir\\bin\" | Out-Null",
+            "Move-Item \"$dir\\*.dll\" \"$dir\\bin\" | Out-Null",
+            "Move-Item \"$dir\\wslbridge2-backend\" \"$dir\\bin\" | Out-Null",
+            "Invoke-ExternalCommand \"$dir\\bin\\zoo.exe\" x \"$dir\\lang.zoo\"",
+            "Invoke-ExternalCommand \"$dir\\bin\\zoo.exe\" x \"$dir\\themes.zoo\"",
+            "Invoke-ExternalCommand \"$dir\\bin\\zoo.exe\" x \"$dir\\sounds.zoo\"",
+            "New-Item \"$dir\\usr\\share\\mintty\\lang\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\*.po\" \"$dir\\usr\\share\\mintty\\lang\" | Out-Null",
+            "New-Item \"$dir\\usr\\share\\mintty\\info\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\charnames.txt\" \"$dir\\usr\\share\\mintty\\info\" | Out-Null",
+            "New-Item \"$dir\\usr\\share\\mintty\\themes\" -Type Directory | Out-Null",
+            "'dracula', 'flat-ui', 'gruvbox', 'html', 'mintty', 'nord', 'rosipov', 'vga', 'windows10', 'xterm' | ForEach-Object {",
+            "    Move-Item \"$dir\\$_\" \"$dir\\usr\\share\\mintty\\themes\" | Out-Null",
+            "}",
+            "New-Item \"$dir\\usr\\share\\mintty\\sounds\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\*.wav\" \"$dir\\usr\\share\\mintty\\sounds\" | Out-Null",
+            "New-Item \"$dir\\usr\\share\\mintty\\icon\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\*.ico\" \"$dir\\usr\\share\\mintty\\icon\" | Out-Null",
+            "New-Item \"$dir\\shortcut\" -Type Directory | Out-Null",
+            "Move-Item \"$dir\\*.lnk\" \"$dir\\shortcut\" | Out-Null"
+        ]
+    },
+    "bin": "",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mintty/wsltty/releases/download/$version/wsltty-$version-x86_64.cab",
+                "extract_dir": "wsltty-$version-x86_64"
+            },
+            "32bit": {
+                "url": "https://github.com/mintty/wsltty/releases/download/$version/wsltty-$version-i686.cab",
+                "extract_dir": "wsltty-$version-i686"
+            }
+        }
+    }
+}
