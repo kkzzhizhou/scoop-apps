@@ -4,9 +4,19 @@
     "homepage": "https://github.com/r-lib/rig",
     "license": "MIT",
     "url": "https://github.com/r-lib/rig/releases/download/v0.5.1/rig-windows-0.5.1.exe",
-    "innosetup": true,
-    "bin": "rig.exe",
     "hash": "701a92776d9857de83cb8c9f472ed6a227b823297b929495de1cb48951fb86aa",
+    "bin": "rig.exe",
+    "innosetup": true,
+    "post_install": [
+        "$binDir=\"C:\\Program Files\\R\\bin\"",
+        "$curPath = [System.Environment]::GetEnvironmentVariable(\"Path\",\"User\")",
+        "$curPathArray=($oldPath) -split ';'",
+        "if(-Not($curPathArray -Contains \"$binDir\")) {",
+        "    Write-Host -ForegroundColor Yellow \"Adding $binDir to User Path\"",
+        "    $newPath = \"$curPath;$binDir\" -replace ';+', ';'",
+        "    [System.Environment]::SetEnvironmentVariable(\"Path\",$newPath,\"User\")",
+        "}"
+    ],
     "checkver": "github",
     "autoupdate": {
         "url": "https://github.com/r-lib/rig/releases/download/v$version/rig-windows-$version.exe"
