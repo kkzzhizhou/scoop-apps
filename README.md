@@ -91,8 +91,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - naderi/scoop-bucket
 - ChungZH/peach
 - 42wim/scoop-bucket
-- krproject/qi-windows
 - anderlli0053/DEV-tools
+- krproject/qi-windows
 - mogeko/scoop-sysinternals
 - excitoon/scoop-user
 - jfut/scoop-jfut
