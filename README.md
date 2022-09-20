@@ -97,6 +97,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - excitoon/scoop-user
 - jfut/scoop-jfut
 - iquiw/scoop-bucket
+- NyaMisty/scoop_bucket_misty
 - batkiz/backit
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
@@ -105,7 +106,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Velgus/Scoop-Portapps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
-- NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
 - seumsc/scoop-seu
 - ddavness/scoop-roblox
