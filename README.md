@@ -89,8 +89,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - ScoopInstaller/Nonportable
 - naderi/scoop-bucket
-- ChungZH/peach
 - anderlli0053/DEV-tools
+- ChungZH/peach
 - 42wim/scoop-bucket
 - krproject/qi-windows
 - mogeko/scoop-sysinternals
