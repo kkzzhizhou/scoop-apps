@@ -1,0 +1,48 @@
+{
+    "version": "22.181.0828.0001",
+    "description": "Microsoft OneDrive Insiders. Save your photos and files to OneDrive and access them from any device, anywhere.",
+    "homepage": "https://www.microsoft.com/en-ww/microsoft-365/onedrive/online-cloud-storage",
+    "license": "Proprietary",
+    "changelog": "https://support.microsoft.com/en-us/office/onedrive-release-notes-845dcf18-f921-435e-bf28-4e24b95e5fc0",
+    "architecture": {
+        "64bit": {
+            "url": "https://oneclient.sfx.ms/Win/Insiders/22.181.0828.0001/amd64/OneDriveSetup.exe#/setup.exe",
+            "hash": "ce14ef44f6e0c60495b9452172aaec9dce7ee3845c8a9cefcbc6e4f6c050cd46"
+        },
+        "32bit": {
+            "url": "https://oneclient.sfx.ms/Win/Insiders/22.181.0828.0001/OneDriveSetup.exe#/setup.exe",
+            "hash": "a6fe749d50c4e1d646e4488e31c6d663890003258ef77562d34adbf5a5bceb33"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft OneDrive*\"",
+            "$LocalAppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$filepath = \"$LocalAppData\\Microsoft\\OneDrive\\OneDrive.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /silent /update /restart | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/microsoft/winget-pkgs/tree/master/manifests/m/Microsoft/OneDrive",
+        "regex": "color-fg-muted\">Insiders/</span>([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://oneclient.sfx.ms/Win/Insiders/$version/amd64/OneDriveSetup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://oneclient.sfx.ms/Win/Insiders/$version/OneDriveSetup.exe#/setup.exe"
+            }
+        }
+    }
+}
