@@ -94,8 +94,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - excitoon/scoop-user
 - jfut/scoop-jfut
-- NyaMisty/scoop_bucket_misty
 - batkiz/backit
+- NyaMisty/scoop_bucket_misty
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
 - littleli/Scoop-littleli

@@ -3,8 +3,16 @@
     "description": "Zoom provides videotelephony and online chat services through a cloud-based peer-to-peer software platform and is used for teleconferencing, telecommuting, distance education, and social relations.",
     "homepage": "https://zoom.us/",
     "license": "Proprietary",
-    "url": "https://zoom.us/client/latest/ZoomInstallerFull.msi#/setup.msi_",
-    "hash": "43c5f511fc37bb5500c54d466ae46d4570ce8d8d2d137d6847b6b7c479b9e591",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.zoom.us/client/5.12.0.8964/ZoomInstallerFull.msi?archType=x64#/setup.msi_",
+            "hash": "889162d15f566dba94e58cf11847d0d8bc26e01141497473e1c41f1ec68df87e"
+        },
+        "32bit": {
+            "url": "https://www.zoom.us/client/5.12.0.8964/ZoomInstallerFull.msi#/setup.msi_",
+            "hash": "43c5f511fc37bb5500c54d466ae46d4570ce8d8d2d137d6847b6b7c479b9e591"
+        }
+    },
     "pre_download": "Assert-Administrator",
     "pre_install": [
         "$processname = \"Zoom*\"",
@@ -22,9 +30,9 @@
         "script": [
             "$programname = \"Zoom*\"",
             "$installpath = \"$dir\\setup.msi_\"",
-            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
             "$programsVersion = \"$majorVersion.$minorVersion.$patchVersion\"",
-            "if((Get-Command \"$ProgramFilesX86\\Zoom\\bin\\zoom.exe\").Version -lt $version)",
+            "if((Get-Command \"$ProgramFiles\\Zoom\\bin\\zoom.exe\").Version -lt $version)",
             "{",
             "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart', 'MSIRESTARTMANAGERCONTROL=”Disable”', 'ZoomAutoUpdate=\"true\"') -RunAs | Out-Null",
             "   if((Get-Command \"$ProgramFilesX86\\Zoom\\bin\\zoom.exe\").Version -lt $version)",
@@ -46,10 +54,17 @@
         "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
     ],
     "checkver": {
-        "url": "https://ninite.com/applist/pro.html",
-        "regex": "<td>Video Conference ([\\d.]+)"
+        "url": "https://launcher.zoom.us/upgrade?os=win",
+        "regex": "Current-version=([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://zoom.us/client/latest/ZoomInstallerFull.msi#/setup.msi_"
+        "architecture": {
+            "64bit": {
+                "url": "https://www.zoom.us/client/$version/ZoomInstallerFull.msi?archType=x64#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://www.zoom.us/client/$version/ZoomInstallerFull.msi#/setup.msi_"
+            }
+        }
     }
 }
