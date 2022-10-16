@@ -46,15 +46,24 @@
     ],
     "checkver": {
         "url": "https://ci.appveyor.com/api/projects/snes9x/snes9x",
-        "regex": "\"jobId\":\"(?<win32>.*?)\".*?arch=win32,.*?\"jobId\":\"(?<x64>.*?)\".*?arch=win32-x64,.*\"version\":\"(?<version>.*?)\".*\"commitId\":\"(?<commit>.{7}).*\""
+        "script": [
+            "$version = json_path $page $.build.version",
+            "$job32 = json_path $page $.build.jobs[0].jobId",
+            "$job64 = json_path $page $.build.jobs[1].jobId",
+            "$build = json_path $page $.build.buildNumber",
+            "$commit = json_path $page $.build.commitId",
+            "Write-Output \"$version $job32 $job64 $build $commit\""
+        ],
+        "regex": "(?<version>[\\d.-]+) (?<job32>[\\w]{16}) (?<job64>[\\w]{16}) (?<build>[\\d]+) (?<commit>[a-f0-9]{7})",
+        "replace": "${version}-${commit}"
     },
     "autoupdate": {
         "architecture": {
             "32bit": {
-                "url": "https://ci.appveyor.com/api/buildjobs/$matchWin32/artifacts/snes9x-$matchVersion-$matchCommit-win32.zip"
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob32/artifacts/snes9x-$matchVersion-$matchCommit-win32.zip"
             },
             "64bit": {
-                "url": "https://ci.appveyor.com/api/buildjobs/$matchX64/artifacts/snes9x-$matchVersion-$matchCommit-win32-x64.zip"
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob64/artifacts/snes9x-$matchVersion-$matchCommit-win32-x64.zip"
             }
         }
     }

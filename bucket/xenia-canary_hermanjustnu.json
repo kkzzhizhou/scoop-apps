@@ -1,5 +1,5 @@
 {
-    "version": "203267b",
+    "version": "20221014183331-d262214",
     "description": "Microsoft Xbox 360 emulator",
     "homepage": "https://xenia.jp",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/xenia-canary/xenia-canary/releases/download/203267b/xenia_canary.zip",
-            "hash": "1ee82f8c1a24e25b01a25107ca802f31339a536a14e6b5d0243e1dc31b77ff63"
+            "url": "https://github.com/xenia-canary/xenia-canary/releases/download/d262214/xenia_canary.zip",
+            "hash": "0a4225503e94f453d7b3c8f054d823f5071131c780ba36fc9e435ed6988668bd"
         }
     },
     "pre_install": [
@@ -38,13 +38,20 @@
         "cache"
     ],
     "checkver": {
-        "github": "https://github.com/xenia-canary/xenia-canary",
-        "regex": "([a-f0-9]{6,7})_canary_experimental"
+        "url": "https://github.com/xenia-canary/xenia-canary/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)_canary_experimental",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$version/xenia_canary.zip"
+                "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$matchCommit/xenia_canary.zip"
             }
         }
     }
