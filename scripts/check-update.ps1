@@ -19,7 +19,7 @@ foreach ($line in $output) {
         continue
     }
     if ($newver -ne $null) {
-        if ($line -match '\(scoop version is ([\d.]+)\)') {
+        if ($line -match '\(scoop version is ([-\w\d.]+)\)') {
             $curver = $Matches.1
 
         } elseif ($line -match '^([\w-]+): $') {
