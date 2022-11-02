@@ -45,4 +45,4 @@ foreach ($line in $output) {
 
 $json = ConvertTo-JSON -Compress @{ app = $updatables }
 
-Write-Output "::set-output name=matrix::$json"
+"matrix=$json`n" -replace '"','\"' | Out-File -NoNewline -Encoding utf8 -Append $env:GITHUB_OUTPUT

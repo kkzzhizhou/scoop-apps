@@ -1,23 +1,50 @@
 {
-    "homepage": "https://www.listary.com",
+    "version": "6.0.10.33",
     "description": "A revolutionary search utility.",
-    "version": "5.00.2843",
+    "homepage": "https://www.listary.com",
     "license": "Shareware",
-    "url": "https://www.listary.com/download/ListaryPortable.zip?version=5.00.2843#/ListaryPortable.zip",
-    "hash": "52c82c32fd719e782fd66c0a87f08ba073a93edc06fce60c64219ea0530b5682",
-    "extract_dir": "ListaryPortable",
-    "persist": "UserData\\Preferences.json",
+    "url": "https://www.listary.com/download/Listary.exe?version=6.0.10.33#/dl.exe",
+    "hash": "e73438a015a4519ebdcbc428f9e12c5b591279e22edf8d78908d1ce0ca815922",
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "New-Service -Name ListaryServiceV2 -BinaryPathName \"$dir\\Listary.Service.exe\" -StartupType Automatic",
+            "$WshShell = New-Object -comObject WScript.Shell",
+            "$Shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\")",
+            "$Shortcut.TargetPath = \"$dir\\Listary.exe\"",
+            "$Shortcut.Arguments = \"-startup\"",
+            "$Shortcut.Save()"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Process -Name Listary",
+            "Stop-Service -Name ListaryServiceV2",
+            "Remove-Service -Name ListaryServiceV2",
+            "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\""
+        ]
+    },
     "shortcuts": [
         [
             "Listary.exe",
             "Listary"
         ]
     ],
+    "persist": "UserData\\Preferences.json",
     "checkver": {
         "url": "https://www.listary.com/download",
-        "regex": "v([\\d.]+)"
+        "regex": "<h2>([\\d.]+) \\([\\d/]+\\)</h2>"
     },
     "autoupdate": {
-        "url": "https://www.listary.com/download/ListaryPortable.zip?version=$version#/ListaryPortable.zip"
-    }
+        "url": "https://www.listary.com/download/Listary.exe?version=$version#/dl.exe"
+    },
+    "notes": "We don't persist your Listary data, they are still storaged in \"$env:APPDATA\\Listary\"."
 }
