@@ -43,6 +43,6 @@ foreach ($line in $output) {
     exit 1
 }
 
-$json = ConvertTo-JSON -Compress @{ app = $updatables }
+$json = (ConvertTo-JSON -Compress $updatables)
 
-"matrix=$json`n" -replace '"','\"' | Out-File -NoNewline -Encoding utf8 -Append $env:GITHUB_OUTPUT
+"apps<<EOF`n$json`nEOF`n" | Out-File -NoNewline -Encoding utf8 -Append $env:GITHUB_OUTPUT
