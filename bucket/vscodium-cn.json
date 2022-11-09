@@ -1,0 +1,61 @@
+{
+  "version": "1.73.0.22306",
+  "description": "Binary releases of VS Code without MS branding/telemetry/licensing.",
+  "homepage": "https://github.com/VSCodium/vscodium",
+  "license": "MIT",
+  "notes": [
+    "Add VSCodium as a context menu option by running: 'reg import \"$dir\\install-context.reg\"'",
+    "For file associations, run 'reg import \"$dir\\install-associations.reg\"'"
+  ],
+  "architecture": {
+    "64bit": {
+      "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/1.73.0.22306/VSCodium-win32-x64-1.73.0.22306.zip",
+      "hash": "4df75060e67b9df7eb374956a42a1fb3f8966699979ff03b4c99d4628736bbc3"
+    },
+    "32bit": {
+      "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/1.73.0.22306/VSCodium-win32-ia32-1.73.0.22306.zip",
+      "hash": "eb3be067c3e5ede5d91fd332171848ff4f7b93bac732c56a9317f2ed6a3749f7"
+    }
+  },
+  "env_add_path": "bin",
+  "shortcuts": [["VSCodium.exe", "VSCodium"]],
+  "post_install": [
+    "$dirpath = \"$dir\".Replace('\\', '\\\\')",
+    "$exepath = \"$dir\\VSCodium.exe\".Replace('\\', '\\\\')",
+    "'install-associations', 'uninstall-associations', 'install-context', 'uninstall-context' | ForEach-Object {",
+    "  if (Test-Path \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\") {",
+    "    $content = Get-Content \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\"",
+    "    $content = $content.Replace('$codedir', $dirpath)",
+    "    $content = $content.Replace('$code', $exepath)",
+    "    $content = $content.Replace('&Code', '&VSCodium')",
+    "    if ($global) {",
+    "      $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+    "    }",
+    "    $content | Set-Content -Path \"$dir\\$_.reg\"",
+    "  }",
+    "}",
+    "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.vscode-oss\\extensions\")) {",
+    "    info '[Portable Mode] Copying extensions...'",
+    "    Copy-Item \"$env:USERPROFILE\\.vscode-oss\\extensions\" \"$dir\\data\" -Recurse",
+    "}",
+    "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\VSCodium\")) {",
+    "    info '[Portable Mode] Copying user data...'",
+    "    Copy-Item \"$env:AppData\\VSCodium\" \"$dir\\data\\user-data\" -Recurse",
+    "}"
+  ],
+  "persist": "data",
+  "checkver": "github",
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/$version/VSCodium-win32-x64-$version.zip"
+      },
+      "32bit": {
+        "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/$version/VSCodium-win32-ia32-$version.zip"
+      }
+    },
+    "hash": {
+      "url": "$url.sha256"
+    }
+  }
+}
