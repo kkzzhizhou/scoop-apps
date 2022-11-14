@@ -1,0 +1,64 @@
+{
+    "version": "1.1.0",
+    "description": "Free and open source text-to-speech software",
+    "homepage": "https://github.com/bawangxx/XZVoice",
+    "license": "No",
+    "url": "https://github.com/bawangxx/XZVoice/releases/download/v1.1.0/xzvoice-setup-1.1.0.exe#/dl.7z",
+    "hash": "",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\data\")) {",
+            "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+            "    if (Test-Path \"$env:USERPROFILE\\xzvoice\") {",
+            "        Copy-Item -Path \"$env:USERPROFILE\\xzvoice\\*\" -Destination \"$persist_dir\\data\" -Recurse -Container",
+            "    }",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\xzvoice\"",
+            "$runtimeCachePersist = \"$persist_dir\\xzvoice\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\xzvoice\"",
+            "$runtimeCachePersist = \"$persist_dir\\xzvoice\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "AI配音专家.exe",
+            "AI配音专家"
+        ]
+    ],
+    "persist": "data",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/bawangxx/XZVoice/releases/download/v$version/xzvoice-setup-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/bawangxx/XZVoice/releases/download/v1.1.0/latest.yml",
+                    "mode": "extract",
+                    "regex": "sha512: $sha512"
+                }
+            }
+        }
+    }
+}

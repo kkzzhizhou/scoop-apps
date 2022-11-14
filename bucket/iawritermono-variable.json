@@ -1,0 +1,33 @@
+{
+    "version": "2.000",
+    "description": "Free variable writing fonts from iA",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/iaolo/iA-Fonts",
+    "url": [
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Variable/iAWriterMonoV.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Variable/iAWriterMonoV-Italic.ttf"
+    ],
+    "hash": [
+        "ca8b5740d7fd05ffd1a9e985a2fe6b7608101f0583d2cf971317c82b4ce01240",
+        "9ab3465dd180ff05b6375f22e0197d696697489ddd7860b85f19b213c0d4edf0"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'iA Writer Mono' variable TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

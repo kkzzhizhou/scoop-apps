@@ -1,0 +1,40 @@
+{
+    "version": "37",
+    "description": "succulent monospaced programming font",
+    "license": "MIT",
+    "homepage": "https://github.com/blobject/agave",
+    "url": [
+        "https://github.com/blobject/agave/releases/download/v37/Agave-Bold-slashed.ttf",
+        "https://github.com/blobject/agave/releases/download/v37/Agave-Regular-slashed.ttf"
+    ],
+    "hash": [
+        "148331b833e5616a40d9e80220c287b5fc6172c494a8c68455ee8c69c5445125",
+        "2f7629e71a74036da4006ceaef846053adfc8fcc28041b4b295576f618f307b0"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/blobject/agave/releases/download/v$version/Agave-Bold-slashed.ttf",
+            "https://github.com/blobject/agave/releases/download/v$version/Agave-Regular-slashed.ttf"
+        ]
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Agave' slashed variant has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

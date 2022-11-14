@@ -1,0 +1,34 @@
+{
+    "version": "0.68",
+    "description": "Sudo Coding Font",
+    "license": "OFL-1.1",
+    "homepage": "https://www.kutilek.de/sudo-font/",
+    "url": "https://github.com/jenskutilek/sudo-font/releases/download/v0.68/sudo.zip",
+    "hash": "8ba04e7327eac26586c2c58c4f376fd4acc1057de2580a3ac22f6f19842492da",
+    "extract_dir": "sudo",
+    "checkver": {
+        "github": "https://github.com/jenskutilek/sudo-font"
+    },
+    "autoupdate": {
+        "url": "https://github.com/jenskutilek/sudo-font/releases/download/v$version/sudo.zip"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Sudo' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

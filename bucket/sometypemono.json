@@ -1,0 +1,41 @@
+{
+    "version": "1.000",
+    "description": "Sometype Mono | Dharma Type",
+    "license": "OFL-1.1",
+    "homepage": "https://monospacedfont.com/",
+    "url": [
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-Bold.ttf",
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-BoldItalic.ttf",
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-Italic.ttf",
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-Medium.ttf",
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-MediumItalic.ttf",
+        "https://github.com/dharmatype/Sometype-Mono/raw/master/fonts/ttf/SometypeMono-Regular.ttf"
+    ],
+    "hash": [
+        "26b89672d4af94aec425f118775264c77fd5c42232fa6606bd90f8ce198522c9",
+        "6ce216d706ddeab3d2dec7b2c3d95b9c5c8b125eb594c97fda9f11a117361180",
+        "92cf6767f7788a38c0e85915cfc9803b6e43b17b90ab217431fb4b13ba0e1775",
+        "c0b7b30480a9c9db3de8b7840cc47f5930400637c11799b8513b2236f9442ee6",
+        "6f707ac593ea2e73f5ad44ef4781295ef040a7bd04aaaa78ebb5ca118a35891e",
+        "132ef3c6539d18538e9dbe2e59340640fa4fbe40e06ed05affa93d461963e0d4"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Sometype Mono' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

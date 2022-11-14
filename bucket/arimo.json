@@ -1,0 +1,37 @@
+{
+    "version": "1.33",
+    "description": "Google Fonts - Arimo",
+    "license": "OFL-1.1",
+    "homepage": "https://fonts.google.com/specimen/Arimo",
+    "url": [
+        "https://github.com/googlefonts/noto-fonts/raw/master/hinted/ttf/Arimo/Arimo-Bold.ttf",
+        "https://github.com/googlefonts/noto-fonts/raw/master/hinted/ttf/Arimo/Arimo-BoldItalic.ttf",
+        "https://github.com/googlefonts/noto-fonts/raw/master/hinted/ttf/Arimo/Arimo-Italic.ttf",
+        "https://github.com/googlefonts/noto-fonts/raw/master/hinted/ttf/Arimo/Arimo-Regular.ttf"
+    ],
+    "hash": [
+        "10724c3733f60cdec733da1a439de9100e1593ceb219cc4d03c443bef1feb9b6",
+        "8e057ec4b127ee4242b35cf66f31b558aa46eb5e6808047324bf2a6f1e8c86a6",
+        "5f4917a32312ba8a011502e2147567d678984d820223367a2a4c5d6dda2a758c",
+        "5c315974260455a02fad62495a0ae9a783bb53f0eccf807deb75c7967e7a81d6"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Arimo' TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

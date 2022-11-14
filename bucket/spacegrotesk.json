@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "description": "Space Grotesk: a proportional variant of the original fixed-width Space Mono family",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/floriankarsten/space-grotesk",
+    "url": "https://github.com/floriankarsten/space-grotesk/releases/download/2.0.0/SpaceGrotesk-2.0.0.zip",
+    "hash": "53b415577d4139248555300710bea0d268c7a5be67b93de53b716a9736cabffd",
+    "extract_dir": "SpaceGrotesk-2.0.0\\ttf\\static",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/floriankarsten/space-grotesk/releases/download/$version/SpaceGrotesk-$version.zip",
+        "extract_dir": "SpaceGrotesk-$version\\ttf\\static"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Space Grotesk' TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

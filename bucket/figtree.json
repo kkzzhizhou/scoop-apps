@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "description": "A friendly, simple geometric sans serif font.",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/erikdkennedy/figtree",
+    "url": [
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Black.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Bold.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-ExtraBold.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Light.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Medium.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Regular.ttf",
+        "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-SemiBold.ttf"
+    ],
+    "hash": [
+        "922b6691df26ee0cb260d799a3cfc7601bc9a51c357694b88ad4e46b51b001ac",
+        "c531418647e8876d2b63aa26d7e4a8baf0c46b8f8c110ddbe07a29fddc67ceef",
+        "19500a73f73ea81d750a780cc5a95778f3e06b35413d967b230fd054f8d6c4a1",
+        "0079cb0a42ec3efc5f4f95a5d733423bfaee0c4a6e078344fa95e35d00af0747",
+        "c00af32ca4fe947c0c0ffa6fb95d1bd800a6f204c14a721f926f4ff2fa6a57d6",
+        "e8a6e07a6fc5eb1b0a49168d2e88e1289e90d7c2b02606b02aa4972f8a067a11",
+        "c05f45a99bf58abf9cd9363ba7304cda8f6212857179f230ff83b70cc424b6f3"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Black.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Bold.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-ExtraBold.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Light.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Medium.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-Regular.ttf",
+            "https://github.com/erikdkennedy/figtree/raw/master/fonts/ttf/Figtree-SemiBold.ttf"
+        ]
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Figtree' TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

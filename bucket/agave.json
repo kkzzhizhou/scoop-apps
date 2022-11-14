@@ -1,0 +1,40 @@
+{
+    "version": "37",
+    "description": "succulent monospaced programming font",
+    "license": "MIT",
+    "homepage": "https://github.com/blobject/agave",
+    "url": [
+        "https://github.com/blobject/agave/releases/download/v37/Agave-Bold.ttf",
+        "https://github.com/blobject/agave/releases/download/v37/Agave-Regular.ttf"
+    ],
+    "hash": [
+        "031fe5fd12b2734de56b0d138622da73fec71d5e3e63189b2b37199e366ce952",
+        "bd7d5584482acbdad0ee13e6020046c4ac88b36412018a990bf98bff60483ab0"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/blobject/agave/releases/download/v$version/Agave-Bold.ttf",
+            "https://github.com/blobject/agave/releases/download/v$version/Agave-Regular.ttf"
+        ]
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Agave' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

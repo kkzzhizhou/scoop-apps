@@ -1,0 +1,32 @@
+{
+    "version": "1.4",
+    "description": "a programming typeface",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/madmalik/mononoki",
+    "url": "https://github.com/madmalik/mononoki/releases/download/1.4/mononoki.zip",
+    "hash": "e0b8223a524f7f4dfa6a25f1bc9b061f5303b114a3837aaad860446bca71a857",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/madmalik/mononoki/releases/download/$version/mononoki.zip"
+    },
+    "pre_install": "Get-ChildItem $dir -Exclude mononoki-*.ttf | Remove-Item",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Mononoki' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

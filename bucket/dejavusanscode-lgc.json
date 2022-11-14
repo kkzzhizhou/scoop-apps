@@ -1,0 +1,33 @@
+{
+    "version": "1.2.2",
+    "description": "Monospaced font with programming ligatures based on DejaVu Sans Mono",
+    "license": "https://github.com/SSNikolaevich/DejaVuSansCode/blob/master/LICENSE",
+    "homepage": "https://github.com/SSNikolaevich/DejaVuSansCode",
+    "url": "https://github.com/SSNikolaevich/DejaVuSansCode/releases/download/v1.2.2/dejavu-code-lgc-ttf-1.2.2.zip",
+    "hash": "53fcfcbc1b228e225f6dd7783522356464fcef193fcf3557f7ed384ee3e811c3",
+    "extract_dir": "dejavu-code-lgc-ttf-1.2.2\\ttf",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/SSNikolaevich/DejaVuSansCode/releases/download/v$version/dejavu-code-lgc-ttf-$version.zip",
+        "extract_dir": "dejavu-code-lgc-ttf-$version\\ttf"
+    },
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "    Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'DejaVu LGC Sans Code' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

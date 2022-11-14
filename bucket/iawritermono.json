@@ -1,0 +1,37 @@
+{
+    "version": "2.000",
+    "description": "Free variable writing fonts from iA",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/iaolo/iA-Fonts",
+    "url": [
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Static/iAWriterMonoS-Bold.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Static/iAWriterMonoS-BoldItalic.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Static/iAWriterMonoS-Italic.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Mono/Static/iAWriterMonoS-Regular.ttf"
+    ],
+    "hash": [
+        "76aa5b5b4f9091a9c686a2a6fe5ff3495bb791994d7079857e5b24ae98063743",
+        "b0cf9571234528b0896aacf97eb3ec45712da40b8410c799fa43ea123bc19e35",
+        "c7e7e36e8167bf50f27e46c9cab447d04cc570bd388b998044e2e29f4cebc216",
+        "929605302a57250e712908cb5f6e1ce80c7d0accd5fd2555345f29a5e8d4e30b"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'iA Writer Mono' TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

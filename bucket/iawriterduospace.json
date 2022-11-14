@@ -1,0 +1,37 @@
+{
+    "version": "1.005",
+    "description": "Free variable writing fonts from iA",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/iaolo/iA-Fonts",
+    "url": [
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Duospace/TTF%20(PC)/iAWriterDuospace-Bold.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Duospace/TTF%20(PC)/iAWriterDuospace-BoldItalic.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Duospace/TTF%20(PC)/iAWriterDuospace-Italic.ttf",
+        "https://github.com/iaolo/iA-Fonts/raw/master/iA%20Writer%20Duospace/TTF%20(PC)/iAWriterDuospace-Regular.ttf"
+    ],
+    "hash": [
+        "a7d5781c76a42ef3a5b5666e19e694b8797fc9de0be60e6d6bbcfd6bb279420e",
+        "47ab6d0aa3f593bf71f0d5484fe919af245aec53ae9c7c4b51ad8e5256d0ae4b",
+        "c34803c11866af27a10fa283df01b56b1a7980f1229795b3f7ca95ccb70e82d1",
+        "58faf7d444401ca5260a09cfbbe04b7acfe74e6d5a5512dd2163cb29947cae1a"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'iA Writer Duospace' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

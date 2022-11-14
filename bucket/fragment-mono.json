@@ -1,0 +1,33 @@
+{
+    "version": "1.011",
+    "description": "Helvetica Monospace Coding Font",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/weiweihuanghuang/fragment-mono",
+    "url": "https://github.com/weiweihuanghuang/fragment-mono/releases/download/1.011/fragment-mono-fonts.zip",
+    "hash": "5e60c0c7685ed2893345fa72392c26fe07e53ad1157dddeefedc3991d22755d0",
+    "extract_dir": "fragment-mono-fonts\\fonts\\ttf",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/weiweihuanghuang/fragment-mono/releases/download/$version/fragment-mono-fonts.zip"
+    },
+    "installer": {
+        "script": [
+            "Remove-Item -Recurse \"$dir\\fragment-mono-fonts\"",
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Fragment Mono' TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "version": "1.004",
+    "description": "Customized version of Source Code Pro",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/nathco/Office-Code-Pro",
+    "url": [
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-Bold.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-BoldItalic.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-Light.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-LightItalic.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-Medium.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-MediumItalic.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-Regular.ttf",
+        "https://github.com/nathco/Office-Code-Pro/raw/master/Fonts/Office%20Code%20Pro/TTF/OfficeCodePro-RegularItalic.ttf"
+    ],
+    "hash": [
+        "7a0904aea30de538b6df55727ce7e70b5f60b6c45950daf456c496a29a7c0df5",
+        "8b35a3cc8c51695888432e083d3a4de73ada1ce6980bd4259f1686e4db2a794a",
+        "e1bc7283b89b47b20fb5fded45334a7eeaa1a4be2e4758fb0977eda43d048814",
+        "48048b7f57a56a5b8a24a9013d455b98ceadcb97eb0e5801067173a1978f84e8",
+        "897532996d7f0c2d6f198f31c39114ee9d507cab97e29707490151f135fe2044",
+        "19556ca5391054bb5ae987e5da024e053ebcf58f6924cd92acfd5389e367a81e",
+        "a610363a0748871d111fabbbbd815295f416fcef4c4f244f4537b2b6c1101126",
+        "5985d9ee3ac6c5b6a4d52d89ab6f28dee786a15535256deb40da79cae058b22f"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Office Code Pro' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}

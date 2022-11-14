@@ -1,0 +1,33 @@
+{
+    "version": "3.000",
+    "description": "Font files available from Google Fonts, and a public issue tracker for all things Google Fonts",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/google/fonts/tree/main/apache/robotomono",
+    "url": [
+        "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf",
+        "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono-Italic%5Bwght%5D.ttf"
+    ],
+    "hash": [
+        "7d933841c1086c47dad91b2f249b1f8ecabce0d78469242e8bb52ef43cdc925b",
+        "59eb64cd4dc45d9c3496988b0a735c1664af2d51ca0c61a9804520fe121d280c"
+    ],
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -Filter '*.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required.\"; exit 1 }",
+            "Get-ChildItem $dir -filter '*.ttf' -Recurse | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"'Roboto Mono' variable TTF files have been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    }
+}
