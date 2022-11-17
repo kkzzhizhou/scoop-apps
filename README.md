@@ -100,13 +100,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - excitoon/scoop-user
 - jfut/scoop-jfut
+- ChinLong/scoop-customize
 - seumsc/scoop-seu
 - akirco/aki-apps
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
-- ChinLong/scoop-customize
+- Deide/deide-bucket
 - KnotUntied/scoop-fonts
 - rivy/scoop-bucket
 - brave-simpletons/scoop-the-business

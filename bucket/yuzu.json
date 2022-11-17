@@ -1,52 +1,35 @@
 {
-    "version": "0-1235",
-    "description": "Experimental emulator for the Nintendo Switch",
     "homepage": "https://yuzu-emu.org/",
+    "version": "1235",
+    "description": "Nintendo Switch Emulator",
     "license": {
         "identifier": "GPL-2.0",
         "url": "https://github.com/yuzu-emu/yuzu-mainline/blob/master/license.txt"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-0-1235/yuzu-windows-msvc-20221115-3895b430a.7z",
-            "hash": "acedaa446e5b896362e6a3e12a5cc814d9e43ebe2ae3a7da8b439da188e483f9"
-        }
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
     },
+    "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-0-1235/yuzu-windows-msvc-20221115-3895b430a.7z",
+    "hash": "acedaa446e5b896362e6a3e12a5cc814d9e43ebe2ae3a7da8b439da188e483f9",
     "extract_dir": "yuzu-windows-msvc",
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:APPDATA\\yuzu\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:APPDATA\\yuzu\\*\" -Destination \"$persist_dir\\user\" -Recurse",
-        "       Remove-Item -Path \"$env:APPDATA\\yuzu\" -Recurse",
-        "   }",
-        "}"
-    ],
-    "bin": [
-        "yuzu.exe",
-        "yuzu-cmd.exe"
-    ],
+    "pre_install": "mkdir $dir/user | Out-Null",
+    "bin": "yuzu.exe",
     "shortcuts": [
         [
             "yuzu.exe",
-            "Yuzu"
+            "Nintendo Switch"
         ]
     ],
-    "persist": [
-        "user",
-        "plugins"
-    ],
+    "persist": "user",
     "checkver": {
-        "github": "https://github.com/yuzu-emu/yuzu-mainline",
-        "regex": "download/mainline-([\\d.-]+)/yuzu-windows-msvc-(?<date>[\\d]{8})-(?<commit>[\\da-f]+).7z"
+        "url": "https://api.github.com/repos/yuzu-emu/yuzu-mainline/releases",
+        "jsonpath": {
+            "version": "$.[0].name",
+            "download": "$.[0].assets[?(@.content_type == 'application/x-7z-compressed')].browser_download_url"
+        },
+        "regex": "yuzu (\\d+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/yuzu-emu/yuzu-mainline/releases/download/mainline-$version/yuzu-windows-msvc-$matchDate-$matchCommit.7z"
-            }
-        }
+        "url": "$matchDownload"
     }
 }
