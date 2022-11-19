@@ -1,30 +1,20 @@
 {
-    "version": "2.0",
+    "version": "2.0-16",
     "description": "Nintendo Wii U emulator",
-    "homepage": "https://cemu.info/",
+    "homepage": "https://cemu.info",
     "license": {
-        "identifier": "Freeware",
-        "url": "https://cemu.info"
+        "identifier": "MPL-2.0",
+        "url": "https://github.com/cemu-project/Cemu/blob/main/LICENSE.txt"
     },
     "suggest": {
-        "cemuhook": "cemuhook",
         "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://cemu.info/releases/cemu_2.0.zip",
-            "hash": "660a5461333c9eecad3065c4c3e891e6c362f6df05c5e18fc4c36e3d806b6ca4"
-        }
-    },
-    "extract_dir": "cemu_2.0",
+    "url": "https://github.com/cemu-project/Cemu/releases/download/v2.0-16/cemu-2.0-16-windows-x64.zip",
+    "hash": "98cc89251cdc5299de671d5b317e06f8d89877596a6b7b6263db24001d796e1f",
+    "extract_dir": "Cemu_2.0-16",
     "pre_install": "if (!(Test-Path \"$persist_dir\\keys.txt\")) { New-Item \"$dir\\keys.txt\" -Type File | Out-Null }",
     "installer": {
         "script": [
-            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
-            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
-            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
-            "   }",
-            "}",
             "if (!(Test-Path \"$persist_dir\\keys.txt\")) {",
             "    New-Item \"$dir\\keys.txt\" -Type File | Out-Null",
             "}"
@@ -39,11 +29,16 @@
         "   }",
         "}"
     ],
-    "bin": "Cemu.exe",
+    "bin": [
+        [
+            "cemu.exe",
+            "cemu-dev"
+        ]
+    ],
     "shortcuts": [
         [
             "cemu.exe",
-            "Cemu"
+            "Cemu (dev)"
         ]
     ],
     "persist": [
@@ -58,19 +53,16 @@
     "uninstaller": {
         "script": [
             "'settings.xml' | ForEach-Object {",
-            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force -ErrorAction SilentlyContinue",
             "}"
         ]
     },
     "checkver": {
-        "regex": "Download latest experimental version \\(v((?<version>[\\d.]+)[\\w]*?),"
+        "url": "https://github.com/cemu-project/Cemu/releases",
+        "regex": "v(\\d\\.\\d-\\d+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://cemu.info/releases/cemu_$matchVersion.zip"
-            }
-        },
-        "extract_dir": "cemu_$matchVersion"
+        "url": "https://github.com/cemu-project/Cemu/releases/download/v$version/cemu-$version-windows-x64.zip",
+        "extract_dir": "Cemu_$version"
     }
 }
