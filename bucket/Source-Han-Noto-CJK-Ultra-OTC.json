@@ -15,12 +15,28 @@
     "installer": {
         "script": [
             "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
-            "$windowsTen1809BuildNumber = 17763",
-            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windowsTen1809BuildNumber",
+            "$windows11Version22H2BuildNumber = 22621",
+            "$doesPerUserFontInstallationHaveIssue = $currentBuildNumber -ge $windows11Version22H2BuildNumber",
+            "if ($doesPerUserFontInstallationHaveIssue -and !$global) {",
+            "    scoop uninstall $app",
+            "    Write-Host \"\"",
+            "    Write-Host \"Currently, on Windows 11 Version 22H2 (OS Build 22621) or later,\" -Foreground DarkRed",
+            "    Write-Host \"Font installation only works when installing font for all users.\" -Foreground DarkRed",
+            "    Write-Host \"\"",
+            "    Write-Host \"Please use following commands to install '$app' Font for all users.\" -Foreground DarkRed",
+            "    Write-Host \"\"",
+            "    Write-Host \"        scoop install sudo\"",
+            "    Write-Host \"        sudo scoop install -g $app\"",
+            "    Write-Host \"\"",
+            "    Write-Host \"See https://github.com/matthewjberger/scoop-nerd-fonts/issues/198 for more details.\" -Foreground Magenta",
+            "    exit 1",
+            "}",
+            "$windows10Version1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows10Version1809BuildNumber",
             "if (!$isPerUserFontInstallationSupported -and !$global) {",
             "    scoop uninstall $app",
             "    Write-Host \"\"",
-            "    Write-Host \"For Windows version before Windows 10 1809 (OS Build 17763),\" -Foreground DarkRed",
+            "    Write-Host \"For Windows version before Windows 10 Version 1809 (OS Build 17763),\" -Foreground DarkRed",
             "    Write-Host \"Font can only be installed for all users.\" -Foreground DarkRed",
             "    Write-Host \"\"",
             "    Write-Host \"Please use following commands to install '$app' Font for all users.\" -Foreground DarkRed",
@@ -50,7 +66,9 @@
             "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
             "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
             "}",
-            "Write-Host \"The Source Han & Noto CJK Ultra OTC (OpenType Collection) has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+            "if ($cmd -eq \"uninstall\") {",
+            "    Write-Host \"The Source Han & Noto CJK Ultra OTC (OpenType Collection) has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
+            "}"
         ]
     }
 }

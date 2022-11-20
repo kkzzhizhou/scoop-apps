@@ -4,14 +4,14 @@
     "description": "A free, open source, backup client that securely stores encrypted, incremental, compressed backups on cloud storage services and remote file servers. This is the Canary release.",
     "license": "LGPL-2.1",
     "notes": [
-        "If you want Dupilicati to run at the startup of your system, run:",
-        "& \"$dir\\Duplicati.WindowsService.exe\" install",
+        "If you want Dupilicati to run at the startup of your system, run: (requires administrator privileges)",
+        "start \"$dir\\Duplicati.WindowsService.exe\" -Verb 'RunAs' -ArgumentList 'install'",
         "",
-        "To remove Duplicati startup, run:",
-        "& \"$dir\\Duplicati.WindowsService.exe\" uninstall"
+        "To remove Duplicati from startup, run: (requires administrator privileges)",
+        "start \"$dir\\Duplicati.WindowsService.exe\" -Verb 'RunAs' -ArgumentList 'uninstall'"
     ],
     "url": "https://github.com/duplicati/duplicati/releases/download/v2.0.6.104-2.0.6.104_canary_2022-06-15/duplicati-2.0.6.104_canary_2022-06-15.zip",
-    "hash": "955C6D466A0BB86D9B8F56006FF3B64ED2ACAE2D5816EBECAA8FE0351145CC3D",
+    "hash": "955c6d466a0bb86d9b8f56006ff3b64ed2acae2d5816ebecaa8fe0351145cc3d",
     "bin": [
         "Duplicati.CommandLine.exe",
         [
@@ -31,6 +31,7 @@
     ],
     "pre_uninstall": [
         "if (Get-Service -Name 'Duplicati' -ErrorAction 'SilentlyContinue') {",
+        "    if (!(is_admin)) { error \"Admin rights required to remove Duplicati service\"; break }",
         "    Start-Process \"$dir\\Duplicati.WindowsService.exe\" -Wait -Verb 'RunAs' -ArgumentList 'uninstall' -WindowStyle 'Hidden'",
         "}"
     ],
