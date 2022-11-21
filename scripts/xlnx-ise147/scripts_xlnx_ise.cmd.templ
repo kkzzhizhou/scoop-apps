@@ -1,0 +1,79 @@
+@chcp 65001
+@echo,
+@echo,=====
+@echo,SPDX-License-Identifier: (GPL-2.0+):
+@echo,
+@echo,!!! THIS IS NOT GUARANTEED TO WORK !!!
+@echo,
+@echo,Copyright (c) 2018-2021, SayCV
+@echo,=====
+@echo,
+
+@REM @if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
+@cd /d "%~dp0/../"
+@set "TOPDIR=%cd%"
+@title "%~n0"
+
+@REM Enable extensions, the `verify` call is a trick from the setlocal help
+@VERIFY other 2>nul
+@SETLOCAL EnableDelayedExpansion
+@IF %ERRORLEVEL% == 1 @(
+    @ECHO Unable to enable extensions
+    @GOTO failure
+)
+
+:: =====
+@set "ISE_TOPDIR=%TOPDIR:\=/%"
+@set "ISE_VER=2018.3"
+@set "ISE_HLSROOT=%ISE_TOPDIR%/Vivado/%ISE_VER%"
+@set "ISE_SDKROOT=%ISE_TOPDIR%/SDK/%ISE_VER%"
+
+@set "sdk=%ISE_SDKROOT%/bin/xsdk.bat"
+@set "vivado=%ISE_HLSROOT%/bin/vivado.bat"
+
+:: ---------------------------------------------------------------------------------------------------
+:: ===================================================================================================
+@set "PATH=%ISE_SDKROOT%/bin;%PATH%"
+@set "PATH=%ISE_HLSROOT%/bin;%PATH%"
+
+@set "HOME=%ISE_TOPDIR%/home"
+
+@for /f  %%a in  ('hostname') do @set HOSTNAME=%%a
+@set "LM_LICENSE_FILE=%ISE_TOPDIR%/data/LICENSE.dat"
+
+:: =====
+@set "TKL_CLASS=EDA"
+@set "TKL_ROOTDIR=%ISE_TOPDIR%"
+@set "TKL_WORKDIR=%HOME%"
+@set "TKL_RUNNER=%TKL_ROOTDIR%/scripts/@SCRIPT_NAME@.cmd"
+@set "TKL_RUNNER_ICON=%TKL_ROOTDIR%/@SCRIPT_RUNNER_RELDIR@/@SCRIPT_RUNNER_ICON@"
+@set "TKL_REGITEM=@SCRIPT_LNKNAME@"
+@set "TKL_PROMPT=Open With %TKL_REGITEM%"
+@if not exist "%userprofile%/Desktop/%TKL_CLASS%/%TKL_REGITEM%.lnk" @call :Establish
+
+:: =====
+@set skip=1
+@for %%a in (%*) do @(
+  @if not !position! lss !skip! @(
+    @set args=!args! %%a
+  ) else @(
+    @set /a "position=!position!+1"
+  )
+)
+@START %ISE_TOPDIR%/Vivado/2018.3/bin/unwrapped/win64.o/@SCRIPT_RUNNER@.exe %ISE_TOPDIR%/Vivado/2018.3/bin/vivado.bat %SCRIPT_RUNNER_ARG% %*
+
+:: =====
+:script-done
+:failure
+
+@IF NOT %ERRORLEVEL% == 0  @PAUSE && @EXIT 1
+@EXIT 0
+
+:: =====
+:: ---------------------------------------------------------------------------------------------------
+:: =====
+
+:Establish
+    @if not exist "%userprofile%/Desktop/%TKL_CLASS%" @mkdir "%userprofile%\Desktop\%TKL_CLASS:/=\%"
+    @mshta VBScript:Execute("Set a=CreateObject(""WScript.Shell""):Set b=a.CreateShortcut(a.SpecialFolders(""Desktop"") & ""\%TKL_CLASS:/=\%\%TKL_REGITEM%.lnk""):b.TargetPath=""%TKL_RUNNER%"":b.IconLocation=""%TKL_RUNNER_ICON%, 0"":b.WorkingDirectory=""%TKL_WORKDIR%"":b.Save:close")
+    @EXIT /B 0

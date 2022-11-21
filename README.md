@@ -74,8 +74,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - scoopcn/scoopcn
-- borger/scoop-emulators
 - Paxxs/Cluttered-bucket
+- borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
 - ScoopInstaller/Nonportable
@@ -100,6 +100,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - excitoon/scoop-user
 - jfut/scoop-jfut
+- duzyn/scoop-cn
 - Weidows-projects/scoop-3rd
 - ChinLong/scoop-customize
 - seumsc/scoop-seu
@@ -108,7 +109,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
-- duzyn/scoop-cn
+- SayCV/scoop-cvp
 - Deide/deide-bucket
 - KnotUntied/scoop-fonts
 - rivy/scoop-bucket
