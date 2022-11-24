@@ -94,8 +94,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
 - Darkatse/Scoop-Darkatse
-- littleli/Scoop-littleli
 - batkiz/backit
+- littleli/Scoop-littleli
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - excitoon/scoop-user
@@ -109,6 +109,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
+- TheLastZombie/scoop-bucket
 - SayCV/scoop-cvp
 - Deide/deide-bucket
 - KnotUntied/scoop-fonts

@@ -1,0 +1,108 @@
+{
+    "version": "2022.05",
+    "description": "The most popular Python distribution for data science.",
+    "homepage": "https://conda.io/miniconda.html",
+    "license": "BSD-3-Clause",
+    "notes": [
+        "Write-Host 'Installing Anaconda 3. This can take up to 30 minutes on an HDD.' -ForegroundColor Magenta",
+        "",
+        "Conda envs is not persisted by Scoop, we advice to setup `envs_dirs` to use '~/.conda/envs'.",
+        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs",
+        ""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86_64.exe",
+            "hash": "2766eb102f9d65da36d262b651777358de39fbe5f1a74f9854a2e5e29caeeeec"
+        },
+        "32bit": {
+            "url": "https://repo.anaconda.com/archive/Anaconda3-2022.05-Windows-x86.exe",
+            "hash": "cd8c688349bcd1f429e3b383620fb0d19f52be0f765b2eae78d63b41aefb2e73"
+        }
+    },
+    "installer": {
+        "args": [
+            "/S",
+            "/InstallationType=JustMe",
+            "/RegisterPython=0",
+            "/AddToPath=0",
+            "/NoRegistry=1",
+            "/D=$dir"
+        ],
+        "script": [
+            "foreach ($folder in @('.conda', '.anaconda')) {",
+            "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+            "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+            "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+            "  } else {",
+            "    if (Test-Path \"$env:APPDATA\\$folder\") {",
+            "      $runtimeCache = \"$env:APPDATA\\$folder\"",
+            "      $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+            "    } else {continue}",
+            "  }",
+            "  if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "  } else {",
+            "    mkdir $runtimeCache",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "  }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "file": "Uninstall-Anaconda3.exe",
+        "args": "/S",
+        "script": [
+            "foreach ($folder in @('.conda', '.anaconda')) {",
+            "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+            "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+            "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+            "  } else {",
+            "    if (Test-Path \"$env:APPDATA\\$folder\") {",
+            "      $runtimeCache = \"$env:APPDATA\\$folder\"",
+            "      $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+            "    } else {continue}",
+            "  }",
+            "  if (!(Test-Path $runtimeCachePersist)) { Move-Item $runtimeCache $runtimeCachePersist -Force -ErrorAction SilentlyContinue }",
+            "  else { Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue }",
+            "}"
+        ]
+    },
+    "persist": "pkgs",
+    "bin": [
+        "python.exe",
+        "pythonw.exe",
+        [
+            "python.exe",
+            "python3"
+        ]
+    ],
+    "env_add_path": [
+        "Scripts",
+        "Library/bin"
+    ],
+    "checkver": {
+        "url": "https://docs.anaconda.com/anaconda/install/hashes/win-3-64/",
+        "regex": "Anaconda3-([\\d.]+)-Windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://repo.anaconda.com/archive/Anaconda3-$version-Windows-x86_64.exe",
+                "hash": {
+                    "url": "http://docs.anaconda.com/anaconda/install/hashes/Anaconda3-$version-Windows-x86_64.exe-hash/",
+                    "regex": "$sha256"
+                }
+            },
+            "32bit": {
+                "url": "https://repo.anaconda.com/archive/Anaconda3-$version-Windows-x86.exe",
+                "hash": {
+                    "url": "http://docs.anaconda.com/anaconda/install/hashes/Anaconda3-$version-Windows-x86.exe-hash/",
+                    "regex": "$sha256"
+                }
+            }
+        }
+    }
+}
