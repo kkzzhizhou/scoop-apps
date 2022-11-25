@@ -24,13 +24,12 @@
     "installer": {
         "script": [
             "$programname = \"Allavsoft *\"",
-            "$regPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6EBED4D8-13D9-4370-8D44-B57DDB7A787C}_is1\"",
-            "$regValue = \"DisplayName\"",
-            "$trimString = \"Allavsoft \"",
-            "if((Get-ItemProperty -Path \"$regPath\").DisplayName.Trim(\"$trimString\") -lt [Version]\"$version\")",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Allavsoft\\Video Downloader Converter\\videodownloader.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "{",
             "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
-            "   if((Get-ItemProperty -Path \"$regPath\").DisplayName.Trim(\"$trimString\") -lt [Version]\"$version\")",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
             "   {",
             "       exit 1",
             "   }",
