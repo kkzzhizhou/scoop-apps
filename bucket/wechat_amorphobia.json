@@ -1,0 +1,42 @@
+{
+    "version": "3.7.5.23",
+    "description": "微信电脑版",
+    "homepage": "https://pc.weixin.qq.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://weixin.qq.com/cgi-bin/readtemplate?lang=zh_CN&t=weixin_agreement&s=default"
+    },
+    "url": "https://webcdn.m.qq.com/spcmgr/download/WeChatSetup_3.7.5.23.exe#/dl.7z",
+    "hash": "c91856d0721b09a10c7b37013ca93cabb5e618ea768e66a70141052930c0c351",
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "Remove-Item \"$dir\\`$_15_\" -Force -Recurse",
+            "Remove-Item \"$dir\\`$R5\" -Force -Recurse",
+            "$WeChatAppData = \"$env:APPDATA\\Tencent\\WeChat\"",
+            "ensure \"$WeChatAppData\\All Users\\config\" | Out-Null",
+            "ensure \"$persist_dir\\WeChat Files\" | Out-Null",
+            "if (Test-Path \"$WeChatAppData\\All Users\\config\\3ebffe94.ini\") {",
+            "    Remove-Item -Force \"$WeChatAppData\\All Users\\config\\3ebffe94.ini\"",
+            "}",
+            "Set-Content -NoNewline -Path \"$WeChatAppData\\All Users\\config\\3ebffe94.ini\" -Value \"$persist_dir\"",
+            "$regPath = \"HKCU:Software\\Tencent\\WeChat\"",
+            "New-Item $regPath -Type Directory -Force | Out-Null",
+            "New-ItemProperty -Path $regPath -Name \"FileSavePath\" -Value \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "persist": "WeChat Files",
+    "shortcuts": [
+        [
+            "wechat.exe",
+            "微信"
+        ]
+    ],
+    "checkver": {
+        "url": "https://pc.qq.com/detail/8/detail_11488.html",
+        "re": "WeChat(?<postfix>\\D*)([\\d\\.]+)\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://webcdn.m.qq.com/spcmgr/download/WeChat$matchPostfix$version.exe#/dl.7z"
+    }
+}

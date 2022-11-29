@@ -1,0 +1,49 @@
+{
+    "version": "2.000",
+    "description": "Tally Marks OpenType-SVG Font",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/adobe-fonts/tally-marks",
+    "url": "https://github.com/adobe-fonts/tally-marks/releases/download/2.000/TallyMarks-Regular.otf",
+    "hash": "2ba6bcf0456b24acd1eb9ea9dad25ba3c7960c47e1ea01b28dda476f21bc65d3",
+    "installer": {
+        "script": [
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "$value = if ($isFontInstallationForAllUsers) { \"TallyMarks-Regular.otf\" } else { \"$fontInstallDir\\TallyMarks-Regular.otf\" }",
+            "New-ItemProperty -Path $registryKey -Name \"Tally Marks (TrueType)\" -Value $value -Force | Out-Null",
+            "Copy-Item \"$dir\\TallyMarks-Regular.otf\" -Destination $fontInstallDir"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isFontInstallationForAllUsers = $global -or !$isPerUserFontInstallationSupported",
+            "if ($isFontInstallationForAllUsers -and !(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "$fontInstallDir = if ($isFontInstallationForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isFontInstallationForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "Remove-ItemProperty -Path $registryKey -Name \"Tally Marks (TrueType)\" -Force -ErrorAction SilentlyContinue",
+            "Remove-Item \"$fontInstallDir\\TallyMarks-Regular.otf\" -Force -ErrorAction SilentlyContinue",
+            "Write-Host \"The 'Tally Marks' Font has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/adobe-fonts/tally-marks/releases/download/$version/TallyMarks-Regular.otf"
+    }
+}

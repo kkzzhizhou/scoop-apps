@@ -1,0 +1,52 @@
+{
+    "version": "1.8.6",
+    "description": "🦕Deno Version Manager - Easy way to manage multiple active deno versions.",
+    "homepage": "https://github.com/justjavac/dvm",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/justjavac/dvm/releases/download/v1.8.6/dvm-x86_64-pc-windows-msvc.zip",
+            "hash": "bbbc0c5a1420eff9429eb2a305da5046d03a477d85f186c0acb587c7e62c3d5d"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (Test-Path \"$persist_dir\\.dvm\") {",
+            "    ensure \"$persist_dir\\.dvm\\bin\" | Out-Null",
+            "    $targetPath = \"$persist_dir\\.dvm\\bin\"",
+            "} else {",
+            "    ensure \"$dir\\.dvm\\bin\" | Out-Null",
+            "    $targetPath = \"$dir\\.dvm\\bin\"",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\.deno\")) {",
+            "    ensure \"$dir\\.deno\" | Out-Null",
+            "}",
+            "Copy-Item \"$dir\\dvm.exe\" \"$targetPath\" -Force | Out-Null",
+            "Invoke-ExternalCommand -Path \"$persist_dir\\.dvm\\bin\\dvm.exe\" -Args \"completions powershell\" -LogPath \"$dir\\dvm-completion.psm1\" | Out-Null",
+            "info \"To activate completions, invoke 'Import-Module dvm-completion'\""
+        ]
+    },
+    "psmodule": {
+        "name": "dvm-completion"
+    },
+    "env_add_path": [
+        ".dvm\\bin",
+        ".deno\\bin"
+    ],
+    "env_set": {
+        "DVM_DIR": "$dir\\.dvm",
+        "DENO_INSTALL_ROOT": "$dir\\.deno"
+    },
+    "persist": [
+        ".dvm",
+        ".deno"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/justjavac/dvm/releases/download/v$version/dvm-x86_64-pc-windows-msvc.zip"
+            }
+        }
+    }
+}
