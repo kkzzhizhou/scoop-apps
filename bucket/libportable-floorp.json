@@ -1,0 +1,46 @@
+{
+    "version": "10.7.0",
+    "description": "(libportable patched) A new privacy-preserving Firefox-based browser developedby a community of students in Japan.",
+    "homepage": "https://floorp.ablaze.one/en/",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Floorp-Projects/Floorp/releases/download/v10.7.0/floorp-win64.installer.exe#/dl.7z",
+            "hash": "bc9e2a8beb1b00649fb39d61a010b0a7ebcab133a116b1b24efac731a38a80f9"
+        }
+    },
+    "depends": "lemon/libportable",
+    "pre_install": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "Remove-Item \"$dir\\setup.exe\", \"$dir\\core\\updater.*\" -Force",
+        "Copy-Item \"$(appdir libportable $global)\\current\\portable64.dll\" \"$dir\\core\\\"",
+        "if (!(installed 'libportable' $global)) { error 'Please install `libportable` first, then reinstall `libportable-floorp`.' ; Exit }",
+        "Invoke-ExternalCommand \"$(appdir libportable $global)\\current\\setdll64.exe\" -ArgumentList (\"/d:$dir\\core\\portable64.dll\", \"$dir\\core\\mozglue.dll\") -Activity \"Applying libportable patch...\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\App\\portable.ini\" )) {",
+        "  Copy-Item \"$(appdir libportable $global)\\current\\portable(example).ini\" \"$dir\\core\\portable.ini\"",
+        "  ((Get-Content -path \"$dir\\core\\portable.ini\" -Raw) -replace 'Update=1','Update=0') | Set-Content -Path \"$dir\\core\\portable.ini\"",
+        "}"
+    ],
+    "bin": "core\\floorp.exe",
+    "shortcuts": [
+        [
+            "core\\floorp.exe",
+            "Floorp"
+        ]
+    ],
+    "persist": [
+        "core\\portable.ini",
+        "Profiles",
+        "Plugins"
+    ],
+    "checkver": {
+        "github": "https://github.com/Floorp-Projects/Floorp"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Floorp-Projects/Floorp/releases/download/v$version/floorp-win64.installer.exe#/dl.7z"
+            }
+        }
+    }
+}
