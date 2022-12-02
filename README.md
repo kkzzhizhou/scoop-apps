@@ -71,11 +71,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - hoilc/scoop-lemon
 - hermanjustnu/scoop-emulators
+- scoopcn/scoopcn
 - cderv/r-bucket
 - everyx/scoop-bucket
-- scoopcn/scoopcn
-- borger/scoop-emulators
 - Paxxs/Cluttered-bucket
+- borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
 - ScoopInstaller/Nonportable
@@ -94,7 +94,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
 - akirco/aki-apps
-- ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
 - littleli/Scoop-littleli
 - batkiz/backit
