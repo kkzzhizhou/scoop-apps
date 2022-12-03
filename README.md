@@ -91,12 +91,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - iquiw/scoop-bucket
 - 42wim/scoop-bucket
+- batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
 - akirco/aki-apps
+- ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
 - littleli/Scoop-littleli
-- batkiz/backit
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - excitoon/scoop-user
@@ -111,6 +112,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
+- HUMORCE/nuke
+- ViCrack/scoop-bucket
 - WiiDatabase/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Brawl345/scoop-bucket
