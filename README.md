@@ -95,6 +95,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- ViCrack/scoop-bucket
 - akirco/aki-apps
 - ChinLong/scoop-customize
 - Darkatse/Scoop-Darkatse
@@ -102,7 +103,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
 - jfut/scoop-jfut
-- ViCrack/scoop-bucket
 - KnotUntied/scoop-knotuntied
 - hu3rror/scoop-muggle
 - TheLastZombie/scoop-bucket
