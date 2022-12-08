@@ -79,8 +79,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Bucket
 - ScoopInstaller/Nonportable
 - Qv2ray/mochi
-- dodorz/scoop
 - ACooper81/scoop-apps
+- dodorz/scoop
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
 - wangzq/scoop-bucket
@@ -88,14 +88,15 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wzv5/ScoopBucket
 - naderi/scoop-bucket
 - TheRandomLabs/Scoop-Python
-- ChungZH/peach
 - iquiw/scoop-bucket
+- ChungZH/peach
+- NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - batkiz/backit
-- NyaMisty/scoop_bucket_misty
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- amorphobia/siku
 - ViCrack/scoop-bucket
 - akirco/aki-apps
 - ChinLong/scoop-customize
@@ -103,7 +104,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
 - jfut/scoop-jfut
-- amorphobia/siku
+- starise/Scoop-Confetti
 - KnotUntied/scoop-knotuntied
 - hu3rror/scoop-muggle
 - TheLastZombie/scoop-bucket
@@ -124,7 +125,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Deide/deide-bucket
 - KnotUntied/scoop-fonts
 - rivy/scoop-bucket
-- starise/Scoop-Confetti
 - jonz94/scoop-sarasa-nerd-fonts
 - ddavness/scoop-roblox
 - nickbudi/scoop-bucket
