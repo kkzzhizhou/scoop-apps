@@ -90,12 +90,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - iquiw/scoop-bucket
 - ChungZH/peach
-- NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
+- NyaMisty/scoop_bucket_misty
 - Darkatse/Scoop-Darkatse
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- duzyn/scoop-cn
 - amorphobia/siku
 - ViCrack/scoop-bucket
 - akirco/aki-apps
@@ -109,7 +110,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - hu3rror/scoop-muggle
 - TheLastZombie/scoop-bucket
 - brave-simpletons/scoop-the-business
-- duzyn/scoop-cn
 - Weidows-projects/scoop-3rd
 - seumsc/scoop-seu
 - alextwothousand/scoop-bucket
