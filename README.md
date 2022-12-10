@@ -116,6 +116,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
+- The-Simples/scoop-minecraft
+- niheaven/scoop-sysinternals
 - HUMORCE/nuke
 - WiiDatabase/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
