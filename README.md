@@ -76,10 +76,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - everyx/scoop-bucket
 - Paxxs/Cluttered-bucket
 - borger/scoop-emulators
+- ScoopInstaller/Nonportable
 - Qv2ray/mochi
 - TheRandomLabs/Scoop-Bucket
 - dodorz/scoop
-- ScoopInstaller/Nonportable
 - ACooper81/scoop-apps
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
@@ -90,6 +90,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - iquiw/scoop-bucket
 - ChungZH/peach
+- duzyn/scoop-cn
 - 42wim/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - ViCrack/scoop-bucket
@@ -97,7 +98,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
-- duzyn/scoop-cn
 - amorphobia/siku
 - akirco/aki-apps
 - ChinLong/scoop-customize
