@@ -1,0 +1,25 @@
+{
+    "version": "2.4.2",
+    "description": "Files. A modern file explorer that pushes the boundaries of the Windows platform.",
+    "homepage": "https://files.community/",
+    "license": "MIT",
+	"changelog": "https://github.com/files-community/Files/releases",
+    "url": "https://github.com/files-community/Files/releases/download/v2.4.2/Files.Package_2.4.2.0_x64_arm64_Sideload.msixbundle#/setup.msixbundle",
+    "hash": "cf8f14a1c1690538923e39f4c6591cfd248ef5249aa6685ee688d5bb3cb474d7",
+    "pre_install": [
+        "Start-Process 'powershell' -Wait -WindowStyle 'Hidden' -ArgumentList @('-C', \"Add-AppxPackage \"\"$dir\\setup.msixbundle\"\"\")",
+        "Remove-Item \"$dir\\setup.msixbundle\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) {error \"$app requires admin rights to $cmd\"; break}",
+        "Remove-Item \"$env:ProgramData\\Packages\\Files_*\" -Force -Recurse",
+        "Start-Process 'powershell' -Wait -WindowStyle 'Hidden' -ArgumentList @('-C', 'Get-AppxPackage ''Files'' | Remove-AppxPackage')",
+        "Start-Sleep -Seconds 2"
+    ],
+    "checkver": {
+        "github": "https://github.com/files-community/Files"
+    },
+    "autoupdate": {
+        "url": "https://github.com/files-community/Files/releases/download/v$version/Files.Package_$version.0_x64_arm64_Sideload.msixbundle#/setup.msixbundle"
+    }
+}
