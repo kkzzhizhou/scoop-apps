@@ -74,8 +74,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - scoopcn/scoopcn
 - cderv/r-bucket
 - everyx/scoop-bucket
-- Paxxs/Cluttered-bucket
 - borger/scoop-emulators
+- Paxxs/Cluttered-bucket
 - TheRandomLabs/Scoop-Bucket
 - ScoopInstaller/Nonportable
 - Qv2ray/mochi
@@ -113,6 +113,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-bucket
 - Apocalypsor/My-Scoop-Bucket
 - Velgus/Scoop-Portapps
+- Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
