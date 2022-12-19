@@ -74,8 +74,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - scoopcn/scoopcn
 - cderv/r-bucket
 - everyx/scoop-bucket
-- borger/scoop-emulators
 - Paxxs/Cluttered-bucket
+- borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
 - ScoopInstaller/Nonportable
 - Qv2ray/mochi
@@ -103,8 +103,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/Scoop-littleli
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
-- amorphobia/siku
 - akirco/aki-apps
+- amorphobia/siku
 - niheaven/scoop-sysinternals
 - rivy/scoop-bucket
 - Weidows-projects/scoop-3rd
