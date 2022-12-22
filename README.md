@@ -69,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - MCOfficer/scoop-nirsoft
 - echoiron/echo-scoop
 - KNOXDEV/wsl
-- hermanjustnu/scoop-emulators
 - hoilc/scoop-lemon
+- hermanjustnu/scoop-emulators
 - scoopcn/scoopcn
 - cderv/r-bucket
 - everyx/scoop-bucket

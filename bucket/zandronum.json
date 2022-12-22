@@ -1,16 +1,27 @@
 {
-    "version": "3.0",
-    "description": "Modern multiplayer-oriented source port for Doom",
+    "version": "3.1",
     "homepage": "https://zandronum.com/",
-    "license": "https://zdoom.org/wiki/license",
+    "description": "Modern multiplayer-oriented source port for Doom",
+    "license": "BSD-3-Clause|Sleepycat",
     "notes": [
         "Place WAD files (game data) in:",
         "",
         "    $persist_dir\\..\\_doom"
     ],
-    "url": "https://zandronum.com/downloads/zandronum3.0-win32-base.zip",
-    "hash": "c261ecbc6931bf5245d5447f4702e8aa8b59445c93a5b5cadebcb0fdc0747551",
-    "pre_install": "New-Item -ItemType Directory -Force -Path $persist_dir\\..\\_doom | Out-Null",
+    "architecture": {
+        "32bit": {
+            "url": "https://zandronum.com/downloads/zandronum3.1-win32-base.zip",
+            "hash": "104875bce0c57b30b78c2500bbb532418877495ac0236ec23b8ba5f1da80125e"
+        },
+        "64bit": {
+            "url": "https://zandronum.com/downloads/zandronum3.1-win64-base.zip",
+            "hash": "d96a2b5ea2efad65aa96de7677e3dc451a1d2a852e6660034f676c632f058251"
+        }
+    },
+    "pre_install": [
+        "New-Item \"$persist_dir\\..\\_doom\" -ItemType 'Directory' -Force | Out-Null",
+        "Copy-Item \"$persist_dir\\zandronum-$env:USERNAME.ini\" \"$dir\\zandronum-$env:USERNAME.ini\" -ErrorAction 'SilentlyContinue'"
+    ],
     "env_set": {
         "DOOMWADDIR": "$persist_dir\\..\\_doom"
     },
@@ -20,5 +31,34 @@
             "zandronum.exe",
             "Zandronum"
         ]
-    ]
+    ],
+    "persist": [
+        "addons",
+        "announcer",
+        "autoload",
+        "cfg",
+        "data",
+        "crashes",
+        "demos",
+        "logs",
+        "SAVE",
+        "screenshots",
+        "skins"
+    ],
+    "pre_uninstall": "Copy-Item \"$dir\\zandronum-$env:USERNAME.ini\" \"$persist_dir\\zandronum-$env:USERNAME.ini\" -ErrorAction 'SilentlyContinue'",
+    "checkver": {
+        "url": "https://zandronum.com/downloads/",
+        "regex": "zandronum([\\d.]+)-win*",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://zandronum.com/downloads/zandronum$version-win32-base.zip"
+            },
+            "64bit": {
+                "url": "https://zandronum.com/downloads/zandronum$version-win64-base.zip"
+            }
+        }
+    }
 }
