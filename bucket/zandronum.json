@@ -20,7 +20,9 @@
     },
     "pre_install": [
         "New-Item \"$persist_dir\\..\\_doom\" -ItemType 'Directory' -Force | Out-Null",
-        "Copy-Item \"$persist_dir\\zandronum-$env:USERNAME.ini\" \"$dir\\zandronum-$env:USERNAME.ini\" -ErrorAction 'SilentlyContinue'"
+        "$value = (@(\"[IWADSearch.Directories]`nPath=.`nPath=$DOOMWADDIR`nPath=$HOME`n`n[FileSearch.Directories]`nPath=$PROGDIR`nPath=$DOOMWADDIR/zandronum`n`n\") +  \"[GlobalSettings]`nscreenshot_dir=screenshots`nscreenshot_type=png`nsave_dir=SAVE`ncrashlog_dir=crashes`ncrashlogs=1`ndatabasefile=data/database.sqlite`nsv_adminlistfile=data/adminlist.txt`nsv_banexemptionfile=data/whitelist.txt`nsv_banfile=data/banlist.txt`nstatfile=data/zdoomstats.txt`ngus_patchdir=data/gus`nmidi_config=data/timidity.cfg`n\") -join ''",
+        "$value | New-Item -ItemType File -Path \"$dir/zandronum_portable.ini\" -ErrorAction Ignore | Out-Null",
+        "Copy-Item \"$persist_dir\\zandronum-$($env:USERNAME).ini\" \"$dir\\zandronum-$($env:USERNAME).ini\" -ErrorAction 'SilentlyContinue'"
     ],
     "env_set": {
         "DOOMWADDIR": "$persist_dir\\..\\_doom"
@@ -32,6 +34,7 @@
             "Zandronum"
         ]
     ],
+    "post_install": "New-Item -Path $dir\\zandronum-$($env:USERNAME).ini -Value $persist_dir\\zandronum_portable.ini -ItemType SymbolicLink -ErrorAction Ignore | Out-Null",
     "persist": [
         "addons",
         "announcer",
@@ -45,7 +48,7 @@
         "screenshots",
         "skins"
     ],
-    "pre_uninstall": "Copy-Item \"$dir\\zandronum-$env:USERNAME.ini\" \"$persist_dir\\zandronum-$env:USERNAME.ini\" -ErrorAction 'SilentlyContinue'",
+    "pre_uninstall": "Copy-Item \"$dir\\zandronum-$($env:USERNAME).ini\" \"$persist_dir\\zandronum-$($env:USERNAME).ini\" -ErrorAction 'SilentlyContinue'",
     "checkver": {
         "url": "https://zandronum.com/downloads/",
         "regex": "zandronum([\\d.]+)-win*",
