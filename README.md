@@ -100,7 +100,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - akirco/aki-apps
 - ViCrack/scoop-bucket
 - Darkatse/Scoop-Darkatse
-- ChinLong/scoop-customize
 - littleli/Scoop-littleli
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
@@ -116,8 +115,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - KnotUntied/scoop-knotuntied
-- starise/Scoop-Confetti
 - TheLastZombie/scoop-bucket
+- starise/Scoop-Confetti
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
