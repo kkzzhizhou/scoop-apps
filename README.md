@@ -81,8 +81,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Qv2ray/mochi
 - dodorz/scoop
 - ACooper81/scoop-apps
-- ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
+- ZvonimirSun/scoop-iszy
 - wangzq/scoop-bucket
 - zhoujin7/tomato
 - wzv5/ScoopBucket
@@ -115,9 +115,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Velgus/Scoop-Portapps
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
-- starise/Scoop-Confetti
-- TheLastZombie/scoop-bucket
 - KnotUntied/scoop-knotuntied
+- TheLastZombie/scoop-bucket
+- starise/Scoop-Confetti
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
