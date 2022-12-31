@@ -97,13 +97,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
-- akirco/aki-apps
 - ViCrack/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - ChinLong/scoop-customize
 - littleli/Scoop-littleli
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
+- akirco/aki-apps
 - Apocalypsor/My-Scoop-Bucket
 - amorphobia/siku
 - niheaven/scoop-sysinternals
