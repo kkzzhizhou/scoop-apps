@@ -1,16 +1,31 @@
 {
-    "version": "130.1",
+    "version": "131",
     "description": "Multi-system emulator focused on accuracy and preservation",
-    "homepage": "https://ares-emulator.github.io/",
+    "homepage": "https://ares-emu.net",
     "license": "ISC",
+    "notes": "Configuration file cannot be persisted, but will be retained during the update",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/ares-emulator/ares/releases/download/v130.1/ares-windows.zip",
-            "hash": "7b089bedf4813bf8fd0fb33af2a34ed27a1b3be900dd44682c730d04c04cf84e"
+            "url": "https://github.com/ares-emulator/ares/releases/download/v131/ares-windows-msvc-x64.zip",
+            "hash": "9c9104222c6df26480fb7d5b48d500266b791069c18e444e60354ec4d9dbc1b9"
+        },
+        "arm64": {
+            "url": "https://github.com/ares-emulator/ares/releases/download/v131/ares-windows-msvc-arm64.zip",
+            "hash": "c82d48b3b4abfc7c047a588dbec6f5667c48a6b01120cc6571bb058b85bbab0c"
         }
     },
-    "extract_dir": "ares-v130.1",
-    "pre_install": "if (!(Test-Path \"$persist_dir\\settings.bml\")) { New-Item -ItemType File \"$dir\\settings.bml\" | Out-Null }",
+    "extract_dir": "ares-v131",
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\settings.bml.bak\")) {",
+        "   New-Item -ItemType File \"$dir\\settings.bml\" | Out-Null",
+        "   Set-Content \"$dir\\settings.bml\" 'Paths'",
+        "   Add-Content \"$dir\\settings.bml\" \"  Home`:` $persist_dir\\Systems\\\" ",
+        "   'Saves', 'Screenshots', 'Debugging' | ForEach-Object {",
+        "   Add-Content \"$dir\\settings.bml\" \"  $_`:` $persist_dir\\$_\\\" }",
+        "} else {",
+        "   Copy-Item \"$persist_dir\\settings.bml.bak\" \"$dir\\settings.bml\" -Force",
+        "}"
+    ],
     "bin": "ares.exe",
     "shortcuts": [
         [
@@ -19,21 +34,30 @@
         ]
     ],
     "persist": [
-        "settings.bml",
         "Systems",
         "Saves",
         "Screenshots",
         "Debugging"
     ],
+    "uninstaller": {
+        "script": [
+            "'settings.bml' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
     "checkver": {
         "github": "https://github.com/ares-emulator/ares/"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/ares-emulator/ares/releases/download/v$version/ares-windows.zip"
+                "url": "https://github.com/ares-emulator/ares/releases/download/v$cleanVersion/ares-windows-msvc-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/ares-emulator/ares/releases/download/v$cleanVersion/ares-windows-msvc-arm64.zip"
             }
         },
-        "extract_dir": "ares-v$version"
+        "extract_dir": "ares-v$cleanVersion"
     }
 }
