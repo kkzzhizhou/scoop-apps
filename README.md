@@ -97,6 +97,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- amorphobia/siku
 - ViCrack/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - ChinLong/scoop-customize
@@ -105,7 +106,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - excitoon/scoop-user
 - akirco/aki-apps
 - Apocalypsor/My-Scoop-Bucket
-- amorphobia/siku
 - niheaven/scoop-sysinternals
 - rivy/scoop-bucket
 - Weidows-projects/scoop-3rd
@@ -115,9 +115,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Velgus/Scoop-Portapps
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
+- KnotUntied/scoop-knotuntied
 - TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
-- KnotUntied/scoop-knotuntied
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
