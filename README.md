@@ -61,8 +61,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheCjw/scoop-retools
 - ScoopInstaller/Versions
 - kodybrown/scoop-nirsoft
-- Ash258/Scoop-JetBrains
 - littleli/scoop-clojure
+- Ash258/Scoop-JetBrains
 - kidonng/sushi
 - rasa/scoops
 - kkzzhizhou/scoop-zapps
@@ -78,9 +78,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - borger/scoop-emulators
 - ScoopInstaller/Nonportable
 - TheRandomLabs/Scoop-Bucket
+- ACooper81/scoop-apps
 - Qv2ray/mochi
 - dodorz/scoop
-- ACooper81/scoop-apps
 - kiennq/scoop-misc
 - ZvonimirSun/scoop-iszy
 - wangzq/scoop-bucket
@@ -116,8 +116,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - KnotUntied/scoop-knotuntied
-- TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
+- TheLastZombie/scoop-bucket
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
