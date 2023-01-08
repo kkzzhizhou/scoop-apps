@@ -1,44 +1,24 @@
 {
-    "version": "6.1.22",
+    "version": "7.0.4",
     "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
     "homepage": "https://www.virtualbox.org/",
-    "license": {
-        "identifier": "GPL-2.0-only|Freeware",
-        "url": "https://www.virtualbox.org/wiki/VirtualBox_PUEL"
-    },
-    "changelog": "https://www.virtualbox.org/wiki/Changelog",
+    "license": "GPL-2.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://download.virtualbox.org/virtualbox/6.1.22/VirtualBox-6.1.22-144080-Win.exe#/VBoxSetup.exe",
-            "hash": "ed5796aeb5d143bb4bb59a70bd976411dee79d583deb7a95f621992dd3c6864f"
+            "url": "https://download.virtualbox.org/virtualbox/7.0.4/VirtualBox-7.0.4-154605-Win.exe#/VBoxSetup.exe",
+            "hash": "b7265dd6c0f7f635fec9be67b4b5e34b4105b93d7c11aeef0b5ed6fe1d2dc556"
         }
     },
-    "#pre_download": "Assert-Administrator",
-    "pre_install": [
-        "$processname = \"virtualbox\"",
-        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
-        "if ($process) {",
-        "   $process.CloseMainWindow()",
-        "   Start-Sleep -Seconds 5",
-        "   if (!$process.HasExited) {",
-        "       Start-Sleep -Seconds 25",
-        "       $process | Stop-Process -Force",
-        "   }",
-        "}"
-    ],
     "installer": {
-        "script": "Start-Process cmd -Verb Runas \"/c $dir\\VBoxSetup.exe --msiparams INSTALLDIR=$dir VBOX_START=0 REBOOT=ReallySuppress --silent\" -Wait -WindowStyle hidden"
+        "args": "--msiparams INSTALLDIR=\"$dir\" VBOX_INSTALLDESKTOPSHORTCUT=0",
+        "keep": "true"
     },
-    "post_install": "remove-item \"$dir\\VBoxSetup.exe\"",
     "uninstaller": {
-        "script": [
-            "$id = wmic product where \"\"\"name like 'Oracle VM VirtualBox%'\"\"\" get IdentifyingNumber | find /i \"\"\"-\"\"\"",
-            "Start-Process cmd -Verb Runas \"/c msiexec /x $id /qn\" -Wait -WindowStyle hidden"
-        ]
+        "file": "setup.exe"
     },
     "checkver": {
-        "url": "https://update.virtualbox.org/query.php?platform=WINDOWS_64BITS_GENERIC&version=6.0.0",
-        "re": "VirtualBox-(?<version>[\\d.]+)-(?<revision>[\\d]+)-Win.exe"
+        "url": "https://www.virtualbox.org/wiki/Downloads",
+        "regex": "VirtualBox-(?<version>[\\d.]+)-(?<revision>[\\d]+)-Win.exe"
     },
     "autoupdate": {
         "architecture": {
