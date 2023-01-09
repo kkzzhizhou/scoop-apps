@@ -1,0 +1,70 @@
+{
+    "version": "1.7.3876",
+    "description": "Sony PlayStation 2 emulator",
+    "homepage": "https://pcsx2.net/",
+    "license": {
+        "identifier": "GPL-3.0",
+        "url": "https://github.com/PCSX2/pcsx2/blob/master/COPYING.GPLv3"
+    },
+    "notes": [
+        "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
+        "Place the BIOS file in $persist_dir\\bios",
+        "Learn more at https://wiki.pcsx2.net/Setting_up_Windows_version#BIOS"
+    ],
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "url": "https://github.com/PCSX2/pcsx2/releases/download/v1.7.3876/pcsx2-v1.7.3876-windows-64bit-AVX2-Qt.7z",
+    "hash": "70cb5cadd628191c95969c35c8da7547c726b2a9dc9bb95053c0c45bb6ec7743",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
+        "   }",
+        "   if (!(Test-Path \"$persist_dir\\inis\\PCSX2.ini\")) {",
+        "       New-item \"$persist_dir\\inis\" -ItemType Directory | Out-Null",
+        "       '[AutoUpdater]', 'CheckAtStartup = false' | Set-Content \"$persist_dir\\inis\\PCSX2.ini\"",
+        "   }",
+        "}"
+    ],
+    "bin": [
+        [
+            "pcsx2-qtx64-avx2.exe",
+            "pcsx2-dev"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "pcsx2-qtx64-avx2.exe",
+            "PCSX2 (dev)"
+        ]
+    ],
+    "persist": [
+        "bios",
+        "cache",
+        "cheats_ws",
+        "cheats",
+        "covers",
+        "gamesettings",
+        "inis",
+        "inputprofiles",
+        "logs",
+        "memcards",
+        "portable.ini",
+        "shaders",
+        "snaps",
+        "sstates",
+        "textures"
+    ],
+    "checkver": {
+        "url": "https://github.com/PCSX2/pcsx2/releases.atom",
+        "regex": "v(?<basever>\\d+\\.\\d+)\\.(?<build>\\d+)",
+        "replace": "${basever}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/PCSX2/pcsx2/releases/download/v$version/pcsx2-v$version-windows-64bit-AVX2-Qt.7z"
+    }
+}

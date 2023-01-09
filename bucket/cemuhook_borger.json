@@ -1,0 +1,41 @@
+{
+    "version": "0.5.7.7",
+    "description": "Plugin for the Cemu emulator enabling H.264 decoding, gamepad input source overrides and game code/data patching at load-time",
+    "homepage": "https://cemuhook.sshnuke.net/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://cemuhook.sshnuke.net"
+    },
+    "depends": "cemu",
+    "architecture": {
+        "64bit": {
+            "url": "https://files.sshnuke.net/cemuhook_1262d_0577.zip",
+            "hash": "62c47873eaa2f1f07f80e207ebbbf122648623ed2639ca137c6c1be1ac3172b7"
+        }
+    },
+    "installer": {
+        "script": [
+            "Copy-Item \"$dir\\cemuhook.dll\" \"$(versiondir 'cemu' 'current' $global)\" -Force",
+            "Copy-Item \"$dir\\keystone.dll\" \"$(versiondir 'cemu' 'current' $global)\" -Force"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemu' 'current' $global)\\$_\") {",
+            "       Remove-Item \"$(versiondir 'cemu' 'current' $global)\\$_\"",
+            "   }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "regex": "cemuhook_(?<cemu>[\\d_a-z]+).zip\">Cemu hook ([\\d.]+) for"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://files.sshnuke.net/cemuhook_$matchCemu.zip"
+            }
+        }
+    }
+}

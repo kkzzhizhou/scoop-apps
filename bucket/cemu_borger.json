@@ -1,0 +1,67 @@
+{
+    "version": "1.26.2f",
+    "description": "Nintendo Wii U emulator",
+    "homepage": "https://cemu.info/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://cemu.info"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022",
+        "cemuhook": "cemuhook"
+    },
+    "url": "https://cemu.info/releases/cemu_1.26.2.zip",
+    "hash": "b0e3abf5048f78e352b42c3e1660a2c6e85d6905cd9f60d06ca2f2318fa3152c",
+    "extract_dir": "cemu_1.26.2f",
+    "installer": {
+        "script": [
+            "'cemuhook.dll', 'keystone.dll' | ForEach-Object {",
+            "   if (Test-Path \"$(versiondir 'cemuhook' 'current' $global)\\$_\") {",
+            "       Copy-Item \"$(versiondir 'cemuhook' 'current' $global)\\$_\" \"$dir\"",
+            "   }",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\keys.txt\")) {",
+            "    New-Item \"$dir\\keys.txt\" -Type File | Out-Null",
+            "}"
+        ]
+    },
+    "post_install": [
+        "'settings.xml' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\"  -Force",
+        "   } else {",
+        "       New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}"
+    ],
+    "bin": "Cemu.exe",
+    "shortcuts": [
+        [
+            "cemu.exe",
+            "Cemu"
+        ]
+    ],
+    "persist": [
+        "controllerProfiles",
+        "gameProfiles",
+        "graphicPacks",
+        "mlc01",
+        "sharedFonts",
+        "shaderCache\\transferable",
+        "keys.txt"
+    ],
+    "uninstaller": {
+        "script": [
+            "'settings.xml' | ForEach-Object {",
+            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": {
+        "regex": "\\(recommended\\) \\(v((?<version>[\\d.]+)[\\w]*?),"
+    },
+    "autoupdate": {
+        "url": "https://cemu.info/releases/cemu_$matchVersion.zip",
+        "extract_dir": "cemu_$matchVersion"
+    }
+}

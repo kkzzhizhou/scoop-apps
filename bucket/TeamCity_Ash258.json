@@ -1,0 +1,48 @@
+{
+    "version": "2022.10.1.116934",
+    "description": "TeamCity. Powerful Continuous Integration out of the box by JetBrains.",
+    "homepage": "https://www.jetbrains.com/teamcity/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.jetbrains.com/store/license.html"
+    },
+    "changelog": "https://www.jetbrains.com/teamcity/whatsnew/",
+    "notes": [
+        "TeamCity could be executed from anywhere using 'teamcity' command.",
+        "Run 'teamcity --help' to get more info."
+    ],
+    "url": "https://download.jetbrains.com/teamcity/TeamCity-2022.10.exe#/cosi.7z",
+    "hash": "80857d2a8e391c0e34299ac8f69a357828d994c0ea5cedd736220b131a0ef88d",
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$*\" -Recurse",
+            "    # Create custom shim like script",
+            "$ver_path = \"$dir\\bin\"",
+            "$cont = @(",
+            "    \"Push-Location \"\"$ver_path\"\"\"",
+            "    '& .\\teamcity-server.bat @args'",
+            "    'Pop-Location'",
+            ")",
+            "Set-Content \"$dir\\teamcity.ps1\" $cont -Encoding Ascii"
+        ]
+    },
+    "bin": [
+        "teamcity.ps1",
+        [
+            "teamcity.ps1",
+            "teamcity-server"
+        ]
+    ],
+    "persist": "conf",
+    "checkver": {
+        "url": "https://data.services.jetbrains.com/products/releases?code=TC&latest=true&platform=windows&type=release",
+        "regex": "version\":\"(?<ver>[\\d.]+)\".*\"build\":\"(?<build>[\\d.]+)\"",
+        "replace": "${ver}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/teamcity/TeamCity-$majorVersion.$minorVersion.exe#/cosi.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}
