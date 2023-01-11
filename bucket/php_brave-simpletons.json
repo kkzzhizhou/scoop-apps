@@ -1,0 +1,61 @@
+{
+    "version": "8.2.1",
+    "description": "A popular general-purpose scripting language that is especially suited to web development. (thread safe)",
+    "homepage": "https://windows.php.net/",
+    "license": "PHP-3.01",
+    "suggest": {
+        "vcredist": "vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://windows.php.net/downloads/releases/php-8.2.1-Win32-vs16-x64.zip",
+            "hash": "2edeb82ebcfab64a47c8db78074d8029232d3ce37da053c889979f1b337b4d0c"
+        },
+        "32bit": {
+            "url": "https://windows.php.net/downloads/releases/php-8.2.1-Win32-vs16-x86.zip",
+            "hash": "da302f3b1c174365dbfc48740c21a713507286e515f404ea22325410c9d06559"
+        }
+    },
+    "pre_install": [
+        "# Create directory for custom PHP configuration",
+        "if (!(Test-Path \"$dir\\cli\\conf.d\")) {",
+        "    (New-Item -Type directory \"$dir\\cli\\conf.d\") | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "# Enable extensions to be found in installation-relative folder (the default is to search C:/php)",
+        "(Get-Content \"$dir\\cli\\php.ini\") | % { $_ -replace ';\\s?(extension_dir = \"ext\")', '$1' } | Set-Content \"$dir\\cli\\php.ini\""
+    ],
+    "bin": [
+        "php.exe",
+        "php-cgi.exe",
+        "phpdbg.exe"
+    ],
+    "env_set": {
+        "PHP_INI_SCAN_DIR": "$dir\\cli;$dir\\cli\\conf.d;"
+    },
+    "persist": [
+        "cli",
+        [
+            "php.ini-production",
+            "cli\\php.ini"
+        ]
+    ],
+    "checkver": {
+        "url": "https://windows.php.net/download/",
+        "regex": "<h3 id=\"php-[\\d.]+\".*?>.*?\\(([\\d.]+)\\)</h3>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://windows.php.net/downloads/releases/php-$version-Win32-vs16-x64.zip"
+            },
+            "32bit": {
+                "url": "https://windows.php.net/downloads/releases/php-$version-Win32-vs16-x86.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/sha256sum.txt"
+        }
+    }
+}

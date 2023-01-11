@@ -1,0 +1,76 @@
+{
+    "version": "93.0.4585.84",
+    "description": "Gaming counterpart of Opera web browser",
+    "homepage": "https://www.opera.com/gx",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.opera.com/eula/computers"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download3.operacdn.com/pub/opera_gx/93.0.4585.84/win/Opera_GX_93.0.4585.84_Setup_x64.exe#/dl.7z",
+            "hash": "cb6c7ab4acae77ac5c19d58e6eb6dbd4af60090e592a7468c42f90cabc6223d2"
+        },
+        "32bit": {
+            "url": "https://download3.operacdn.com/pub/opera_gx/93.0.4585.84/win/Opera_GX_93.0.4585.84_Setup.exe#/dl.7z",
+            "hash": "ed7b9b424040d7aa583131d8e9dc251c858cd1e65d004aad587702cd94e8453e"
+        }
+    },
+    "pre_install": [
+        "$operagx_root = \"$dir\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    $content = Get-Content \"$bucketsdir\\business\\assets\\opera-gx\\$_\"",
+        "    $content = $content.Replace('$operagx_root', $operagx_root)",
+        "    if ($global) {",
+        "       $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    Set-Content \"$dir\\$_\" $content -Encoding Ascii",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\*_list\" -Force",
+            "Move-Item \"$dir\\*\" \"$dir\\$version\" -Exclude 'Assets', '*install-context.reg', 'launcher*', 'Resources.pri' -ErrorAction Ignore",
+            "if (-not (Test-Path \"$dir\\$version\\localization\")) {",
+            "   New-Item -Path \"$dir\\$version\\localization\" -ItemType Directory | Out-Null",
+            "   Move-Item -Path \"$dir\\$version\\*.pak\" -Destination \"$dir\\$version\\localization\" -Exclude 'opera*' -ErrorAction Ignore",
+            "}",
+            "@{ 'autoupdate'= $false; 'enable_stats' = $false; 'single_profile' = $true } | ConvertTo-Json -Depth 20 | Out-File \"$dir\\installer_prefs.json\" -Encoding ASCII"
+        ]
+    },
+    "post_install": [
+        "reg import \"$dir\\install-context.reg\"",
+        "Write-Host Registering the app with : \"$dir\\install-context.reg\""
+    ],
+    "uninstaller": {
+        "script": [
+            "reg import \"$dir\\uninstall-context.reg\"",
+            "Write-Host UnRegistering the app with : \"$dir\\uninstall-context.reg\""
+        ]
+    },
+    "shortcuts": [
+        [
+            "launcher.exe",
+            "Opera GX"
+        ]
+    ],
+    "persist": "profile",
+    "checkver": {
+        "url": "https://get.opera.com/ftp/pub/opera_gx/",
+        "regex": "([\\d.]+)/",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download3.operacdn.com/pub/opera_gx/$version/win/Opera_GX_$version_Setup_x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download3.operacdn.com/pub/opera_gx/$version/win/Opera_GX_$version_Setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256sum"
+        }
+    }
+}
