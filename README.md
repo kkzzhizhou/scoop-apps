@@ -118,9 +118,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - brave-simpletons/scoop-the-business
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
-- TheLastZombie/scoop-bucket
-- starise/Scoop-Confetti
 - KnotUntied/scoop-knotuntied
+- starise/Scoop-Confetti
+- TheLastZombie/scoop-bucket
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
