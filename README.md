@@ -76,8 +76,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - borger/scoop-emulators
-- ScoopInstaller/Nonportable
 - ACooper81/scoop-apps
+- ScoopInstaller/Nonportable
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
 - dodorz/scoop
@@ -118,9 +118,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - brave-simpletons/scoop-the-business
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
-- KnotUntied/scoop-knotuntied
 - starise/Scoop-Confetti
 - TheLastZombie/scoop-bucket
+- KnotUntied/scoop-knotuntied
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
