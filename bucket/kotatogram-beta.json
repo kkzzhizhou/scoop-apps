@@ -6,6 +6,12 @@
         "identifier": "GPL-3.0-with-OpenSSL-exception",
         "url": "https://github.com/kotatogram/kotatogram-desktop/blob/dev/LICENSE"
     },
+    "notes": [
+        "To register the 'URL:Telegram Link' protocol, run:",
+        "protocol-handler.ps1 register",
+        "To unregister the 'URL:Telegram Link' protocol, run:",
+        "protocol-handler.ps1 unregister"
+    ],
     "architecture": {
         "64bit": {
             "url": "https://github.com/kotatogram/kotatogram-desktop/releases/download/k1.4.9/1.4.9-win64-portable.zip",
@@ -16,7 +22,18 @@
             "hash": "45ffdf047e5d1847242b4059dde8d439288bb9af08119b2eac7363f807b3d44a"
         }
     },
-    "bin": "Kotatogram.exe",
+    "pre_install": [
+        "Remove-Item \"$dir\\Updater.exe\"",
+        "$currentDir = $dir.Replace($version, 'current')",
+        "$content = Get-Content \"$bucketsdir\\versions\\scripts\\telegram\\protocol-handler.ps1\"",
+        "$content = $content.Replace('REPLACE_HERE', $currentDir)",
+        "$content = $content.Replace('Telegram.exe', 'Kotatogram.exe')",
+        "Set-Content \"$dir\\protocol-handler.ps1\" $content -Force"
+    ],
+    "bin": [
+        "Kotatogram.exe",
+        "protocol-handler.ps1"
+    ],
     "shortcuts": [
         [
             "Kotatogram.exe",
@@ -24,6 +41,10 @@
         ]
     ],
     "persist": "tdata",
+    "pre_uninstall": [
+        "Write-Host 'Unregistering ''URL:Telegram Link'' protocol handler...'",
+        "Remove-Item 'HKCU:\\SOFTWARE\\Classes\\tg', 'HKCU:\\SOFTWARE\\Classes\\TelegramDesktop' -Force -Recurse -ErrorAction 'SilentlyContinue'; Write-Host 'Done!'"
+    ],
     "checkver": {
         "url": "https://github.com/kotatogram/kotatogram-desktop/releases",
         "regex": "Version ([\\d.]+)( beta)?"
