@@ -4,53 +4,31 @@
     "homepage": "https://www.autohotkey.com/",
     "license": "GPL-2.0-or-later",
 	"changelog": "https://www.autohotkey.com/docs/v2/ChangeLog.htm",
-    "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v2.0.2/AutoHotkey_2.0.2_setup.exe#/setup.exe",
-    "hash": "9c8b1aecaf1bdded80bec98ec5ab5b9b9754cbce9439dd9eacc7d1774d1438f8",
-    "pre_install": "Write-Host 'Installing AutoHotKey with their installer and its own options ( create registry keys removed by uninstaller )' -ForegroundColor Magenta",
-    "architecture": {
-        "64bit": {
-            "installer": {
-                "script": [
-                    "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-                    "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/S', '/x64', '/uiAccess=0', '/IsHostApp=1') -Verb RunAs | Out-Null"
-                ]
-            },
-            "bin": [
-                "autohotkeyu64.exe",
-                [
-                    "autohotkeyu64.exe",
-                    "autohotkey"
-                ],
-                "compiler\\ahk2exe.exe"
-            ]
-        },
-        "32bit": {
-            "installer": {
-                "script": [
-                    "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-                    "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/S', '/U32', '/uiAccess=0', '/IsHostApp=1') -Verb RunAs | Out-Null"
-                ]
-            },
-            "bin": [
-                "autohotkeyu32.exe",
-                [
-                    "autohotkeyu32.exe",
-                    "autohotkey"
-                ],
-                "compiler\\ahk2exe.exe"
-            ]
-        }
-    },
-    "uninstaller": {
+	"notes": [
+        "Install specific version of Interpreter(Default: Latest 1.x):",
+        "  - 'autohotkey /script \"$dir\\UX\\install-version.ahk\" [version]'",
+        "Uninstall Sub-versions of Interpreter:",
+        "  - 'autohotkey /script \"$dir\\UX\\ui-uninstall.ahk\"'",
+        "See also: https://github.com/ScoopInstaller/Extras/issues/10066"
+    ],
+    "url": "https://www.autohotkey.com/download/2.0/AutoHotkey_2.0.2.zip",
+    "hash": "8f28c38a0b2af6ac96c4a7e1a2c0f296b2410f845d9aca8487843a1edac4271d",
+    "extract_to": "installer",
+    "pre_install": "Write-Host 'Installing AutoHotKey with their installer and its own options' -ForegroundColor Magenta",
+	"installer": {
         "script": [
-            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-            "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList '/Uninstall' -Verb RunAs | Out-Null"
+            "$ahk = @('/script', \"`\"$dir\\installer\\UX\\install.ahk`\"\", '/silent')",
+            "Start-Process \"$dir\\installer\\AutoHotkey32.exe\" -ArgumentList $ahk -Wait"
         ]
     },
     "checkver": {
-        "github": "https://github.com/lexikos/autohotkey_l"
+        "url": "https://www.autohotkey.com/download/2.0/version.txt",
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/setup.exe"
+        "url": "https://www.autohotkey.com/download/2.0/AutoHotkey_$version.zip",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }

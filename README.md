@@ -106,7 +106,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - excitoon/scoop-user
 - Darkatse/Scoop-KanColle
-- ddavness/scoop-roblox
 - akirco/aki-apps
 - Apocalypsor/My-Scoop-Bucket
 - niheaven/scoop-sysinternals
@@ -116,6 +115,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
 - Velgus/Scoop-Portapps
+- ddavness/scoop-roblox
 - brave-simpletons/scoop-the-business
 - Brawl345/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
