@@ -116,11 +116,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
 - Velgus/Scoop-Portapps
+- zeemanz/my-bucket
 - ddavness/scoop-roblox
 - brave-simpletons/scoop-the-business
 - Brawl345/scoop-bucket
-- starise/Scoop-Confetti
 - TheLastZombie/scoop-bucket
+- starise/Scoop-Confetti
 - KnotUntied/scoop-knotuntied
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket

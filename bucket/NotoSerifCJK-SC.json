@@ -1,0 +1,78 @@
+{
+    "version": "2.001",
+    "description": "A modulated (\"serif\") design for languages in mainland China that use the Simplified Chinese variant of the Han ideograms",
+    "homepage": "https://fonts.google.com/noto",
+    "license": {
+        "identifier": "OFL-1.1",
+        "url": "https://github.com/googlefonts/noto-cjk/blob/main/LICENSE"
+    },
+    "notes": [
+        "If you are using Windows 11 Dev Channel and are not using the global installation option,",
+        "please note that there is a bug will cause your computer unable to find these fonts after restart."
+    ],
+    "url": "https://github.com/googlefonts/noto-cjk/releases/download/Serif2.001/09_NotoSerifCJKsc.zip",
+    "hash": "808e267d85565b7fc7bc47d60d19fc087def225028c307b39d4744f19bde0ec4",
+    "extract_dir": "OTF\\SimplifiedChinese",
+    "pre_install": "Remove-Item -Path \"$dir\\OTF\" -Recurse -Force -ErrorAction SilentlyContinue",
+    "installer": {
+        "script": [
+            "$currentBuildNumber = [Int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isInstallForSingleUserSupport = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isInstallForAllUsers = $global -or -not $isInstallForSingleUserSupport",
+            "if ($isInstallForAllUsers -and -not (is_admin)) {",
+            "    error \"Permission denied: please use administrator rights to install fonts globally.\"",
+            "    exit 1",
+            "}",
+            "$fontDir = if ($isInstallForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isInstallForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item -Path $fontDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem -Path $dir | ForEach-Object {",
+            "    if ($_.BaseName -like \"*Regular*\") {",
+            "        $fontWeight = \"\"",
+            "    } else {",
+            "        $fontWeight = $_.BaseName.Split(\"-\")[1] + \" \"",
+            "    }",
+            "    $name = \"Noto Serif CJK SC \" + $fontWeight + \"(TrueType)\"",
+            "    $value = if ($isInstallForAllUsers) { $_.Name } else { \"$fontDir\\$($_.Name)\" }",
+            "    New-ItemProperty -Path $registryKey -Name $name -Value $value -Force | Out-Null",
+            "    Copy-Item $_.FullName -Destination $fontDir -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$currentBuildNumber = [Int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isInstallForSingleUserSupport = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isInstallForAllUsers = $global -or -not $isInstallForSingleUserSupport",
+            "if ($isInstallForAllUsers -and -not (is_admin)) {",
+            "    error \"Permission denied: please use administrator rights to uninstall fonts.\"",
+            "    exit 1",
+            "}",
+            "$fontDir = if ($isInstallForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isInstallForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item $fontDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem -Path $dir | ForEach-Object {",
+            "    if ($_.BaseName -like \"*Regular*\") {",
+            "        $fontWeight = \"\"",
+            "    } else {",
+            "        $fontWeight = $_.BaseName.Split(\"-\")[1] + \" \"",
+            "    }",
+            "    $name = \"Noto Serif CJK SC \" + $fontWeight + \"(TrueType)\"",
+            "    Remove-ItemProperty -Path $registryKey -Name $name -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item -Path \"$fontDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'Noto Serif CJK SC' font family has been uninstalled and will not present after restarting your computer.\" -ForegroundColor DarkGreen"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/googlefonts/noto-cjk/releases",
+        "regex": "Noto Serif CJK Version.*?([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/googlefonts/noto-cjk/releases/download/Serif$version/09_NotoSerifCJKsc.zip"
+    }
+}

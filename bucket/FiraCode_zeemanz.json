@@ -1,0 +1,61 @@
+{
+    "version": "6.2",
+    "description": "A free monospaced font with programming ligatures",
+    "homepage": "https://github.com/tonsky/FiraCode",
+    "license": {
+        "identifier": "OFL-1.1",
+        "url": "https://github.com/tonsky/FiraCode/blob/master/LICENSE"
+    },
+    "notes": [
+        "If you are using Windows 11 Dev Channel and are not using the global installation option,",
+        "please note that there is a bug will cause your computer unable to find these fonts after restart."
+    ],
+    "url": "https://github.com/tonsky/FiraCode/releases/download/6.2/Fira_Code_v6.2.zip",
+    "hash": "0949915BA8EB24D89FD93D10A7FF623F42830D7C5FFC3ECBF960E4ECAD3E3E79",
+    "installer": {
+        "script": [
+            "$currentBuildNumber = [Int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isInstallForSingleUserSupport = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isInstallForAllUsers = $global -or -not $isInstallForSingleUserSupport",
+            "if ($isInstallForAllUsers -and -not (is_admin)) {",
+            "    error \"Permission denied: please use administrator rights to install fonts globally.\"",
+            "    exit 1",
+            "}",
+            "$fontDir = if ($isInstallForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isInstallForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item $fontDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem $dir\\ttf | ForEach-Object {",
+            "    $value = if ($isInstallForAllUsers) { $_.Name } else { \"$fontDir\\$($_.Name)\" }",
+            "    New-ItemProperty -Path $registryKey -Name \"$($_.BaseName.Replace(\"FiraCode\", \"Fira Code\").Replace(\"-\", \" \")) (TrueType)\" -Value $value -Force | Out-Null",
+            "    Copy-Item $_.FullName -Destination $fontDir -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$currentBuildNumber = [Int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows1809BuildNumber = 17763",
+            "$isInstallForSingleUserSupport = $currentBuildNumber -ge $windows1809BuildNumber",
+            "$isInstallForAllUsers = $global -or -not $isInstallForSingleUserSupport",
+            "if ($isInstallForAllUsers -and -not (is_admin)) {",
+            "    error \"Permission denied: please use administrator rights to uninstall fonts.\"",
+            "    exit 1",
+            "}",
+            "$fontDir = if ($isInstallForAllUsers) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($isInstallForAllUsers) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "New-Item $fontDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem $dir\\ttf | ForEach-Object {",
+            "    Remove-ItemProperty -Path $registryKey -Name \"$($_.BaseName.Replace(\"FiraCode\", \"Fira Code\").Replace(\"-\", \" \")) (TrueType)\" -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$fontDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "Write-Host \"The 'Fira Code' font family has been uninstalled and will not present after restarting your computer.\" -ForegroundColor DarkGreen"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/tonsky/FiraCode/releases/download/$version/Fira_Code_v$version.zip"
+    }
+}
