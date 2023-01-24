@@ -75,9 +75,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - Paxxs/Cluttered-bucket
 - everyx/scoop-bucket
+- dodorz/scoop
 - ACooper81/scoop-apps
 - borger/scoop-emulators
-- dodorz/scoop
 - ScoopInstaller/Nonportable
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
@@ -105,6 +105,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - littleli/Scoop-littleli
 - excitoon/scoop-user
+- TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
 - jonz94/scoop-sarasa-nerd-fonts
 - Darkatse/Scoop-KanColle
@@ -117,12 +118,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - alextwothousand/scoop-bucket
 - MCOfficer/scoop-bucket
 - Velgus/Scoop-Portapps
+- HUMORCE/nuke
 - zeemanz/my-bucket
 - ddavness/scoop-roblox
 - brave-simpletons/scoop-the-business
 - Brawl345/scoop-bucket
 - KnotUntied/scoop-knotuntied
-- TheLastZombie/scoop-bucket
 - hu3rror/scoop-muggle
 - yuanying1199/scoopbucket
 - SayCV/scoop-cvp
