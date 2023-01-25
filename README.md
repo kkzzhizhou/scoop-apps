@@ -82,8 +82,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
-- kiennq/scoop-misc
 - zhoujin7/tomato
+- kiennq/scoop-misc
 - wangzq/scoop-bucket
 - wzv5/ScoopBucket
 - duzyn/scoop-cn
@@ -98,6 +98,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- rivy/scoop-bucket
 - cc713/ownscoop
 - amorphobia/siku
 - ViCrack/scoop-bucket
@@ -112,7 +113,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - akirco/aki-apps
 - Apocalypsor/My-Scoop-Bucket
 - niheaven/scoop-sysinternals
-- rivy/scoop-bucket
 - Weidows-projects/scoop-3rd
 - seumsc/scoop-seu
 - alextwothousand/scoop-bucket
