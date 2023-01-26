@@ -1,0 +1,51 @@
+{
+    "version": "6.6",
+    "description": "A V2Ray client for Windows, support Xray core and v2fly core",
+    "homepage": "https://github.com/2dust/v2rayN",
+    "license": "GPL-3.0-only",
+    "depends": "xray",
+    "suggest": {
+        ".NET 6.0 Desktop Runtime": "extras/windowsdesktop-runtime-lts",
+        "v2fly-core":"main/v2ray"
+    },
+    "url": "https://github.com/2dust/v2rayN/releases/download/6.6/v2rayN.7z",
+    "hash": "c82dbccd84b56cd6137b518fe5295983d0c26f25d9f0c5870cf30daaa9a90bd4",
+    "extract_dir": "v2rayN",
+
+    "pre_install": [
+        "if (Test-Path \"$persist_dir\\guiConfigs\\config.json\") {",
+        "    Copy-Item \"$persist_dir\\guiConfigs\\config.json\" \"$dir\\guiConfigs\" | Out-Null",
+        "}",
+        "foreach ($form in @('*.exe', '*.dat')) {",
+        "    foreach ($_ in Get-ChildItem \"$(appdir xray $global)\\current\" -File) {",
+        "        $name = $_.Name",
+        "        if ($name -Like $form) {",
+        "            Write-Host \"Creating hardlink for $name\"",
+        "            New-Item -ItemType HardLink -Path \"$dir\\bin\\Xray\" -Name $name -Target \"$(appdir xray $global)\\current\\$name\" | Out-Null",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "if (Test-Path \"$dir\\guiConfigs\\config.json\") {",
+            "    Copy-Item \"$dir\\guiConfigs\\config.json\" \"$persist_dir\\guiConfigs\\config.json\" | Out-Null",
+            "}"
+        ]
+    },
+    "bin": "v2rayN.exe",
+    "shortcuts": [
+        [
+            "v2rayN.exe",
+            "v2rayN"
+        ]
+    ],
+    "persist": "guiConfigs",
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/v2rayN/releases",
+        "regex": "download/([\\d.]+)/"
+    },
+    "autoupdate": {
+        "url": "https://github.com/2dust/v2rayN/releases/download/$version/v2rayN.7z"
+    }
+}
