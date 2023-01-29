@@ -70,8 +70,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - echoiron/echo-scoop
 - KNOXDEV/wsl
 - hoilc/scoop-lemon
-- scoopcn/scoopcn
 - hermanjustnu/scoop-emulators
+- scoopcn/scoopcn
 - cderv/r-bucket
 - Paxxs/Cluttered-bucket
 - everyx/scoop-bucket
@@ -98,6 +98,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - krproject/qi-windows
+- jonz94/scoop-sarasa-nerd-fonts
 - rivy/scoop-bucket
 - cc713/ownscoop
 - amorphobia/siku
@@ -109,7 +110,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Deide/deide-bucket
 - TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
-- jonz94/scoop-sarasa-nerd-fonts
 - Darkatse/Scoop-KanColle
 - akirco/aki-apps
 - Apocalypsor/My-Scoop-Bucket
