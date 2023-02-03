@@ -1,0 +1,62 @@
+{
+    "version": "2018.12",
+    "description": "The most popular Python distribution for data science",
+    "homepage": "https://www.anaconda.com/",
+    "license": "BSD-3-Clause",
+    "notes": [
+        "Conda envs and pkgs are not persisted by Scoop, we advice to setup `envs_dirs` to use '~/.conda/envs'.",
+        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs",
+        "",
+        "To enable conda tab-completion autoload, run code below to add the shell hook:",
+        "Add-Content -Path $Profile -Value \"`n(& conda \"shell.powershell\" \"hook\") | Out-String | Invoke-Expression"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://repo.anaconda.com/archive/Anaconda3-2018.12-Windows-x86_64.exe",
+            "hash": "09d84a789013d5e2bfb0148bdd9f5d69a6baa2127edabb9a8e50e77c6fc57ecc"
+        },
+        "32bit": {
+            "url": "https://repo.anaconda.com/archive/Anaconda3-2018.12-Windows-x86.exe",
+            "hash": "3f2955c1874ca452b985627a10859f6906eb21d4f6a4c055b78049cf6822b46d"
+        }
+    },
+    "installer": {
+        "args": [
+            "/S",
+            "/InstallationType=JustMe",
+            "/RegisterPython=0",
+            "/AddToPath=0",
+            "/NoRegistry=1",
+            "/D=$dir"
+        ]
+    },
+    "uninstaller": {
+        "file": "Uninstall-Anaconda3.exe",
+        "args": "/S"
+    },
+    "bin": "scripts\\conda.exe",
+    "post_install": [
+        "# PREVENT CREATING SHORTCUTS",
+        "Invoke-ExternalCommand -Path \"$dir\\_conda.exe\" -ArgumentList \"constructor --prefix $dir --rm-menus\" | Out-Null",
+        "conda config --system --set auto_activate_base false"
+    ],
+    "checkver": {
+        "url": "https://repo.anaconda.com/archive",
+        "regex": "Anaconda3-(\\d{4}.[\\d.]+)-Windows",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://repo.anaconda.com/archive/Anaconda3-$version-Windows-x86_64.exe"
+            },
+            "32bit": {
+                "url": "https://repo.anaconda.com/archive/Anaconda3-$version-Windows-x86.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl",
+            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
+        }
+    }
+}

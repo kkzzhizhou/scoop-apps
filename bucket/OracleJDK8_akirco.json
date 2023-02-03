@@ -1,0 +1,61 @@
+{
+    "description": "Oracle JDK 8",
+    "homepage": "https://www.oracle.com/technetwork/java/javase/overview/index.html",
+    "version": "8u341",
+    "license": "https://www.oracle.com/downloads/licenses/javase-license1.html",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ZvonimirSun/oracle-java/releases/download/8u341/jdk-8u341-windows-x64.exe#/dl.7z",
+            "hash": "64c7f56a7085053e0fa895efcbd044c82a2015807aa269e4dd873906b9f95d75"
+        },
+        "32bit": {
+            "url": "https://github.com/ZvonimirSun/oracle-java/releases/download/8u341/jdk-8u341-windows-i586.exe#/dl.7z",
+            "hash": "cbedb7f0d9fe275d7f333accc3866b4c2a7cff8a2d78b0a8ca0670af2cb6a13b"
+        }
+    },
+    "cookie": {
+        "oraclelicense": "accept-securebackup-cookie"
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "# Java Source (src.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB9\\110\" \"$dir\"",
+            "# JDK (tools.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB10\\111\" \"$dir\\tmp\"",
+            "Expand-7zipArchive \"$dir\\tmp\\tools.zip\" \"$dir\"",
+            "# Copyright (COPYRIGHT)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB11\\112\" \"$dir\"",
+            "# Convert .pack to .jar, and remove .pack",
+            "pushd \"$dir\"",
+            "ls \"$dir\" -recurse | ? name -match '^[^_].*?\\.(?i)pack$' | % {",
+            "    $name = $_.fullname -replace '\\.(?i)pack$', ''",
+            "    $pack = \"$name.pack\"",
+            "    $jar = \"$name.jar\"",
+            "    & \"bin\\unpack200.exe\" \"-r\" \"$pack\" \"$jar\"",
+            "}",
+            "rm -r tmp | out-null",
+            "popd"
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir",
+        "classpath": ".;%JAVA_HOME%\\lib\\dt.jar;%JAVA_HOME%\\lib\\tools.jar"
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/ZvonimirSun/oracle-java/releases",
+        "jsonpath": "$..browser_download_url",
+        "re": "download/([\\w]+)/"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ZvonimirSun/oracle-java/releases/download/$version/jdk-$version-windows-x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/ZvonimirSun/oracle-java/releases/download/$version/jdk-$version-windows-i586.exe#/dl.7z"
+            }
+        }
+    }
+}
