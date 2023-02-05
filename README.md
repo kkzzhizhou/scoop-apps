@@ -83,6 +83,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - kiennq/scoop-misc
 - wzv5/ScoopBucket
+- TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - iquiw/scoop-bucket
 - NyaMisty/scoop_bucket_misty
