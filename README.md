@@ -87,15 +87,15 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - iquiw/scoop-bucket
+- ViCrack/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
+- TheLastZombie/scoop-bucket
 - akirco/aki-apps
 - cc713/ownscoop
-- ViCrack/scoop-bucket
 - amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
 - rivy/scoop-bucket
-- TheLastZombie/scoop-bucket
 - starise/Scoop-Confetti
 - Darkatse/Scoop-KanColle
 - yuusakuri/scoop-bucket
