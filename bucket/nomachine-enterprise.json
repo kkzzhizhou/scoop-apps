@@ -1,0 +1,33 @@
+{
+    "version": "7.10.2",
+    "description": "NoMachine is a remote-control tool, available for multiple platforms.",
+    "homepage": "https://www.nomachine.com/",
+    "license": "Proprietary",
+    "url": "https://download.nomachine.com/download/7.10/Windows/nomachine-enterprise-client_7.10.2_14.exe#/setup.exe",
+    "hash": "37fb7662bb27c97e7eee7f79b31c1c17f29aa907e05704a75dd9f42f52f97d87",
+    "installer": {
+        "script": [
+            "$programname = \"NoMachine*\"",
+            "if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /CLOSEAPPLICATIONS /NORESTART /SP- /DIR=$dir | Out-Null",
+            "   if(!(Get-Package -Provider Programs -IncludeWindowsInstaller -Name \"$programname\" -MinimumVersion $version -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force",
+            "Move-Item -Path c:\\ProgramData\\Nomachine\\var\\uninstall $dir\\uninstall"
+        ]
+    },
+    "uninstaller": {
+        "script": "&\"$dir\\uninstall\\unins000.exe\" /VERYSILENT | Out-Null"
+    },
+    "checkver": {
+        "url": "https://www.nomachine.com/download/download&id=16",
+        "regex": "<p>([\\d.]+)_(?<revision>[\\d]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.nomachine.com/download/$majorVersion.$minorVersion/Windows/nomachine-enterprise-client_$version_$matchRevision.exe#/setup.exe"
+    }
+}

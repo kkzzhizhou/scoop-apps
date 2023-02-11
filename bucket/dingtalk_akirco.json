@@ -10,12 +10,33 @@
     "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v7.0.0.1109109.exe#/dl.7z",
     "hash": "md5:dfa2b8016e278a1bf5952d1bfaebb378",
     "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
-    "shortcuts": [
-        [
-            "DingtalkLauncher.exe",
-            "DingTalk"
+    "installer": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\DingTalk\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
         ]
-    ],
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\DingTalk\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [["DingtalkLauncher.exe", "DingTalk"]],
     "checkver": {
         "url": "https://im.dingtalk.com/manifest/new/release_windows_vista_later_gray4.json",
         "regex": "DingTalk_v([\\d.]+).exe"

@@ -2,6 +2,7 @@
     "version": "7.25.0.4",
     "description": "百度网盘PC版 ",
     "homepage": "https://pan.baidu.com/download",
+    "license": "Proprietary",
     "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_7.25.0.4.exe#dl.7z",
     "hash": "e7890987d574bfd463724c088e9c0eb6bec2311772a0b4cb7a476b28d160a797",
     "bin": "BaiduNetdisk.exe",
@@ -10,6 +11,29 @@
         "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
         "Remove-Item \"$dir\\`$TEMP\" -Recurse"
     ],
+    "pre_uninstall": [
+        "$processName = \"YunDetectService\"",
+        "if((Get-Process -Name $processName -ErrorAction SilentlyContinue) -eq $null) {",
+        "Write-Host \"YunDetectService is not running.\" -ForegroundColor blue",
+        "} else {",
+        "Stop-Process -ProcessName $processName",
+        "Write-Host \"YunDetectService is exist.\" -ForegroundColor green",
+        "}"
+    ],
+    "post_uninstall": [
+        "$baiduCache = \"$env:APPDATA\\Baidu\"",
+        "$baiduLog = \"$env:APPDATA\\BaiduYunGuanjia\"",
+        "$runtimeCache = \"$env:APPDATA\\BaiduYunKernel\"",
+        "if (Test-Path \"$baiduCache\") {",
+        "Remove-Item $baiduCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "}",
+        "if (Test-Path \"$baiduLog\") {",
+        "Remove-Item $baiduLog -Force -Recurse -ErrorAction SilentlyContinue",
+        "}",
+        "if (Test-Path \"$runtimeCache\") {",
+        "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "}"
+    ],
     "checkver": {
         "url": "https://pan.baidu.com/disk/cmsdata?do=client",
         "regex": "BaiduNetdisk_(\\d+.\\d+.\\d+.\\d+).exe"
@@ -17,10 +41,5 @@
     "autoupdate": {
         "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#dl.7z"
     },
-    "shortcuts": [
-        [
-            "BaiduNetdisk.exe",
-            "百度网盘"
-        ]
-    ]
+    "shortcuts": [["BaiduNetdisk.exe", "百度网盘"]]
 }
