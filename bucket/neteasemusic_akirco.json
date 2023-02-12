@@ -4,18 +4,40 @@
     "license": "Freeware",
     "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_2.10.6.200601.exe#/dl.7z",
     "hash": "c8b86cfc55ef68e030802ef4eab3fd9d38c9c67fb2e42f1ee17414f0e6b27afb",
+    "pre_install": [
+        "Move-Item \"$dir\\redist_packages\\*\" \"$dir\" -Force",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\redist_packages\" -Force -Recurse"
+    ],
     "installer": {
         "script": [
-            "Move-Item \"$dir\\redist_packages\\*\" \"$dir\" -Force",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\redist_packages\" -Force -Recurse"
+            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
+            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:LOCALAPPDATA\\NetEase\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
         ]
     },
-    "shortcuts": [
-        [
-            "cloudmusic.exe",
-            "NeteaseMusic"
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:LOCALAPPDATA\\NetEase\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
         ]
-    ],
+    },
+    "shortcuts": [["cloudmusic.exe", "NeteaseMusic"]],
     "checkver": {
         "url": "https://api.nicoconi.com/updater/neteasemusic",
         "regex": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_([\\d.]+\\d)\\.exe"

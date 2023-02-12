@@ -13,6 +13,9 @@
     "bin": "electerm.exe",
     "installer": {
         "script": [
+            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
+            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
+            "}",
             "$runtimeCache = \"$env:APPDATA\\electerm\"",
             "$runtimeCachePersist = \"$persist_dir\\Cache\"",
             "if (Test-Path $runtimeCachePersist) {",
@@ -29,12 +32,9 @@
     "uninstaller": {
         "script": [
             "$runtimeCache = \"$env:APPDATA\\electerm\"",
-            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
-            "if (!(Test-Path $runtimeCachePersist)) {",
-            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
-            "} else {",
-            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-            "}"
+            "$runtimeCachePersist = \"$persist_dir\"",
+            "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "Remove-Item $runtimeCachePersist -Force -Recurse -ErrorAction SilentlyContinue"
         ]
     },
     "shortcuts": [["electerm.exe", "electerm"]],
