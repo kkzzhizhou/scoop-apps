@@ -1,0 +1,61 @@
+{
+    "version": "471.41",
+    "description": "NVIDIA display driver.",
+    "homepage": "https://www.nvidia.com/Download/index.aspx",
+    "license": "Freeware",
+    "notes": [
+        "This is only an installer for the NVIDIA display driver. Running `scoop uninstall nvidia-display-driver-dch-np` will only unregister it from Scoop.",
+        "The NVIDIA display driver installer installs and enables the NVIDIA Display Container LS service, which is required for the NVIDIA Control Panel application but also contains telemetry components.",
+        "To disable this functionality and prevent it from being re-enabled on future updates, disable the service using the following commands:",
+        "$ Stop-Service NVDisplay.ContainerLocalSystem",
+        "$ Set-Service NVDisplay.ContainerLocalSystem -StartupType Disabled"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://us.download.nvidia.com/Windows/471.41/471.41-desktop-win10-64bit-international-dch-whql.exe#/dl.7z",
+            "hash": "e0a6c5fad2a1476c8d9f1438c13111794b5d759a6efdec54bea3cf199cb1b91f"
+        }
+    },
+    "installer": {
+        "script": [
+            "$service_disabled = (Get-CimInstance win32_service -Filter \"name='NVDisplay.ContainerLocalSystem'\").StartMode -eq 'Disabled'",
+            "",
+            "New-Item \"$dir\\extract\" -ItemType Directory | Out-Null",
+            "Move-Item \"$dir\\*\" -Exclude \"extract\" -Destination \"$dir\\extract\"",
+            "New-Item \"$dir\\setup\" -ItemType Directory | Out-Null",
+            "# Move everything we want",
+            "Move-Item \"$dir\\extract\\Display.Driver\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\Display.Optimus\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\HDAudio\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\NVI2\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\PhysX\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\*.txt\" -Destination \"$dir\\setup\"",
+            "Move-Item \"$dir\\extract\\setup.*\" -Destination \"$dir\\setup\"",
+            "# The installer will not run without these legal files",
+            "New-Item \"$dir\\setup\\GFExperience\" -ItemType Directory | Out-Null",
+            "Move-Item \"$dir\\extract\\GFExperience\\PrivacyPolicy\" -Destination \"$dir\\setup\\GFExperience\"",
+            "Move-Item \"$dir\\extract\\GFExperience\\EULA.html\" -Destination \"$dir\\setup\\GFExperience\"",
+            "Move-Item \"$dir\\extract\\GFExperience\\FunctionalConsent*\" -Destination \"$dir\\setup\\GFExperience\"",
+            "",
+            "if ($service_disabled) {",
+            "    Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\setup\\setup.exe`\" -s -noreboot && sc config NVDisplay.ContainerLocalSystem start= disabled && sc stop NVDisplay.ContainerLocalSystem\" -Verb RunAs",
+            "} else {",
+            "    Start-Process -Wait \"$dir\\setup\\setup.exe\" \"-s -noreboot\" -Verb RunAs",
+            "}",
+            "",
+            "Remove-Item -Recurse \"$dir\\extract\"",
+            "Remove-Item -Recurse \"$dir\\setup\""
+        ]
+    },
+    "checkver": {
+        "url": "https://www.nvidia.com/Download/processFind.aspx?psid=95&pfid=694&osid=19&lid=1",
+        "regex": ">([\\d.]{6})<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://us.download.nvidia.com/Windows/$version/$version-desktop-win10-64bit-international-dch-whql.exe#/dl.7z"
+            }
+        }
+    }
+}

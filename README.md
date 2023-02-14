@@ -81,13 +81,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - duzyn/scoop-cn
 - ScoopInstaller/Nonportable
 - ZvonimirSun/scoop-iszy
-- wangzq/scoop-bucket
 - zhoujin7/tomato
+- wangzq/scoop-bucket
 - kiennq/scoop-misc
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - 42wim/scoop-bucket
+- batkiz/backit
 - ViCrack/scoop-bucket
 - iquiw/scoop-bucket
 - akirco/aki-apps
