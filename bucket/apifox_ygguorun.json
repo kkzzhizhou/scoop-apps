@@ -1,17 +1,20 @@
 {
-    "version": "3.17.0",
-    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘，由阿里巴巴集团出品",
-    "homepage": "https://www.aliyundrive.com/",
+    "version": "2.2.24",
+    "description": "API 文档、API 调试、API Mock、API 自动化测试",
+    "homepage": "https://www.apifox.cn",
     "license": "Unknown",
-    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/3.17.0/win32/ia32/aDrive-3.17.0.exe#/dl.7z",
-    "hash": "b9d4d43ab05690cf778cb3eafc814ff390208b65cb2c4a027618704f600655a8",
+    "url": "http://cdn.apifox.cn/download/2.2.24/Apifox-2.2.24.exe#/dl.7z",
+    "hash": "sha512:c813125e10fc1148ec55e6f240d023e7cdac1afb6157616c67cbb2fef6e7857986252ad70136c62589b8353366a377bbe81547657cc49a8d8bb2ee6a9bd737c4",
     "installer": {
         "script": [
+            "# Expand-7zipArchive",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
             "# handle runtime cache",
             "if (!(Test-Path $persist_dir)) {",
             "    New-Item $persist_dir -Type Directory -Force | Out-Null",
             "}",
-            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCache = \"$env:APPDATA\\apifox\"",
             "$runtimeCachePersist = \"$persist_dir\\appdata\"",
             "if (Test-Path $runtimeCachePersist) {",
             "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
@@ -26,7 +29,7 @@
     },
     "uninstaller": {
         "script": [
-            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCache = \"$env:APPDATA\\apifox\"",
             "$runtimeCachePersist = \"$persist_dir\\appdata\"",
             "if (!(Test-Path $runtimeCachePersist)) {",
             "    Move-Item $runtimeCache $runtimeCachePersist -Force",
@@ -37,19 +40,19 @@
     },
     "shortcuts": [
         [
-            "aDrive.exe",
-            "阿里云盘"
+            "Apifox.exe",
+            "Apifox"
         ]
     ],
-    "post_install": [
-        "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
-        "Remove-Item -Force -Recurse \"$dir\\`$TEMP\""
-    ],
     "checkver": {
-        "url": "https://www.aliyundrive.com/desktop/version/update.json",
-        "regex": "/([\\d.]+)"
+        "url": "http://cdn.apifox.cn/download/latest.yml",
+        "regex": "Apifox-([\\d.]+).exe"
     },
     "autoupdate": {
-        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/ia32/aDrive-$version.exe#/dl.7z"
+        "url": "http://cdn.apifox.cn/download/$version/Apifox-$version.exe#/dl.7z",
+        "hash": {
+            "url": "http://cdn.apifox.cn/download/latest.yml",
+            "regex": "sha512.*?$base64"
+        }
     }
 }
