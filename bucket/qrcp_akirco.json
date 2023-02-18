@@ -14,6 +14,32 @@
         }
     },
     "bin": "qrcp.exe",
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\qrcp\")) {",
+            "    New-Item \"$persist_dir\\qrcp\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeConfig = \"$env:LOCALAPPDATA\\qrcp\"",
+            "$runtimeConfigPersist = \"$persist_dir\\qrcp\"",
+            "if (Test-Path $runtimeConfigPersist) {",
+            "    Remove-Item $runtimeConfig -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeConfig -Target $runtimeConfigPersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeConfig) {",
+            "        Move-Item $runtimeConfig $runtimeConfigPersist -Force",
+            "        New-Item -Type Junction -Path $runtimeConfig -Target $runtimeConfigPersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeConfig = \"$env:LOCALAPPDATA\\qrcp\"",
+            "$runtimeConfigPersist = \"$persist_dir",
+            "Remove-Item $runtimeConfig -Force -Recurse -ErrorAction SilentlyContinue",
+            "Remove-Item $runtimeConfigPersist -Force -Recurse -ErrorAction SilentlyContinue"
+        ]
+    },
     "checkver": {
         "github": "https://github.com/claudiodangelis/qrcp"
     },
