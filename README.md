@@ -75,15 +75,15 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - everyx/scoop-bucket
 - dodorz/scoop
 - borger/scoop-emulators
+- duzyn/scoop-cn
 - TheRandomLabs/Scoop-Bucket
 - ACooper81/scoop-apps
-- duzyn/scoop-cn
 - Qv2ray/mochi
 - ScoopInstaller/Nonportable
 - ZvonimirSun/scoop-iszy
+- kiennq/scoop-misc
 - zhoujin7/tomato
 - wangzq/scoop-bucket
-- kiennq/scoop-misc
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
@@ -100,6 +100,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
 - rivy/scoop-bucket
+- hu3rror/scoop-muggle
 - TheLastZombie/scoop-bucket
 - starise/Scoop-Gaming
 - starise/Scoop-Confetti
