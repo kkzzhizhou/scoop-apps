@@ -87,9 +87,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
+- okibcn/ScoopMaster
 - 42wim/scoop-bucket
 - akirco/aki-apps
-- okibcn/ScoopMaster
 - batkiz/backit
 - ViCrack/scoop-bucket
 - iquiw/scoop-bucket
@@ -101,11 +101,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
 - rivy/scoop-bucket
+- aoisummer/scoop-bucket
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
 - TheLastZombie/scoop-bucket
 - starise/Scoop-Gaming
 - starise/Scoop-Confetti
 - Darkatse/Scoop-KanColle
-- aoisummer/scoop-bucket
 - Deide/deide-bucket
