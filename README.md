@@ -74,8 +74,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - dodorz/scoop
-- borger/scoop-emulators
 - duzyn/scoop-cn
+- borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
 - ACooper81/scoop-apps
 - Qv2ray/mochi
@@ -102,6 +102,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
 - rivy/scoop-bucket
+- lzwme/scoop-proxy-cn
 - aoisummer/scoop-bucket
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
@@ -109,4 +110,5 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - starise/Scoop-Gaming
 - starise/Scoop-Confetti
 - Darkatse/Scoop-KanColle
+- jingyu9575/scoop-jingyu9575
 - Deide/deide-bucket
