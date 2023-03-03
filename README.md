@@ -73,8 +73,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Paxxs/Cluttered-bucket
 - cderv/r-bucket
 - everyx/scoop-bucket
-- dodorz/scoop
 - ACooper81/scoop-apps
+- dodorz/scoop
 - duzyn/scoop-cn
 - borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
@@ -86,8 +86,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wangzq/scoop-bucket
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
-- naderi/scoop-bucket
 - okibcn/ScoopMaster
+- naderi/scoop-bucket
 - ViCrack/scoop-bucket
 - 42wim/scoop-bucket
 - akirco/aki-apps
