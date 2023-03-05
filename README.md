@@ -96,6 +96,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - niheaven/scoop-sysinternals
 - NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
+- TheLastZombie/scoop-bucket
 - seumsc/scoop-seu
 - Velgus/Scoop-Portapps
 - cc713/ownscoop
@@ -106,9 +107,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
-- TheLastZombie/scoop-bucket
 - starise/Scoop-Gaming
 - starise/Scoop-Confetti
 - Darkatse/Scoop-KanColle
+- hulucc/bucket
 - jingyu9575/scoop-jingyu9575
 - Deide/deide-bucket
