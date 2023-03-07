@@ -1,13 +1,13 @@
 {
-    "version": "ed8a612",
+    "version": "20230306151100-6389cb6",
     "description": "Microsoft Xbox emulator",
     "homepage": "https://cxbx-reloaded.co.uk/",
     "license": {
-        "identifier": "GPL-2.0",
-        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/blob/master/COPYING"
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/blob/master/COPYING",
+        "identifier": "GPL-2.0"
     },
-    "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-ed8a612/CxbxReloaded-Release-VS2022.zip",
-    "hash": "c9c002c6f36641fcbb529c9ed1dbc72164b975efbf977920cd929729f0261d5a",
+    "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-6389cb6/CxbxReloaded-Release-VS2022.zip",
+    "hash": "0f7fa6a517b7a7f3ccfb0a31dc0dc190f9a9d28998c8140d6a2bfab73e40dac0",
     "pre_install": "if (!(Test-Path \"$persist_dir\\settings.ini\")) { $null = New-Item \"$dir\\settings.ini\" }",
     "bin": "cxbx.exe",
     "shortcuts": [
@@ -22,9 +22,16 @@
     ],
     "checkver": {
         "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases.atom",
-        "regex": "CI-([a-f\\d]+)."
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z CI-(?<commit>[a-f0-9]+)",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
-        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$version/CxbxReloaded-Release-VS2022.zip"
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$matchCommit/CxbxReloaded-Release-VS2022.zip"
     }
 }
