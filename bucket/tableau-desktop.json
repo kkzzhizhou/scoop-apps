@@ -1,39 +1,46 @@
 {
-    "homepage": "https://www.tableau.com/",
-    "description": "Interactive data visualization software",
-    "version": "2019.4.3",
-    "license": "Proprietary",
-    "architecture": {
-        "64bit": {
-            "url": "https://downloads.tableau.com/esdalt/2019.4.3/TableauDesktop-64bit-2019-4-3.exe",
-            "hash": "e20392f4349787b4fdd9b01f24215701ed119a3db1cc927bac9ca39d7142e114"
-        }
-    },
-    "depends": "dark",
+    "##": "Download URL and Hashes https://community.chocolatey.org/packages/Tableau-Desktop#files",
+    "version": "2021.1.1",
+    "description": "Tableau Desktop is data visualization software that lets you see and understand data in minutes.",
+    "homepage": "https://www.tableau.com//desktop/",
+    "license": "",
+    "url": "https://downloads.tableau.com/tssoftware/TableauDesktop-64bit-2021-1-1.exe#/setup.exe",
+    "hash": "093a318cbf64b23cf0f1bd9196bcab2361960d1958bfd833a57a6cd810c0e3a4",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Tableau.exe\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
     "installer": {
         "script": [
-            "Expand-DarkArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\\extracted\" -Removal",
-            "Rename-Item @(Get-ChildItem \"$dir\\extracted\\AttachedContainer\\tableau-setup*.msi\")[0] -NewName \"$dir\\extracted\\AttachedContainer\\tableau-setup.msi\"",
-            "Expand-MsiArchive \"$dir\\extracted\\AttachedContainer\\tableau-setup.msi\" \"$dir\"",
-            "Move-Item \"$dir\\Tableau\\Tableau*\\*\" \"$dir\" -Force",
-            "# Remove-Item \"$dir\\extracted\", \"$dir\\Tableau\" -Force -Recurse"
+            "&\"$dir\\setup.exe\" /quiet /norestart /install ACCEPTEULA=1 INSTALLDIR=\"$dir\" | Out-Null",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
         ]
     },
-    "shortcuts": [
-        [
-            "bin\\tableau.exe",
-            "Tableau"
-        ]
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Tableau Desktop.lnk\") {Remove-Item \"$CommonDesktopPath\\Tableau Desktop.lnk\" -Force}"
     ],
-    "checkver": {
-        "url": "https://www.tableau.com/support/releases",
-        "regex": "releases/desktop/([\\d.]+)"
+    "uninstaller": {
+        "script": [
+            "$uninstdir = \"$env:ProgramData\\Package Cache\\{e50d2f09-8762-457f-81a4-3510b3146151}\"",
+            "if (Test-Path \"$uninstdir\")",
+            "{",
+            "   &\"$uninstdir\\tableau-setup-std-tableau-2021-1.21.0420.1112-x64.exe\" -quiet -uninstall | Out-Null",
+            "}",
+            "Remove-Item \"$uninstdir\" -Force -ErrorAction SilentlyContinue"
+        ]
     },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://downloads.tableau.com/esdalt/$version/TableauDesktop-64bit-$majorVersion-$minorVersion-$patchVersion.exe"
-            }
-        }
+    "checkver": {
+        "url": "https://community.chocolatey.org/packages/Tableau-Desktop",
+        "regex": "Tableau Desktop ([\\d.]+)"
     }
 }

@@ -50,6 +50,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - HCLonely/my-scoop-bucket
 - Weidows-projects/scoop-3rd
 - Sliots/scoop-bucket
+- SayCV/scoop-cvp
 - ScoopInstaller/Extras
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
