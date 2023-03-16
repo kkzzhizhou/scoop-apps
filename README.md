@@ -94,11 +94,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - ViCrack/scoop-bucket
 - 42wim/scoop-bucket
+- lzwme/scoop-proxy-cn
 - akirco/aki-apps
 - ygguorun/scoop-bucket
 - batkiz/backit
 - iquiw/scoop-bucket
-- lzwme/scoop-proxy-cn
 - niheaven/scoop-sysinternals
 - NyaMisty/scoop_bucket_misty
 - seumsc/scoop-seu

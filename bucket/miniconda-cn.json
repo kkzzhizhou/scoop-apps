@@ -1,5 +1,5 @@
 {
-    "version": "22.11.1-1",
+    "version": "23.1.0-1",
     "description": "A cross-platform, Python-agnostic binary package manager.",
     "homepage": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/",
     "license": "BSD-3-Clause",
@@ -11,27 +11,24 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_22.11.1-1-Windows-x86_64.exe",
-            "hash": "1acbc2e8277ddd54a5f724896c7edee112d068529588d944702966c867e7e9cc"
-        },
-        "32bit": {
-            "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_22.11.1-1-Windows-x86.exe",
-            "hash": "4fb64e6c9c28b88beab16994bfba4829110ea3145baa60bda5344174ab65d462"
+            "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_23.1.0-1-Windows-x86_64.exe#/setup.exe",
+            "hash": "d4517212c8ac44fd8b5ccc2d4d9f38c2dd924c77a81c2be92c3a72e70dd3e907"
         }
     },
     "installer": {
-        "args": [
-            "/S",
-            "/InstallationType=JustMe",
-            "/RegisterPython=0",
-            "/AddToPath=0",
-            "/NoRegistry=1",
-            "/D=$dir"
+        "script": [
+            "# Using Start-Process as a workaround because the installer will not work properly when args are quoted (e.g. \"`\"/S`\"\")",
+            "# Move the installer to the upper directory to avoid the error \"The installatiom directory is not empty.\"",
+            "Move-Item \"$dir\\setup.exe\" \"$dir\\..\\setup.exe\" | Out-Null",
+            "Start-Process \"$dir\\..\\setup.exe\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', \"/D=$dir\") -Wait | Out-Null"
         ]
     },
     "uninstaller": {
-        "file": "Uninstall-Miniconda3.exe",
-        "args": "/S"
+        "script": [
+            "Start-Process \"$dir\\Uninstall-Miniconda3.exe\" -ArgumentList '/S' -Wait | Out-Null",
+            "# Create a 'dummy' to avoid error because the uninstaller removes the symlink. The does not affect persist.",
+            "if (!(Test-Path \"$dir\\envs\")) { New-Item \"$dir\\envs\" -ItemType Directory | Out-Null }"
+        ]
     },
     "bin": [
         "python.exe",
@@ -41,22 +38,19 @@
             "python3"
         ]
     ],
-    "persist": "envs",
     "env_add_path": [
         "scripts",
         "Library\\bin"
     ],
+    "persist": "envs",
     "checkver": {
         "url": "https://docs.conda.io/en/latest/miniconda.html",
-        "regex": "Miniconda3-py310_([(0-9).]+-[(0-9)]?)-Windows"
+        "regex": "Miniconda3-py310_([\\d.-]+)-Windows"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_$version-Windows-x86_64.exe"
-            },
-            "32bit": {
-                "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_$version-Windows-x86.exe"
+                "url": "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-py310_$version-Windows-x86_64.exe#/setup.exe"
             }
         },
         "hash": {
