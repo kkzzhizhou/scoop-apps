@@ -1,30 +1,20 @@
 {
-    "version": "2023.03.0-407",
-    "description": "An IDE for R with console, syntax-highlighting, editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
+    "version": "2023.03.1+409",
     "homepage": "https://www.rstudio.com/",
+    "description": "An IDE for R, which includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
     "license": "AGPL-3.0-only",
-    "depends": "r",
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/rstudio-ide-build/electron/windows/RStudio-2023.03.0-407.exe#/dl.7z",
-            "hash": "e48ce6cdfd1e2eb89a1a7fe5856c3018721607e1b830f6c5b3c4150bee478c97",
-            "post_install": [
-                "Remove-Item \"$dir\\`$*\" -Recurse",
-                "if (!(Test-Path \"$env:Appdata\\RStudio\")) {",
-                "    New-Item \"$env:Appdata\\RStudio\" -ItemType Directory -Force | Out-Null",
-                "}",
-                "$conf = \"$env:Appdata\\RStudio\\desktop.ini\"",
-                "$rpath = \"$(appdir r $global)\\current\\bin\\x64\".Replace('\\', '/')",
-                "if (!(Test-Path $conf)) {",
-                "    @(",
-                "        '[General]'",
-                "        \"RBinDir=$rpath\"",
-                "    ) | Add-Content -Path $conf -Encoding UTF8 -Force",
-                "}"
-            ]
+            "url": "https://s3.amazonaws.com/rstudio-ide-build/electron/windows/RStudio-2023.03.1-409.zip",
+            "hash": "8b1aab5ed0588ebea3880d9cdb91d38ac0a57bae97aff93ff252b787276b5412"
         }
     },
-    "bin": "rstudio.exe",
+    "bin": [
+        [
+            "rstudio.exe",
+            "rstudio-daily"
+        ]
+    ],
     "shortcuts": [
         [
             "rstudio.exe",
@@ -33,16 +23,18 @@
     ],
     "checkver": {
         "url": "https://dailies.rstudio.com/rstudio/latest/index.json",
-        "jsonpath": "$.products.electron.platforms.windows.filename",
-        "regex": "RStudio-([\\w.-]+).exe"
+        "jsonpath": ".products.electron.platforms['windows-xcopy'].version",
+        "regex": "(?<date>[\\d.]+)(?<type>-(daily|preview))?\\+(?<build>\\d+)",
+        "replace": "${date}+${build}${type}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/rstudio-ide-build/electron/windows/RStudio-$version.exe#/dl.7z",
+                "url": "https://s3.amazonaws.com/rstudio-ide-build/electron/windows/RStudio-$matchDate$matchType-$matchBuild.zip",
                 "hash": {
-                    "url": "https://dailies.rstudio.com/rstudio/latest/index.json",
-                    "jsonpath": "$.products.electron.platforms.windows.sha256"
+                    "mode": "json",
+                    "jsonpath": ".products.electron.platforms['windows-xcopy'].sha256",
+                    "url": "https://dailies.rstudio.com/rstudio/latest/index.json"
                 }
             }
         }
