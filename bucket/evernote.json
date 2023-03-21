@@ -1,26 +1,18 @@
 {
-    "version": "10.54.4",
-    "description": "App for note taking, organizing, task lists, and archiving",
+    "version": "10.54.4.3978-986a1704b8",
     "homepage": "https://evernote.com/",
+    "description": "Remember everything and tackle any project with your notes, tasks, and schedule all in one place.",
     "license": {
-        "identifier": "EULA",
-        "url": "https://evernote.com/legal/terms-of-service"
+        "identifier": "Freeware",
+        "url": "https://evernote.com/legal"
     },
-    "notes": "We don't persist your Evernote data, they are still storaged in \"$env:APPDATA\\Evernote\".",
     "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-10.54.4-win-ddl-ga-3978-986a1704b8-setup.exe#/dl.7z",
     "hash": "480af0126fb2a2fe3a8fafc71310de038ee1ebf052ea1fb597d670cd2d40a622",
-    "installer": {
-        "script": [
-            "if ([Environment]::Is64BitOperatingSystem) {",
-            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir -Removal",
-            "} else {",
-            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" $dir -Removal",
-            "}",
-            "Remove-Item \"$dir\\Uninstall Evernote.exe\"",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
-            "Remove-Item \"$dir\\resources\" -Force -Recurse"
-        ]
-    },
+    "extract_dir": "$PLUGINSDIR",
+    "pre_install": [
+        "if ($architecture -eq '32bit') { Expand-7zipArchive \"$dir\\app-32.7z\" \"$dir\" -Removal; Remove-Item \"$dir\\app-64.7z\" }",
+        "elseif ($architecture -eq '64bit') { Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal; Remove-Item \"$dir\\app-32.7z\" }"
+    ],
     "shortcuts": [
         [
             "Evernote.exe",
@@ -28,10 +20,15 @@
         ]
     ],
     "checkver": {
-        "url": "https://evernote.com/download",
-        "regex": "Evernote-([\\d.]+)(?<tail>.+)\\.exe"
+        "script": [
+            "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'",
+            "(Invoke-RestMethod 'https://evernote.com/download' -UserAgent $userAgent) -match '(?<File>Evernote-(?<Ver>[\\d.]+)-win-ddl-ga-(?<Build>[\\w-]+)-setup\\.exe)' | Out-Null",
+            "$getFile = $Matches['File']; $getVersion = $Matches['Ver']; $getBuild = $Matches['Build']",
+            "Write-Output \"$getFile, $getVersion.$getBuild\""
+        ],
+        "regex": "(?<File>[\\w.-]+),\\s([\\w.-]+)"
     },
     "autoupdate": {
-        "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-$version$matchTail.exe#/dl.7z"
+        "url": "https://cdn1.evernote.com/boron/win/builds/$matchFile#/dl.7z"
     }
 }

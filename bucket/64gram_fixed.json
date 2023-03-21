@@ -1,0 +1,60 @@
+{
+    "version": "1.0.80",
+    "description": "Unofficial Telegram Desktop with some enhancements.",
+    "homepage": "https://64gr.am",
+    "license": {
+        "identifier": "GPL-3.0-openssl-exception",
+        "url": "https://github.com/TDesktop-x64/tdesktop/blob/dev/LICENSE"
+    },
+    "notes": [
+        "To register the 'URL:Telegram Link' protocol, run:",
+        "protocol-handler.ps1 register",
+        "To unregister the 'URL:Telegram Link' protocol, run:",
+        "protocol-handler.ps1 unregister"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/TDesktop-x64/tdesktop/releases/download/v1.0.80/64Gram_1.0.80_x64.zip",
+            "hash": "6501c3cf5557b6d980f3bf2b633928930a349836789aa7c6ac1830c576bb288e"
+        }
+    },
+    "pre_install": [
+        "if (Test-Path \"$persist_dir\\log.txt\") { Copy-Item \"$persist_dir\\log.txt\" \"$dir\\\" }",
+        "$currentDir = $dir.Replace($version, 'current')",
+        "$content = Get-Content \"$bucketsdir\\MyScoop\\scripts\\telegram\\protocol-handler.ps1\"",
+        "$content = $content.Replace('REPLACE_HERE', $currentDir)",
+        "Set-Content \"$dir\\protocol-handler.ps1\" $content -Force"
+    ],
+    "bin": [
+        [
+            "Telegram.exe",
+            "64Gram"
+        ],
+        "protocol-handler.ps1"
+    ],
+    "shortcuts": [
+        [
+            "Telegram.exe",
+            "64Gram"
+        ]
+    ],
+    "persist": "tdata",
+    "pre_uninstall": [
+        "if (Test-Path \"$dir\\log.txt\") { Copy-Item \"$dir\\log.txt\" \"$persist_dir\\\" }",
+        "Write-Host 'Unregistering ''URL:Telegram Link'' protocol handler...'",
+        "Remove-Item 'HKCU:\\SOFTWARE\\Classes\\tg', 'HKCU:\\SOFTWARE\\Classes\\TelegramDesktop' -Force -Recurse -ErrorAction 'SilentlyContinue'; Write-Host 'Done!'"
+    ],
+    "checkver": {
+        "github": "https://github.com/TDesktop-x64/tdesktop"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/TDesktop-x64/tdesktop/releases/download/v$version/64Gram_$version_x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/TDesktop-x64/tdesktop/releases/download/v$version/64Gram_$version_x86.zip"
+            }
+        }
+    }
+}

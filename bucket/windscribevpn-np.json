@@ -1,0 +1,36 @@
+{
+    "##": "This package is non-portable because the app requires installing drivers/services to work properly.",
+    "version": "2.5.18",
+    "description": "Open Source VPN with AdBlocking Proxy.",
+    "homepage": "https://windscribe.com/",
+    "license": "GPL-2.0",
+    "url": "https://deploy.totallyacdn.com/desktop-apps/2.5.18/Windscribe_2.5.18.exe#/vpnsetup.exe",
+    "hash": "a58515e3c3b350de864bfd41ebd570724efdffe44e17de571f78da74b5ef7475",
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\vpnsetup.exe\" -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('-silent', '-dir', \"$dir\\Windscribe\")",
+        "Stop-Process -Name \"Windscribe\" -Force -ErrorAction SilentlyContinue",
+        "Stop-Service -Name \"WindscribeService\" -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$Env:Public\\Desktop\\Windscribe.lnk\" -Force",
+        "Remove-Item \"$dir\\vpnsetup.exe\""
+    ],
+    "pre_uninstall": [
+        "$currentDir = $dir.Replace($version, 'current')",
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Stop-Service -Name \"WindscribeService\" -Force -ErrorAction SilentlyContinue",
+        "Remove-Service -Name \"WindscribeService\" -ErrorAction SilentlyContinue",
+        "Stop-Process -Name \"Windscribe\" -Force -ErrorAction SilentlyContinue",
+        "Start-Process \"$currentDir\\Windscribe\\uninstall.exe\" -WindowStyle 'Hidden' -Verb 'RunAs' -ArgumentList '/VERYSILENT' -Wait",
+        "Start-Sleep -Seconds 2"
+    ],
+    "checkver": {
+        "script": [
+            "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.26 Safari/537.36'",
+            "(Invoke-WebRequest 'https://windscribe.com/install/desktop/windows' -UserAgent $userAgent -MaximumRedirection 1 -Method 'Get').BaseResponse.RequestMessage.RequestUri.AbsoluteUri"
+        ],
+        "regex": "/desktop-apps/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://deploy.totallyacdn.com/desktop-apps/$version/Windscribe_$version.exe#/vpnsetup.exe"
+    }
+}

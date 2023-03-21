@@ -1,0 +1,37 @@
+{
+    "version": "3.16.1.2",
+    "homepage": "https://cli.jonaskohl.de/",
+    "description": "A small utility that indicates the state of the Num lock, Caps lock and Scroll lock key.",
+    "license": "Apache-2.0",
+    "url": "https://github.com/jonaskohl/CapsLockIndicator/releases/download/3.16.1.2/CLIv3-3.16.1.2.exe#/capslock-indicator.exe",
+    "hash": "md5:9a7cabedbf071dedceb494c8b0bd4ec4",
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null; Copy-Item \"$persist_dir\\*.ico\" \"$dir\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "Copy-Item \"$persist_dir\\*.dll\" \"$dir\" -ErrorAction 'SilentlyContinue' -Recurse"
+    ],
+    "shortcuts": [
+        [
+            "capslock-indicator.exe",
+            "CapsLock Indicator"
+        ]
+    ],
+    "pre_uninstall": [
+        "Copy-Item \"$dir\\*.ico\" \"$persist_dir\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "Copy-Item \"$dir\\*.dll\" \"$persist_dir\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "if (Get-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'CapsLock Indicator' -ErrorAction 'SilentlyContinue') {",
+        "   Remove-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'CapsLock Indicator' -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/jonaskohl/CapsLockIndicator"
+    },
+    "autoupdate": {
+        "url": "https://github.com/jonaskohl/CapsLockIndicator/releases/download/$version/CLIv$majorVersion-$version.exe#/capslock-indicator.exe",
+        "hash": {
+            "mode": "json",
+            "url": "https://clireleases.jonaskohl.de/releases/api.php",
+            "jsonpath": "$..hashes..value",
+            "find": "$md5"
+        }
+    }
+}

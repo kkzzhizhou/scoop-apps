@@ -72,17 +72,17 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - echoiron/echo-scoop
 - hoilc/scoop-lemon
 - scoopcn/scoopcn
+- duzyn/scoop-cn
 - hermanjustnu/scoop-emulators
 - Paxxs/Cluttered-bucket
-- duzyn/scoop-cn
 - cderv/r-bucket
 - everyx/scoop-bucket
 - ACooper81/scoop-apps
 - dodorz/scoop
 - borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
-- ScoopInstaller/Nonportable
 - Qv2ray/mochi
+- ScoopInstaller/Nonportable
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
 - zhoujin7/tomato
@@ -93,8 +93,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - naderi/scoop-bucket
 - lzwme/scoop-proxy-cn
 - ChungZH/peach
-- ViCrack/scoop-bucket
 - 42wim/scoop-bucket
+- ViCrack/scoop-bucket
 - akirco/aki-apps
 - ygguorun/scoop-bucket
 - batkiz/backit
@@ -112,6 +112,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - hu3rror/scoop-muggle
 - starise/Scoop-Gaming
 - Darkatse/Scoop-KanColle
+- Zliced13/MyScoop
 - starise/Scoop-Confetti
 - TheLastZombie/scoop-bucket
 - hulucc/bucket
