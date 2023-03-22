@@ -81,8 +81,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - dodorz/scoop
 - borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
-- Qv2ray/mochi
 - ScoopInstaller/Nonportable
+- Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
 - kiennq/scoop-misc
 - zhoujin7/tomato

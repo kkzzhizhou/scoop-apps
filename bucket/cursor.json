@@ -1,0 +1,42 @@
+{
+    "##": "cursor",
+    "version": "0.1.3",
+    "description": "Write, edit, and chat about your code with GPT-4 in a new type of editor",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.cursor.so/"
+    },
+    "homepage": "https://www.cursor.so",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+    ],
+    "url": "https://dl.todesktop.com/230313mzl4w4u92/windows/nsis/x64#/dl.7z",
+    "hash": "a91845d7c72836fc4e5230e0f4cd2c87b1ea9cd6b69efa6d54d5c360ee78a8c3",
+    "shortcuts": [
+        [
+            "Cursor.exe",
+            "Cursor"
+        ]
+    ],
+    "persist": [
+        "resources/lsp"
+    ],
+    "checkver": {
+        "script": [
+            "$response = Invoke-WebRequest -Uri 'https://www.cursor.so/'",
+            "$downloadUrl = $response.Links | Where-Object href -match 'windows/nsis/x64' | Select-Object -first 1 -expand href",
+            "$res = Invoke-WebRequest -Uri $downloadUrl -MaximumRedirection 0 -UseBasicParsing",
+            "$filePath = Join-Path $cachedir $res.Headers['Content-Disposition'].Split('=')[1].TrimStart(\"`\"\").TrimEnd(\"`\"\")",
+            "$version = [regex]::Match($filePath, '([\\d.]+)').Groups[1].Value",
+            "Write-Output $version $downloadUrl"
+        ],
+        "regex": "^([\\d.]+)\\s+(?<downloadUrl>.+)$"
+    },
+    "autoupdate": {
+        "url": "$matchDownloadUrl#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
