@@ -1,38 +1,53 @@
 {
-    "version": "2.14",
-    "description": "A clash client for Windows, support clash core and Clash.Meta core.",
+    "version": "2.15",
+    "description": "A clash client for Windows, support clash core and Clash.Meta core",
     "homepage": "https://github.com/2dust/clashN",
-    "license": "GPL-3.0-only",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/2dust/clashN/releases/download/2.14/clashN.zip",
-            "hash": "b7c4a960b258f1e6a75079f52926a31823fb612dd1f247da917012ef58f97317"
-        }
+    "license": {
+        "identifier": "GPL-3.0-only",
+        "url": "https://github.com/2dust/clashN/raw/main/LICENSE"
     },
-    "suggest": {
-        "dotnet-runtime": "windowsdesktop-runtime"
-    },
-    "extract_dir": "clashN",
-    "persist": [
-        "guiConfigs",
-        "guiBackups",
-        "guiLogs"
+    "notes": [
+        "Create scheduled task by running: '$dir\\create-scheduled-task.ps1'",
+        "Delete scheduled task by running: '$dir\\delete-scheduled-task.ps1'"
     ],
+    "depends": "gsudo",
+    "url": "https://github.com/2dust/clashN/releases/download/2.15/clashN.zip",
+    "hash": "29120e0dab4a5955f5890c9a616a7730cbff770d9c9513cae70e587cd7c217d6",
+    "extract_dir": "clashN",
+    "pre_install": [
+        "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -Force | Out-Null }",
+        "}",
+        "(Get-Content \"$bucketsdir\\ownscoop\\scripts\\clashn\\start-clashn.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\start-clashn.ps1\" -Encoding ASCII",
+        "(Get-Content \"$bucketsdir\\ownscoop\\scripts\\clashn\\create-scheduled-task.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\create-scheduled-task.ps1\" -Encoding ASCII",
+        "(Get-Content \"$bucketsdir\\ownscoop\\scripts\\clashn\\delete-scheduled-task.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\delete-scheduled-task.ps1\" -Encoding ASCII"
+    ],
+    "uninstaller": {
+        "script": [
+            "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+            "    ensure \"$persist_dir\" | Out-Null",
+            "    if (Test-Path \"$dir\\$_\") { Copy-Item \"$dir\\$_\" \"$persist_dir\\\" -Force | Out-Null }",
+            "}"
+        ]
+    },
+    "bin": "start-clashn.ps1",
     "shortcuts": [
         [
             "clashN.exe",
             "clashN"
         ]
     ],
+    "persist": [
+        "guiBackups",
+        "guiConfigs",
+        "guiLogs",
+        "data"
+    ],
     "checkver": {
-        "url": "https://github.com/2dust/clashN/releases/latest",
-        "regex": "/releases/tag/([\\d.]+)"
+        "url": "https://api.github.com/repos/2dust/clashN/releases?per_page=1",
+        "jsonpath": "$[0].tag_name"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/2dust/clashN/releases/download/$version/clashN.zip"
-            }
-        }
+        "url": "https://github.com/2dust/clashN/releases/download/$version/clashN.zip"
     }
 }

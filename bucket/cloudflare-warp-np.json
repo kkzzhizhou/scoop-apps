@@ -1,0 +1,42 @@
+{
+    "version": "2022.12.582.0",
+    "homepage": "https://one.one.one.one/",
+    "description": "An app that allows you to replace the connection between your device and the Internet with a modern, optimized, protocol.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.cloudflare.com/en-ca/application/terms/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi#/setup.msi_",
+            "hash": "md5:2f3cf808a7ee1c871c461d60ffa67cb2"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/i', \"$dir\\setup.msi_\", '/qn')",
+        "Stop-Process -Name 'Cloudflare WARP' -ErrorAction 'SilentlyContinue' -Force; Stop-Service -Name 'CloudflareWARP' -ErrorAction 'SilentlyContinue' -Force"
+    ],
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Stop-Process -Name 'Cloudflare WARP' -ErrorAction 'SilentlyContinue' -Force; Stop-Service -Name 'CloudflareWARP' -ErrorAction 'SilentlyContinue' -Force",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn')"
+        ]
+    },
+    "checkver": {
+        "url": "https://install.appcenter.ms/api/v0.1/apps/cloudflare/1.1.1.1-windows-1/distribution_groups/release/releases/50?is_install_page=true",
+        "jsonpath": "$.version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi#/setup.msi_",
+                "hash": {
+                    "url": "https://install.appcenter.ms/api/v0.1/apps/cloudflare/1.1.1.1-windows-1/distribution_groups/release/releases/50?is_install_page=true",
+                    "jsonpath": "$.fingerprint"
+                }
+            }
+        }
+    }
+}
