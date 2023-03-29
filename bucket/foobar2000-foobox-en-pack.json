@@ -1,0 +1,50 @@
+{
+    "version": "7.7_20230320",
+    "description": "DUI theme for foobar2000",
+    "homepage": "https://github.com/dream7180/foobox-en",
+    "license": "GPL-3.0-only",
+    "suggest": {
+        "Foobar2000": "extras/foobar2000"
+    },
+    "notes": "The theme is conveniently installed into $dir/themes and $dir/profile of the foobar2000 installation folder.",
+    "url": "https://github.com/dream7180/foobox-en/releases/download/7.7/foobox_7.7en_20230320.7z",
+    "hash": "d2b827aa0aec79d7f8889e5bbd016f70d05904c2c5f77683b0b7ff516415e62c",
+    "installer": {
+        "script": [
+            "$FoobarDir = $(appdir foobar2000 $global)",
+            "if (Test-Path \"$FoobarDir\") {",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\themes\" -Filter \"foobox*\" | Remove-Item -Force -Recurse",
+            "    New-Item \"$FoobarDir\\current\\themes\\foobox Dark Color.fth\" -ItemType SymbolicLink -Target \"$dir\\foobar2000\\themes\\foobox Dark Color.fth\" | Out-Null",
+            "    New-Item \"$FoobarDir\\current\\themes\\foobox Light Color.fth\" -ItemType SymbolicLink -Target \"$dir\\foobar2000\\themes\\foobox Light Color.fth\" | Out-Null",
+            "    New-Item \"$FoobarDir\\current\\themes\\foobox Main Layout.fth\" -ItemType SymbolicLink -Target \"$dir\\foobar2000\\themes\\foobox Main Layout.fth\" | Out-Null",
+            "    New-Item \"$FoobarDir\\current\\themes\\foobox\" -ItemType Junction -Target \"$dir\\foobar2000\\themes\\foobox\" | Out-Null",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"eslyric-data\" | Remove-Item -Force -Recurse",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"user-components\" | Remove-Item -Force -Recurse",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"theme.fth\" | Remove-Item -Force -Recurse",
+            "    New-Item \"$FoobarDir\\current\\profile\\eslyric-data\" -ItemType Junction -Target \"$dir\\foobar2000\\profile\\eslyric-data\" | Out-Null",
+            "    New-Item \"$FoobarDir\\current\\profile\\user-components\" -ItemType Junction -Target \"$dir\\foobar2000\\profile\\user-components\" | Out-Null",
+            "    New-Item \"$FoobarDir\\current\\profile\\theme.fth\" -ItemType SymbolicLink -Target \"$dir\\foobar2000\\profile\\theme.fth\" | Out-Null",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$FoobarDir = $(appdir foobar2000 $global)",
+            "if (Test-Path \"$FoobarDir\") {",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\themes\" -Filter \"foobox*\" | Remove-Item -Force -Recurse",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"eslyric-data\" | Remove-Item -Force -Recurse",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"user-components\" | Remove-Item -Force -Recurse",
+            "    Get-ChildItem -Path \"$FoobarDir\\current\\profile\" -Filter \"theme.fth\" | Remove-Item -Force -Recurse",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/dream7180/foobox-en/releases",
+        "jsonpath": "$..name",
+        "regex": "v([\\d.]+)\\s+\\(((\\d+))\\)",
+        "replace": "${1}_${2}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/dream7180/foobox-en/releases/download/$match1/foobox_$match1en_$match2.7z"
+    }
+}
