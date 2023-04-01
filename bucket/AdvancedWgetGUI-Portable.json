@@ -18,18 +18,37 @@
         }
     },
     "extract_dir": "AWGG",
+    "post_install": [
+        "foreach ($folder in @('AWGG')) {",
+        "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+        "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  } elseif (Test-Path \"$env:LOCALAPPDATA\\$folder\") {",
+        "    $runtimeCache = \"$env:LOCALAPPDATA\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  } elseif (Test-Path \"$env:APPDATA\\$folder\") {",
+        "    $runtimeCache = \"$env:APPDATA\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+        "  } else {continue}",
+
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}"
+    ],
     "bin": [
-        [
-            "awgg.exe",
-            "awgg"
-        ]
+        "awgg.exe",
+        "axel.exe",
+        "curl.exe",
+        "wget.exe",
+        "youtube-dl.exe"
     ],
-    "shortcuts": [
-        [
-            "awgg.exe",
-            "Advanced Wget GUI"
-        ]
-    ],
+    "shortcuts": [["awgg.exe", "Advanced Wget GUI"]],
     "checkver": {
         "url": "https://sites.google.com/site/awggproject",
         "regex": "sites-page-title.+?AWGG ([\\d.]+)"
@@ -43,6 +62,5 @@
                 "url": "https://downloads.sourceforge.net/project/awgg/Beta/AWGG_win32.zip"
             }
         }
-    },
-    "notes": "Your AWGG data are storaged in '%LOCALAPPDATA%\\AWGG'."
+    }
 }
