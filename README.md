@@ -82,9 +82,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
+- kiennq/scoop-misc
 - ScoopInstaller/Nonportable
 - zhoujin7/tomato
-- kiennq/scoop-misc
 - wangzq/scoop-bucket
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
