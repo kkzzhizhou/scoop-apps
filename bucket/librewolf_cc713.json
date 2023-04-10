@@ -1,0 +1,54 @@
+{
+    "version": "111.0.1-1",
+    "description": "An independent fork of Firefox, with the primary goals of privacy, security and user freedom.",
+    "homepage": "https://librewolf-community.gitlab.io/",
+    "license": "MPL-2.0",
+    "url": "https://gitlab.com/librewolf-community/browser/windows/-/package_files/73020469/download#/librewolf-111.0.1-1.en-US.win64-portable.zip",
+    "hash": "00a5ecce8e8d523b436f9bbbd5c1b9f82504ceede54062f6309c516667920246",
+    "extract_dir": "librewolf-111.0.1-1/LibreWolf",
+    "bin": [
+        [
+            "librewolf.exe",
+            "LibreWolf",
+            "-profile \"$dir\\profiles\\default\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "librewolf.exe",
+            "LibreWolf",
+            "-profile \"$dir\\profiles\\default\""
+        ]
+    ],
+    "post_install": [
+        "$app = \"$dir\\librewolf.exe\".Replace('\\', '\\\\')",
+        "$shim = \"$(shimdir)\\librewolf.exe\".Replace('\\', '\\\\')",
+        "$scripts = join-path $bucketsdir $($ResolvedObject.Bucket) | join-path -ChildPath scripts/librewolf",
+        "'install-associations', 'uninstall-associations' | ForEach-Object {",
+        "  if (Test-Path \"$scripts\\$_.reg\") {",
+        "    $content = Get-Content \"$scripts\\$_.reg\"",
+        "    $content = $content.Replace('$app', $app)",
+        "    $content = $content.Replace('$shim', $shim)",
+        "    if ($global) {",
+        "      $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_.reg\"",
+        "  }",
+        "}",
+        "REG IMPORT \"$dir\\install-associations.reg\" *>&1 | Out-Null"
+    ],
+    "pre_uninstall": "REG IMPORT \"$dir\\uninstall-associations.reg\" *>&1 | Out-Null",
+    "persist": "profiles",
+    "checkver": {
+        "url": "https://gitlab.com/api/v4/projects/13852981/releases",
+        "jsonpath": "$[0].assets.links",
+        "regex": "(?s)(?=.*\"(?<file>librewolf-(?<version>\\d+(?:\\.\\d+)*(?:-\\d+)?)\\.en-US\\.win64-portable\\.zip)\").*?\"(?<url>https://.+?)\".*(?<hashUrl>https://.+?/sha256sums\\.txt)"
+    },
+    "autoupdate": {
+        "url": "${matchUrl}#/${matchFile}",
+        "extract_dir": "librewolf-$version/LibreWolf",
+        "hash": {
+            "url": "$matchHashurl"
+        }
+    }
+}

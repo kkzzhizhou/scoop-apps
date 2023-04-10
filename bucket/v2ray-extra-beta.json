@@ -1,0 +1,35 @@
+{
+    "version": "5.4.1",
+    "description": "The extra resources of v2ray (beta)",
+    "homepage": "https://github.com/v2fly/v2ray-core",
+    "license": "MIT",
+    "depends": "maple/v2ray-beta",
+    "url": "https://github.com/v2fly/v2ray-core/releases/download/v5.4.1/v2ray-extra.zip",
+    "hash": "4245970bae6a6dcbc7881154051658409482bf582c9027db54ba3b8bb54c2d94",
+    "installer": {
+        "script": [
+            "function LinkDir([String] $destination, [String] $source = $destination) {",
+            "    Write-Host \"Creating Junction for $destination\"",
+            "    New-Item -Force -ItemType Junction -Path \"$(appdir v2ray-beta $global)\\current\\$destination\" -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "LinkDir 'browserforwarder'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "function DelDir([String] $destination) {",
+            "    if(Test-Path -Path \"$(appdir v2ray-beta $global)\\current\\$destination\"){",
+            "        Remove-Item \"$(appdir v2ray-beta $global)\\current\\$destination\" -Recurse -Force",
+            "    }",
+            "}",
+            "DelDir 'browserforwarder'"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/v2fly/v2ray-core/releases",
+        "regex": "/releases/tag/(?:v|V)?([\\w.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/v2fly/v2ray-core/releases/download/v$version/v2ray-extra.zip"
+    }
+}
