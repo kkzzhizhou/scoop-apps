@@ -1,0 +1,82 @@
+{
+    "version": "13.0.1",
+    "description": "Professional text and hex editor with Binary Templates technology.",
+    "homepage": "https://www.sweetscape.com/010editor/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.sweetscape.com/010editor/manual/License.htm"
+    },
+    "notes": [
+        "This is a free 30-day trial version. Please buy a copy of it for furthur evaluation.",
+        "",
+        "To install file associations, run:",
+        "reg import \"$(scoop prefix 010editor_fixed)\\install-file-associations.reg\"",
+        "To uninstall file associations, run:",
+        "reg import \"$(scoop prefix 010editor_fixed)\\uninstall-file-associations.reg\"",
+        "",
+        "To install the context menu, run:",
+        "reg import \"$(scoop prefix 010editor_fixed)\\install-context-menu.reg\"",
+        "To uninstall the context menu, run:",
+        "reg import \"$(scoop prefix 010editor_fixed)\\uninstall-context-menu.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.sweetscape.com/010EditorWin64Portable13.0.1.zip",
+            "hash": "4158136519a7f3bbc7e3f2f8b471884704b04edd37e8f73487b4e4ae63a63baa",
+            "extract_dir": "010EditorWin64Portable"
+        },
+        "32bit": {
+            "url": "https://download.sweetscape.com/010EditorWin32Portable13.0.1.zip",
+            "hash": "2564cd82e4eaea34671698cb36c635146a450de501e8f223bab59ab12a082b15",
+            "extract_dir": "010EditorWin32Portable"
+        }
+    },
+    "bin": "AppData\\010Editor.exe",
+    "shortcuts": [
+        [
+            "AppData\\010Editor.exe",
+            "010 Editor"
+        ]
+    ],
+    "persist": [
+        "AppData\\Config",
+        "AppData\\Data",
+        "AppData\\Plugins",
+        "010 Scripts",
+        "010 Templates",
+        "AppData\\Temp"
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\010EditorPortable.exe\"; $scriptsDir = \"$bucketsdir\\MyScoop\\scripts\"",
+        "$appDir = $dir.Replace('\\', '\\\\')",
+        "Get-ChildItem \"$scriptsDir\\010editor\\*.reg\" | ForEach-Object {",
+        "    $content = Get-Content $_",
+        "    $content = $content.Replace('REPLACE_HERE', $appDir)",
+        "    if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "    Set-Content \"$dir\\$($_.Name)\" $content -Encoding 'unicode' -Force",
+        "}"
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    foreach ($regFile in 'uninstall-file-associations.reg', 'uninstall-context-menu.reg') { reg import \"$dir\\$regFile\" }",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://www.sweetscape.com/download/previous/",
+        "regex": "Download\\s010\\sEditor\\sv([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.sweetscape.com/010EditorWin64Portable$version.zip"
+            },
+            "32bit": {
+                "url": "https://download.sweetscape.com/010EditorWin32Portable$version.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256/$basename.SHA256.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}
