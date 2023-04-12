@@ -105,15 +105,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - seumsc/scoop-seu
 - Velgus/Scoop-Portapps
 - rivy/scoop-bucket
+- Zliced13/MyScoop
+- starise/Scoop-Gaming
 - aoisummer/scoop-bucket
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
 - Darkatse/Scoop-KanColle
 - AkinoKaede/maple
-- starise/Scoop-Gaming
-- Zliced13/MyScoop
 - starise/Scoop-Confetti
 - TheLastZombie/scoop-bucket
 - hulucc/bucket
 - jingyu9575/scoop-jingyu9575
-- Deide/deide-bucket
