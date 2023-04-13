@@ -1,0 +1,27 @@
+{
+    "version": "1.0.5",
+    "homepage": "https://github.com/srwi/EverythingToolbar",
+    "description": "Everything integration for the Windows taskbar.",
+    "license": "MIT",
+    "notes": [
+        "If 'everything-toolbar' is not working for you properly please read, https://github.com/srwi/EverythingToolbar#setup",
+        "You may have to sign out or restart your computer in order for 'everything-toolbar' to work correctly."
+    ],
+    "url": "https://github.com/srwi/EverythingToolbar/releases/download/1.0.5/EverythingToolbar-1.0.5.msi#/setup.msi_",
+    "hash": "d1bbf650adf1ea2786bdd6944b746f762db134ef6aa02225a746e35731141e8a",
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/i', \"$dir\\setup.msi_\", '/qn')",
+        "Stop-Process -Name 'explorer' -Force"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/x', \"$dir\\setup.msi_\", '/qn'); Start-Sleep -Seconds 2",
+        "taskkill /F /IM 'explorer.exe' | Out-Null; Start-Process 'explorer.exe' -Wait -WindowStyle 'Hidden'"
+    ],
+    "extract_dir": "EverythingToolbar",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/srwi/EverythingToolbar/releases/download/$version/EverythingToolbar-1.0.5.msi#/setup.msi_"
+    }
+}
