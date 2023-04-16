@@ -1,44 +1,50 @@
 {
+    "homepage": "https://www.veracrypt.fr/",
+    "description": "A free open source disk encryption software for Windows, Mac OSX and Linux.",
+    "license": "Apache Licence",
     "version": "1.25.9",
-    "homepage": "https://www.veracrypt.fr/en/Home.html",
-    "description": "A free open source disk encryption software.",
-    "license": "Apache-2.0",
-    "notes": [
-        "Make sure you decrypt your disks (encrypted with VeraCrypt) before uninstalling the app.",
-        "You may have to restart your computer in order for VeraCrypt to work correctly.",
-        "If you are having any VeraCrypt-related issues, please see,",
-        "https://www.veracrypt.fr/en/Troubleshooting.html",
-        "https://www.veracrypt.fr/en/Issues%20and%20Limitations.html"
-    ],
+    "url": "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe#/setup.exe",
+    "hash": "785e2953547ea8232aa3c45b9cfe564118809eb84b474df6488f7519c4e954cc",
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\"",
+            "Remove-Item -Recurse \"$dir\\setup.exe\"",
+            "Move-Item \"$dir\\VeraCrypt\\*\" -Destination \"$dir\"",
+            "Remove-Item -Recurse \"$dir\\VeraCrypt\"",
+            "$file = 'Configuration.xml'",
+            "if (!(Test-Path \"$persist_dir\\$file\")) {",
+            "    New-Item \"$dir\\$file\" -Type File | Out-Null",
+            "}"
+        ]
+    },
     "architecture": {
         "64bit": {
-            "url": "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt_Setup_x64_1.25.9.msi#/setup.msi_",
-            "hash": "md5:25f8a853a23f4b64bd5c723d0c41443d"
+            "shortcuts": [
+                [
+                    "VeraCrypt-x64.exe",
+                    "VeraCrypt"
+                ]
+            ]
+        },
+        "32bit": {
+            "shortcuts": [
+                [
+                    "VeraCrypt.exe",
+                    "VeraCrypt"
+                ]
+            ]
         }
     },
-    "pre_install": [
-        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart', 'ACCEPTLICENSE=YES')"
-    ],
-    "pre_uninstall": [
-        "if ($cmd -eq 'uninstall') {",
-        "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "    Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/x', \"$dir\\setup.msi_\", '/qn', '/norestart')",
-        "}"
-    ],
+    "persist": "Configuration.xml",
     "checkver": {
-        "url": "https://launchpad.net/veracrypt/trunk",
-        "regex": "Latest\\sversion\\sis\\s([\\d.]+)"
+        "url": "https://www.veracrypt.fr/en/Downloads.html",
+        "regex": "Latest Stable Release - ([\\d.]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://launchpad.net/veracrypt/trunk/$version/+download/VeraCrypt_Setup_x64_$version.msi#/setup.msi_",
-                "hash": {
-                    "url": "$url/+md5",
-                    "regex": "$md5\\s$basename"
-                }
-            }
+        "url": "https://launchpad.net/veracrypt/trunk/$version/+download/VeraCrypt%20Portable%20$version.exe#/setup.exe",
+        "hash": {
+            "url": "https://launchpad.net/veracrypt/trunk/$version/+download/veracrypt-$version-sha256sum.txt",
+            "regex": "$sha256\\s+$basename"
         }
     }
 }
