@@ -1,0 +1,58 @@
+{
+    "version": "20230416230721-fecd1e6",
+    "description": "Microsoft Xbox 360 emulator",
+    "homepage": "https://xenia.jp",
+    "license": {
+        "url": "https://github.com/xenia-canary/xenia-canary/blob/canary_pr/LICENSE",
+        "identifier": "BSD-3-Clause"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/xenia-canary/xenia-canary/releases/download/fecd1e6/xenia_canary.zip",
+            "hash": "f40f6c34ee37da5e2c524827e1fba47cc96104264db123aec9d611e128592574"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\portable.txt\" -ItemType File | Out-Null",
+        "   New-item \"$persist_dir\\xenia-canary.config.toml\" -ItemType File | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Xenia\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": "xenia_canary.exe",
+    "shortcuts": [
+        [
+            "xenia_canary.exe",
+            "Xenia (canary)"
+        ]
+    ],
+    "persist": [
+        "portable.txt",
+        "xenia-canary.config.toml",
+        "content",
+        "cache"
+    ],
+    "checkver": {
+        "url": "https://github.com/xenia-canary/xenia-canary/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)_canary_experimental",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$matchCommit/xenia_canary.zip"
+            }
+        }
+    }
+}
