@@ -1,0 +1,42 @@
+{
+    "homepage": "https://github.com/xwmx/nb",
+    "license": "AGPL-3.0",
+    "version": "7.4.1",
+    "depends": "main/unzip",
+    "suggest": {
+        "git": "git"
+    },
+    "url": "https://github.com/xwmx/nb/archive/refs/tags/7.4.1.zip",
+    "hash": "f3b164269db0dc9fbcccb3f9ceded794530ada8e8f36c34c876f23670e2bdf47",
+    "installer": {
+        "script": [
+            "$zipfile = (Get-ChildItem \"$dir\" '*.zip#' | Select-Object -First 1).FullName",
+            "Start-Process -Wait -FilePath \"unzip.exe\" -ArgumentList \"$zipfile -d $dir\" -WindowStyle Hidden",
+            "$folder = (Get-Childitem -Directory \"$dir\"| Select-Object -First 1).FullName",
+            "Move-Item \"$folder\\*\" \"$dir\"",
+            "Remove-Item \"$folder\"",
+            "Set-Content \"$dir\\nb.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0nb %*\" -Encoding ASCII",
+            "Set-Content \"$dir\\bookmark.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0bin\\bookmark %*\" -Encoding ASCII",
+            "Remove-Item \"$zipfile\" -Force",
+            "Remove-Item \"$dir\\.github\" -Force -Recurse",
+            "Remove-Item \"$dir\\nb.go\" -Force -Recurse",
+            "Remove-Item \"$dir\\test\" -Force -Recurse",
+            "Remove-Item \"$dir\\.gitignore\" -Force",
+            "Remove-Item \"$dir\\.shellcheckrc\" -Force",
+            "Remove-Item \"$dir\\Makefile\" -Force",
+            "Remove-Item \"$dir\\Baskfile\" -Force"
+        ]
+    },
+    "bin": [
+        "nb.bat",
+        "bookmark.bat"
+    ],
+    "checkver": {
+        "url": "https://github.com/xwmx/nb/tags",
+        "regex": "Update version to ([\\d.]+)."
+    },
+    "autoupdate": {
+        "url": "https://github.com/xwmx/nb/archive/refs/tags/$version.zip",
+        "extract_dir": "nb-$version"
+    }
+}

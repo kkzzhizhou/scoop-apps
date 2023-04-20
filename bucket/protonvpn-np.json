@@ -1,0 +1,33 @@
+{
+    "##": "This package is non-portable because the app requires installing drivers/services to work.",
+    "version": "2.4.1",
+    "description": "Open source VPN app packed with useful security features",
+    "homepage": "https://protonvpn.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://github.com/ProtonVPN/win-app/blob/master/COPYING.md"
+    },
+    "url": "https://github.com/ProtonVPN/win-app/releases/download/2.4.1/ProtonVPN_win_v2.4.1.exe#/setup.exe",
+    "hash": "c95cf2af65dd0b1556c02cd17952462f02314cf532eec06ebca08328549790ae",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList '/qn' -RunAs | Out-Null",
+            "Stop-Process -Name ProtonVPN  # This closes the login screen appeared after installing the app",
+            "Remove-Item \"$Env:Public\\Desktop\\ProtonVPN.lnk\"",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', '{0102D7E4-DD33-494D-B34C-2DD6976A54B1}', '/qn') -RunAs | Out-Null"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/ProtonVPN/win-app"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ProtonVPN/win-app/releases/download/$version/ProtonVPN_win_v$version.exe#/setup.exe"
+    }
+}

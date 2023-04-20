@@ -1,0 +1,75 @@
+{
+    "version": "112.0.1",
+    "description": "Mozilla Firefox (Portable): open source web browser. Custom policies.json file. Italian Language Pack.",
+    "homepage": "https://www.mozilla.org/it/firefox/",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://archive.mozilla.org/pub/firefox/releases/112.0.1/win64/it/Firefox%20Setup%20112.0.1.exe#/dl.7z",
+                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/firefox-policies.json#/policies.json"
+            ],
+            "hash": [
+                "sha512:1bcc010feb3750831a55157571aae9f3ca40203b21a5c6b382a281f5bae1d55f7f70dba564583f7ea54039e3d68b46649e666b3dcc0d769dbeca18607cc230a7",
+                "cb75fbc7489904edf08041213b70c67c8dad3f54fdecdadd623fdb0f44cbaef6"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://archive.mozilla.org/pub/firefox/releases/112.0.1/win32/it/Firefox%20Setup%20112.0.1.exe#/dl.7z",
+                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/firefox-policies.json#/policies.json"
+            ],
+            "hash": [
+                "sha512:9baff682cba2df3ea81ec2eb8a012bd5ac46de9fcfe46cdbb4f056865e376b57c5d1d3b8aedc68f3eb3f371e3daf9374b12ab8413466d8227f33c7b7c5e70904",
+                "cb75fbc7489904edf08041213b70c67c8dad3f54fdecdadd623fdb0f44cbaef6"
+            ]
+        }
+    },
+    "extract_dir": "core",
+    "pre_install": [
+        "if(!(Test-Path \"$persist_dir\\distribution\")) {",
+        "  New-Item \"$persist_dir\\distribution\" -Type Directory -Force | Out-Null",
+        "  Move-Item \"$dir\\policies.json\" \"$persist_dir\\distribution\\policies.json\"",
+        "}"
+    ],
+    "persist": [
+        "distribution",
+        "profile"
+    ],
+    "bin": [
+        [
+            "firefox.exe",
+            "firefox",
+            "-profile \"$dir\\profile\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "firefox.exe",
+            "Mozilla Firefox",
+            "-profile \"$dir\\profile\""
+        ]
+    ],
+    "checkver": {
+        "url": "https://product-details.mozilla.org/1.0/firefox_versions.json",
+        "jsonpath": "$.LATEST_FIREFOX_VERSION"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$version/win64/it/Firefox%20Setup%20$version.exe#/dl.7z",
+                "hash": {
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win64/it/$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$version/win32/it/Firefox%20Setup%20$version.exe#/dl.7z",
+                "hash": {
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win32/it/$basename"
+                }
+            }
+        }
+    }
+}

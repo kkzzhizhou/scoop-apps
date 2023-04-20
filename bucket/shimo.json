@@ -1,0 +1,58 @@
+{
+    "version": "3.2.0-release.32738d1",
+    "description": "A notes app",
+    "homepage": "https://shimo.im/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "hash": "22468ad7ba91e2992a7771e28cb11de7617dee9adc98f8b620388e6ca4f65dde",
+            "url": "https://webcdn.m.qq.com/spcmgr/download/SMWD_v3.2.0-release.32738d1.shimo_win32-x64.exe#/dl.7z",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\data\")) {",
+            "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\shimo\"",
+            "$runtimeCachePersist = \"$persist_dir\\shimo\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\shimo\"",
+            "$runtimeCachePersist = \"$persist_dir\\shimo\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "石墨文档.exe",
+            "石墨文档"
+        ]
+    ],
+    "checkver": {
+        "url": "https://pc.qq.com/detail/4/detail_24544.html",
+        "regex": "SMWD_v([\\d.\\-\\w.]+).shimo_win32-x64.exe"
+    },
+    "autoupdate": {
+        "url": "https://webcdn.m.qq.com/spcmgr/download/SMWD_v$version.shimo_win32-x64.exe#/dl.7z"
+    }
+}

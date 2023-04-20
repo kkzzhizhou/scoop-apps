@@ -1,0 +1,46 @@
+{
+    "version": "1.6.2",
+    "description": "RDP Wrapper. The goal of this project is to enable Remote Desktop Host support and concurrent RDP sessions on reduced functionality systems for home usage",
+    "homepage": "https://github.com/asmtron/rdpwrap",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/asmtron/rdpwrap/blob/master/LICENSE"
+    },
+    "pre_download": "Assert-Administrator",
+    "url": [
+        "https://github.com/stascorp/rdpwrap/releases/download/v1.6.2/RDPWrap-v1.6.2.zip#/cosi.alfa",
+        "https://raw.githubusercontent.com/asmtron/rdpwrap/master/autoupdate.zip#/auto.alfa"
+    ],
+    "hash": [
+        "35a9481ddbed5177431a9ea4bd09468fe987797d7b1231d64942d17eb54ec269",
+        "2a12fc292430f9d6978335113f616dd58a70d1b021b175870b56ae7cfe41634f"
+    ],
+    "pre_install": [
+        "$inst = Join-Path $env:ProgramFiles 'RDP Wrapper'",
+        "ensure $inst | Out-Null",
+        "Add-MpPreference -ExclusionPath $inst",
+        "Expand-7zipArchive \"$dir\\cosi.alfa\" -Destination $inst -Removal",
+        "Expand-7zipArchive \"$dir\\auto.alfa\" -Destination $inst -Removal",
+        "Invoke-ExternalCommand \"$inst\\autoupdate.bat\" -LogPath \"$dir\\autoupdate.log\" | Out-Null",
+        "",
+        "    # Shortcut creation",
+        "    # $target, $shortcutName, $arguments, [System.IO.FileInfo]$icon, $global",
+        "startmenu_shortcut \"$inst\\RDPCheck.exe\" 'Local RDP Checker' $null \"$inst\\RDPCheck.exe\" $global",
+        "startmenu_shortcut \"$inst\\RDPConf.exe\" 'RDP Wrapper Configuration' $null \"$inst\\RDPConf.exe\" $global"
+    ],
+    "pre_uninstall": [
+        "Assert-Administrator",
+        "Invoke-ExternalCommand \"$inst\\RDPWinst.exe\" -ArgumentList '-u' | Out-Null",
+        "",
+        "    # Remove shorcuts",
+        "function _rm($name) {",
+        "    $shortcut = shortcut_folder $global | Join-Path -ChildPath \"$name.lnk\"",
+        "    Write-UserMessage -Message \"Removing shortcut $(friendly_path $shortcut)\"",
+        "    Remove-Item $shortcut -ErrorAction SilentlyContinue",
+        "}",
+        "",
+        "_rm 'Local RDP Checker'",
+        "_rm 'RDP Wrapper Configuration'",
+        "Join-Path $env:ProgramFiles 'RDP Wrapper' | Remove-Item -Erroraction SilentlyContinue -Force -Recurse"
+    ]
+}

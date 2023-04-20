@@ -1,0 +1,59 @@
+{
+    "##": "https://www.philips-hue.com/en-hk/explore-hue/propositions/entertainment/sync-with-pc#get_the_app",
+    "version": "1.10",
+    "description": "Hue Sync. Sync your lights with movies, music and games",
+    "homepage": "https://www.philips-hue.com/en-hk/entertainment/hue-sync",
+    "license": "Freeware",
+    "changelog": "https://www.philips-hue.com/en-au/support/release-notes/hue-sync",
+    "architecture": {
+        "64bit": {
+            "url": "https://firmware.meethue.com/v1/download?deviceTypeId=HueSyncWin#/setup.exe",
+            "hash": "51c6aab4c866371967235f38f7dc9253f50528b2a1df56d8bca4ca24c6292279"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"HueSync\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Hue Sync*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Hue Sync\\HueSync.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Hue Sync\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.philips-hue.com/en-au/support/release-notes/hue-sync",
+        "regex": "Software version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://firmware.meethue.com/v1/download?deviceTypeId=HueSyncWin#/setup.exe"
+            }
+        }
+    }
+}

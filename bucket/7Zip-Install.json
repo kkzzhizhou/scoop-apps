@@ -1,0 +1,65 @@
+{
+    "version": "22.01",
+    "description": "7-Zip. A multi-format file archiver with high compression ratios",
+    "homepage": "https://www.7-zip.org/",
+    "notes": "This manifest only installs and updates 7-Zip",
+    "license": {
+        "identifier": "Freeware,LGPL-2.0-only,BSD-3-Clause",
+        "url": "https://www.7-zip.org/license.txt"
+    },
+    "changelog": "https://7zip.dev/en/changelog/",
+    "architecture": {
+        "64bit": {
+            "url": "https://7-zip.org/a/7z2201-x64.msi#/setup.msi_",
+            "hash": "f4afba646166999d6090b5beddde546450262dc595dddeb62132da70f70d14ca"
+        },
+        "32bit": {
+            "url": "https://7-zip.org/a/7z2201.msi#/setup.msi_",
+            "hash": "a4913f98821e0da0c58cd3a7f2a59f1834b85b6ca6b3fdefa5454d6c3bbef54c"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"7zFM\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"7-Zip*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\7-Zip\\7zFM.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.7-zip.org/download.html",
+        "regex": "Download 7-Zip ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://7-zip.org/a/7z$cleanVersion-x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://7-zip.org/a/7z$cleanVersion.msi#/setup.msi_"
+            }
+        }
+    }
+}

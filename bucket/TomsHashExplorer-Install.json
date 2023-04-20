@@ -1,0 +1,44 @@
+{
+    "version": "1.2",
+    "description": "Tom’s Hash Explorer. Calculate cryptographic hash values (GUI)",
+    "homepage": "https://www.mannerud.org/tom-andreas/software/toms-hash-explorer/",
+    "license": "Freeware",
+    "url": "http://www.mannerud.org/tom-andreas/downloads/Toms_Hash_Explorer_v1.2.zip",
+    "hash": "f9b205b73e3891dfd6d3aa455f2c922da0803af2f84fd73ea9bcef520d48d006",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Toms Hash Explorer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Tom's Hash Explorer*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Toms Hash Explorer\\Toms Hash Explorer.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.majorgeeks.com/files/details/toms_hash_explorer.html",
+        "regex": "Tom&#039;s Hash Explorer ([\\d.]+2)"
+    },
+    "autoupdate": {
+        "url": "http://www.mannerud.org/tom-andreas/downloads/Toms_Hash_Explorer_v$version.zip"
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "version": "4.62",
+    "description": "IrfanView. A fast, compact and innovative graphic viewer",
+    "homepage": "https://www.irfanview.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.irfanview.com/eula.htm"
+    },
+    "changelog": "https://www.irfanview.com/main_history.htm",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.irfanview.info/files/iview462_x64_setup.exe#/setup.exe",
+            "hash": "d9d4c5f3120a9420e2dbaf0ee8931556e161787fbc4297d5fb4e4c7616fdd668"
+        },
+        "32bit": {
+            "url": "https://www.irfanview.info/files/iview462_setup.exe#/setup.exe",
+            "hash": "37cdb372c4b6053356eca2c40aa44f4fb8cd30681c28cda54e80601d6c7b565a"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"i_view*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"IrfanView*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\IrfanView\\i_view64.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /silent /desktop=0 /thumbs=0 /group=1 /allusers=1 /assoc=0 | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.irfanview.com/",
+        "regex": ">\\s*version\\s+([\\d\\.-]+)\\s*<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_x64_setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://www.irfanview.info/files/iview$majorVersion$minorVersion_setup.exe#/setup.exe"
+            }
+        }
+    }
+}

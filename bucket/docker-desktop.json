@@ -1,0 +1,47 @@
+{
+    "version": "nightly",
+    "description": "Docker Desktop. Open platform for developers and sysadmins to build, ship, and run distributed applications, whether on laptops, data center VMs, or the cloud.",
+    "homepage": "https://www.docker.com",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/moby/moby/blob/master/LICENSE"
+    },
+    "notes": [
+        "Conditions:",
+        "refer to the:",
+        "https://learn.microsoft.com/en-us/windows/wsl/install"
+    ],
+
+    "architecture": {
+        "64bit": {
+            "url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
+            "pre_install": [
+                "if(is_admin) {",
+                "    if((Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V-All -Online).State -eq 'Disabled') {",
+                "        dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart /loglevel:4 /logpath:$dir",
+                "        dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart /loglevel:4 /logpath:$dir",
+                "    }",
+                "}else{",
+                "       Write-host \"Please run as an administrator\" -ForegroundColor green",
+                "       exit",
+                "}"
+            ],
+            "bin": ["resources\\bin\\docker.exe"],
+            "installer": {
+                "args": [
+                    "install",
+                    "--quiet",
+                    "--accept-license",
+                    "--backend=wsl-2",
+                    "--installation-dir=$dir",
+                    "--admin-settings"
+                ],
+                "keep": true
+            },
+            "uninstaller": {
+                "file": "Docker%20Desktop%20Installer.exe",
+                "args": ["uninstall", "--quiet"]
+            }
+        }
+    }
+}

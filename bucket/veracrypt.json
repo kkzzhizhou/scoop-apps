@@ -1,0 +1,30 @@
+{
+    "version": "1.25.9",
+    "description": "A free open source disk encryption software for Windows, Mac OSX and Linux based on TrueCrypt.",
+    "homepage": "https://veracrypt.fr",
+    "license": "Apache-2.0",
+    "url": "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt%20Portable%201.25.9.exe#/setup.exe",
+    "hash": "sha256:785E2953547EA8232AA3C45B9CFE564118809EB84B474DF6488F7519C4E954CC",
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\"",
+            "Remove-Item -Recurse \"$dir\\setup.exe\"",
+            "Move-Item \"$dir\\VeraCrypt\\*\" -Destination \"$dir\"",
+            "Remove-Item -Recurse \"$dir\\VeraCrypt\""
+        ]
+    },
+    "persist": "Configuration.xml",
+    "pre_install": "If (!(Test-Path \"$persist_dir\\Configuration.xml\")) { New-Item \"$dir\\Configuration.xml\" -ItemType File | Out-Null }",
+    "checkver": {
+        "url": "https://www.veracrypt.fr/en/Downloads.html",
+        "regex": "Latest Stable Release - ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://launchpad.net/veracrypt/trunk/$version/+download/VeraCrypt%20Portable%20$version.exe#/setup.exe",
+        "hash": {
+            "url": "https://launchpad.net/veracrypt/trunk/$version/+download/veracrypt-$version-sha256sum.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    },
+    "_from": "okibcn/ScoopMaster"
+}

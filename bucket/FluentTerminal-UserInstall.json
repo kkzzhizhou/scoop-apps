@@ -1,0 +1,49 @@
+{
+    "version": "0.7.7.0",
+    "description": "Fluent Terminal. Terminal emulator based on UWP and web technologies.",
+    "homepage": "https://github.com/felixse/FluentTerminal",
+    "license": "GPL-3.0-only",
+    "url": "https://github.com/felixse/FluentTerminal/releases/download/0.7.7.0/FluentTerminal.Package_0.7.7.0.zip",
+    "hash": "799cc25c0f8a67a36d00187a2a06e0fd1505e0b63e48286d8619296629d79a44",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModelUnlock\" /t REG_DWORD /f /v \"AllowAllTrustedApps\" /d 1",
+            "",
+            "Add-AppxPackage \"${dir}//FluentTerminal.Package`_${version}`_x86_x64.appxbundle\"",
+            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Install.bat -OutFile $dir//InstallContextMenu.bat -UseBasicParsing",
+            "Invoke-WebRequest https://github.com/felixse/FluentTerminal/raw/master/Explorer%20Context%20Menu%20Integration/Uninstall.bat -OutFile $dir//UninstallContextMenu.bat -UseBasicParsing",
+            "cmd /c \"$dir//InstallContextMenu.bat > nul 2> nul\"",
+            "",
+            "New-Item \"$dir//fluent-terminal.ps1\" | Out-Null",
+            "Set-Content \"$dir//fluent-terminal.ps1\" \"explorer shell:AppsFolder\\`$(Get-AppXPackage -Name *FluentTerminal* | Select-Object -ExpandProperty PackageFamilyName)`!App\""
+        ]
+    },
+    "bin": [
+        [
+            "fluent-terminal.ps1",
+            "fluent-terminal"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "",
+            "cmd /c \"$dir//UninstallContextMenu.bat > nul 2> nul\"",
+            "Get-AppxPackage -Name *FluentTerminal* | Remove-AppxPackage -AllUsers"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/felixse/FluentTerminal"
+    },
+    "autoupdate": {
+        "url": "https://github.com/felixse/FluentTerminal/releases/download/$version/FluentTerminal.Package_$version.zip"
+    }
+}

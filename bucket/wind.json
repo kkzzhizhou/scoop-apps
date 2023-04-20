@@ -1,0 +1,45 @@
+{
+    "version": "2.5.6",
+    "description": "A daemon service which is designed to create a systemd for Windows.",
+    "homepage": "https://github.com/ragnaroks/Wind",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ragnaroks/Wind/releases/download/v2.5.6/wind-win-x64.7z",
+            "hash": "ed1b745c6d778a768628a9c981abf4d6618919c0b1005bcdb310c0fe8895154e"
+        }
+    },
+    "persist": [
+        "Data",
+        "Units",
+        "Logs",
+        "UnitLogs"
+    ],
+    "bin": "wind.exe",
+    "post_install": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "Write-Host \"Installing Wind as Windows service...\"",
+        "sudo $dir\\wind.exe action:install start-immediately:true",
+        "Write-Host \"Starting Wind service...\"",
+        "sudo sc.exe start Wind"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($env:CI -eq \"true\") { Exit }",
+            "Write-Host \"Removing Wind service...\"",
+            "sudo $dir\\wind.exe action:uninstall"
+        ]
+    },
+    "depends": "sudo",
+    "suggest": {
+        "windctl": "windctl"
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ragnaroks/Wind/releases/download/v$version/wind-win-x64.7z"
+            }
+        }
+    }
+}

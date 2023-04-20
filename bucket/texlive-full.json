@@ -1,0 +1,58 @@
+{
+    "homepage": "https://tug.org/texlive/",
+    "description": "TeX Live is a cross-platform, free software distribution for the TeX typesetting system",
+    "license": "LPPL,GPL2",
+    "version": "2023",
+    "url": "http://mirror.ctan.org/systems/texlive/Images/texlive2023.iso",
+    "hash": "620923de5936ab315926e81de2cb8253a9c626fb7e03d8ffe0d424598eb32f94",
+    "extract_to": "installer",
+    "installer": {
+        "script": [
+            "Write-Host 'Invoking TeX Live installer...' -ForegroundColor DarkCyan",
+            "Write-Host 'This can take a few minutes to to a long time...' -ForegroundColor DarkYellow",
+            "$env:TEXLIVE_INSTALL_PAPER='a4'",
+            "$env:TEXLIVE_INSTALL_PREFIX=\"$dir\"",
+            "$env:TEXLIVE_INSTALL_NO_CONTEXT_CACHE=1",
+            "$env:TEXLIVE_INSTALL_NO_RESUME=1",
+            "$env:TEXLIVE_INSTALL_ENV_NOCHECK=1",
+            "$installProfile = \"$dir\\installer\\default.profile\"",
+            "Write-Output \"selected_scheme scheme-full\" | Out-File $installProfile -Encoding ASCII",
+            "$installArgs = \"-no-gui -portable -non-admin -profile=$installProfile\"",
+            "Invoke-ExternalCommand -Path \"$dir\\installer\\install-tl-windows.bat\" -ArgumentList $installArgs",
+            "Remove-Item \"$dir\\installer\" -Recurse -Force | Out-Null",
+            "if (!(Test-Path \"$dir\\bin\\win64\")) {",
+            "    New-Item -Type Directory -Path \"$dir\\bin\\win64\" | Out-Null",
+            "}",
+            "# Unset install envs",
+            "$env:TEXLIVE_INSTALL_PAPER=''",
+            "$env:TEXLIVE_INSTALL_PREFIX=''",
+            "$env:TEXLIVE_INSTALL_NO_CONTEXT_CACHE=''",
+            "$env:TEXLIVE_INSTALL_NO_RESUME=''",
+            "$env:TEXLIVE_INSTALL_ENV_NOCHECK=''"
+        ]
+    },
+    "env_add_path": [
+        "bin\\win64",
+        "bin\\windows"
+    ],
+    "shortcuts": [
+        [
+            "tl-tray-menu.exe",
+            "Tex Live Manager"
+        ],
+        [
+            "bin\\windows\\texworks.exe",
+            "TeXworks"
+        ]
+    ],
+    "persist": "texmf-config",
+    "checkver": {
+        "regex": "Current release: TeX Live ([\\d]+)"
+    },
+    "autoupdate": {
+        "url": "http://mirror.ctan.org/systems/texlive/Images/texlive$version.iso",
+        "hash": {
+            "url": "$url.sha512"
+        }
+    }
+}

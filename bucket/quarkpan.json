@@ -1,0 +1,51 @@
+{
+    "version": "2.5.20",
+    "description": "夸克网盘",
+    "homepage": "https://pan.quark.cn/",
+    "license": "Proprietary",
+    "url": "https://webcdn.m.qq.com/spcmgr/download/QuarkCloudDrive-v2.5.20-release-pckk@othre_ch-20230404152644.exe#/dl.7z",
+    "hash": "ef3fa51281db6d5f8e39e03524e26894e2d6e5b6bd64a1d1746d08f26d0ee0f0",
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
+            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\quark-cloud-drive\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\quark-cloud-drive\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "QuarkCloudDrive.exe",
+            "QuarkCloudDrive"
+        ]
+    ],
+    "checkver": {
+        "url": "https://pc.qq.com/detail/13/detail_24833.html",
+        "regex": "QuarkCloudDrive-v(?<version>[\\d.]+)-release-pckk@othre_ch-(?<build>[\\d]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://webcdn.m.qq.com/spcmgr/download/QuarkCloudDrive-v$matchVersion-release-pckk@othre_ch-$matchBuild.exe#/dl.7z"
+    }
+}

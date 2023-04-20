@@ -1,0 +1,37 @@
+{
+    "version": "4.10.06",
+    "description": "Stardock Fences. Automatically organize your desktop shortcuts icons and running tasks",
+    "homepage": "https://www.stardock.com/products/fences/",
+    "license": "Proprietary",
+    "changelog": "https://www.stardock.com/products/fences/history",
+    "url": "https://cdn.stardock.us/downloads/public/software/fences/Fences4-sd-setup.exe#/setup.exe",
+    "hash": "d42b9b2eaa2cc5ba81fe1969585b4be22eea455117b9140c649b62db7679fec5",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"Stardock Fences*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Stardock\\Fences\\Fences.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /s /noreboot | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\Customize Fences.lnk\") {Remove-Item \"$DesktopPath\\Customize Fences.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.stardock.com/products/fences/update",
+        "regex": "Update to Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://cdn.stardock.us/downloads/public/software/fences/Fences4-sd-setup.exe#/setup.exe"
+    }
+}

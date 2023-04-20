@@ -1,0 +1,43 @@
+{
+    "homepage": "https://y.qq.com/",
+    "description": "The official QQ Music client",
+    "version": "1924",
+    "license": "Proprietary",
+    "url": "https://dldir1.qq.com/music/clntupate/QQMusic_Setup_1924.exe#/dl.7z",
+    "hash": "md5:3c22ed505b0b87cf01c52b4466222069",
+    "installer": {
+        "script": [
+            "# simulate instok check",
+            "$helperScript = $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/qqmusic/instok)",
+            "Copy-Item -Path $helperScript -Destination $dir",
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "QQMusic.exe",
+            "QQ音乐"
+        ]
+    ],
+    "checkver": {
+        "url": "https://c.y.qq.com/pcupdate/fcgi-bin/fcg_update_player.fcg?cmd=QueryModuleUpdate&module_type=QQ&MusicNew&update_strategy=0",
+        "regex": "QQMusic_Setup_(\\d+).exe"
+    },
+    "autoupdate": {
+        "url": "https://dldir1.qq.com/music/clntupate/QQMusic_Setup_$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://c.y.qq.com/pcupdate/fcgi-bin/fcg_update_player.fcg?cmd=QueryModuleUpdate&module_type=QQ&MusicNew&update_strategy=0",
+            "regex": "module_hash>$md5"
+        }
+    }
+}

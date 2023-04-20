@@ -1,0 +1,49 @@
+{
+    "version": "3.0.0-rc1",
+    "description": "A cross platform connection manager for V2Ray and other backends.",
+    "homepage": "https://github.com/Shadowsocks-NET/Qv2ray",
+    "license": "GPL-3.0-or-later",
+    "suggest": {
+        "v2ray": "v2ray",
+        "vcredist": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Shadowsocks-NET/Qv2ray/releases/download/v3.0.0-rc1/Qv2ray-v3.0.0-rc1-Windows.7z",
+            "hash": "854c7a2e4035c43d7a409c702c0eee39848b999e76a83dd0a677a52975812d0c"
+        }
+    },
+    "extract_dir": "Qv2ray",
+    "pre_install": [
+        "if (-not (Test-Path \"$persist_dir\\config\\plugin_settings\\builtin_v2ray_support.json\")) {",
+        "    ensure \"$dir\\config\\plugin_settings\" | Out-Null",
+        "    $v2ray_dir = appdir 'v2ray' $global",
+        "    if (Test-Path $v2ray_dir) {",
+        "        $current = $v2ray_dir | Join-Path -ChildPath 'current'",
+        "        @{",
+        "            'AssetsPath' = \"$current\"",
+        "            'CorePath'   = \"$current\\v2ray.exe\"",
+        "        } | ConvertTo-Json -Depth 20 | Out-File \"$dir\\config\\plugin_settings\\builtin_v2ray_support.json\"",
+        "    }",
+        "}"
+    ],
+    "bin": "qv2ray.exe",
+    "shortcuts": [
+        [
+            "qv2ray.exe",
+            "Qv2ray"
+        ]
+    ],
+    "persist": "config",
+    "checkver": {
+        "url": "https://github.com/Shadowsocks-NET/Qv2ray/releases",
+        "regex": "/releases/tag/(?:v|V)?([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Shadowsocks-NET/Qv2ray/releases/download/v$version/Qv2ray-v$version-Windows.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "version": "15.3",
+    "description": "Adobe DNG Converter. The Adobe DNG Converter enables you to easily convert camera-specific raw files from supported cameras to a more universal DNG raw file.",
+    "homepage": "https://helpx.adobe.com/camera-raw/digital-negative.html",
+    "license": "Freeware",
+    "changelog": "",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.adobe.com/go/dng_converter_win#/setup.exe",
+            "hash": "b06b8dbbb81ae678caf2072b4ed2e80159867fad24e651de30d8fb140f84562e"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Adobe DNG Converter\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Adobe\\Adobe DNG Converter\\Adobe DNG Converter.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Adobe DNG Converter\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://codecpack.co/download/Adobe-DNG-Converter.html",
+        "regex": "Adobe DNG Converter / Camera Raw ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.adobe.com/go/dng_converter_win#/setup.exe"
+            }
+        }
+    }
+}

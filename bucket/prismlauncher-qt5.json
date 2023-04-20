@@ -1,0 +1,35 @@
+{
+    "version": "6.3",
+    "description": "An open source Minecraft launcher with the ability to manage multiple instances, accounts and mods. Focused on user freedom and free redistributability. Qt 5 build that still supports legacy Windows like 8.1 and 7.",
+    "homepage": "https://prismlauncher.org/",
+    "license": "GPL-3.0-only",
+    "notes": "To add Prism Launcher file association options for .ZIPs and .MRPACKS, run this: \"$dir\\install-associations.reg\"",
+    "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/6.3/PrismLauncher-Windows-MSVC-Legacy-6.3.zip",
+    "hash": "003b54560935c341ab825d41962323e56d649ea15a29f69d4ce64b93326c866c",
+    "suggest": {
+        "Microsoft Visual C++ Redistributables": "extras/vcredist2022"
+    },
+    "post_install": [
+        "'install-associations', 'uninstall-associations' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\games\\scripts\\prismlauncher-qt5\\$_.reg\") {",
+        "        $exePath = \"$dir\\prismlauncher.exe\".Replace('\\', '\\\\')",
+        "        $content = (Get-Content \"$bucketsdir\\games\\scripts\\prismlauncher-qt5\\$_.reg\").Replace('$EXEPATH', $exePath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
+    "bin": "prismlauncher.exe",
+    "shortcuts": [
+        [
+            "prismlauncher.exe",
+            "Prism Launcher"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/PrismLauncher/PrismLauncher"
+    },
+    "autoupdate": {
+        "url": "https://github.com/PrismLauncher/PrismLauncher/releases/download/$version/PrismLauncher-Windows-MSVC-Legacy-$version.zip"
+    }
+}

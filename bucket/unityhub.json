@@ -1,0 +1,48 @@
+{
+    "homepage": "https://unity.com/unity-hub",
+    "description": "The world’s most popular development platform for creating 2D and 3D multiplatform games",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://unity3d.com/legal/terms-of-service"
+    },
+    "version": "3.4.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe#/dl.7z",
+            "installer": {
+                "script": [
+                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                    "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse"
+                ]
+            }
+        }
+    },
+    "post_install": [
+        "Write-Host \"Registering unityhub:// protocol handler\"",
+        "$regpath = \"HKCU:\\SOFTWARE\\Classes\\unityhub\"",
+        "New-Item -Path $regpath -Value \"URL:unityhub\" -Force | Out-Null",
+        "New-ItemProperty -Path $regpath -Name \"URL Protocol\" -PropertyType String -Force | Out-Null",
+        "New-Item -Path \"$regpath\\shell\\Open\\command\" -Value \"`\"$dir\\Unity Hub.exe`\" `\"%1`\"\" -Force| Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "Write-Host \"Unregistering unityhub:// protocol handler\"",
+            "Remove-Item \"HKCU:\\SOFTWARE\\Classes\\unityhub\" -Recurse -Force"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Unity Hub.exe",
+            "Unity Hub"
+        ]
+    ],
+    "checkver": {
+        "url": "https://unity.com/unity-hub/release-notes",
+        "regex": "class=\"active\">([\\d.]+)</a>"
+    },
+    "autoupdate": {
+        "64bit": {
+            "url": "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe#/dl.7z"
+        }
+    }
+}

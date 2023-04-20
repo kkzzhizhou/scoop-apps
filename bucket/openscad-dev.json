@@ -1,0 +1,54 @@
+{
+    "version": "2023.04",
+    "description": "The Programmers Solid 3D CAD Modeller",
+    "homepage": "https://www.openscad.org/",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://files.openscad.org/snapshots/OpenSCAD-2023.04.04-x86-64.zip",
+            "hash": "sha512:6ba426977ce19d5f49e0648a19a9b785eb5b9f7dd3b96c64a24aae25a370870d0b37776e54078da9a9eb640fa8bdf19e92780e7c3610d77d3cf7c24112d5c815",
+            "extract_dir": "openscad-2023.04.04"
+        },
+        "32bit": {
+            "url": "https://files.openscad.org/snapshots/OpenSCAD-2023.04.04-x86-32.zip",
+            "hash": "sha512:8bf32e0677865656c016f8145a2ce45a132864fd82a691ccd2832c530114649dae6a886075546f49799efefcded7515b69bda6f3a0d20a77b2edb966a42d3aa2",
+            "extract_dir": "openscad-2023.04.04"
+        }
+    },
+    "shortcuts": [
+        [
+            "openscad.exe",
+            "OpenSCAD Snapshot"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$builds = 'x86-32', 'x86-64'",
+            "$script_ver = ''",
+            "$build_ids =  @()",
+            "foreach ($build in $builds) {",
+            "    $page = Invoke-WebRequest 'https://files.openscad.org/snapshots/' -UseBasicParsing",
+            "    $dl_file = $page.links | Where-Object href -match \"OpenSCAD-[\\w.]+-$build.zip$\" | Select-Object -last 1 -expand href",
+            "    $script_ver = ($dl_file | Select-String -Pattern 'OpenSCAD-([\\d.]+)\\.').Matches.Groups[1].Value",
+            "    $build_ids += ($dl_file | Select-String -Pattern 'OpenSCAD-([\\w.]+)-').Matches.Groups[1].Value",
+            "}",
+            "Write-Output ('version:\"' + $script_ver + '\"') ('build_ids:\"' + $build_ids + '\"')"
+        ],
+        "regex": "version:\"(?<version>[\\d.]+)\"\\sbuild_ids:\"(?<win32bit>.+)\\s(?<win64bit>.+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://files.openscad.org/snapshots/OpenSCAD-$matchWin64bit-x86-64.zip",
+                "extract_dir": "openscad-$matchWin64bit"
+            },
+            "32bit": {
+                "url": "https://files.openscad.org/snapshots/OpenSCAD-$matchWin32bit-x86-32.zip",
+                "extract_dir": "openscad-$matchWin32bit"
+            }
+        },
+        "hash": {
+            "url": "$url.sha512"
+        }
+    }
+}

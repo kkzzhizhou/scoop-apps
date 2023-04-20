@@ -1,22 +1,31 @@
 {
-    "version": "9.7.0.0",
-    "description": "YY致力于打造全民娱乐的互动直播平台，以多样的美女互动、优质的直播内容、极致的互动体验，满足用户音乐、舞蹈、户外等直播及绝地求生、王者荣耀等热门游戏直播的观看需求。",
     "homepage": "https://www.yy.com/",
+    "description": "The official client of YY, a Chinese video-based social network.",
+    "version": "9.15.0.0",
     "license": {
-        "identifier": "Unknown"
+        "identifier": "EULA",
+        "url": "https://zc.yy.com/license.html"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://yydl.yy.com/4/setup/YYSetup-9.4.0.0-zh-CN.exe#/dl.7z",
-            "hash": "e8ddab7ca6dd7dcf27ca119ae14b1b2a2892caf98d0ec2f51999aee1eec4c847"
-        }
-    },
+    "url": "https://yydl.yy.com/4/setup/YYSetup-9.15.0.0-zh-CN.exe#/dl.7z",
+    "hash": "30a0e35fd27efdb3dcc2fd023a1b5dbfbdf0bf83755176b471a52ef0e4a05ccf",
     "extract_dir": "InstallDir",
-    "bin": "YY.exe",
     "shortcuts": [
         [
             "YY.exe",
-            "YY"
+            "YY语音"
         ]
-    ]
+    ],
+    "checkver": {
+        "script": [
+            "$content = irm 'https://www.yy.com/web/pcyy_download/'",
+            "$jsPathname = 'https://web.yystatic.com/project/pcyy_download/pc/assets/'",
+            "$jsChunk = (Select-String -InputObject $content -Pattern 'js/index.*chunk.js').Matches.Value",
+            "$content = irm \"$jsPathname$jsChunk\"",
+            "return (Select-String -InputObject $content -Pattern 'YYSetup-([\\d.]+)-zh-CN.exe').Matches.Value"
+        ],
+        "regex": "YYSetup-([\\d.]+)-zh-CN.exe"
+    },
+    "autoupdate": {
+        "url": "https://yydl.yy.com/4/setup/YYSetup-$version-zh-CN.exe#/dl.7z"
+    }
 }

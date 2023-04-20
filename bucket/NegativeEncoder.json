@@ -1,0 +1,54 @@
+{
+    "version": "5.0.7",
+    "description": "NegativeEncoder is a GUI tool for video encoding using QuickSync and NVENC.",
+    "homepage": "https://github.com/zyzsdy/NegativeEncoder",
+    "license": "MIT License",
+    "url": "https://github.com/zyzsdy/NegativeEncoder/releases/download/v5.0.7/NegativeEncoderSetup_v5.0.7.exe#/dl.7z",
+    "hash": "3696f4acbf2d5b102c1862a93585deae3a29c191db7e329c1ab8a2db63bbf822",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\NegativeEncoder\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\NegativeEncoder\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "bin": [
+        "Libs/NVEncC64.exe",
+        "Libs/QSVEncC64.exe",
+        "Libs/VCEEncC64.exe"
+    ],
+    "shortcuts": [
+        [
+            "NEbin\\NegativeEncoder.exe",
+            "Negative Encoder"
+        ]
+    ],
+    "post_install": "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/zyzsdy/NegativeEncoder/releases/download/v$version/NegativeEncoderSetup_v$version.exe#/dl.7z"
+    }
+}

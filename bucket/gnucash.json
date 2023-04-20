@@ -1,0 +1,44 @@
+{
+    "version": "5.0",
+    "description": "Personal and small-business financial-accounting software",
+    "homepage": "https://www.gnucash.org/",
+    "license": "GPL-2.0-or-later",
+    "url": "https://github.com/Gnucash/gnucash/releases/download/5.0/gnucash-5.0.setup.exe",
+    "hash": "e9d30e36163a7f047daf2523ac35bf2218d2e661bcfc7f279d57d4d396caa33d",
+    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "Get-ChildItem \"$dir\\*,2.*\" -Recurse | Rename-Item -NewName { $_.FullName -replace ',2\\.', '.' }",
+                "Get-ChildItem \"$dir\\*,1.*\" -Recurse | Remove-Item",
+                "if (!(Test-Path -Path \"$persist_dir\\etc\\gnucash\\environment.local\")) { New-Item -Path \"$dir\\etc\\gnucash\" -Name \"environment.local\" -Value \"[Variables]\" | Out-Null }"
+            ]
+        },
+        "32bit": {
+            "pre_install": [
+                "Get-ChildItem \"$dir\\*,1.*\" -Recurse | Rename-Item -NewName { $_.FullName -replace ',1\\.', '.' }",
+                "Get-ChildItem \"$dir\\*,2.*\" -Recurse | Remove-Item",
+                "if (!(Test-Path -Path \"$persist_dir\\etc\\gnucash\\environment.local\")) { New-Item -Path \"$dir\\etc\\gnucash\" -Name \"environment.local\" -Value \"[Variables]\" | Out-Null }"
+            ]
+        }
+    },
+    "bin": "bin\\gnucash-cli.exe",
+    "shortcuts": [
+        [
+            "bin\\gnucash.exe",
+            "GnuCash"
+        ]
+    ],
+    "persist": "etc\\gnucash\\environment.local",
+    "checkver": {
+        "github": "https://github.com/Gnucash/gnucash",
+        "regex": "/download/([\\d.]+)/gnucash-([\\w.-]+)\\.setup\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Gnucash/gnucash/releases/download/$version/gnucash-$match2.setup.exe",
+        "hash": {
+            "url": "https://github.com/Gnucash/gnucash/releases/tag/$version",
+            "regex": "$sha256.*?$basename"
+        }
+    }
+}

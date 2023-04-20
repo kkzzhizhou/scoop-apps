@@ -1,0 +1,37 @@
+{
+    "version": "20230313125500-6c530fb",
+    "description": "Microsoft Xbox emulator",
+    "homepage": "https://cxbx-reloaded.co.uk/",
+    "license": {
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/blob/master/COPYING",
+        "identifier": "GPL-2.0"
+    },
+    "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-6c530fb/CxbxReloaded-Release-VS2022.zip",
+    "hash": "1cb40508413fb3cf2f9087858e18ecc02f15e98d9d149f9017eab7a8c16ce76d",
+    "pre_install": "if (!(Test-Path \"$persist_dir\\settings.ini\")) { $null = New-Item \"$dir\\settings.ini\" }",
+    "bin": "cxbx.exe",
+    "shortcuts": [
+        [
+            "cxbx.exe",
+            "Cxbx-Reloaded"
+        ]
+    ],
+    "persist": [
+        "EmuDisk",
+        "settings.ini"
+    ],
+    "checkver": {
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z CI-(?<commit>[a-f0-9]+)",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$matchCommit/CxbxReloaded-Release-VS2022.zip"
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "version": "1.74.0.22342",
+    "description": "Binary releases of VS Code without MS branding/telemetry/licensing.",
+    "homepage": "https://github.com/VSCodium/vscodium",
+    "license": "MIT",
+    "notes": [
+        "Add VSCodium as a context menu option by running: 'reg import \"$dir\\install-context.reg\"'",
+        "For file associations, run 'reg import \"$dir\\install-associations.reg\"'"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/1.74.0.22342/VSCodium-win32-x64-1.74.0.22342.zip",
+            "hash": "65fd0872bf619c5b8e98c7bd3b260467dcf9314c19ff0b601cc6d36188477d12"
+        },
+        "32bit": {
+            "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/1.74.0.22342/VSCodium-win32-ia32-1.74.0.22342.zip",
+            "hash": "1024ff8a8a78f0f674e5f96f3b88b436e7bd2593efc6c3da555555179cd46c0e"
+        },
+        "arm64": {
+            "url": "https://github.com/VSCodium/vscodium/releases/download/1.74.0.22342/VSCodium-win32-arm64-1.74.0.22342.zip",
+            "hash": "42da06e2fc800f52d8d36a271981ed7470fc81c56a9351e0f56cfd7c430d1e89"
+        }
+    },
+    "env_add_path": "bin",
+    "shortcuts": [
+        [
+            "VSCodium.exe",
+            "VSCodium"
+        ]
+    ],
+    "post_install": [
+        "$dirpath = \"$dir\".Replace('\\', '\\\\')",
+        "$exepath = \"$dir\\VSCodium.exe\".Replace('\\', '\\\\')",
+        "'install-associations', 'uninstall-associations', 'install-context', 'uninstall-context' | ForEach-Object {",
+        "  if (Test-Path \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\") {",
+        "    $content = Get-Content \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\"",
+        "    $content = $content.Replace('$codedir', $dirpath)",
+        "    $content = $content.Replace('$code', $exepath)",
+        "    $content = $content.Replace('&Code', '&VSCodium')",
+        "    if ($global) {",
+        "      $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_.reg\"",
+        "  }",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.vscode-oss\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.vscode-oss\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\VSCodium\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\VSCodium\" \"$dir\\data\\user-data\" -Recurse",
+        "}"
+    ],
+    "persist": "data",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/$version/VSCodium-win32-x64-$version.zip"
+            },
+            "32bit": {
+                "url": "https://mirrors.bfsu.edu.cn/github-release/VSCodium/vscodium/$version/VSCodium-win32-ia32-$version.zip"
+            }
+        },
+        "arm64": {
+            "url": "https://github.com/VSCodium/vscodium/releases/download/$version/VSCodium-win32-arm64-$version.zip"
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

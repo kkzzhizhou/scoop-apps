@@ -1,0 +1,63 @@
+{
+    "version": "1.6.2",
+    "description": "RDP Wrapper Library",
+    "homepage": "https://github.com/stascorp/rdpwrap",
+    "license": {
+        "identifier": "Apache-2.0"
+    },
+    "url": [
+        "https://github.com/stascorp/rdpwrap/releases/download/v1.6.2/RDPWrap-v1.6.2.zip",
+        "https://cdn.jsdelivr.net/gh/asmtron/rdpwrap@master/autoupdate.zip",
+        "https://gist.github.com/Paxxs/25f44af08977b771fed9e0f5cf167898/raw/6cb120732af23effb019e5a97bdcecc545f50121/autoupdate.bat#/auto.bat"
+    ],
+    "hash": [
+        "35a9481ddbed5177431a9ea4bd09468fe987797d7b1231d64942d17eb54ec269",
+        "9a1719db80042828e2af10f8d8fb11d1cc6c86db6a26306039fc8048f8bce254",
+        "65a4a5c42e2766df6d5313c7abdafe78a0f30634c9535b3419db8d21b78fedcc"
+    ],
+    "installer": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"ERROR: install require UAC. Please try again.\"",
+            "}",
+            "write-host \"替换更新脚本...\"",
+            "Remove-Item -Path \"$dir\\autoupdate.bat\"",
+            "Rename-Item -Path \"$dir\\auto.bat\" -NewName \"autoupdate.bat\"",
+            "write-host \"复制程序文件...\"",
+            "New-Item -Type Directory -Path \"$env:ProgramFiles\\RDP Wrapper\"",
+            "Move-Item -Path \"$dir\\*\" `",
+            "   -Destination \"$env:ProgramFiles\\RDP Wrapper\" -Exclude \"*.json\" -Force",
+            "write-host \"执行安装脚本...\"",
+            "cmd.exe /c \"$env:ProgramFiles\\RDP Wrapper\\install.bat\"",
+            "cmd.exe /c \"$env:ProgramFiles\\RDP Wrapper\\autoupdate.bat\"",
+            "",
+            "$shortcutPath = \"$(shortcut_folder $false)\"",
+            "write-host \"Creating shortcut in $shortcutPath...\"",
+            "New-Item -ItemType SymbolicLink -Path $shortcutPath -Name RDPCheck.lnk -Value \"$env:ProgramFiles\\RDP Wrapper\\RDPCheck.exe\"",
+            "New-Item -ItemType SymbolicLink -Path $shortcutPath -Name RDPConf.lnk -Value \"$env:ProgramFiles\\RDP Wrapper\\RDPConf.exe\"",
+            "New-Item -ItemType SymbolicLink -Path $shortcutPath -Name RDPUpdate.lnk -Value \"$env:ProgramFiles\\RDP Wrapper\\autoupdate.bat\"",
+            "",
+            ""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"ERROR: install require UAC. Please try again.\"",
+            "}",
+            "cmd.exe /c \"$env:ProgramFiles\\RDP Wrapper\\uninstall.bat\"",
+            "Remove-Item -Path \"$env:ProgramFiles\\RDP Wrapper\" -Recurse",
+            "",
+            "$shortcutPath = \"$(shortcut_folder $false)\"",
+            "write-host \"Removing shortcut in $shortcutPath...\"",
+            "Remove-Item $shortcutPath\\RDPCheck.lnk",
+            "Remove-Item $shortcutPath\\RDPConf.lnk",
+            "Remove-Item $shortcutPath\\RDPUpdate.lnk",
+            ""
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/stascorp/rdpwrap/releases/download/v$version/RDPWrap-v$version.zip"
+    }
+}

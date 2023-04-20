@@ -1,0 +1,56 @@
+{
+    "version": "0.9.13",
+    "description": "DeSmuME is a Nintendo DS emulator",
+    "homepage": "https://desmume.org",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/TASEmulators/desmume/releases/download/release_0_9_13/desmume-0.9.13-win64.zip",
+            "hash": "cbf710b8e6b29f0904e289a9b9a895548a2d7c7af5a3145c8279b97a69a09276"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\desmume.ini\")) {",
+        "    New-Item \"$dir\\desmume.ini\" -Type File | Out-Null",
+        "}",
+        "if (!(Test-Path \"$dir\\DeSmuME.exe\")) {",
+        "    Get-ChildItem \"$dir\" \"DeSmuME*.exe\" |",
+        "    Where-Object { $_.Name -Match '(?i)DeSmuME_(git#[\\da-z]+|[\\d.]+)_x[\\d]{2}.exe' } |",
+        "    ForEach-Object {",
+        "        warn \"Moving $($_.Name) to DeSmuMe.exe\"",
+        "        Move-Item -Force \"$dir\\$($_.Name)\" \"$dir\\DeSmuMe.exe\"",
+        "    }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "DeSmuME.exe",
+            "DeSmuME (Stable)"
+        ]
+    ],
+    "persist": [
+        "AviFiles",
+        "Battery",
+        "Cheats",
+        "Firmware",
+        "Lua",
+        "Roms",
+        "Screenshots",
+        "SramImportExport",
+        "States",
+        "StateSlots",
+        "desmume.ini"
+    ],
+    "checkver": {
+        "github": "https://github.com/TASEmulators/desmume",
+        "regex": "release_(?<major>[\\d]+)_(?<minor>[\\d]+)_(?<patch>[\\d]+)",
+        "replace": "${major}.${minor}.${patch}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/TASEmulators/desmume/releases/download/release_$underscoreVersion/desmume-$version-win64.zip"
+            }
+        }
+    }
+}

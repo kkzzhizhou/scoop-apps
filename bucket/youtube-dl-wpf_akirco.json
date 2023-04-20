@@ -1,0 +1,50 @@
+{
+    "version": "1.11.0",
+    "description": "A simple GUI wrapper for youtube-dl",
+    "homepage": "https://github.com/database64128/youtube-dl-wpf",
+    "license": "GPL-3.0-only",
+    "suggest": {
+        "FFmpeg": [
+            "ffmpeg",
+            "ffmpeg-nightly"
+        ]
+    },
+    "depends": [
+        "yt-dlp",
+        "sushi/dotnet-desktop-runtime"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/database64128/youtube-dl-wpf/releases/download/v1.11.0/youtube-dl-wpf-v1.11.0-windows.7z",
+            "hash": "9b0f50cbe268282fdfb7cb0a81dc45c62961c4b5d6ee78c68577689faf2f5f87"
+        }
+    },
+    "installer": {
+        "script": [
+            "$ffmpeg = ''",
+            "if (Test-Path (appdir ffmpeg $global)) {",
+            "    $ffmpeg = \"$(appdir ffmpeg $global)\\current\\bin\\ffmpeg.exe\"",
+            "} elseif (Test-Path (appdir ffmpeg-nightly $global)) {",
+            "    $ffmpeg = \"$(appdir ffmpeg-nightly $global)\\current\\bin\\ffmpeg.exe\"",
+            "}",
+            "@{",
+            "    'Version' = 1",
+            "    'Backend' = 2",
+            "    'BackendPath' = \"$(appdir 'yt-dlp' $global)\\current\\yt-dlp.exe\"",
+            "    'BackendAutoUpdate' = $false",
+            "    'FfmpegPath' = $ffmpeg",
+            "} | ConvertTo-Json | Out-File \"$dir\\Settings.json\""
+        ]
+    },
+    "shortcuts": [
+        [
+            "youtube-dl-wpf.exe",
+            "Cube YouTube Downloader"
+        ]
+    ],
+    "persist": "Settings.json",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/database64128/youtube-dl-wpf/releases/download/v$version/youtube-dl-wpf-v$version-windows.7z"
+    }
+}

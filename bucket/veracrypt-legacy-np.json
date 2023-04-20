@@ -1,0 +1,50 @@
+{
+    "homepage": "https://www.veracrypt.fr/",
+    "description": "A free open source disk encryption software for Windows, Mac OSX and Linux.",
+    "license": "Apache Licence",
+    "version": "1.25.4",
+    "url": "https://launchpad.net/veracrypt/trunk/1.25.4/+download/VeraCrypt%20Portable%201.25.4.exe#/setup.exe",
+    "hash": "4ebc0fce3668eb0e91a39e0a2c884f08a942c77dbbe9d880850a736ea07788e5",
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\"",
+            "Remove-Item -Recurse \"$dir\\setup.exe\"",
+            "Move-Item \"$dir\\VeraCrypt\\*\" -Destination \"$dir\"",
+            "Remove-Item -Recurse \"$dir\\VeraCrypt\"",
+            "$file = 'Configuration.xml'",
+            "if (!(Test-Path \"$persist_dir\\$file\")) {",
+            "    New-Item \"$dir\\$file\" -Type File | Out-Null",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "shortcuts": [
+                [
+                    "VeraCrypt-x64.exe",
+                    "VeraCrypt"
+                ]
+            ]
+        },
+        "32bit": {
+            "shortcuts": [
+                [
+                    "VeraCrypt.exe",
+                    "VeraCrypt"
+                ]
+            ]
+        }
+    },
+    "persist": "Configuration.xml",
+    "_checkver": {
+        "url": "https://www.veracrypt.fr/en/Downloads.html",
+        "regex": "For macOS and Windows: ([\\d.]+)"
+    },
+    "_autoupdate": {
+        "url": "https://launchpad.net/veracrypt/trunk/$version/+download/VeraCrypt%20Portable%20$version.exe#/setup.exe",
+        "hash": {
+            "url": "https://launchpad.net/veracrypt/trunk/$version/+download/veracrypt-$version-sha256sum.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "version": "5.14.5.15287",
+    "description": "Zoom. Video and audio conferencing, chat, and webinars",
+    "homepage": "https://zoom.us",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://zoom.us/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.zoom.us/client/5.14.5.15287/ZoomInstallerFull.msi?archType=x64",
+            "hash": "3c5765f01836a9491b504c259bc6751a1704f545d0e644cb29c36af7bb9ba2cd",
+            "extract_dir": "Program Files (64-bit) Folder\\Zoom\\bin"
+        },
+        "32bit": {
+            "url": "https://www.zoom.us/client/5.14.5.15287/ZoomInstallerFull.msi",
+            "hash": "93aea070bdcc8f0969328fb6e0707615ea5d4f098df1c49ee90517a5d3607cd5",
+            "extract_dir": "Program Files (32-bit) Folder\\Zoom\\bin"
+        }
+    },
+    "extract_dir": "Program Files (64-bit) Folder\\Zoom\\bin",
+    "post_install": [
+        "Write-Host \"Registering zoommtg:// protocol handler\"",
+        "$regpath = \"HKCU:\\SOFTWARE\\Classes\\zoommtg\"",
+        "New-Item -Path $regpath -Value \"Zoom (Application Name)\" -Force | Out-Null",
+        "New-ItemProperty -Path $regpath -Name \"URL Protocol\" -PropertyType String -Force | Out-Null",
+        "New-Item -Path \"$regpath\\shell\\open\\command\" -Value \"`\"$dir\\Zoom.exe`\" --url=`\"%1`\"\" -Force| Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "Write-Host \"Unregistering zoommtg:// protocol handler\"",
+            "Remove-Item \"HKCU:\\SOFTWARE\\Classes\\zoommtg\" -Recurse -Force"
+        ]
+    },
+    "bin": "Zoom.exe",
+    "shortcuts": [
+        [
+            "Zoom.exe",
+            "Zoom"
+        ]
+    ],
+    "checkver": {
+        "url": "https://launcher.zoom.us/upgrade?os=win",
+        "regex": "Current-version=([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.zoom.us/client/$version/ZoomInstallerFull.msi?archType=x64"
+            },
+            "32bit": {
+                "url": "https://www.zoom.us/client/$version/ZoomInstallerFull.msi"
+            }
+        }
+    }
+}

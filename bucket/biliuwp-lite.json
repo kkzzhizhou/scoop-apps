@@ -1,0 +1,83 @@
+{
+    "##": "The shortcut will be created when adding the Appx package",
+    "version": "4.5.5",
+    "description": "第三方哔哩哔哩UWP客户端",
+    "homepage": "https://github.com/ywmoyue/biliuwp-lite",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v4.5.5/BiliLite.UWP_4.5.5.0_x64.zip",
+            "hash": "44b3866f31877bacfc564fd9af30d311f6bbae7b1cb250e5dc145df8c09faf16",
+            "extract_dir": "BiliLite.UWP_4.5.5.0_x64"
+        },
+        "32bit": {
+            "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v4.5.5/BiliLite.UWP_4.5.5.0_x86.zip",
+            "hash": "c6efd04e36075763e37b3126d2a4dc361fb8c6f499b8eaafb1b468b4dcfa553f",
+            "extract_dir": "BiliLite.UWP_4.5.5.0_x86"
+        },
+        "arm64": {
+            "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v4.5.5/BiliLite.UWP_4.5.5.0_ARM64.zip",
+            "hash": "45d573b1089a14a9c21bcf76e5e6ef73414125ac22112fb2573b5e80191bbc3d",
+            "extract_dir": "BiliLite.UWP_4.5.5.0_ARM64"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\*.pdf\", \"$dir\\*.txt\"",
+        "Get-ChildItem \"$dir\\*.cer\" | Rename-Item -NewName 'biliuwp-lite.cer'",
+        "Get-ChildItem \"$dir\\*.msix\" | Rename-Item -NewName 'biliuwp-lite.msix'",
+        "if ($env:CI -eq \"true\") { Exit }",
+        "$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(\"$dir\\biliuwp-lite.cer\")",
+        "$trusted = Test-Path -PathType Leaf -Path \"cert:\\LocalMachine\\Root\\$($cert.Thumbprint)\"",
+        "if (!$trusted) {",
+        "    if (!(is_admin)) { ",
+        "        error \"Administrator privilege is required to install root certificate that may be a security concern. \";",
+        "        warn \"You can safely abort the installation, or try running the command 'sudo scoop install $app' with elevated privileges.\"",
+        "        break",
+        "}",
+        "    Write-Host 'Installing certificate' -ForegroundColor Yellow",
+        "    $rootStore = Get-Item 'cert:\\LocalMachine\\Root'",
+        "    $rootStore.Open('ReadWrite')",
+        "    $rootStore.Add($cert)",
+        "    $rootStore.Close()",
+        "}",
+        "",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "Add-AppxPackage \"$dir\\biliuwp-lite.msix\" -ForceTargetApplicationShutdown"
+    ],
+    "pre_uninstall": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "$package = Get-AppxPackage '5422.502643927C6AD'",
+        "if ($purge) {",
+        "    Remove-AppxPackage $package",
+        "} else {",
+        "    Remove-AppxPackage $package -PreserveRoamableApplicationData",
+        "}",
+        "$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2(\"$dir\\biliuwp-lite.cer\")",
+        "if ($purge -And ($cert.Thumbprint -ne $null)) {",
+        "    if (is_admin) { ",
+        "        Write-Host 'Uninstalling certificate' -ForegroundColor Yellow",
+        "        Remove-Item \"cert:\\LocalMachine\\Root\\$($cert.Thumbprint)\" -ErrorAction SilentlyContinue",
+        "    } else {",
+        "        warn \"Run 'Remove-Item cert:\\LocalMachine\\Root\\$($cert.Thumbprint)' with elevated privileges to remove certificate manually.\"",
+        "    }",
+        "}"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v$version/BiliLite.UWP_$version.0_x64.zip",
+                "extract_dir": "BiliLite.UWP_$version.0_x64"
+            },
+            "32bit": {
+                "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v$version/BiliLite.UWP_$version.0_x86.zip",
+                "extract_dir": "BiliLite.UWP_$version.0_x86"
+            },
+            "arm64": {
+                "url": "https://github.com/ywmoyue/biliuwp-lite/releases/download/v$version/BiliLite.UWP_$version.0_ARM64.zip",
+                "extract_dir": "BiliLite.UWP_$version.0_ARM64"
+            }
+        }
+    }
+}

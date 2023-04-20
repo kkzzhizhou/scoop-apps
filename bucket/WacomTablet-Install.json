@@ -1,0 +1,46 @@
+{
+    "version": "6.4.1.3",
+    "description": "Wacom Tablet. Drivers for Wacom Tablet",
+    "homepage": "https://www.wacom.com/",
+    "license": "Proprietary",
+    "changelog": "https://www.wacom.com/en-au/support/product-support/drivers",
+    "url": "https://cdn.wacom.com/u/productsupport/drivers/win/professional/WacomTablet_6.4.1-3.exe#/setup.7z",
+    "hash": "e1ce3fafdfd1c924b6ad4f45b78eebcf476b4a92e9da510e1f0e449a0d7a3c33",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"WacomDesktopCenter\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"WacomDesktopCenter*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Tablet\\Wacom\\32\\WacomDesktopCenter.exe\"",
+            "$SimpleVersion = \"$majorVersion.$minorVersion.$patchVersion.$buildVersion\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.wacom.com/en-au/support/product-support/drivers",
+        "regex": "Driver ([\\d.]+)-([\\d]) \\(Windows",
+        "replace": "$1.$2"
+    },
+    "autoupdate": {
+        "url": "https://cdn.wacom.com/u/productsupport/drivers/win/professional/WacomTablet_$majorVersion.$minorVersion.$patchVersion-$buildVersion.exe#/setup.7z"
+    }
+}

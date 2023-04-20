@@ -1,0 +1,48 @@
+{
+    "homepage": "https://wiki.mozilla.org/Add-ons/Extension_Signing#Unbranded_Builds",
+    "version": "112_0_1",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.v2.mozilla-release.revision.abc07166ae78021ff1d14bcbe58038b386500dae.firefox.win64-add-on-devel/artifacts/public/build/target.zip",
+            "hash": "fb0cc36e60fc3fea61b06eaf81be6d77013c36cc2b5905c6e992ed81949877a3"
+        },
+        "32bit": {
+            "url": "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.v2.mozilla-release.revision.abc07166ae78021ff1d14bcbe58038b386500dae.firefox.win32-add-on-devel/artifacts/public/build/target.zip",
+            "hash": "e30263faae021cc0259869568063229b9445ec3db2e6680b87a5a9b0e6196f44"
+        }
+    },
+    "extract_dir": "firefox",
+    "pre_install": [
+        "mkdir -f \"$dir\\distribution\" | Out-Null",
+        "Set-Content \"$dir\\distribution\\policies.json\" '{\"policies\":{\"DisableAppUpdate\":true,\"DisableFirefoxStudies\":true,\"DisableSystemAddonUpdate\":true,\"DisableTelemetry\":true}}'"
+    ],
+    "persist": "distribution",
+    "bin": [
+        [
+            "firefox.exe",
+            "firefox-unbranded"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "firefox.exe",
+            "Firefox Unbranded"
+        ]
+    ],
+    "checkver": {
+        "url": "https://hg.mozilla.org/releases/mozilla-release/raw-file/tip/.hgtags",
+        "re": "\\b(?<revision>[0-9a-fA-F]{40}) FIREFOX_(?<version>[\\d_]+)_RELEASE\\b",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.v2.mozilla-release.revision.$matchRevision.firefox.win64-add-on-devel/artifacts/public/build/target.zip"
+            },
+            "32bit": {
+                "url": "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.v2.mozilla-release.revision.$matchRevision.firefox.win32-add-on-devel/artifacts/public/build/target.zip"
+            }
+        }
+    }
+}
