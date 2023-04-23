@@ -1,25 +1,40 @@
 {
+    "version": "1.6.10",
+    "description": "订阅网页、RSS和Podcast，具备急速的阅读体验，高品质、免费、无广告、多平台的阅读器。泛用型Podcast播放器。",
     "homepage": "http://irreader.fatecore.com/",
-    "version": "1.6.9",
-    "url": "http://irreader.fatecore.com/download/irreader-1.6.9.zip",
-    "hash": "64735c30049864270201fb5db2f6c17226026f466e38b64ea81d8feb7d6fad92",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive \"$dir\\irreader` $version.exe\" \"$dir\"",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
-        ]
+    "license": {
+        "identifier": "Unknown"
     },
-    "checkver": {
-        "url": "http://irreader.fatecore.com/",
-        "regex": "irreader v((\\d+\\.\\d+\\.\\d+))"
+    "depends": "7zip",
+    "architecture": {
+        "64bit": {
+            "url": "http://irreader.fatecore.com/download/irreader-1.6.10.zip",
+            "hash": "72a0adf30e6a661a710f6555adf3b13c43df7829ac3bf888e80812437e28df8b"
+        }
     },
-    "autoupdate": {
-        "url": "http://irreader.fatecore.com/download/irreader-$version.zip"
-    },
+    "pre_install": [
+        "Rename-Item \"$dir\\*.exe\" -NewName \"$dir\\setup.7z\"",
+        "7z x $dir\\setup.7z -o\"$dir\"",
+        "7z x \"$dir\\`$PLUGINSDIR\\*.7z\" -o\"$dir\\`$PLUGINSDIR\\zy-player\"",
+        "Move-Item $dir\\`$PLUGINSDIR\\zy-player\\* $dir",
+        "Remove-Item -R -Path $dir\\`$PLUGINSDIR"
+    ],
+    "bin": "irreader.exe",
     "shortcuts": [
         [
             "irreader.exe",
             "irreader"
         ]
-    ]
+    ],
+    "checkver": {
+        "url": "http://irreader.fatecore.com/",
+        "regex": "\\/download\\/irreader-(?<version>[\\d.]+)\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://irreader.fatecore.com/download/irreader-$matchVersion.zip"
+            }
+        }
+    }
 }
