@@ -93,10 +93,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - ViCrack/scoop-bucket
 - niheaven/scoop-sysinternals
+- jonz94/scoop-sarasa-nerd-fonts
 - ChungZH/peach
 - 42wim/scoop-bucket
 - amorphobia/siku
-- jonz94/scoop-sarasa-nerd-fonts
 - NyaMisty/scoop_bucket_misty
 - batkiz/backit
 - iquiw/scoop-bucket
@@ -111,6 +111,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
 - Darkatse/Scoop-KanColle
+- AkariiinMKII/Scoop4kariiin
 - HUMORCE/nuke
 - AkinoKaede/maple
 - starise/Scoop-Confetti

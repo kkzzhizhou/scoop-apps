@@ -1,0 +1,58 @@
+{
+    "version": "2.1.1",
+    "description": "A custom keyboard configuration manager presented by LNE Lab.",
+    "homepage": "https://github.com/ln-org/lne_link",
+    "license": "Unknown",
+    "notes": [
+        "Support list:",
+        "https://github.com/ln-org/lne_link/blob/master/SUPPORT.md"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ln-org/lne_link/releases/download/v2.1.1/LINK.Setup.2.1.1.exe#/dl.7z",
+            "hash": "af137dd97f1ea50b5dd4afc3ae8d12d8c2db77e0118c3344b6f7eb99a2890d6a",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Mount-ExternalRuntimeData -Persist \"$persist_dir\\lne_link\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Write-Host 'Missing files, please readd Scoop4kariiin bucket and reinstall this app.' -ForegroundColor Red",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "LINK.exe",
+            "LINK"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Dismount-ExternalRuntimeData -Name \"lne_link\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ln-org/lne_link/releases/download/v$version/LINK.Setup.$version.exe#/dl.7z"
+            }
+        }
+    }
+}
