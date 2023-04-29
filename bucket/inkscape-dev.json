@@ -1,22 +1,22 @@
 {
-    "version": "1.3-dev_2023-03-28",
+    "version": "1.3-alpha_2023-04-27_3c4f48da9",
     "description": "Professional vector graphics editor",
     "homepage": "https://inkscape.org",
     "license": "GPL-3.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://gitlab.com/inkscape/inkscape/-/jobs/4012358327/artifacts/raw/build/inkscape-1.3-dev_2023-03-28_d93531fe2-x64.7z",
-            "hash": "56b1c9cfee5acdefbd50007a58f78524f5c9c393cb710dc801be6d93c086f307"
+            "url": "https://gitlab.com/inkscape/inkscape/-/jobs/4195005755/artifacts/raw/build/inkscape-1.3-alpha_2023-04-27_3c4f48da9-x64.7z",
+            "hash": "ecbe189a12014de88002a4a565f31d6ff1c5110e8c1d2829aeafe68ee4c60210"
         },
         "32bit": {
-            "url": "https://gitlab.com/inkscape/inkscape/-/jobs/4002339722/artifacts/raw/build/inkscape-1.3-dev_2023-03-24_009e769f6-x86.7z",
-            "hash": "67a2b2e0b4c1d7b3ed82a79c38b4bf7d578375e72e1c135ba84c1d101c45f663"
+            "url": "https://gitlab.com/inkscape/inkscape/-/jobs/4161005532/artifacts/raw/build/inkscape-1.3-alpha_2023-04-22_d32ff691c-x86.7z",
+            "hash": "3afe7d80f3dee2228d13ef875a333333d34aa4fca7835eda9a878d2ff888c40e"
         }
     },
     "extract_dir": "inkscape",
     "bin": [
-        "bin\\inkscape.com",
-        "bin\\inkview.com"
+        "bin\\inkscapecom.com",
+        "bin\\inkviewcom.com"
     ],
     "shortcuts": [
         [
@@ -25,25 +25,16 @@
         ]
     ],
     "checkver": {
-        "script": [
-            "$urls =  @()",
-            "'x32', 'x64' | ForEach-Object {",
-            "    $base_url = 'https://alpha.inkscape.org/snapshots/latest_master_'+ $_ + '.html'",
-            "    $dl_page = Invoke-WebRequest $base_url -UseBasicParsing",
-            "    $dl = $dl_page.links | Where-Object href -match '\\.7z$' | Select-Object -first 1 -expand href",
-            "    $urls += $dl",
-            "}",
-            "Write-Output ('urls:\"' + $urls + '\"')"
-        ],
-        "regex": "urls:\"(?<win32bit>.+inkscape-[\\d._\\-dev]+_\\w+-.+)\\s(?<win64bit>.+inkscape-(?<version>[\\d._\\-dev]+)_\\w+-.+)\""
+        "script": "('x64', 'x32' | ForEach-Object { (Invoke-WebRequest \"https://alpha.inkscape.org/snapshots/latest_master_$_.html\" -UseBasicParsing).links | Where-Object href -clike *.7z | Select-Object -first 1 -expand href }) -join ' '",
+        "regex": "https://gitlab\\.com/inkscape/inkscape/-/jobs/(?<job64>\\d+)/artifacts/raw/build/inkscape-([\\d.]+-[a-z]+_[\\d-]+_[a-f\\d]+)-x64\\.7z https://gitlab\\.com/inkscape/inkscape/-/jobs/(?<job32>\\d+)/artifacts/raw/build/inkscape-(?<ver32>[\\d.]+-[a-z]+_[\\d-]+_[a-f\\d]+)-x86\\.7z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "$matchWin64bit"
+                "url": "https://gitlab.com/inkscape/inkscape/-/jobs/$matchJob64/artifacts/raw/build/inkscape-$version-x64.7z"
             },
             "32bit": {
-                "url": "$matchWin32bit"
+                "url": "https://gitlab.com/inkscape/inkscape/-/jobs/$matchJob32/artifacts/raw/build/inkscape-$matchVer32-x86.7z"
             }
         }
     }
