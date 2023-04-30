@@ -90,13 +90,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - naderi/scoop-bucket
 - akirco/aki-apps
+- 42wim/scoop-bucket
 - ygguorun/scoop-bucket
 - ViCrack/scoop-bucket
 - niheaven/scoop-sysinternals
 - NyaMisty/scoop_bucket_misty
 - jonz94/scoop-sarasa-nerd-fonts
 - ChungZH/peach
-- 42wim/scoop-bucket
 - amorphobia/siku
 - batkiz/backit
 - iquiw/scoop-bucket
