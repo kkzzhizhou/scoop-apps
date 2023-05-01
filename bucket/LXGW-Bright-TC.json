@@ -1,5 +1,5 @@
 {
-    "version": "4.158",
+    "version": "5.300",
     "description": "An open-source Traditional Chinese font. Combination of LXGW WenKai TC (霞鹜文楷 TC) and Ysabeau Office",
     "homepage": "https://github.com/lxgw/LxgwBright",
     "license": "OFL-1.1",
@@ -12,12 +12,12 @@
         "https://raw.githubusercontent.com/lxgw/LxgwBright/main/LXGWBrightTC/LXGWBrightTC-SemiLightItalic.otf"
     ],
     "hash": [
-        "01471031c9c689ccdc6655f98738efa02fe833f185f14a92826e6b8696363460",
-        "75333cf7a06615da5402dd3b3204bede6c620ec87906372ca09acb92c5492986",
-        "50b2e39ace3aa029d4953cceb6a64f3fe659386b24135ea526ec50348bedfca6",
-        "3cbe7ba6b2f701182c85ee20afa858d613456c7ac17298b82bc5b610b50cba9c",
-        "8f39a54fe7e79df3ad51668feebc3e429e002b79b6bf0a8c41340105314b865e",
-        "f932de7a02762eb531f13824b46fe8a881774661f5d6c92aec3a405b8ff4cf89"
+        "8b5235ed5704d11f532edb4ac52f371cb173be696f019155d05f65fdb0a7950d",
+        "f58c9bf000acb535f53895697c0e25ec2786d122927ccc9f21e972e1b5fb13cf",
+        "42857e8e1709e03f0360ee434fbb03eea61da86b64365237b15ca84545f8ded3",
+        "d3d9b8ef76665a2ebd49a8d484e1eee0cb768986759d3bab1d959b028e028779",
+        "d0593b8bad479817cf083bd3011ec53ac0cc35ea3d3c2b3bf5493208cf245ad2",
+        "61debe092147f5ffa315e0ae3f86d04e22017e45404b0a43517c2229b845b30e"
     ],
     "installer": {
         "script": [
@@ -58,6 +58,33 @@
             "}"
         ]
     },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
     "uninstaller": {
         "script": [
             "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",

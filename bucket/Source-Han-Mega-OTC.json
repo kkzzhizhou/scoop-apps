@@ -1,17 +1,9 @@
 {
     "version": "20190603",
-    "license": "OFL-1.1",
     "homepage": "https://github.com/adobe-fonts/source-han-super-otc",
+    "license": "OFL-1.1",
     "url": "https://github.com/adobe-fonts/source-han-super-otc/releases/download/20190603/SourceHan.ttc",
     "hash": "md5:8f12d2fff6492b917496a3718e60cd5b",
-    "checkver": "github",
-    "autoupdate": {
-        "url": "https://github.com/adobe-fonts/source-han-super-otc/releases/download/$version/SourceHan.ttc",
-        "hash": {
-            "url": "https://github.com/adobe-fonts/source-han-super-otc",
-            "find": "href=\"#source-hansourcehanttc\">.+?MD5 hash is ([A-Fa-f0-9]{32})"
-        }
-    },
     "installer": {
         "script": [
             "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
@@ -51,6 +43,33 @@
             "}"
         ]
     },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.ttc' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
     "uninstaller": {
         "script": [
             "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
@@ -64,5 +83,13 @@
             "    Write-Host \"The Source Han Mega OTC (OpenType Collection) has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
             "}"
         ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/adobe-fonts/source-han-super-otc/releases/download/$version/SourceHan.ttc",
+        "hash": {
+            "url": "https://github.com/adobe-fonts/source-han-super-otc",
+            "find": "href=\"#source-hansourcehanttc\">.+?MD5 hash is ([A-Fa-f0-9]{32})"
+        }
     }
 }

@@ -1,8 +1,8 @@
 {
     "##": "This package has to be updated manually since autoupdate does not support updating multiple urls.",
     "version": "1.002",
-    "license": "OFL-1.1",
     "homepage": "https://github.com/adobe-fonts/source-han-mono",
+    "license": "OFL-1.1",
     "url": [
         "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-Bold.otf",
         "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-BoldIt.otf",
@@ -35,25 +35,6 @@
         "2931bfb8dc3fe0c09ea99de226dc9954c9b7d883876a45547edcb0852c51949e",
         "e75dae26a69a1c78fbd7945b9778b2585b375c359cdebdae91fe9001f045a643"
     ],
-    "checkver": "github",
-    "autoupdate": {
-        "url": [
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-Bold.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-BoldIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/ExtraLight/OTC/SourceHanMonoK-ExtraLight.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/ExtraLight/OTC/SourceHanMonoK-ExtraLightIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Heavy/OTC/SourceHanMonoK-Heavy.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Heavy/OTC/SourceHanMonoK-HeavyIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Light/OTC/SourceHanMonoK-Light.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Light/OTC/SourceHanMonoK-LightIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Medium/OTC/SourceHanMonoK-Medium.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Medium/OTC/SourceHanMonoK-MediumIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Normal/OTC/SourceHanMonoK-Normal.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Normal/OTC/SourceHanMonoK-NormalIt.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-Regular.otf",
-            "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-RegularIt.otf"
-        ]
-    },
     "installer": {
         "script": [
             "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
@@ -93,6 +74,33 @@
             "}"
         ]
     },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
     "uninstaller": {
         "script": [
             "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
@@ -105,6 +113,25 @@
             "if ($cmd -eq \"uninstall\") {",
             "    Write-Host \"Font family 'Source Han Mono K' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
             "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-Bold.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Bold/OTC/SourceHanMonoK-BoldIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/ExtraLight/OTC/SourceHanMonoK-ExtraLight.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/ExtraLight/OTC/SourceHanMonoK-ExtraLightIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Heavy/OTC/SourceHanMonoK-Heavy.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Heavy/OTC/SourceHanMonoK-HeavyIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Light/OTC/SourceHanMonoK-Light.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Light/OTC/SourceHanMonoK-LightIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Medium/OTC/SourceHanMonoK-Medium.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Medium/OTC/SourceHanMonoK-MediumIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Normal/OTC/SourceHanMonoK-Normal.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Normal/OTC/SourceHanMonoK-NormalIt.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-Regular.otf",
+            "https://github.com/adobe-fonts/source-han-mono/raw/master/Regular/OTC/SourceHanMonoK-RegularIt.otf"
         ]
     }
 }

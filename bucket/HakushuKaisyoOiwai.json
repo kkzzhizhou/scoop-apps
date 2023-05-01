@@ -1,11 +1,11 @@
 {
     "version": "1.0",
+    "description": "Japanese ink brush Kaisyo(楷書) font suitable for celebrations/banquets",
+    "homepage": "https://www.hakusyu.com/download_shiki_spring.htm",
     "license": {
         "identifier": "Freeware",
         "url": "https://www.hakusyu.com/download_shiki_spring.htm"
     },
-    "homepage": "https://www.hakusyu.com/download_shiki_spring.htm",
-    "description": "Japanese ink brush Kaisyo(楷書) font suitable for celebrations/banquets",
     "url": "https://www.hakusyu.com/font_win/shiki/spring/hkkaiiw.zip",
     "hash": "7d05a9acb1a2ebe7a6bb2103cce855c1d33d7f1298a10dace149745a3ad6234f",
     "extract_dir": "hkkaiiw",
@@ -48,6 +48,33 @@
             "}"
         ]
     },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.ttf' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
     "uninstaller": {
         "script": [
             "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",

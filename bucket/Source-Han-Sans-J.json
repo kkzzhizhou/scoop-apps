@@ -1,18 +1,11 @@
 {
     "version": "2.004",
     "description": "Source Han Sans is a set of OpenType Pan-CJK fonts. (Japanese variant)",
-    "license": "OFL-1.1",
     "homepage": "https://github.com/adobe-fonts/source-han-sans/",
+    "license": "OFL-1.1",
     "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest/download/SourceHanSansJ.zip",
     "hash": "747734b49301784fed68440711a106de42714d3a7dbc79064a30bbb0cac3f986",
     "extract_dir": "OTF/Japanese",
-    "checkver": {
-        "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest",
-        "regex": "Version ([\\d.]+)R"
-    },
-    "autoupdate": {
-        "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest/download/SourceHanSansJ.zip"
-    },
     "installer": {
         "script": [
             "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
@@ -52,6 +45,33 @@
             "}"
         ]
     },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
     "uninstaller": {
         "script": [
             "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
@@ -65,5 +85,12 @@
             "    Write-Host \"Font family 'Source Han Sans J' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
             "}"
         ]
+    },
+    "checkver": {
+        "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest",
+        "regex": "Version ([\\d.]+)R"
+    },
+    "autoupdate": {
+        "url": "https://github.com/adobe-fonts/source-han-sans/releases/latest/download/SourceHanSansJ.zip"
     }
 }
