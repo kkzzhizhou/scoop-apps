@@ -1,0 +1,53 @@
+{
+    "version": "0.6.3",
+    "homepage": "https://github.com/vladaad/discordcompressor",
+    "description": "A small program in Go that efficiently compresses videos using ffmpeg.",
+    "pre_install": "if (-Not(Get-Command ffmpeg -ErrorAction Ignore)){scoop.cmd install main/ffmpeg}",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/atzuur/discordcompressor/releases/download/0.6.3/discordcompressor-windows-portable.zip",
+            "hash": "da08b93a9f19cd22e74ccf7175f30b871256e7b5fb5d6d98b0fa99ec53421f3e",
+            "bin": [
+                "discordcompressor-portable.exe",
+                [
+                    "discordcompressor-portable.exe",
+                    "discordcompressor"
+                ],
+                [
+                    "discordcompressor-portable.exe",
+                    "dc"
+                ]
+            ]
+        }
+    },
+    "persist": "settings",
+    "post_install": [
+        "if (-Not(Get-Command ffmpeg.exe -ErrorAction Ignore)){",
+        "Write-Output \"Installing FFmpeg..\"",
+        "scoop.cmd install main/ffmpeg",
+        "}",
+        "$SendTo = [System.Environment]::GetFolderPath('SendTo')",
+        "if (-Not(Test-Path \"$SendTo\\DiscordCompressor.lnk\")){",
+        "if (Get-Command wt.exe -Ea Ignore){",
+        "$WshShell = New-Object -comObject WScript.Shell",
+        "$Shortcut = $WshShell.CreateShortcut(\"$SendTo\\DiscordCompressor.lnk\")",
+        "$Shortcut.TargetPath = \"wt.exe\"",
+        "$Shortcut.Arguments = \"-w 0 nt discordcompressor-portable.exe\"",
+        "$Shortcut.Save()",
+        "    }else{",
+        "$WshShell = New-Object -comObject WScript.Shell",
+        "$Shortcut = $WshShell.CreateShortcut(\"$SendTo\\DiscordCompressor.lnk\")",
+        "$Shortcut.TargetPath = \"discordcompressor-portable.exe\"",
+        "$Shortcut.Save()",
+        "    }",
+        "}"
+      ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/vladaad/discordcompressor/releases/download/$ver/discordcompressor-windows-portable.zip"
+            }
+        }
+    }
+}

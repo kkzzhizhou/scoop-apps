@@ -1,0 +1,38 @@
+{
+    "##": "The shortcut will be created when adding the Appx package",
+    "version": "2.1.36.5468",
+    "description": "基于UWP的第三方网易云音乐播放器",
+    "homepage": "https://github.com/HyPlayer/HyPlayer",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/HyPlayer/HyPlayer/releases/download/2.1.36.5468/HyPlayer_2.1.36.5468_x64_ARM64.msixbundle#/HyPlayer.msixbundle",
+            "hash": "e11213e6adcd1a0272767f139db0f0b0f5dd9d66f107a5b61312136b8c999c73"
+        }
+    },
+    "pre_install": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "Add-AppxPackage \"$dir\\HyPlayer.msixbundle\" -ForceTargetApplicationShutdown -AllowUnsigned"
+    ],
+    "pre_uninstall": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "$package = Get-AppxPackage '48848aaaaaaccd.HyPlayer'",
+        "if (!$package) { warn \"$app is already uninstalled out of scoop.\" ; Exit }",
+        "if ($purge) {",
+        "    Remove-AppxPackage $package",
+        "} else {",
+        "    Remove-AppxPackage $package -PreserveRoamableApplicationData",
+        "}"
+    ],
+    "notes": "本软件内置了以Toast通知形式实现的桌面歌词，如果有拖动桌面歌词/控制歌曲的需要我们建议下载【热词】 https://www.microsoft.com/store/productId/9MXFFHVQVBV9",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/HyPlayer/HyPlayer/releases/download/$version/HyPlayer_$version_x64_ARM64.msixbundle#/HyPlayer.msixbundle"
+            }
+        }
+    }
+}

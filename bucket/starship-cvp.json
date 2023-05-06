@@ -1,37 +1,28 @@
 {
-    "version": "1.14.2",
-    "description": "The minimal, blazing fast, and extremely customizable prompt for any shell!",
+    "version": "0.20230505",
+    "description": "Starship helper utils",
     "homepage": "https://starship.rs",
-    "license": "ISC",
+    "license": "MIT",
     "notes": [
-        "Usage: Add 'Invoke-Expression (&starship init powershell)' to the end of your PowerShell $PROFILE.",
-        "Prerequisites: A Powerline font installed and enabled in your terminal."
+        "Starship helper utils"
     ],
-    "suggest": {
-        "vcredist": "extras/vcredist2022"
-    },
-    "depends": ["cvp/nushell", "cvp/clink"],
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/starship/starship/releases/download/v1.14.2/starship-x86_64-pc-windows-msvc.zip",
-            "hash": "1e4d454c7ee7ee60daa490801ca8352e7c1947cc4d3f548101bfe48f4bb1e95b"
-        },
-        "32bit": {
-            "url": "https://github.com/starship/starship/releases/download/v1.14.2/starship-i686-pc-windows-msvc.zip",
-            "hash": "01af958ca5dac29484f4e02bb85d76911328e5375537867e5555d28f17d9646c"
-        },
-        "arm64": {
-            "url": "https://github.com/starship/starship/releases/download/v1.14.2/starship-aarch64-pc-windows-msvc.zip",
-            "hash": "922b7ac3fee850fba8ca9811b0ce13e989d946bd6dbd2595e0beabf9dfe5d055"
-        }
-    },
+    "depends": ["clink-cvp", "nushell-cvp", "starship"],
+    "url": "https://github.com/excitoon/empty/releases/download/empty-1.0.7/empty-1.0.7.zip",
+    "hash": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
     "pre_install": [
+        "",
+        "$null, $bucket = find_manifest($appName)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "",
+        "$evalDir = \"$(appdir nushell-cvp $global)\\current\".Replace('/', '\\')",
+        "$unixEvalDir = \"$evalDir\".Replace('\\', '/')",
+        "$unixDir = \"$dir\".Replace('\\', '/')",
         "",
         "'.cache', 'profile' | ForEach-Object { ensure \"$dir\\$_\" | Out-Null }",
         "",
         "$cachedir = \"$env:USERPROFILE/.cache\"",
         "ensure $cachedir | Out-Null",
-        "$cachedir = \"$env:USERPROFILE/.cache/$appName\"",
+        "$cachedir = \"$env:USERPROFILE/.cache/starship\"",
         "",
         "Write-UserMessage -Message \"Linking $(friendly_path $cachedir) => $(friendly_path $dir/.cache)\" -Output:$false",
         "",
@@ -49,7 +40,7 @@
         "Write-Host \":: Create script for start starship by clink...\" -ForegroundColor DarkCyan",
         "#ensure $dir/profile | Out-Null",
         "$ofile = \"$dir/starship_by_clink.cmd\"",
-        "$cont = \"@cmd.exe /s /k clink inject --profile $dir/profile\"",
+        "$cont = \"@cmd.exe /s /k clink inject --profile $unixDir/profile\"",
         "Set-Content \"$ofile\" \"$cont\" -Encoding ASCII",
         "",
         "Write-Host \":: Allow called by 'starship_by_clink'\" -ForegroundColor DarkCyan",
@@ -57,10 +48,11 @@
         "Write-Host \":: Create script for start starship by nushell...\" -ForegroundColor DarkCyan",
         "#ensure $dir/profile | Out-Null",
         "$ofile = \"$dir/starship_by_nushell.cmd\"",
-        "$cont = \"@cmd.exe /s /k nu --config $dir/profile/config.nu\"",
+        "$cont = \"@cmd.exe /s /k nu --config $unixDir/profile/config.nu\"",
         "Set-Content \"$ofile\" \"$cont\" -Encoding ASCII",
         "",
         "Write-Host \":: Allow called by 'starship_by_nushell'\" -ForegroundColor DarkCyan",
+        "",
         "",
         ""
     ],
@@ -69,12 +61,35 @@
         "$null, $bucket = find_manifest(\"nushell\")",
         "$bucketdir = Find-BucketDirectory($bucket)",
         "",
+        "$evalDir = \"$(appdir nushell-cvp $global)\\current\".Replace('/', '\\')",
+        "$unixEvalDir = \"$evalDir\".Replace('\\', '/')",
+        "$unixDir = \"$dir\".Replace('\\', '/')",
+        "",
+        "#$nu.config-path",
+        "$ifile = \"$(appdir nushell-cvp $global)/current/AppData/config.nu\"",
+        "Write-Host \":: Create script for generate config.nu...\" -ForegroundColor DarkCyan",
+        "$ofile = \"$dir/cmd_gen_config_nu.cmd\"",
+        "$cont = \"@chcp 65001 >nul&@set LANG=zh_CN\n@echo 'Y' | nu\"",
+        "Set-Content \"$ofile\" \"$cont\" -Encoding ASCII",
+        "$proc = Start-Process -FilePath \"$ofile\" -PassThru",
+        "do {",
+        "    Start-Sleep -Milliseconds 250",
+        "} while (-not(Test-Path -Path \"$ifile\" -PathType Leaf))",
+        "$nuproc = Get-Process \"nu\" -ErrorAction SilentlyContinue",
+        "$nuproc | Stop-Process -Force #$proc | kill",
+        "Remove-Item \"$ofile\"",
+        "",
+        "",
         "Write-Host \":: Config for start starship by nushell...\" -ForegroundColor DarkCyan",
         "cmd.exe /c \"starship init nu > $dir/.cache/init.nu\"",
-        "#$nu.config-path",
-        "$ifile = \"$(appdir nushell $global)/current/AppData/config.nu\"",
+        "$ofile = \"$dir/cmd_gen_init_nu.cmd\"",
+        "$cont = \"@chcp 65001 >nul&@set LANG=zh_CN\n@starship init nu > $dir/.cache/init.nu\"",
+        "Set-Content \"$ofile\" \"$cont\" -Encoding ASCII",
+        "$proc = Start-Process -FilePath \"$ofile\" -Wait",
+        "",
+        "$ifile = \"$(appdir nushell-cvp $global)/current/AppData/config.nu\"",
         "$ofile = \"$dir/profile/config.nu\"",
-        "$cont_append = \"source $dir/.cache/init.nu\"",
+        "$cont_append = \"source $unixDir/.cache/init.nu\"",
         "$cont = (Get-Content \"$ifile\")",
         "$found = False",
         "foreach($current_line in $cont)",
@@ -101,28 +116,8 @@
         ""
     ],
     "bin": [
-        "starship.exe",
         "starship_by_clink.cmd",
         "starship_by_nushell.cmd"
     ],
-    "persist": "profile",
-    "checkver": {
-        "github": "https://github.com/starship/starship"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/starship/starship/releases/download/v$version/starship-x86_64-pc-windows-msvc.zip"
-            },
-            "32bit": {
-                "url": "https://github.com/starship/starship/releases/download/v$version/starship-i686-pc-windows-msvc.zip"
-            },
-            "arm64": {
-                "url": "https://github.com/starship/starship/releases/download/v$version/starship-aarch64-pc-windows-msvc.zip"
-            }
-        },
-        "hash": {
-            "url": "$url.sha256"
-        }
-    }
+    "persist": "profile"
 }
