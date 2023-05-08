@@ -1,0 +1,49 @@
+{
+    "##": "The shortcut will be created when adding the Appx package / arm64 version is included",
+    "version": "0.13.149.0",
+    "description": "网易云音乐第三方UWP客户端",
+    "homepage": "https://t.me/lyricease",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://scoop-lemon.vercel.app/appcenter/brandonw3612/lyricease/public/64/download#/dl.zip",
+            "extract_dir": "LyricEase_0.13.149.0",
+            "hash": "b965eee5a61590f924a281eaf35850e3df0996a52b596c6a8e47200e73d78d9b"
+        }
+    },
+    "pre_install": [
+        "if ($env:CI -eq \"true\") { return }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "if ($architecture -eq \"64bit\") { $deppkgs = Get-ChildItem -Path $dir\\Dependencies\\*,$dir\\Dependencies\\x64\\* -Include *.appx,*.msix 2>$null }",
+        "if ($architecture -eq \"arm64\") { $deppkgs = Get-ChildItem -Path $dir\\Dependencies\\*,$dir\\Dependencies\\arm64\\* -Include *.appx,*.msix 2>$null }",
+        "# workaround for bug https://github.com/PowerShell/PowerShell/issues/18708",
+        "foreach ($deppkg in $deppkgs) {",
+        "    Write-Host (\"Install dependency '{0}'\" -f $deppkg.BaseName)",
+        "    Add-AppxPackage -Path $deppkg.Fullname 2>$null",
+        "}",
+        "Get-ChildItem \"$dir\\*.msixbundle\" | Add-AppxPackage -ForceTargetApplicationShutdown -AllowUnsigned"
+    ],
+    "pre_uninstall": [
+        "if ($env:CI -eq \"true\") { return }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "$package = Get-AppxPackage '17588BrandonWong.LyricEase'",
+        "if (!$package) { warn \"$app is already uninstalled out of scoop.\" ; return }",
+        "if ($purge) {",
+        "    Remove-AppxPackage $package",
+        "} else {",
+        "    Remove-AppxPackage $package -PreserveRoamableApplicationData",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://scoop-lemon.vercel.app/appcenter/brandonw3612/lyricease/public/latest/version",
+        "regex": "([\\d.]+)/(?<release>\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://scoop-lemon.vercel.app/appcenter/brandonw3612/lyricease/public/$matchRelease/download#/dl.zip",
+                "extract_dir": "LyricEase_$version"
+            }
+        }
+    }
+}
