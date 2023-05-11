@@ -64,8 +64,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheCjw/scoop-retools
 - kodybrown/scoop-nirsoft
 - littleli/scoop-clojure
-- kidonng/sushi
 - kkzzhizhou/scoop-zapps
+- kidonng/sushi
 - rasa/scoops
 - ScoopInstaller/Nirsoft
 - scoopcn/scoopcn
@@ -82,9 +82,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
 - Qv2ray/mochi
-- ZvonimirSun/scoop-iszy
-- kiennq/scoop-misc
 - ScoopInstaller/Nonportable
+- ZvonimirSun/scoop-iszy
 - zhoujin7/tomato
 - wangzq/scoop-bucket
 - wzv5/ScoopBucket
