@@ -1,0 +1,59 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/schema.json",
+    "version": "20230511.1",
+    "description": "Experimental emulator for the Nintendo Switch",
+    "homepage": "https://yuzu-emu.org/",
+    "license": {
+        "identifier": "GPL-2.0",
+        "url": "https://github.com/yuzu-emu/yuzu-mainline/blob/master/license.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kiennq/yuzu-build/releases/download/ea-20230511.1/yuzu-windows-msvc-20230508-440236bd2.7z",
+            "hash": "e66f504da4129531eb906804543e7282e8277ea53f8de6da88010d7109bf18ba"
+        }
+    },
+    "extract_dir": "yuzu-windows-msvc-ea",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\yuzu\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\yuzu\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\yuzu\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": [
+        [
+            "yuzu.exe",
+            "yuzu-ea"
+        ],
+        [
+            "yuzu-cmd.exe",
+            "yuzu-cmd-ea"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "yuzu.exe",
+            "Yuzu (EA)"
+        ]
+    ],
+    "persist": [
+        "user",
+        "plugins"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/kiennq/yuzu-build/releases/latest",
+        "re": "/download/ea-([\\d.-]+)/yuzu-windows-msvc-(?<date>[\\d]{8})-(?<commit>[\\da-f]+).7z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kiennq/yuzu-build/releases/download/ea-$version/yuzu-windows-msvc-$matchDate-$matchCommit.7z"
+            }
+        }
+    }
+}

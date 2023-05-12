@@ -59,8 +59,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Java
 - TheRandomLabs/Scoop-Spotify
 - borger/scoop-galaxy-integrations
-- TheRandomLabs/scoop-nonportable
 - ScoopInstaller/Versions
+- TheRandomLabs/scoop-nonportable
 - TheCjw/scoop-retools
 - kodybrown/scoop-nirsoft
 - littleli/scoop-clojure
@@ -81,9 +81,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - dodorz/scoop
 - borger/scoop-emulators
 - TheRandomLabs/Scoop-Bucket
-- Qv2ray/mochi
 - ScoopInstaller/Nonportable
+- Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
+- kiennq/scoop-misc
 - zhoujin7/tomato
 - wangzq/scoop-bucket
 - wzv5/ScoopBucket
