@@ -1,0 +1,56 @@
+{
+    "version": "7.0.20.4239101",
+    "description": "An all-in-one free communication and collaboration platform",
+    "homepage": "https://www.dingtalk.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://tms.dingtalk.com/markets/dingtalk/service-terms-zh"
+    },
+    "notes": "We don't persist your DingTalk data, they are still storaged in '%APPDATA%\\DingTalk'.",
+    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v7.0.20.4239101.exe#/dl.7z",
+    "hash": "md5:33c850cbf1c79ec3af7a5782c91f8fc4",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
+    "installer": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\DingTalk\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\DingTalk\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "DingtalkLauncher.exe",
+            "DingTalk"
+        ]
+    ],
+    "checkver": {
+        "url": "https://im.dingtalk.com/manifest/new/release_windows_vista_later_gray4.json",
+        "regex": "DingTalk_v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://im.dingtalk.com/manifest/new/release_windows_vista_later_gray4.json",
+            "jsonpath": "$.win.install.md5"
+        }
+    }
+}
