@@ -1,0 +1,21 @@
+{
+    "version": "0.4",
+    "description": "Legendary Integration for GOG Galaxy",
+    "homepage": "https://github.com/currall/galaxy-integration-legendary",
+    "license": "Unknown",
+    "url": "https://github.com/currall/galaxy-integration-legendary/releases/download/v0.4/GalaxyPluginEpic.zip",
+    "hash": "83d9eb3badd140d16baee18cfd5ef2335289e3822c28f6f81c1a71369b67a2db",
+    "pre_install": [
+        "$legendaryLocation = where.exe legendary.exe | Select-Object -First 1",
+        "if (!$legendaryLocation) { error \"$app requires legendary to be installed\"; break }",
+        "$config = \"$dir\\config.txt\"",
+        "(Get-Content $config) -Replace '(?<=legendary: ).+', $legendaryLocation | Set-Content $config",
+        "$installPath = \"$env:LOCALAPPDATA\\GOG.com\\Galaxy\\plugins\\installed\\GalaxyPluginEpic\"",
+        "if (!(Test-Path $installPath)) { New-Item -ItemType SymbolicLink -Path $installPath -Target \"$dir\" | Out-Null }"
+    ],
+    "post_uninstall": "Remove-Item -Recurse -ErrorAction Ignore \"$env:LOCALAPPDATA\\GOG.com\\Galaxy\\plugins\\installed\\GalaxyPluginEpic\"",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/currall/galaxy-integration-legendary/releases/download/v$version/GalaxyPluginEpic.zip"
+    }
+}

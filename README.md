@@ -75,8 +75,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Paxxs/Cluttered-bucket
 - couleur-tweak-tips/utils
 - hermanjustnu/scoop-emulators
-- cderv/r-bucket
 - ACooper81/scoop-apps
+- cderv/r-bucket
 - everyx/scoop-bucket
 - dodorz/scoop
 - borger/scoop-emulators
@@ -112,6 +112,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - yuusakuri/scoop-bucket
 - hu3rror/scoop-muggle
 - Darkatse/Scoop-KanColle
+- brian6932/dank-scoop
 - aliesbelik/poldi
 - AkariiinMKII/Scoop4kariiin
 - HUMORCE/nuke

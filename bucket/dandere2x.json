@@ -1,0 +1,45 @@
+{
+    "version": "3.7.6",
+    "description": "Dandere2x - Fast Waifu2x Video Upscaling.",
+    "homepage": "https://github.com/akai-katto/dandere2x",
+    "license": "GPL-3.0-only",
+    "url": "https://github.com/akai-katto/dandere2x/releases/download/3.7/3.7.6.zip",
+    "hash": "586eaa3028f9c2e533681e063dc5c9175845332ebd4e4a5202cb053edcbd56fe",
+    "extract_dir": "3.7.6",
+    "bin": [
+        [
+            "main.exe",
+            "dandere2x"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "main.exe",
+            "dandere2x"
+        ]
+    ],
+    "persist": "config_files",
+    "checkver": {
+        "script": [
+            "try {",
+            "    $api = (Invoke-RestMethod https://api.github.com/repositories/171577816/releases)[0..2] | Where-Object { $_.assets.name.split('.')[0] -match '^\\d+$' }",
+            "    $zip = '[\\d.]+(?=b?\\.zip\\Z)'",
+            "    foreach ($ver in $api.assets.name) {",
+            "        if ($ver -match $zip -and ($curr = [version][string]$matches.Values) -gt $max) {",
+            "            $max = $curr",
+            "            $beta = if ($ver[$ver.length - 5] -eq 'b') { 'b' } else { '' }",
+            "        }",
+            "    }",
+            "    $api[0].tag_name, ([string]$max + $beta) -join ' '",
+            "}",
+            "catch {",
+            "    ''",
+            "}"
+        ],
+        "regex": "\\A(?<tag>\\S+) ([\\d.]+b?)\\Z"
+    },
+    "autoupdate": {
+        "url": "https://github.com/akai-katto/dandere2x/releases/download/$matchTag/$version.zip",
+        "extract_dir": "$version"
+    }
+}
