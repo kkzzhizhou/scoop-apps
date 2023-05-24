@@ -1,15 +1,15 @@
 {
-    "version": "5051346908",
+    "version": "5063942970",
     "description": "Free and reliable P2P Bittorent client.",
-    "homepage": "https://www.qbittorrent.org/",
+    "homepage": "https://github.com/qbittorrent/qBittorrent",
     "license": {
         "identifier": "GPL-2.0-only",
         "url": "https://github.com/qbittorrent/qBittorrent/blob/master/COPYING"
     },
     "architecture": {
         "64bit": {
-            "url": "https://nightly.link/qbittorrent/qBittorrent/workflows/ci_windows.yaml/master/qBittorrent-CI_Windows-x64_libtorrent-1.2.18.zip",
-            "hash": "d52d24be81ee1c476fb2bcf463cc1fdee5095ad9f7f36704c368709840c4ffc6"
+            "url": "https://nightly.link/qbittorrent/qBittorrent/workflows/ci_windows.yaml/master/qBittorrent-CI_Windows-x64_libtorrent-1.2.19.zip",
+            "hash": "2e31f585df443f3ef7229876fdb8a042196e61bef4d87f2b7a4ca0f7df0bbbca"
         }
     },
     "pre_install": [
@@ -44,13 +44,19 @@
     ],
     "persist": "profile",
     "checkver": {
-        "url": "https://api.github.com/repositories/3351871/actions/workflows/ci_windows.yaml/runs?branch=master&status=success",
-        "jsonpath": "$.workflow_runs[0].id"
+        "script": [
+            "try {",
+            "    (Invoke-RestMethod 'https://api.github.com/repositories/3351871/actions/workflows/ci_windows.yaml/runs?branch=master&status=success').workflow_runs[0].id,",
+            "    (Invoke-RestMethod https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/.github/workflows/ci_windows.yaml | Select-String 'libt_version: \\[\"[\\d.]+\", \"([\\d.]+)\"\\]').matches.groups[1].value -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(\\d+) (?<libtorrent>[\\d.]+)\\Z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://nightly.link/qbittorrent/qBittorrent/workflows/ci_windows.yaml/master/qBittorrent-CI_Windows-x64_libtorrent-1.2.18.zip"
+                "url": "https://nightly.link/qbittorrent/qBittorrent/workflows/ci_windows.yaml/master/qBittorrent-CI_Windows-x64_libtorrent-$matchLibtorrent.zip"
             }
         }
     }
