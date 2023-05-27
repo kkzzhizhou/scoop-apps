@@ -3,48 +3,51 @@
     "description": "Locate files and folders by name instantly.",
     "homepage": "https://www.voidtools.com",
     "license": "MIT",
-    "notes": "Run '$dir\\install-context.reg' to add Everything to right-click context menu.",
+    "notes": [
+        "To add Everything to right-click context menu, run:",
+        "reg import \"$dir\\install-context.reg\""
+    ],
     "architecture": {
         "64bit": {
-            "url": [
-                "https://www.voidtools.com/Everything-1.4.1.1024.x64.zip",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/install-context.reg",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/uninstall-context.reg"
-            ],
-            "hash": [
-                "4be0851752e195c9c7f707b1e0905cd01caf6208f4e2bfa2a66e43c0837be8f5",
-                "8dae88b926055e99ed6bc9f851bb684ef791cf5213638330e822e5a6c3b9a98f",
-                "5c07afc595465def0d839ab327f3abb389897c14f52231e578d42db571b7d2f9"
-            ]
+            "url": "https://www.voidtools.com/Everything-1.4.1.1024.x64.zip",
+            "hash": "4be0851752e195c9c7f707b1e0905cd01caf6208f4e2bfa2a66e43c0837be8f5"
         },
         "32bit": {
-            "url": [
-                "https://www.voidtools.com/Everything-1.4.1.1024.x86.zip",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/install-context.reg",
-                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/everything/uninstall-context.reg"
-            ],
-            "hash": [
-                "febbdf9ffefd122e046163d23b3ce995b35bbee05964886d1db8c81b7fb5c34f",
-                "8dae88b926055e99ed6bc9f851bb684ef791cf5213638330e822e5a6c3b9a98f",
-                "5c07afc595465def0d839ab327f3abb389897c14f52231e578d42db571b7d2f9"
-            ]
+            "url": "https://www.voidtools.com/Everything-1.4.1.1024.x86.zip",
+            "hash": "febbdf9ffefd122e046163d23b3ce995b35bbee05964886d1db8c81b7fb5c34f"
         }
     },
     "pre_install": [
         "ensure \"$persist_dir\" | Out-Null",
-        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Invoke-ExternalCommand \"$dir\\Everything.exe\" -Args @('-install-config null') | Out-Null }",
-        "Get-ChildItem \"$persist_dir\\*\" -Include 'Everything.db', 'Bookmarks.csv', 'Everything.ini' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue",
-        "$app_path = \"$dir\\Everything.exe\".Replace('\\', '\\\\')",
-        "$reg_content = (Get-Content \"$dir\\install-context.reg\")",
-        "$reg_content = $reg_content.replace('$app_path', $app_path)",
-        "Set-Content \"$dir\\install-context.reg\" $reg_content -Encoding ASCII"
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Start-Process -Wait \"$dir\\Everything.exe\" -Args @('-install-config null') }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
     ],
-    "uninstaller": {
-        "script": [
-            "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Everything.db', 'Bookmarks.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
-            "reg import \"$dir\\uninstall-context.reg\""
-        ]
-    },
+    "post_install": [
+        "$app_path = \"$dir\\Everything.exe\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\everything\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\everything\\$_\"",
+        "        $content = $content.Replace('$app_path', $app_path)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "}"
+    ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
+        "if ($(Get-Service -Name Everything -ErrorAction SilentlyContinue).Status -ne 'Stopped') {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to stop Everything service'; break }",
+        "    Stop-Service -Name 'Everything' -Force -ErrorAction SilentlyContinue | Out-Null",
+        "}",
+        "if ((Get-Service -Name Everything -ErrorAction SilentlyContinue) -and ($cmd -eq 'uninstall')) {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to remove Everything service'; break }",
+        "    sc.exe delete 'Everything'",
+        "}",
+        "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+        "Get-ChildItem \"$dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    ],
     "bin": "Everything.exe",
     "shortcuts": [
         [
