@@ -1,5 +1,5 @@
 {
-    "version": "1.52",
+    "version": "1.52.0.0",
     "description": "Winaero Tweaker. Tweaks and hidden settings for power-users for Windows 7/8/8.1/10",
     "homepage": "https://winaero.com/winaero-tweaker/",
     "license": {
@@ -8,14 +8,15 @@
     },
     "changelog": "https://winaero.com/winaero-tweaker/#history",
     "url": "https://winaero.com/winaerotweaker.zip",
-    "hash": "0a436faf46af1bbbc93d24ccee855291996214477336b63e50cff261b13953f4",
+    "hash": "4ebe957fb53878b946c6c25bfee8f04e2576871c91b55fd91269dd5216db7a8f",
+    "pre_install": [
+        "Remove-Item \"$dir\\SilentSetup.cmd\" -ErrorAction 'SilentlyContinue'",
+        "Get-ChildItem \"$dir\" '*setup.exe' | Rename-Item -NewName 'setup.exe'"
+    ],
     "installer": {
-        "file": "WinaeroTweaker-1.40.0.0-setup.exe",
-        "args": [
-            "/SP-",
-            "/VERYSILENT",
-            "/PORTABLE",
-            "/DIR=$dir"
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/SP-', '/VERYSILENT', '/PORTABLE', \"/DIR=`\"$dir`\"\")",
+            "Remove-Item \"$dir\\setup.exe\""
         ]
     },
     "post_install": "if (Test-Path \"$dir\\SilentSetup.cmd\") { Remove-Item \"$dir\\SilentSetup.cmd\" }",
@@ -26,7 +27,10 @@
             "Winaero Tweaker"
         ]
     ],
-    "checkver": "The latest version is ([\\d.]+)",
+    "checkver": {
+        "url": "https://winaero.com/updates/tweaker.txt",
+        "regex": "^([\\d.]+)"
+    },
     "autoupdate": {
         "url": "https://winaero.com/winaerotweaker.zip"
     }
