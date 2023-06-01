@@ -1,16 +1,16 @@
 {
-    "version": "ad2d27f",
-    "description": "Microsoft Xbox 360 emulator",
+    "version": "20230531204722-1ae524a",
+    "description": "Xbox 360 Research Emulator (development version)",
     "homepage": "https://xenia.jp",
     "license": {
         "identifier": "BSD-3-Clause",
         "url": "https://github.com/xenia-canary/xenia-canary/blob/canary_pr/LICENSE"
     },
-    "url": "https://github.com/xenia-canary/xenia-canary/releases/download/ad2d27f/xenia_canary.zip",
-    "hash": "44f822cc7fb797117b0e06774b1ae6cb3e305a6d1ef1f933135168ea0b9a0799",
+    "url": "https://github.com/xenia-canary/xenia-canary/releases/download/1ae524a/xenia_canary.zip",
+    "hash": "9fedd392f2061e64fdc428224d64e986a3813caf569446ceb2bd059957ea0635",
     "pre_install": [
         "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
         "   New-item \"$persist_dir\\portable.txt\" -ItemType File | Out-Null",
         "   New-item \"$persist_dir\\xenia-canary.config.toml\" -ItemType File | Out-Null",
         "   if (Test-Path \"$env:USERPROFILE\\Documents\\Xenia\") {",
@@ -24,20 +24,28 @@
     "shortcuts": [
         [
             "xenia_canary.exe",
-            "Xenia (canary)"
+            "Xenia Canary"
         ]
     ],
     "persist": [
         "portable.txt",
         "xenia-canary.config.toml",
         "content",
-        "cache"
+        "cache",
+        "patches"
     ],
     "checkver": {
-        "url": "https://github.com/xenia-canary/xenia-canary/releases/latest",
-        "regex": "([a-f0-9]{7})<"
+        "url": "https://github.com/xenia-canary/xenia-canary/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)_canary_experimental",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
-        "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$version/xenia_canary.zip"
+        "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$matchCommit/xenia_canary.zip"
     }
 }
