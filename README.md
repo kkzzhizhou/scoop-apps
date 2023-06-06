@@ -78,8 +78,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ACooper81/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
-- dodorz/scoop
 - ScoopInstaller/Nonportable
+- dodorz/scoop
 - TheRandomLabs/Scoop-Bucket
 - borger/scoop-emulators
 - Qv2ray/mochi
@@ -90,9 +90,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - wzv5/ScoopBucket
 - akirco/aki-apps
+- niheaven/scoop-sysinternals
 - naderi/scoop-bucket
 - ViCrack/scoop-bucket
-- niheaven/scoop-sysinternals
 - 42wim/scoop-bucket
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
