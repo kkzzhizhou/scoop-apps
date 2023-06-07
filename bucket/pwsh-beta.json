@@ -11,6 +11,10 @@
         "32bit": {
             "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.4.0-preview.3/PowerShell-7.4.0-preview.3-win-x86.zip",
             "hash": "93f8a23c489c1e1cf51fd3b6c0bc98a73e8adab5148d352881abbc4c8ac87343"
+        },
+        "arm64": {
+            "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.4.0-preview.3/PowerShell-7.4.0-preview.3-win-arm64.zip",
+            "hash": "9337ac0b9bddd33eb4bfff8bf085df9780a790326cd71cf7c41089a041e11719"
         }
     },
     "bin": "pwsh.exe",
@@ -23,8 +27,9 @@
     "pre_install": "if(!(Test-Path \"$dir\\profile.ps1\")) { New-Item \"$dir\\profile.ps1\" -ItemType File }",
     "persist": "profile.ps1",
     "checkver": {
-        "url": "https://github.com/PowerShell/PowerShell/releases.atom",
-        "regex": "/releases/tag/(?:v)?([\\d.]+(-[a-z]+[\\d.]+)?)"
+        "url": "https://api.github.com/repos/PowerShell/PowerShell/releases",
+        "jsonpath": "$[?(@.prerelease == true)].tag_name",
+        "regex": "v([\\w.-]+)"
     },
     "autoupdate": {
         "architecture": {
@@ -33,11 +38,13 @@
             },
             "32bit": {
                 "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-x86.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/PowerShell/PowerShell/releases/download/v$version/PowerShell-$version-win-arm64.zip"
             }
         },
         "hash": {
-            "url": "https://github.com/PowerShell/PowerShell/releases/tag/v$version/",
-            "find": "$basename\\s*<ul>\\s*<li>([A-Fa-f0-9]{64})"
+            "url": "$baseurl/hashes.sha256"
         }
     }
 }
