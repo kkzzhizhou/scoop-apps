@@ -50,7 +50,7 @@
         "$cont = $cont -replace '@SCRIPT_LNKNAME@', \"Verification Run Manager 2020.04 CVP\"",
         "Set-Content \"$ofile\" ($cont -join \"`r`n\") -Encoding ASCII",
         "",
-        "$EVAL_INST_PATH = \"$(current_dir $dir)\".Replace('/', '\\\\')",
+        "$EVAL_INST_PATH = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
         "$escdir = $EVAL_INST_PATH -replace \"\\\\\",\"\\\\\"",
         "#(gc \"$bucketdir\\..\\scripts\\$appName\\install-context.reg.tpl\") | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-context.reg\"",
         "#(gc \"$bucketdir\\..\\scripts\\$appName\\uninstall-context.reg.tpl\") | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\uninstall-context.reg\"",
