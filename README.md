@@ -72,10 +72,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - hoilc/scoop-lemon
 - echoiron/echo-scoop
-- couleur-tweak-tips/utils
 - Paxxs/Cluttered-bucket
-- ACooper81/scoop-apps
+- couleur-tweak-tips/utils
 - hermanjustnu/scoop-emulators
+- ACooper81/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - ScoopInstaller/Nonportable
@@ -101,12 +101,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - amorphobia/siku
 - batkiz/backit
+- arch3rPro/scoop-bucket
 - aoisummer/scoop-bucket
 - cc713/ownscoop
 - seumsc/scoop-seu
 - Velgus/Scoop-Portapps
 - rivy/scoop-bucket
-- arch3rPro/scoop-bucket
 - littleli/Scoop-littleli
 - ChinLong/scoop-customize
 - starise/Scoop-Gaming
