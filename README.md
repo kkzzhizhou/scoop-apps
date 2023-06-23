@@ -107,11 +107,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - seumsc/scoop-seu
 - Velgus/Scoop-Portapps
 - rivy/scoop-bucket
+- hu3rror/scoop-muggle
 - littleli/Scoop-littleli
 - ChinLong/scoop-customize
 - starise/Scoop-Gaming
 - yuusakuri/scoop-bucket
-- hu3rror/scoop-muggle
 - Darkatse/Scoop-KanColle
 - brian6932/dank-scoop
 - AkariiinMKII/Scoop4kariiin
