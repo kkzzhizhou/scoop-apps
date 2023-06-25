@@ -1,25 +1,44 @@
 {
-    "version": "3.5.4.234",
-    "description": "HMCL 是一个免费、开源的 Minecraft 启动器，允许玩家方便快捷地安装、管理、运行游戏。",
     "homepage": "https://github.com/huanghongxun/HMCL",
-    "license": "GPL-3.0",
-    "depends": "oraclejre8",
-    "url": "https://github.com/huanghongxun/HMCL/releases/download/v3.5.4.234/HMCL-3.5.4.234.exe",
-    "hash": "dd4c8e9db18af01a715eea6a661a94e185dc4981eb7a1eee0541bb0c1a43bd9c",
-    "bin": "HMCL.exe",
-    "pre_install": "Rename-Item \"$dir\\HMCL-$version.exe\" -NewName \"$dir\\HMCL.exe\"",
+    "description": "A powered Minecraft launcher that supports a lot of features.",
+    "license": "GPL-3.0-only",
+    "version": "3.5.5",
+    "url": "http://ci.huangyuhui.net/job/HMCL-stable/5/artifact/HMCL/build/libs/HMCL-3.5.5.exe#/hmcl.exe",
+    "hash": "sha1:b416350bd1f6d23e69b7b7ef7a4b69b7110d79bd",
+    "bin": "hmcl.exe",
     "shortcuts": [
         [
-            "HMCL.exe",
+            "hmcl.exe",
             "HMCL"
         ]
     ],
-    "persist": ".minecraft",
-    "post_install": "scoop reset oraclejre8",
+    "suggest": {
+        "JDK": [
+            "java/oraclejdk",
+            "java/openjdk"
+        ]
+    },
+    "pre_install": [
+        "function ensureFile([String] $name) {",
+        "    if (!(Test-Path \"$persist_dir\\$name\") -and !(Test-Path \"$dir\\$name\")) {",
+        "        Add-Content -Path \"$dir\\$name\" -Value $null",
+        "    }",
+        "}",
+        "ensureFile 'hmcl.json'"
+    ],
+    "persist": [
+        "hmcl.json",
+        ".minecraft"
+    ],
     "checkver": {
-        "github": "https://github.com/huanghongxun/HMCL"
+        "url": "https://hmcl.huangyuhui.net/api/update_link?channel=stable&download_link=true",
+        "jsonpath": "$.version"
     },
     "autoupdate": {
-        "url": "https://github.com/huanghongxun/HMCL/releases/download/v$version/HMCL-$version.exe"
+        "url": "http://ci.huangyuhui.net/job/HMCL-stable/$patchVersion/artifact/HMCL/build/libs/HMCL-$version.exe#/hmcl.exe",
+        "hash": {
+            "url": "https://hmcl.huangyuhui.net/api/update_link?channel=stable&download_link=true",
+            "jsonpath": "$.exesha1"
+        }
     }
 }
