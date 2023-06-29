@@ -77,14 +77,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ACooper81/scoop-apps
 - hermanjustnu/scoop-emulators
 - cderv/r-bucket
-- everyx/scoop-bucket
 - ScoopInstaller/Nonportable
+- everyx/scoop-bucket
 - dodorz/scoop
 - TheRandomLabs/Scoop-Bucket
 - ZvonimirSun/scoop-iszy
 - borger/scoop-emulators
 - Qv2ray/mochi
-- kiennq/scoop-misc
 - zhoujin7/tomato
 - wangzq/scoop-bucket
 - TheRandomLabs/Scoop-Python
