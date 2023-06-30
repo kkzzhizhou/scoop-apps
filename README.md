@@ -84,6 +84,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ZvonimirSun/scoop-iszy
 - borger/scoop-emulators
 - Qv2ray/mochi
+- kiennq/scoop-misc
 - zhoujin7/tomato
 - wangzq/scoop-bucket
 - TheRandomLabs/Scoop-Python
@@ -97,10 +98,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - jonz94/scoop-sarasa-nerd-fonts
+- arch3rPro/scoop-bucket
 - ChungZH/peach
 - amorphobia/siku
 - batkiz/backit
-- arch3rPro/scoop-bucket
 - aoisummer/scoop-bucket
 - cc713/ownscoop
 - seumsc/scoop-seu
