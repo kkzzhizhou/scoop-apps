@@ -1,32 +1,42 @@
 {
     "version": "3.4.7.22085",
-    "description": "tencent TIM, lightweight alternative to QQ",
-    "homepage": "https://office.qq.com/",
+    "description": "An lightweight instant messaging software service developed by Tencent",
+    "homepage": "https://tim.qq.com/",
     "license": {
-        "identifier": "Unknown",
-        "url": "http://play.mobile.qq.com/yy/eim/help/serverinfo.html"
+        "identifier": "Proprietary",
+        "url": "https://ti.qq.com/tim/serverinfo.html"
     },
-    "url": "http://dldir1.qq.com/qqfile/qq/TIM3.4.7/TIM3.4.7.22085.exe#/TimSetup.exe",
+    "notes": [
+        "Scoop doesn't persist your TIM data, by default they are stored in: ",
+        "'%UserProfile%\\Documents\\Tencent Files'.",
+        "Files produced at runtime leaves in '%AppData%\\Tencent'."
+    ],
+    "url": "https://webcdn.m.qq.com/spcmgr/download/TIM3.4.7.22085.exe#/dl.exe",
     "hash": "aea6f78918bf989551befac3dc81122ceef302725b9fd457a561fe11a5f0d8d0",
+    "shortcuts": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "TIM"
+        ]
+    ],
     "installer": {
         "script": [
-            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TimSetup.exe`\" -s\" -Verb RunAs",
-            "Remove-Item \"$dir\\TimSetup.exe\""
+            "Expand-7zipArchive \"$dir\\$fname\" -Switches '-t*' -Removal",
+            "Get-Item \"$dir\\*\" -Exclude .rsrc | Remove-Item",
+            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\101\" \"$dir\" -ExtractDir 'Files'",
+            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\102\" \"$dir\\temp\"",
+            "'vcruntime140.dll', 'msvcp140.dll', 'msvcr100.dll', 'vcomp140.dll', 'msvcp100.dll' | ForEach-Object {",
+            "  Move-Item \"$dir\\temp\\$_\" \"$dir\\Bin\\\"",
+            "}",
+            "Expand-7zipArchive \"$dir\\temp\\TXSSO\\TXSSOSetup.exe\" \"$dir\\Bin\\TXSSO\" -ExtractDir 'TXSSO'",
+            "Remove-Item \"$dir\\.rsrc\", \"$dir\\temp\" -Recurse"
         ]
     },
-    "post_install": "Copy-Item -Path \"C:\\Program Files (x86)\\Tencent\\TIM\\TIMUninst.exe\" \"$dir\\TIMUninst.exe\"",
-    "uninstaller": {
-        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TIMUninst.exe`\" -s\" -Verb RunAs"
-    },
     "checkver": {
-        "url": "https://im.qq.com/rainbow/TIMDownload/",
-        "regex": "\"pcLink\":\"https?://dldir1\\.qq\\.com/qqfile/qq(?<extra>.*)/TIM(?<main>\\d+\\.\\d+\\.\\d+)/TIM.*\\.(?<patch>\\d+)\\.exe",
-        "replace": "${main}.${patch}"
+        "url": "https://pc.qq.com/detail/18/detail_23258.html",
+        "regex": "TIM([\\d.]+).exe"
     },
     "autoupdate": {
-        "url": "http://dldir1.qq.com/qqfile/qq$matchExtra/TIM$matchMain/TIM$version.exe#/TimSetup.exe",
-        "hash": {
-            "mode": "download"
-        }
+        "url": "https://webcdn.m.qq.com/spcmgr/download/TIM$version.exe#/dl.exe"
     }
 }
