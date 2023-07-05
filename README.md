@@ -72,8 +72,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - hoilc/scoop-lemon
 - KNOXDEV/wsl
 - echoiron/echo-scoop
-- couleur-tweak-tips/utils
 - Paxxs/Cluttered-bucket
+- couleur-tweak-tips/utils
 - ACooper81/scoop-apps
 - hermanjustnu/scoop-emulators
 - cderv/r-bucket
