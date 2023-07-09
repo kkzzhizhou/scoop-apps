@@ -9,7 +9,7 @@ Remove-NetFirewallRule -Description "Work with Clash for Windows." -ErrorAction 
         -Action Allow `
         -Program "$CFWPath" `
         -EdgeTraversalPolicy DeferToUser `
-        | Out-Null
+    | Out-Null
     New-NetFirewallRule `
         -DisplayName "Clash Core" `
         -Profile "Private, Public" `
@@ -18,5 +18,5 @@ Remove-NetFirewallRule -Description "Work with Clash for Windows." -ErrorAction 
         -Protocol $_ `
         -Action Allow `
         -Program "$CorePath" `
-        | Out-Null
+    | Out-Null
 }

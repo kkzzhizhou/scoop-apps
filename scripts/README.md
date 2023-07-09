@@ -18,7 +18,7 @@ _Generate scripts which modifies PowerShell profile._
 
 |Parameters|Type|Mandatory|Descriptions|
 |----|:----:|:----:|----|
-|`Type`|String|&check;|Type of scripts to generate, support `ImportModule`, `RemoveModule` in current version.|
+|`Behavior`|String|&check;|Type of scripts to generate, support `ImportModule`, `RemoveModule` in current version.|
 |`Name`|String|&check;|Use the name of manifest file.|
 |`BucketDir`|String|&check;|Path of Scoop4kariiin bucket root directory.|
 |`ModuleName`|String|&cross;|Value of `name` in `psmodule` field, use this parameter if it differs from manifest name.|
@@ -57,12 +57,12 @@ _Mount external runtime data._
 
 |Parameters|Type|Mandatory|Descriptions|
 |----|:----:|:----:|----|
-|`Source`|String|&check;|Source folder persisted in `$persist_dir`, support `Persist` as alias.|
-|`Target`|String|&cross;|The target path, which is the actual path app uses to access the runtime data.|
-|`AppData`|Switch|&cross;|Use this parameter if target folder locates in `$env:APPDATA` using the name of persisted folder, value of `$Target` will be forced overwritten.|
+|`Source`|String|&check;|Path of source folder in scoop persist directory.|
+|`Target`|String|&cross;|The actual path which app uses to access the runtime data.|
+|`AppData`|Switch|&cross;|Conveniently mount folder in `$env:APPDATA` by the name of source folder. Value of `$Target` will be overwritten.|
 
 - Either `Target` or `AppData` should be specified.
-- See [lne-link manifest](../bucket/lne-link.json) for example.
+- See [LNE-LINK manifest](../bucket/LNE-LINK.json) for example.
 
 ----
 
@@ -72,10 +72,10 @@ _Unmount external runtime data._
 
 |Parameters|Type|Mandatory|Descriptions|
 |----|:----:|:----:|----|
-|`Path`|String|&check;|The target path, which is the actual path app uses to access the runtime data, support `Name`, `Target` as alias. Or just use the folder name with `AppData` parameter.|
-|`AppData`|Switch|&cross;|Use this parameter if target folder locates in `$env:APPDATA` using the name of persisted folder, value of `$Path` will be forced overwritten.|
+|`Target`|String|&check;|Path or name of runtime folder mounted by scoop.
+|`AppData`|Switch|&cross;|Conveniently dismount folder in `$env:APPDATA` with folder name in `Target` parameter. Value of `$Target` will be overwritten.|
 
-- See [lne-link manifest](../bucket/lne-link.json) for example.
+- See [LNE-LINK manifest](../bucket/LNE-LINK.json) for example.
 
 ----
 

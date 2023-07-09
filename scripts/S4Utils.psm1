@@ -5,7 +5,7 @@ function New-ProfileModifier {
     .SYNOPSIS
         Generate scripts which modifies PowerShell profile.
 
-    .PARAMETER Type
+    .PARAMETER Behavior
         Type of scripts to generate.
 
     .PARAMETER Name
@@ -20,7 +20,8 @@ function New-ProfileModifier {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string] $Type,
+        [Alias("Type")]
+        [string] $Behavior,
         [Parameter(Mandatory = $true, Position = 1)]
         [string] $Name,
         [Parameter(Mandatory = $true, Position = 2)]
@@ -29,10 +30,10 @@ function New-ProfileModifier {
         [string] $ModuleName
     )
 
-    $SupportedType = @("ImportModule", "RemoveModule")
+    $SupportedBehavior = @("ImportModule", "RemoveModule")
 
-    if ($SupportedType -notcontains $Type) {
-        Write-Host "[ERROR] Unsupported type." -ForegroundColor Red
+    if ($SupportedBehavior -notcontains $Behavior) {
+        Write-Host "[ERROR] Unsupported behavior." -ForegroundColor Red
         Return
     }
 
@@ -44,19 +45,19 @@ function New-ProfileModifier {
     $ScoopDir = Split-Path $BucketDir | Split-Path
     $AppDir = $ScoopDir | Join-Path -ChildPath "\apps\$Name\current\"
 
-    $ImportUtilsCommand = ("Import-Module ", $S4UtilsPath) -Join("")
+    $ImportUtilsCommand = ("Import-Module ", $S4UtilsPath) -Join ("")
     $RemoveUtilsCommand = "Remove-Module -Name S4Utils -ErrorAction SilentlyContinue"
 
-    $ImportModuleCommand = ("Add-ProfileContent 'Import-Module ", $ModuleName, "'") -Join("")
-    $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $ModuleName, "'") -Join("")
+    $ImportModuleCommand = ("Add-ProfileContent 'Import-Module ", $ModuleName, "'") -Join ("")
+    $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $ModuleName, "'") -Join ("")
 
-    switch ($Type) {
-        {$_ -eq "ImportModule"} {
-            $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $ImportModuleCommand, $RemoveUtilsCommand) -Join("`r`n")
+    switch ($Behavior) {
+        { $_ -eq "ImportModule" } {
+            $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $ImportModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\add-profile-content.ps1"
         }
-        {$_ -eq "RemoveModule"} {
-            $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $RemoveUtilsCommand) -Join("`r`n")
+        { $_ -eq "RemoveModule" } {
+            $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\remove-profile-content.ps1"
         }
     }
@@ -108,7 +109,7 @@ function Remove-ProfileContent {
         Return
     }
 
-    ($RawProfile -replace "[\r\n]*$Content",'').trim() | Set-Content $PROFILE -NoNewLine
+    ($RawProfile -replace "[\r\n]*$Content", '').trim() | Set-Content $PROFILE -NoNewLine
 }
 
 function Mount-ExternalRuntimeData {
@@ -117,20 +118,21 @@ function Mount-ExternalRuntimeData {
         Mount external runtime data.
 
     .PARAMETER Source
-        The source path, which is the persist_dir.
+        Path of source folder in scoop persist directory.
 
     .PARAMETER Target
-        The target path, which is the actual path app uses to access the runtime data.
+        The actual path which app uses to access the runtime data.
 
     .PARAMETER AppData
-        Use this parameter if target folder locates in $env:APPDATA using the name of persisted folder.
+        Mount in $env:APPDATA by the name of source folder. Value of $Target will be overwritten.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [Alias("Persist")]
+        [Alias("SourcePath", "Persist")]
         [string] $Source,
         [Parameter(Mandatory = $false, Position = 1)]
+        [Alias("TargetPath", "Runtime")]
         [string] $Target,
         [Parameter(Mandatory = $false, Position = 2)]
         [switch] $AppData
@@ -141,12 +143,12 @@ function Mount-ExternalRuntimeData {
         Return
     }
 
-    if($AppData) {
-        $Name = Split-Path -Path $Source -Leaf
+    if ($AppData) {
+        $FolderName = Split-Path -Path $Source -Leaf
         if ($Target) {
             Write-Host "[WARN] Overwriting `$Target value..." -ForegroundColor DarkYellow
         }
-        $Target = Join-Path -Path $env:APPDATA -ChildPath $Name
+        $Target = Join-Path -Path $env:APPDATA -ChildPath $FolderName
     }
 
     if (-not(Test-Path $Source)) {
@@ -172,40 +174,40 @@ function Dismount-ExternalRuntimeData {
     .SYNOPSIS
         Unmount external runtime data.
 
-    .PARAMETER Path
-        Name or path of runtime folder, which is the actual path app uses to access the runtime data.
+    .PARAMETER Target
+        Path or name of runtime folder mounted by scoop.
 
     .PARAMETER AppData
-        Use this parameter if target folder locates in $env:APPDATA using the name of persisted folder.
+        Dismount folder in $env:APPDATA with folder name in Target parameter. Value of $Target will be overwritten.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [Alias("Name","Target")]
-        [string] $Path,
+        [Alias("TargetPath", "Path", "Name")]
+        [string] $Target,
         [Parameter(Mandatory = $false, Position = 1)]
         [switch] $AppData
     )
 
     if ($AppData) {
-        $Name = Split-Path -Path $Path -Leaf
-        $Path = Join-Path -Path $env:APPDATA -ChildPath $Name
+        $FolderName = Split-Path -Path $Target -Leaf
+        $Target = Join-Path -Path $env:APPDATA -ChildPath $FolderName
     }
 
     Write-Host "Dismounting runtime cache..."
 
-    if (Test-Path $Path) {
-        Remove-Item $Path -Force -Recurse
+    if (Test-Path $Target) {
+        Remove-Item $Target -Force -Recurse
     }
     else {
-        Write-Host "[ERROR] Invalid path, continue without dismounting." -ForegroundColor Red
+        Write-Host "[ERROR] Invalid target, continue without dismounting." -ForegroundColor Red
     }
 }
 
 Export-ModuleMember `
     -Function `
-        New-ProfileModifier, `
-        Add-ProfileContent, `
-        Remove-ProfileContent, `
-        Mount-ExternalRuntimeData, `
-        Dismount-ExternalRuntimeData
+    New-ProfileModifier, `
+    Add-ProfileContent, `
+    Remove-ProfileContent, `
+    Mount-ExternalRuntimeData, `
+    Dismount-ExternalRuntimeData
