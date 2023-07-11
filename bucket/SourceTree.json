@@ -1,0 +1,61 @@
+{
+    "version": "3.4.14",
+    "description": "Simple and powerful Git GUI",
+    "homepage": "https://www.sourcetreeapp.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.atlassian.com/legal/software-license-agreement"
+    },
+    "notes": "Use scoop-git-all instead of sourcetree's git.",
+    "depends": "git-all",
+    "architecture": {
+        "64bit": {
+            "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTree-3.4.14-full.nupkg",
+            "hash": "sha1:d2ca00f2ff807e7d159913598f99e0952f868916",
+            "extract_dir": "lib\\net45"
+        }
+    },
+    "post_install": [
+        "foreach ($folder in @('Atlassian')) {",
+        "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+        "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  }",
+        "  if (Test-Path \"$env:LOCALAPPDATA\\$folder\") {",
+        "    $runtimeCache = \"$env:LOCALAPPDATA\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "    New-Item -Type Junction -Path \"$env:LOCALAPPDATA\\$folder\\SourceTree\\git_local\" -Target $scoopdir\\apps\\git-all\\current | Out-Null",
+        "  }",
+        "  if (Test-Path \"$env:APPDATA\\$folder\") {",
+        "    $runtimeCache = \"$env:APPDATA\\$folder\"",
+        "    $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+        "  } else {continue}",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}"
+    ],
+    "bin": "SourceTree.exe",
+    "shortcuts": [
+        [
+            "SourceTree.exe",
+            "Sourcetree"
+        ]
+    ],
+    "checkver": {
+        "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/RELEASES",
+        "regex": "SourceTree-([\\d.]+)-full\\.nupkg",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTree-$version-full.nupkg",
+        "hash": {
+            "url": "$baseurl/RELEASES"
+        }
+    }
+}
