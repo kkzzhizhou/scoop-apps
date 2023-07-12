@@ -55,8 +55,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
 - ivaquero/scoopet
-- ScoopInstaller/Java
 - Calinou/scoop-games
+- ScoopInstaller/Java
 - TheRandomLabs/Scoop-Spotify
 - borger/scoop-galaxy-integrations
 - ScoopInstaller/Versions
@@ -69,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - rasa/scoops
 - ScoopInstaller/Nirsoft
 - scoopcn/scoopcn
-- KNOXDEV/wsl
 - hoilc/scoop-lemon
+- KNOXDEV/wsl
 - echoiron/echo-scoop
 - Paxxs/Cluttered-bucket
 - couleur-tweak-tips/utils
@@ -93,11 +93,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - niheaven/scoop-sysinternals
 - naderi/scoop-bucket
 - ViCrack/scoop-bucket
-- iquiw/scoop-bucket
 - 42wim/scoop-bucket
+- iquiw/scoop-bucket
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - jonz94/scoop-sarasa-nerd-fonts
+- mogeko/scoop-sysinternals
 - arch3rPro/scoop-bucket
 - ChungZH/peach
 - amorphobia/siku
