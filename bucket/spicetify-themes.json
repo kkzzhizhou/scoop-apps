@@ -1,42 +1,52 @@
 {
-    "version": "2023-07-07T07.07.13",
+    "version": "2023-07-13T02.03.33",
     "description": "Community-created themes for Spicetify.",
-    "homepage": "https://github.com/spicetify/spicetify-themes",
+    "homepage": "https://github.com/morpheusthewhite/spicetify-themes",
     "license": "MIT",
-    "suggest": {
-        "Spicetify": "spicetify-cli"
-    },
-    "url": "https://github.com/spicetify/spicetify-themes/archive/master.zip",
-    "hash": "7b02b8ed4701809ca2327469014dcf6d76ca8b62654f286d2914ae2a6cceba67",
+    "depends": "spicetify-cli",
+    "url": "https://github.com/morpheusthewhite/spicetify-themes/archive/master.zip",
+    "hash": "b58dbb5fe1d795f050344518279d3e53a44209d4eb5f1f9193f852f0b2a26b97",
+    "notes": [
+        "The Elementary theme requires the Open Sans and Raleway fonts:",
+        "scoop bucket add nerd-fonts",
+        "sudo scoop install open-sans raleway",
+        "The WintergatanBlueprint theme requires the Ubuntu font:",
+        "scoop bucket add nerd-fonts",
+        "sudo scoop install Ubuntu-NF",
+        "A preview of all of the themes can be found here: https://github.com/morpheusthewhite/spicetify-themes/wiki/Themes-preview"
+    ],
     "extract_dir": "spicetify-themes-master",
     "installer": {
         "script": [
-            "$spctconf = $Env:AppData\\spicetify",
-            "if ($Env:SPICETIFY_CONFIG) {",
-            "    $spctconf = $Env:SPICETIFY_CONFIG",
+            "if ($global) {",
+            "    Write-Host \"$app cannot be installed globally.\" -Foreground Red",
+            "    exit 1",
             "}",
-            "ensure $spctconf",
+            "",
+            "if (-not (Test-Path (get-spotify-path))) {",
+            "    Write-Host \"Spotify must be installed to install $app.\" -Foreground Red",
+            "    exit 1",
+            "}",
+            "",
             "Get-ChildItem $dir -Directory | ForEach-Object {",
-            "    Remove-Item -ErrorAction Ignore -Recurse \"$spctconf\\Themes\\$($_.Name)\"",
-            "    Copy-Item -Recurse $_.FullName -Destination \"$spctconf\\Themes\"",
-            "}"
+            "    Remove-Item -ErrorAction Ignore -Recurse \"$env:USERPROFILE\\.spicetify\\Themes\\$($_.Name)\"",
+            "    Copy-Item -Recurse $_.FullName -Destination \"$env:USERPROFILE\\.spicetify\\Themes\"",
+            "}",
+            "",
+            "(Get-Content \"$env:USERPROFILE\\.spicetify\\Themes\\Elementary\\user.css\").Replace('Google Sans', 'Open Sans') | Set-Content \"$env:USERPROFILE\\.spicetify\\Themes\\Elementary\\user.css\"",
+            "",
+            "init-spicetify-config-and-apply"
         ]
     },
     "uninstaller": {
-        "script": [
-            "$spctconf = $Env:AppData\\spicetify",
-            "if ($Env:SPICETIFY_CONFIG) {",
-            "    $spctconf = $Env:SPICETIFY_CONFIG",
-            "}",
-            "Get-ChildItem \"$dir\" | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore \"$spctconf\\Themes\\$($_.Name)\" }"
-        ]
+        "script": "Get-ChildItem \"$dir\" | ForEach-Object { Remove-Item -Recurse -ErrorAction Ignore \"$env:USERPROFILE\\.spicetify\\Themes\\$($_.Name)\" }"
     },
     "checkver": {
-        "url": "https://api.github.com/repos/spicetify/spicetify-themes/commits",
+        "url": "https://api.github.com/repos/morpheusthewhite/spicetify-themes/commits",
         "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
         "replace": "$1$2.$3.$4"
     },
     "autoupdate": {
-        "url": "https://github.com/spicetify/spicetify-themes/archive/master.zip"
+        "url": "https://github.com/morpheusthewhite/spicetify-themes/archive/master.zip"
     }
 }
