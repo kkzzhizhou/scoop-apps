@@ -6,20 +6,40 @@
     "suggest": {
         "vcredist": "extras/vcredist"
     },
-    "url": "https://github.com/martinet101/WingetUI/releases/download/2.0.1/WingetUI.Installer.exe",
-    "hash": "feb1df98893e90c4264b3ed5ca78842e6a71aff13e43d9f0c65f63054d97420f",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/martinet101/WingetUI/releases/download/2.0.1/WingetUI.Installer.exe",
+            "hash": "feb1df98893e90c4264b3ed5ca78842e6a71aff13e43d9f0c65f63054d97420f"
+        }
+    },
     "innosetup": true,
-    "shortcuts": [
-        [
-            "WingetUI.exe",
-            "WingetUI"
-        ]
+    "post_install": [
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('.wingetui')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
     ],
+    "shortcuts": [["WingetUI.exe", "WingetUI"]],
     "bin": [
         "WingetUI.exe",
         "choco-cli\\choco.exe",
         ["components\\gsudo.exe", "sudo"],
         "winget-cli\\winget.exe"
+    ],
+    "persist": [
+        "choco-cli\\lib"
     ],
     "checkver": "github",
     "autoupdate": {

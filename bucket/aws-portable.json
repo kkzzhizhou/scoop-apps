@@ -1,18 +1,18 @@
 {
-    "version": "2.13.0",
+    "version": "2.13.1",
     "description": "Unified tool to manage AWS services",
     "homepage": "https://aws.amazon.com/cli/",
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://awscli.amazonaws.com/AWSCLIV2-2.13.0.msi",
-            "hash": "5b27e0aec2de78648b33cb15008efc186f322aa39ac1b27fc466a35cd42e662b"
+            "url": "https://awscli.amazonaws.com/AWSCLIV2-2.13.1.msi",
+            "hash": "218de347bea59c04162fe670b9621f82bed50e71a3bd86e77d527fb7a6301a68"
         }
     },
     "extract_dir": "Amazon\\AWSCLIV2",
     "post_install": [
         "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
-        "  if (Test-Path $runtimeCache) { return }",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
         "  if (Test-Path $runtimeCachePersist) {",
         "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
         "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
@@ -28,16 +28,18 @@
         "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
         "}"
     ],
-    "bin": ["aws.exe", "aws_completer.exe"],
+    "bin": [
+        "aws.exe",
+        "aws_completer.exe"
+    ],
     "checkver": {
         "url": "https://api.github.com/repos/aws/aws-cli/tags",
         "jsonpath": "$[0].name"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://awscli.amazonaws.com/AWSCLIV2-$version.msi"
-            }
+        "url": "https://awscli.amazonaws.com/AWSCLIV2-$version.msi",
+        "hash": {
+            "mode": "download"
         }
     }
 }
