@@ -95,6 +95,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ViCrack/scoop-bucket
 - 42wim/scoop-bucket
 - iquiw/scoop-bucket
+- amorphobia/siku
 - batkiz/backit
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
@@ -102,7 +103,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - arch3rPro/scoop-bucket
 - ChungZH/peach
-- amorphobia/siku
 - Velgus/Scoop-Portapps
 - cc713/ownscoop
 - aoisummer/scoop-bucket
