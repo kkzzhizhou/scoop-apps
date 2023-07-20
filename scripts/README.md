@@ -19,9 +19,9 @@ _Generate scripts which modifies PowerShell profile._
 |Parameters|Type|Mandatory|Descriptions|
 |----|:----:|:----:|----|
 |`Behavior`|String|&check;|Type of scripts to generate, support `ImportModule`, `RemoveModule` in current version.|
-|`Name`|String|&check;|Use the name of manifest file.|
+|`PSModuleName`|String|&check;|Name of PowerShell module, should be `$manifest.psmodule.name` in most situations.|
+|`AppDir`|String|&check;|Path of the app directory, should be `$dir` in most situations.|
 |`BucketDir`|String|&check;|Path of Scoop4kariiin bucket root directory.|
-|`ModuleName`|String|&cross;|Value of `name` in `psmodule` field, use this parameter if it differs from manifest name.|
 
 - See [Windows-screenFetch manifest](../bucket/Windows-screenFetch.json) for example.
 

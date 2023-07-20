@@ -8,14 +8,14 @@ function New-ProfileModifier {
     .PARAMETER Behavior
         Type of scripts to generate.
 
-    .PARAMETER Name
-        Name of manifest.
+    .PARAMETER PSModuleName
+        Name of PowerShell module, should be $manifest.psmodule.name in most situations.
+
+    .PARAMETER AppDir
+        Path of the app directory, should be $dir in most situations.
 
     .PARAMETER BucketDir
         Path of Scoop4kariiin bucket root directory.
-
-    .PARAMETER ModuleName
-        Use this parameter if module name differs from manifest name.
     #>
     [CmdletBinding()]
     param (
@@ -23,11 +23,11 @@ function New-ProfileModifier {
         [Alias("Type")]
         [string] $Behavior,
         [Parameter(Mandatory = $true, Position = 1)]
-        [string] $Name,
+        [string] $PSModuleName,
         [Parameter(Mandatory = $true, Position = 2)]
-        [string] $BucketDir,
-        [Parameter(Mandatory = $false, Position = 3)]
-        [string] $ModuleName
+        [string] $AppDir,
+        [Parameter(Mandatory = $true, Position = 3)]
+        [string] $BucketDir
     )
 
     $SupportedBehavior = @("ImportModule", "RemoveModule")
@@ -37,19 +37,13 @@ function New-ProfileModifier {
         Return
     }
 
-    if (-not($ModuleName)) {
-        $ModuleName = $Name
-    }
-
     $S4UtilsPath = $BucketDir | Join-Path -ChildPath "\scripts\S4Utils.psm1"
-    $ScoopDir = Split-Path $BucketDir | Split-Path
-    $AppDir = $ScoopDir | Join-Path -ChildPath "\apps\$Name\current\"
 
     $ImportUtilsCommand = ("Import-Module ", $S4UtilsPath) -Join ("")
     $RemoveUtilsCommand = "Remove-Module -Name S4Utils -ErrorAction SilentlyContinue"
 
-    $ImportModuleCommand = ("Add-ProfileContent 'Import-Module ", $ModuleName, "'") -Join ("")
-    $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $ModuleName, "'") -Join ("")
+    $ImportModuleCommand = ("Add-ProfileContent 'Import-Module ", $PSModuleName, "'") -Join ("")
+    $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $PSModuleName, "'") -Join ("")
 
     switch ($Behavior) {
         { $_ -eq "ImportModule" } {
