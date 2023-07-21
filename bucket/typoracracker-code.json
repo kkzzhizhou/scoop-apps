@@ -1,0 +1,51 @@
+{
+    "version": "0.2022.04.06",
+    "description": "A extract & decryption and pack & encryption tools for typora.",
+    "homepage": "https://github.com/Mas0nShi/typoraCracker",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/Mas0nShi/typoraCracker/blob/master/LICENSE"
+    },
+    "notes": [
+        "typoraCracker doesn't provide support for crack.",
+        "FOR STUDY AND DISCUSSION ONLY, PLEASE DO NOT ENGAGE IN ANY ILLEGAL ACTS.",
+        "ANY PROBLEMS ARISING FROM THIS WILL BE BORNE BY THE USER (YOU).",
+        "",
+        "typoraCracker 不会提供破解相关支持，包括但不限于思路、流程、成品。",
+        "仅供学习和讨论，请不要从事任何非法行为。",
+        "由此产生的任何问题都将由用户（您）承担。"
+    ],
+    "depends": "typora",
+    "url": "https://github.com/Mas0nShi/typoraCracker/archive/3ac472a198920a239a8dcd86b9830c92b44c729c.zip",
+    "hash": "b1724e17a9c0387b9c16d48a6c8ecacfea4daff65e5da6ddbf8bc483d841cb46",
+    "extract_dir": "typoraCracker-3ac472a198920a239a8dcd86b9830c92b44c729c",
+    "pre_install": [
+        "$cont = @(",
+        "    'if (-not $env:SCOOP_APPS) { $env:SCOOP_APPS = \"$env:SCOOP\\apps\" }'",
+        "    'Set-Location $env:SCOOP_APPS/typoraCracker/current/'",
+        "    'if ($null -eq (Get-Command \"python\" -ErrorAction SilentlyContinue)) { Write-Host \"Python appears not to be installed!\" -Foreground Magenta }'",
+        "    'if ($null -eq (Get-Command \"pip\" -ErrorAction SilentlyContinue)) { Write-Host \"Pip appears not to be installed!\" -Foreground Magenta }'",
+        "    'if ($null -ne (Get-Command \"Get-Process typora\" -ErrorAction SilentlyContinue)) { Get-Process typora | Stop-Process }'",
+        "    'pip install -r requirements.txt'",
+        "    'Copy-Item -Path example/patch/License.js -Destination $env:SCOOP_APPS/typora/current/resources/node_modules -Force'",
+        "    'python typora.py $env:SCOOP_APPS/typora/current/resources/app.asar workstation/outfile/'",
+        "    'python typora.py -u workstation/outfile/dec_app workstation/outappasar'",
+        "    'Rename-Item -Path $env:SCOOP_APPS/typora/current/resources/app.asar -NewName $env:SCOOP_APPS/typora/current/resources/app.asar.bak -Force'",
+        "    'Move-Item -Path workstation/outappasar/app.asar -Destination $env:SCOOP_APPS/typora/current/resources/app.asar -Force'",
+        "    'node example/keygen.js | Set-Clipboard'",
+        "    'Start-Process -FilePath $env:SCOOP_APPS/typora/current/Typora.exe'",
+        ")",
+        "if (!(Test-Path \"$dir\\typoraCracker.ps1\")) { New-Item -Path \"$dir\\typoraCracker.ps1\" -ItemType file | Out-Null  }",
+        "Set-Content \"$dir\\typoraCracker.ps1\" -Value $cont -Encoding Ascii"
+    ],
+    "bin": "typoraCracker.ps1",
+    "checkver": {
+        "url": "https://github.com/Mas0nShi/typoraCracker/commits/master.atom",
+        "regex": "(?s)>(\\d+)-(\\d+)-(\\d+)T.*?/(?<sha>[0-9a-f]{40})",
+        "replace": "0.${1}.${2}.${3}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Mas0nShi/typoraCracker/archive/$matchSha.zip",
+        "extract_dir": "typoraCracker-$matchSha"
+    }
+}

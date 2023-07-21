@@ -1,0 +1,46 @@
+{
+    "version": "0.4.3",
+    "description": "A desktop app for ChatGPT API (OpenAI API) that supports Windows, Mac & Linux. 开源的ChatGPT桌面应用，prompt 开发神器，全平台支持",
+    "homepage": "https://github.com/Bin-Huang/chatbox",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/Bin-Huang/chatbox/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Bin-Huang/chatbox/releases/download/Chatbox-v0.4.3/chatbox_0.4.3_x64_en-US.msi",
+            "hash": "d754239badb6c05d12d36b59d39f7caf736d157b10c68978eaeb0387277fcfed"
+        }
+    },
+    "extract_dir": "PFiles\\chatbox",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\xyz.chatboxapp.app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\xyz.chatboxapp.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\xyz.chatboxapp.app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\xyz.chatboxapp.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "chatbox.exe",
+            "chatbox"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/Bin-Huang/chatbox/releases",
+        "regex": "(?sm)browser_download_url.*?releases/download/(?<tag>Chatbox-v([\\d.]+))/chatbox_([\\d.]+)_x64_en-US\\.msi"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Bin-Huang/chatbox/releases/download/$matchTag/chatbox_$version_x64_en-US.msi"
+    }
+}

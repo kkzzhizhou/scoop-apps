@@ -1,0 +1,53 @@
+{
+    "version": "2.17",
+    "description": "A clash client for Windows, support clash core and Clash.Meta core",
+    "homepage": "https://github.com/2dust/clashN",
+    "license": {
+        "identifier": "GPL-3.0-only",
+        "url": "https://github.com/2dust/clashN/raw/main/LICENSE"
+    },
+    "notes": [
+        "Create scheduled task by running: '$dir\\create-scheduled-task.ps1'",
+        "Delete scheduled task by running: '$dir\\delete-scheduled-task.ps1'"
+    ],
+    "depends": "sudo",
+    "url": "https://github.com/2dust/clashN/releases/download/2.17/clashN.zip",
+    "hash": "c02933d1967383e3951e73c25360af084ea85da5803dc33cfed90d198db02d18",
+    "extract_dir": "clashN",
+    "pre_install": [
+        "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") { Copy-Item \"$persist_dir\\$_\" \"$dir\\\" -Force | Out-Null }",
+        "}",
+        "(Get-Content \"$bucketsdir\\Apps\\scripts\\clashn\\start-clashn.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\start-clashn.ps1\" -Encoding ASCII",
+        "(Get-Content \"$bucketsdir\\Apps\\scripts\\clashn\\create-scheduled-task.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\create-scheduled-task.ps1\" -Encoding ASCII",
+        "(Get-Content \"$bucketsdir\\Apps\\scripts\\clashn\\delete-scheduled-task.ps1\") -replace 'clashn', 'clashn' | Set-Content \"$dir\\delete-scheduled-task.ps1\" -Encoding ASCII"
+    ],
+    "uninstaller": {
+        "script": [
+            "'config.yaml', 'guiNConfig.json' | ForEach-Object {",
+            "    ensure \"$persist_dir\" | Out-Null",
+            "    if (Test-Path \"$dir\\$_\") { Copy-Item \"$dir\\$_\" \"$persist_dir\\\" -Force | Out-Null }",
+            "}"
+        ]
+    },
+    "bin": "start-clashn.ps1",
+    "shortcuts": [
+        [
+            "clashN.exe",
+            "clashN"
+        ]
+    ],
+    "persist": [
+        "guiBackups",
+        "guiConfigs",
+        "guiLogs",
+        "data"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/clashN/tags",
+        "regex": "/refs/tags/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/2dust/clashN/releases/download/$version/clashN.zip"
+    }
+}

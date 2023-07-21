@@ -1,0 +1,44 @@
+{
+    "version": "1.0.197",
+    "description": "A terminal for a more modern age",
+    "homepage": "https://tabby.sh",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Eugeny/tabby/releases/download/v1.0.197/tabby-1.0.197-setup-x64.exe#/dl.7z",
+            "hash": "sha512:2228affeeabfb36ccf5e9f274e5aaf2c1db6b6d1eb4ea7d9d3b5cff3f3f15a399ec897514a87c2efa4843dc0ae34736e80b0ddbf3c2fce7f10de39ca63888320",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Unins*\" -Force -Recurse"
+            ],
+            "post_install": [
+                "if (Test-Path $env:APPDATA\\Tabby) {",
+                "    Copy-Item -Path $env:APPDATA\\Tabby\\* -Destination \"$persist_dir\\data\" -Force -Recurse",
+                "}"
+            ]
+        }
+    },
+    "bin": "Tabby.exe",
+    "shortcuts": [
+        [
+            "Tabby.exe",
+            "Tabby"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://api.github.com/repos/Eugeny/tabby/releases",
+        "regex": "(?sm)browser_download_url.*?releases/download/v([\\d.]+)/tabby-([\\d.]+)-setup-x64\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Eugeny/tabby/releases/download/v$version/tabby-$version-setup-x64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-x64.yml",
+                    "regex": "sha512: $base64"
+                }
+            }
+        }
+    }
+}

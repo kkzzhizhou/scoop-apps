@@ -1,0 +1,46 @@
+{
+    "version": "7.0.40.7049102",
+    "description": "An all-in-one free communication and collaboration platform",
+    "homepage": "https://www.dingtalk.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://tms.dingtalk.com/markets/dingtalk/service-terms-zh"
+    },
+    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v7.0.40.7049102.exe#/dl.7z",
+    "hash": "md5:8e0cd9d74bb629381df05bae0eaa52a1",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\DingTalk_91\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\DingTalk\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\DingTalk_91\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\DingTalk\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "DingtalkLauncher.exe",
+            "DingTalk"
+        ]
+    ],
+    "checkver": {
+        "url": "https://im.dingtalk.com/manifest/x64/release_windows_vista_later_gray4.json",
+        "regex": "DingTalk_v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://im.dingtalk.com/manifest/x64/release_windows_vista_later_gray4.json",
+            "jsonpath": "$.win.install.md5"
+        }
+    }
+}

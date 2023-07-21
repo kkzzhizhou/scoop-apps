@@ -1,0 +1,54 @@
+{
+    "##": "优酷",
+    "version": "9.2.17.1001",
+    "license": {
+        "identifier": "Copyright © 2019 优酷"
+    },
+    "description": "[优酷] - 优酷视频客户端",
+    "homepage": "https://www.youku.com",
+    "architecture": {
+        "64bit": {
+            "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_9.2.17.1001.exe#/dl.7z",
+            "hash": "e58aa0803d5ce01d1d2a9f2f17ac746f1de7c925a046ef0002450de7d2272fb9",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Unins*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\youku\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\youku-app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "YOUKU.exe",
+            "优酷"
+        ]
+    ],
+    "checkver": {
+        "url": "https://pd.youku.com/pc",
+        "regex": "(?sm)优酷视频Windows客户端.*?u002Fiku-win-release\\\\u002Fyoukuclient_setup_([\\d.]+)\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_$version.exe#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}

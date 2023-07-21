@@ -1,0 +1,48 @@
+{
+    "version": "1.3.3",
+    "description": "A Clash GUI based on tauri. Supports Windows and macOS.",
+    "homepage": "https://github.com/zzzgydi/clash-verge",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/zzzgydi/clash-verge/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zzzgydi/clash-verge/releases/download/v1.3.3/Clash.Verge_1.3.3_x64_portable.zip",
+            "hash": "c014024640db66caf1945f192cb2fde20e102ac8076abd0cdeef2ccfe3fa327a"
+        }
+    },
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\*\") {",
+        "    ensure \"$env:USERNAME\\.config\\clash-verge\" | Out-Null",
+        "    Copy-Item \"$persist_dir\\*\" \"$env:USERNAME\\.config\\clash-verge\\\" -Recurse -Force | Out-Null ",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:USERNAME\\.config\\clash-verge\\*\") { ",
+            "    ensure \"$persist_dir\" | Out-Null",
+            "    Copy-Item \"$env:USERNAME\\.config\\clash-verge\\*\" \"$persist_dir\\\" -Recurse -Force | Out-Null ",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Clash Verge.exe",
+            "Clash Verge"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/zzzgydi/clash-verge/releases",
+        "regex": "(?sm)browser_download_url.*?(?<file>Clash.Verge_([\\d.]+)_x64_(?:green|portable)\\.zip)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zzzgydi/clash-verge/releases/download/v$version/$matchFile"
+            }
+        }
+    }
+}

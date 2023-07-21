@@ -1,15 +1,32 @@
 {
-    "version": "1.7.0",
-    "description": "Pure Writer Desktop",
+    "version": "1.9.0",
+    "description": "Pure Writer Desktop is currently basic, providing only two-directions real-time synchronous editing for your current article.",
     "homepage": "https://writer.drakeet.com/desktop",
-    "license": "GPL-3.0-or-only",
+    "license": {
+        "identifier": "GPL-3.0-or-only",
+        "url": "https://github.com/PureWriter/desktop/raw/master/LICENSE"
+    },
+    "notes": [
+        "- Pure Writer Desktop 1.4.0 version must be used with Pure Writer 19.92.0 or above.",
+        "- Pure Writer Desktop must be on the same Wi-Fi or hotspot network as the phone to connect to each other.",
+        "- During the development of this desktop version, I have encountered some situations that will cause the current article on Pure Writer Android to be emptied. Although this problem has been fixed, I am not completely sure if some scenes may trigger this again. But don't worry, because Pure Writer for Android supports multiple Backups. You can recover/restore it by using 'History' or 'Undo'. More about automatic backup and cloud backup: <https://writer.drakeet.com/backups>"
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/PureWriter/desktop/releases/download/1.7.0/PureWriter-1.7.0-Windows-x64.exe",
-            "hash": "e3a26254800e0812c4d658e4710a5731b7a75698513c0996f886e69e24b8c2e2"
+            "url": "https://github.com/PureWriter/desktop/releases/download/1.9.0/PureWriter-1.9.0-Windows-x64.exe#/installer.exe",
+            "hash": "9def9cb60000bcc9dc22c040a8a2553b36b98bac215cd1c2039f785cd6d5ed17"
         }
     },
-    "extract_dir": "Pure Writer",
+    "installer": {
+        "script": "Start-Process \"$dir\\installer.exe\" -ArgumentList @('/passive', \"/log `\"scoop_install.log`\"\", \"TARGETDIR=`\"$dir`\"\") -WorkingDirectory \"$dir\" -Wait"
+    },
+    "post_install": "Remove-Item -Path \"$dir\\installer.exe\" -Force",
+    "uninstaller": {
+        "script": [
+            "$productId = (Get-WmiObject win32_product | Where-Object { $_.name -eq \"`\"Pure Writer`\"\" }).IdentifyingNumber",
+            "Start-Process msiexec -ArgumentList @('/uninstall', \"`\"$productId`\"\", '/passive', '/norestart') -Wait | Out-Null"
+        ]
+    },
     "shortcuts": [
         [
             "Pure Writer.exe",
@@ -17,12 +34,15 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/PureWriter/desktop"
+        "url": "https://api.github.com/repos/PureWriter/desktop/releases/latest",
+        "regex": "releases/download/(?<tag>[\\d.]+)/PureWriter-(?<version>[\\d.]+)-Windows-x64.exe",
+        "reverse": true,
+        "replace": "${version}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/PureWriter/desktop/releases/download/$version/PureWriter-$version-Windows-x64.exe"
+                "url": "https://github.com/PureWriter/desktop/releases/download/$matchTag/PureWriter-$matchVersion-Windows-x64.exe#/installer.exe"
             }
         }
     }
