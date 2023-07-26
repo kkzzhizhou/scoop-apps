@@ -1,0 +1,71 @@
+{
+    "version": "1.8.5",
+    "description": "A cross platform front-end GUI of the popular youtube-dl media downloader written in wxPython.",
+    "homepage": "https://github.com/oleksis/youtube-dl-gui",
+    "license": "Unlicense",
+    "notes": [
+        "Visit following page to check supported sites:",
+        "https://ytdl-org.github.io/youtube-dl/supportedsites.html"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/oleksis/youtube-dl-gui/releases/download/v1.8.5/yt-dlg-20230224.1.msi#/dl.ism",
+            "hash": "32b00b725f6b5068abca5928e55046148173c924c0126d3a9bcd5b0872622030"
+        }
+    },
+    "pre_install": [
+        "$_args = @{",
+        "    'Path' = \"$dir\\$fname\"",
+        "    'DestinationPath' = \"$dir\"",
+        "    'Removal' = $true",
+        "}",
+        "$LESSMSI = get_config USE_LESSMSI",
+        "if ($LESSMSI) { $_args.Add('ExtractDir', 'APPDIR\\yt-dlg') } else { $_args.Add('ExtractDir', 'yt-dlg') }",
+        "Expand-MsiArchive @_args"
+    ],
+    "installer": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Mount-ExternalRuntimeData -Source \"$persist_dir\\yt-dlg\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Write-Host 'Missing files, please readd Scoop4kariiin bucket and reinstall this app.' -ForegroundColor Red",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "yt-dlg.exe",
+            "yt-dlg"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Dismount-ExternalRuntimeData -Target \"yt-dlg\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/oleksis/youtube-dl-gui/releases/latest",
+        "jsonpath": "$.assets..browser_download_url",
+        "regex": "v([\\d.]+)/yt-dlg-(?<Release>[\\d.]+).msi"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/oleksis/youtube-dl-gui/releases/download/v$version/yt-dlg-$matchRelease.msi#/dl.ism",
+                "hash": {
+                    "url": "$baseurl/SHA2-256SUMS"
+                }
+            }
+        }
+    }
+}
