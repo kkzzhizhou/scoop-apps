@@ -1,0 +1,56 @@
+{
+    "version": "nightly",
+    "description": "Docker Desktop. Open platform for developers and sysadmins to build, ship, and run distributed applications, whether on laptops, data center VMs, or the cloud.",
+    "homepage": "https://www.docker.com",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/moby/moby/blob/master/LICENSE"
+    },
+    "notes": [
+        "Conditions refer to the:",
+        "https://learn.microsoft.com/en-us/windows/wsl/install",
+        "--backend= wsl-2 / windows / hyper-v"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe"
+        }
+    },
+    "installer": {
+        "args": [
+            "install",
+            "--quiet",
+            "--accept-license",
+            "--backend=hyper-v",
+            "--installation-dir=$dir",
+            "--admin-settings"
+        ]
+    },
+    "post_install": [
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('.docker', 'Docker', 'Docker Desktop')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
+    ],
+    "shortcuts": [["Docker Desktop.exe", "Docker Desktop"]],
+    "bin": [
+        "resources\\bin\\docker.exe",
+        "resources\\cli-plugins\\docker-compose.exe"
+    ],
+    "uninstaller": {
+        "file": "Docker%20Desktop%20Installer.exe",
+        "args": ["uninstall", "--quiet"]
+    }
+}
