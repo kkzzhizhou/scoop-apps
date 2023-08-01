@@ -1,36 +1,41 @@
 {
     "version": "2.3.8",
-    "description": "Apifox = Postman + Swagger + Mock + JMeter",
-    "homepage": "https://www.apifox.cn/",
+    "description": "All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
+    "homepage": "https://apifox.com",
     "license": "Freeware",
     "architecture": {
         "64bit": {
-            "url": "http://cdn.apifox.cn/download/2.3.8/Apifox-2.3.8.exe#/dl.7z",
-            "hash": "sha512:7c784e8ce2bd8a5f28f2648e5976a945940c241c7d93b3048aad99c2921e0f40f925fc2fd74dc9553a333296d47661cc5ebbb1b8673ee502d95d4798147fcbbb",
-            "pre_install": [
-                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
-                "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
-            ]
+            "url": "https://cdn.apifox.cn/download/2.3.8/Apifox-2.3.8.exe#/dl.7z",
+            "hash": "1a53effbc872e080343dac95cb8fa27b918a2ecb1f0125aab4ca23c29c328fe3"
         }
     },
+    "pre_install": [
+        "Get-Item \"$dir\\`$PLUGINSDIR\\app*.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
+    ],
     "shortcuts": [
         [
             "Apifox.exe",
-            "Apifox"
+            "Apifox",
+            "--user-data-dir=\"$dir\\UserData\""
         ]
     ],
+    "persist": "UserData",
+    "pre_uninstall": [
+        "Stop-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue",
+        "Wait-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue -Timeout 30"
+    ],
     "checkver": {
-        "url": "http://cdn.apifox.cn/download/latest.yml",
-        "regex": "Apifox-([\\d.]+).exe"
+        "url": "https://cdn.apifox.cn/download/latest.yml",
+        "regex": "version: ([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://cdn.apifox.cn/download/$version/Apifox-$version.exe#/dl.7z",
+                "url": "https://cdn.apifox.cn/download/$version/Apifox-$version.exe#/dl.7z",
                 "hash": {
-                    "url": "http://cdn.apifox.cn/download/latest.yml",
-                    "mode": "extract",
-                    "regex": "sha512.*?$base64"
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512: $base64"
                 }
             }
         }
