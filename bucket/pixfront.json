@@ -1,0 +1,40 @@
+{
+    "version": "1.25",
+    "description": "pixFront: a picture deskew tool",
+    "homepage": "http://pixtopo.main.jp/front/index.html",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "http://pixtopo.main.jp/front/setup_pixfont_x64_1_25_4_jp.msi#/dl.msi",
+            "hash": "7272c8c639fc80b58646e71eeade156722adcdb137e3ef5db563ced44138ba0e"
+        }
+    },
+    "bin": [
+        [
+            "QtFront.exe",
+            "pixFront"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "QtFront.exe",
+            "pixFront"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$web = Invoke-WebRequest -Uri http://pixtopo.main.jp/front/index.html",
+            "$ver = [regex]::Matches($web.Content, '(?<=vs\">[0-9]{4}.+? )[0-9][0-9.]+').Value[-1]",
+            "$link64 = ($web.Links | Where-Object { $_.href -like '*.msi' -and $_.innerText -like \"*$ver*\" }).href",
+            "Write-Output \"$ver $link64\""
+        ],
+        "regex": "^([^ ]+) (?<link64>[^ ]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://pixtopo.main.jp/front/$matchLink64#/dl.msi"
+            }
+        }
+    }
+}
