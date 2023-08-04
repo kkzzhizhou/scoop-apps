@@ -9,27 +9,25 @@
             "hash": "feca39ecead369f5a8d4d324f99bbcd7998078c0c67cb4dcd4fc7db63ccb7547"
         }
     },
-    "extract_to": "PulsarPortable",
+    "extract_to": "pulsar",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\.pulsar\") -and (Test-Path \"$env:UserProfile\\.pulsar\")) {",
+        "    info '[Portable Mode]: Migrating user data...'",
+        "    Copy-Item \"$env:UserProfile\\.pulsar\" \"$persist_dir\\.pulsar\" -Recurse",
+        "}",
+        "ensure \"$persist_dir\\.pulsar\\electronUserData\" | Out-Null"
+    ],
     "bin": [
-        "PulsarPortable\\resources\\pulsar.cmd",
-        "PulsarPortable\\resources\\app\\ppm\\bin\\apm.cmd"
+        "pulsar\\resources\\pulsar.cmd",
+        "pulsar\\resources\\app\\ppm\\bin\\apm.cmd"
     ],
     "shortcuts": [
         [
-            "PulsarPortable\\Pulsar.exe",
+            "pulsar\\Pulsar.exe",
             "Pulsar"
         ]
     ],
     "persist": ".pulsar",
-    "post_install": [
-        "if (!(Test-Path \"$dir\\.pulsar\\*\") -and (Test-Path \"$env:UserProfile\\.pulsar\")) {",
-        "    info '[Portable Mode]: Copying user data...'",
-        "    Copy-Item \"$env:UserProfile\\.pulsar\\*\" \"$dir\\.pulsar\" -Recurse",
-        "}",
-        "if (!(Test-Path \"$dir\\.pulsar\\electronUserData\")) {",
-        "    New-Item -Type Directory \"$dir\\.pulsar\\electronUserData\" | Out-Null",
-        "}"
-    ],
     "checkver": {
         "github": "https://github.com/pulsar-edit/pulsar"
     },
