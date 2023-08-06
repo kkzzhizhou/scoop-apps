@@ -3,23 +3,18 @@
     "description": "Nintendo 64 emulator",
     "homepage": "https://simple64.github.io/",
     "license": {
-        "url": "https://github.com/simple64/simple64/blob/main/LICENSE",
-        "identifier": "GPL-3.0"
+        "identifier": "GPL-3.0",
+        "url": "https://github.com/simple64/simple64/blob/main/LICENSE"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/simple64/simple64/releases/download/v2023.08.2/simple64-win64-824d786.zip",
-            "hash": "c89a9794a59d9cc12f8679711643dfb55a358e5c7218abef84927409c512ef94"
-        }
-    },
+    "url": "https://github.com/simple64/simple64/releases/download/v2023.08.2/simple64-win64-824d786.zip",
+    "hash": "c89a9794a59d9cc12f8679711643dfb55a358e5c7218abef84927409c512ef94",
     "extract_dir": "simple64",
-    "post_install": [
-        "if (!(Test-Path \"$persist_dir\\mupen64plus-gui.ini.bak\")) {",
-        "   Set-Content \"$dir\\mupen64plus-gui.ini\" '[General]'",
-        "   Add-Content \"$dir\\mupen64plus-gui.ini\" 'version=2'",
-        "   Add-Content \"$dir\\mupen64plus-gui.ini\" 'configDirPath=$APP_PATH$/config'",
-        "} else {",
-        "   Copy-Item \"$persist_dir\\mupen64plus-gui.ini.bak\" \"$dir\\mupen64plus-gui.ini\" -Force",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\simple64-gui.ini\")) {",
+        "   New-Item    \"$dir\\simple64-gui.ini\" -Type File | Out-Null",
+        "   Set-Content \"$dir\\simple64-gui.ini\" '[General]'",
+        "   Add-Content \"$dir\\simple64-gui.ini\" 'version=2'",
+        "   Add-Content \"$dir\\simple64-gui.ini\" 'configDirPath=$APP_PATH$/config'",
         "}"
     ],
     "bin": [
@@ -35,22 +30,11 @@
         ]
     ],
     "persist": "config",
-    "uninstaller": {
-        "script": [
-            "'mupen64plus-gui.ini' | ForEach-Object {",
-            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
-            "}"
-        ]
-    },
     "checkver": {
         "github": "https://github.com/simple64/simple64",
-        "regex": "v([\\d.]+)/simple64-win64-(?<commit>[\\da-f]{7})\\.zip"
+        "regex": "v([\\d\\.]+)\\/simple64-win64-(?<commit>[\\da-f]{7})\\."
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/simple64/simple64/releases/download/v$version/simple64-win64-$matchCommit.zip"
-            }
-        }
+        "url": "https://github.com/simple64/simple64/releases/download/v$version/simple64-win64-$matchCommit.zip"
     }
 }

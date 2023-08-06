@@ -105,10 +105,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - mogeko/scoop-sysinternals
 - ChungZH/peach
 - cc713/ownscoop
+- hu3rror/scoop-muggle
 - aoisummer/scoop-bucket
 - seumsc/scoop-seu
 - rivy/scoop-bucket
-- hu3rror/scoop-muggle
 - littleli/Scoop-littleli
 - ChinLong/scoop-customize
 - starise/Scoop-Gaming
