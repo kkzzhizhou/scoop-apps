@@ -69,8 +69,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - ScoopInstaller/Nirsoft
 - scoopcn/scoopcn
-- KNOXDEV/wsl
 - hoilc/scoop-lemon
+- KNOXDEV/wsl
 - echoiron/echo-scoop
 - Paxxs/Cluttered-bucket
 - ACooper81/scoop-apps
