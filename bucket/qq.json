@@ -1,9 +1,17 @@
 {
-    "homepage": "https://im.qq.com",
-    "description": "I'm QQ - 每一天，乐在沟通",
     "version": "9.7.13.29149",
-    "license": "Copyright © 1998 - 2021 Tencent. All Rights Reserved.",
-    "url": "https://dldir1.qq.com/qqfile/qq/PCQQ9.7.13/QQ9.7.13.29149.exe#/dl.7z",
+    "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family.",
+    "homepage": "https://im.qq.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://ti.qq.com/agreement/index.html"
+    },
+    "notes": [
+        "Scoop doesn't persist your QQ data, by default they are stored in: ",
+        "'%UserProfile%\\Documents\\Tencent Files'.",
+        "Files produced at runtime leaves in '%AppData%\\Tencent'."
+    ],
+    "url": "https://webcdn.m.qq.com/spcmgr/download/QQ9.7.13.29149.exe#/dl.7z",
     "hash": "ca44c5ae758e6ae5e304257267096ed765aad590c212bcec562b544ece310db4",
     "shortcuts": [
         [
@@ -14,18 +22,20 @@
     "installer": {
         "script": [
             "Get-Item \"$dir\\*\" -Exclude .rsrc | Remove-Item",
-            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\101\" \"Files\" -Destination \"$dir\\\" -Removal",
-            "Move-Item \"$dir\\Files\\*\" \"$dir\"",
-            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\102\" \"TXSSO\\TXSSOSetup.exe\" -Destination \"$dir\" -Removal",
-            "Expand-7zipArchive \"$dir\\TXSSO\\TXSSOSetup.exe\" \"TXSSO\" -Destination \"$dir\\bin\" -Removal"
+            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\101\" \"$dir\" -ExtractDir 'Files'",
+            "Expand-7zipArchive \"$dir\\.rsrc\\2052\\MSI\\102\" \"$dir\\temp\"",
+            "'vcruntime140.dll', 'msvcp140.dll', 'msvcr100.dll', 'vcomp140.dll', 'msvcp100.dll' | ForEach-Object {",
+            "  Move-Item \"$dir\\temp\\$_\" \"$dir\\Bin\\\"",
+            "}",
+            "Expand-7zipArchive \"$dir\\temp\\TXSSO\\TXSSOSetup.exe\" \"$dir\\Bin\\TXSSO\" -ExtractDir 'TXSSO'",
+            "Remove-Item \"$dir\\.rsrc\", \"$dir\\temp\" -Recurse"
         ]
     },
-    "post_install": "Echo \"$dir\\Files\" \"$dir\\.rsrc\" \"$dir\\TXSSO\" | Remove-Item -Recurse",
     "checkver": {
-        "url": "https://im.qq.com/pcqq",
+        "url": "https://pc.qq.com/detail/2/detail_2.html",
         "regex": "QQ([\\d.]+).exe"
     },
     "autoupdate": {
-        "url": "https://dldir1.qq.com/qqfile/qq/PCQQ$majorVersion.$minorVersion.$patchVersion/QQ$majorVersion.$minorVersion.$patchVersion.$buildVersion.exe#/dl.7z"
+        "url": "https://webcdn.m.qq.com/spcmgr/download/QQ$version.exe#/dl.7z"
     }
 }
