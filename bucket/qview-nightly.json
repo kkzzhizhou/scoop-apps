@@ -1,18 +1,16 @@
 {
-    "version": "1166",
+    "version": "5811193418",
     "description": "Practical and minimal image viewer",
-    "homepage": "https://dev.azure.com/jurplel/qView/",
+    "homepage": "https://github.com/jurplel/qView",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://dev.azure.com/jurplel/79795e5b-716b-4a59-a698-8605132587c5/_apis/build/builds/1166/artifacts?artifactName=qView-nightly-win64-2022-12-14.1&api-version=7.0&%24format=zip#/artifacts.zip",
-            "hash": "47013ee899c57aba1e93d02e120ae19efdf05b21ce318769da21e1b1269c23d8",
-            "extract_dir": "qView-nightly-win64-2022-12-14.1"
+            "url": "https://nightly.link/jurplel/qView/workflows/build/master/qView-nightly-Windows_64-2023-08-09.1.zip",
+            "hash": "3e74182fa148c278516e429338cea60989758bd225ac26512bee9638b3e2a7ae"
         },
         "32bit": {
-            "url": "https://dev.azure.com/jurplel/79795e5b-716b-4a59-a698-8605132587c5/_apis/build/builds/1166/artifacts?artifactName=qView-nightly-win32-2022-12-14.1&api-version=7.0&%24format=zip#/artifacts.zip",
-            "hash": "bd331a550182115a0fb876060c42f6f2629568fc76da8331145d5dd735853c58",
-            "extract_dir": "qView-nightly-win32-2022-12-14.1"
+            "url": "https://nightly.link/jurplel/qView/workflows/build/master/qView-nightly-Windows_32-2023-08-09.1.zip",
+            "hash": "5096516126e255636bffbdc21da08e4541cc069291a6a86b71e74c1b3a46de54"
         }
     },
     "pre_install": [
@@ -35,20 +33,21 @@
     ],
     "checkver": {
         "script": [
-            "$api = (Invoke-RestMethod 'https://vsrm.dev.azure.com/jurplel/79795e5b-716b-4a59-a698-8605132587c5/_apis/Release/deployments').value[0].release.artifacts[0].definitionReference.version",
-            "('id', 'name' | ForEach-Object { $api.$_ }) -join ' '"
+            "try {",
+            "    $api = (Invoke-RestMethod 'https://api.github.com/repositories/123522764/actions/workflows/build.yml/runs?branch=master&status=success').workflow_runs[0]",
+            "    ($api.id, $api.updated_at.ToString('yyyy-MM-dd'), $api.run_attempt) -join ' '",
+            "}",
+            "catch { '' }"
         ],
-        "regex": "^(\\S+) (?<date>\\S+)$"
+        "regex": "\\A(\\d+) (?<date>\\d{4}(?:-\\d{2}){2}) (?<attempt>\\d+)\\Z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dev.azure.com/jurplel/79795e5b-716b-4a59-a698-8605132587c5/_apis/build/builds/$version/artifacts?artifactName=qView-nightly-win64-$matchDate&api-version=7.0&%24format=zip#/artifacts.zip",
-                "extract_dir": "qView-nightly-win64-$matchDate"
+                "url": "https://nightly.link/jurplel/qView/workflows/build/master/qView-nightly-Windows_64-$matchDate.$matchAttempt.zip"
             },
             "32bit": {
-                "url": "https://dev.azure.com/jurplel/79795e5b-716b-4a59-a698-8605132587c5/_apis/build/builds/$version/artifacts?artifactName=qView-nightly-win32-$matchDate&api-version=7.0&%24format=zip#/artifacts.zip",
-                "extract_dir": "qView-nightly-win32-$matchDate"
+                "url": "https://nightly.link/jurplel/qView/workflows/build/master/qView-nightly-Windows_32-$matchDate.$matchAttempt.zip"
             }
         }
     }
