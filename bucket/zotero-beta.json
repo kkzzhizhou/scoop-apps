@@ -1,10 +1,18 @@
 {
-    "version": "6.0.27-beta.3",
+    "version": "7.0.0-beta.32",
     "description": "Open-source reference management software to manage bibliographic data and related research materials.",
     "homepage": "https://www.zotero.org/",
     "license": "AGPL-3.0-only",
-    "url": "https://download.zotero.org/client/beta/6.0.27-beta.3%2B3e12f3f20/Zotero-6.0.27-beta.3%2B3e12f3f20_setup.exe#/dl.7z",
-    "hash": "75369dd13f840b7ef1f19e7c04a65b37f436a192f0782538fb6f92aade7ffeb0",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.zotero.org/client/beta/7.0.0-beta.32%2B5e27a7501/Zotero-7.0.0-beta.32%2B5e27a7501_x64_setup.exe#/dl.7z",
+            "hash": "7f7f0858b6e06c1c8542e63c58b3f26e61e9f54c8c6fe7bb53b824847bc56564"
+        },
+        "32bit": {
+            "url": "https://download.zotero.org/client/beta/7.0.0-beta.32%2B5e27a7501/Zotero-7.0.0-beta.32%2B5e27a7501_win32_setup.exe#/dl.7z",
+            "hash": "d457fa36eea09f0375456bfc4cf22bce7aed37a79f56078f9d8c8c1a109668b7"
+        }
+    },
     "extract_dir": "core",
     "bin": "zotero.exe",
     "shortcuts": [
@@ -14,10 +22,20 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.zotero.org/download/client/update/5.0.0/_/WINNT_x86-msvc/en-US/beta/_/update.xml",
+        "script": [
+            "try { $detail = Invoke-WebRequest 'https://www.zotero.org/download/client/dl?platform=win-x64-zip&channel=beta' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "return $detail.Headers.Location"
+        ],
         "regex": "Zotero-([\\d.]+-beta[\\d.]+)%2B(?<commit>[\\da-f]+)"
     },
     "autoupdate": {
-        "url": "https://download.zotero.org/client/beta/$version%2B$matchCommit/Zotero-$version%2B$matchCommit_setup.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://download.zotero.org/client/beta/$version%2B$matchCommit/Zotero-$version%2B$matchCommit_x64_setup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download.zotero.org/client/beta/$version%2B$matchCommit/Zotero-$version%2B$matchCommit_win32_setup.exe#/dl.7z"
+            }
+        }
     }
 }
