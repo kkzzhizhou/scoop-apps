@@ -2,7 +2,7 @@
     "version": "1.2.3-sp4",
     "description": " Cyber Security ALL-IN-ONE Platform 交互式应用安全测试平台 ",
     "homepage": "https://github.com/yaklang/yakit",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json",
+    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json，会将yakit自动添加到防火墙允许规则中",
     "license": "AGPL-3.0-or-later",
     "architecture": {
         "64bit": {
@@ -14,6 +14,11 @@
             ]
         }
     },
+    "post_install": [
+        "$existingRule = Get-NetFirewallRule -DisplayName yakit.exe -ErrorAction SilentlyContinue",
+        "if ($existingRule) {  Set-NetFirewallRule -DisplayName yakit.exe -Action Allow -Enabled True -Program \"$dir\\yakit.exe\" }",
+        "else { New-NetFirewallRule -DisplayName yakit.exe -Action Allow -Enabled True -Program \"$dir\\yakit.exe\" }"
+    ],
     "shortcuts": [
         [
             "Yakit.exe",
