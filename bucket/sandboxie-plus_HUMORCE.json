@@ -1,9 +1,8 @@
 {
     "version": "1.10.5",
     "description": "A sandbox-based isolation software for 32- and 64-bit Windows NT-based operating systems",
-    "homepage": "https://github.com/sandboxie-plus/Sandboxie",
+    "homepage": "https://sandboxie-plus.com/",
     "license": "GPL-3.0-only",
-    "notes": "When the program asking for \"put SandBoxes folder into it's parent directory\", you should select \"No\" for keep directory structure of scoop, and protect your sandbox data, because the parent directory will be deleted when uninstalling.",
     "architecture": {
         "64bit": {
             "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.10.5/Sandboxie-Plus-x64-v1.10.5.exe",
@@ -12,21 +11,29 @@
         "32bit": {
             "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.10.5/Sandboxie-Plus-x86-v1.10.5.exe",
             "hash": "d5cf65d917da082000b8b521a877b057758f1b3013cc65130f54548ef22b190b"
+        },
+        "arm64": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.10.5/Sandboxie-Plus-ARM64-v1.10.5.exe",
+            "hash": "1206d7e35cae1c6a96b633998d72c6098800b3414adcc8e9d0df41270144f1ce"
         }
     },
     "innosetup": true,
     "pre_install": [
-        "ensure \"$persist_dir\" | Out-Null",
-        "Get-ChildItem \"$persist_dir\\*\" -Include 'Sandboxie.ini', 'Sandboxie-Plus.ini' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue -Force"
+        "ensure \"$persist_dir\\Sandbox\" | Out-Null",
+        "Get-ChildItem \"$persist_dir\\*.ini\" | Copy-Item -Destination \"$dir\" -Force -ErrorAction SilentlyContinue",
+        "# Create Junction for `FileRootPath`",
+        "New-Item -ItemType Junction -Path \"$dir\\..\\Sandbox\" -Target \"$persist_dir\\Sandbox\" | Out-Null"
     ],
-    "pre_uninstall": "Get-ChildItem \"$dir\\*\" -Include 'Sandboxie.ini', 'Sandboxie-Plus.ini' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
     "shortcuts": [
         [
             "SandMan.exe",
             "Sandboxie Plus"
         ]
     ],
-    "checkver": "github",
+    "pre_uninstall": "Get-ChildItem \"$dir\\*\" -Include 'Sandboxie.ini', 'Sandboxie-Plus.ini' | Copy-Item -Destination \"$persist_dir\" -Force -ErrorAction SilentlyContinue",
+    "checkver": {
+        "github": "https://github.com/sandboxie-plus/Sandboxie"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
@@ -34,6 +41,9 @@
             },
             "32bit": {
                 "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$version/Sandboxie-Plus-x86-v$version.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v$version/Sandboxie-Plus-ARM64-v$version.exe"
             }
         }
     }
