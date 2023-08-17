@@ -1,0 +1,34 @@
+{
+    "version": "1.0.0",
+    "homepage": "https://github.com/Weidows-projects/scoop-3rd",
+    "license": "MIT",
+    "description": "辅以 scoop 本体的扩展",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Weidows-projects/scoop-3rd/releases/download/1.0.0/test.7z",
+            "hash": "BDB2B93905F214E3DE4DEAC78BBA1E928A92B521EA3341AFA672601FE642D828"
+        }
+    },
+    "post_install": [
+        "scoop config global_path $scoopdir\\global",
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('.config/scoop')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
+    ],
+    "post_uninstall": [
+        "scoop config rm global_path"
+    ]
+}

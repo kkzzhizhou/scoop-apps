@@ -88,8 +88,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wangzq/scoop-bucket
 - zhoujin7/tomato
 - TheRandomLabs/Scoop-Python
-- wzv5/ScoopBucket
 - akirco/aki-apps
+- wzv5/ScoopBucket
 - ViCrack/scoop-bucket
 - arch3rPro/PST-Bucket
 - niheaven/scoop-sysinternals
