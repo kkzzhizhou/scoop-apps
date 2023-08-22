@@ -105,13 +105,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - mogeko/scoop-sysinternals
 - ChungZH/peach
+- DoveBoy/Apps
 - cc713/ownscoop
 - hu3rror/scoop-muggle
 - aoisummer/scoop-bucket
 - seumsc/scoop-seu
 - rivy/scoop-bucket
 - AkariiinMKII/Scoop4kariiin
-- DoveBoy/Apps
 - littleli/Scoop-littleli
 - ChinLong/scoop-customize
 - starise/Scoop-Gaming
