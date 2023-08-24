@@ -15,9 +15,14 @@
     },
     "installer": {
         "script": [
-            "Remove-Item $scoopdir\\apps\\aria2 -Force -Recurse -ErrorAction SilentlyContinue",
-            "New-Item -Type Junction -Path $scoopdir\\apps\\aria2 -Target $dir\\resources | Out-Null",
-            "New-Item -Type Junction -Path $scoopdir\\apps\\aria2\\current -Target $dir\\resources\\engine | Out-Null"
+            "scoop uninstall aria2",
+            "mkdir $dir\\resources\\scoop",
+            "New-Item -Type Junction -Path $scoopdir\\apps\\aria2 -Target $dir\\resources\\scoop | Out-Null",
+
+            "mkdir $dir\\resources\\scoop\\nightly-230823",
+            "New-Item -Type Junction -Path $dir\\resources\\scoop\\current -Target $dir\\resources\\scoop\\nightly-230823 | Out-Null",
+
+            "Copy-Item \"$dir\\resources\\engine\\*\" \"$dir\\resources\\scoop\\current\" -Recurse -ErrorAction SilentlyContinue"
         ]
     },
     "post_install": [
@@ -38,6 +43,9 @@
         "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
         "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
         "}"
+    ],
+    "post_uninstall": [
+        "Remove-Item $scoopdir\\apps\\aria2 -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "bin": ["Motrix.exe", "resources\\engine\\aria2c.exe"],
     "shortcuts": [["Motrix.exe", "Motrix"]],

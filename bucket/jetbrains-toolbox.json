@@ -14,17 +14,9 @@
     "hash": "4d642ac91ab7920086373d9b90574fc058fa50812ccad5d9853a6b5a27949acf",
     "post_install": [
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall.exe\" -Recurse",
-        "foreach ($folder in @('JetBrains', '..\\Roaming\\JetBrains')) {",
-        "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
-        "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
-        "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
-        "  } elseif (Test-Path \"$env:LOCALAPPDATA\\$folder\") {",
-        "    $runtimeCache = \"$env:LOCALAPPDATA\\$folder\"",
-        "    $runtimeCachePersist = \"$persist_dir\\LOCALAPPDATA\\$folder\"",
-        "  } elseif (Test-Path \"$env:APPDATA\\$folder\") {",
-        "    $runtimeCache = \"$env:APPDATA\\$folder\"",
-        "    $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
-        "  } else {continue}",
+
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
         "  if (Test-Path $runtimeCachePersist) {",
         "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
         "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
@@ -34,6 +26,12 @@
         "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
         "  }",
         "}",
+        "foreach ($folder in @('JetBrains', 'Google')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}",
+
         "$config = \"$env:LOCALAPPDATA\\JetBrains\\Toolbox\\.settings.json\"",
         "if (-not (Test-Path $config)) {",
         "    $settings = @{",
@@ -52,7 +50,10 @@
             "JetBrains Toolbox"
         ]
     ],
-    "persist": "apps",
+    "persist": [
+        "apps",
+        "download"
+    ],
     "checkver": {
         "url": "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release",
         "jsonpath": "$.TBA..build"
