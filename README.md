@@ -84,8 +84,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Bucket
 - ZvonimirSun/scoop-iszy
 - Qv2ray/mochi
-- kiennq/scoop-misc
 - wangzq/scoop-bucket
+- kiennq/scoop-misc
 - zhoujin7/tomato
 - TheRandomLabs/Scoop-Python
 - akirco/aki-apps

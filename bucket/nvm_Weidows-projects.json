@@ -24,17 +24,43 @@
     },
     "post_install": [
         "corepack enable",
-        "corepack prepare pnpm@latest --activate",
+        "corepack prepare --activate --all",
+
         "pnpm config set store-dir $dir\\pnpm\\store",
         "pnpm config set global-dir $dir\\pnpm\\global",
         "pnpm config set global-bin-dir $dir\\pnpm\\bin",
         "pnpm config set cache-dir $dir\\pnpm\\cache",
-        "pnpm config set state-dir $dir\\pnpm\\state"
+        "pnpm config set state-dir $dir\\pnpm\\state",
+        "pnpm list -g",
+
+        "yarn config set cache-folder $dir\\yarn\\cache",
+        "yarn config set yarn-offline-mirror $dir\\yarn\\mirror",
+        "yarn config set global-folder $dir\\yarn\\global",
+        "yarn config set prefix $dir\\yarn\\global",
+        "yarn global list",
+
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('npm-cache', 'Yarn', 'pnpm')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
     ],
     "bin": "nvm.exe",
     "env_add_path": [
         "nodejs\\nodejs",
-        "pnpm\\bin"
+        "pnpm\\bin",
+        "yarn\\global\\node_modules\\.bin"
     ],
     "env_set": {
         "NVM_HOME": "$dir",
@@ -43,6 +69,7 @@
     "persist": [
         "nodejs",
         "pnpm",
+        "yarn",
         "settings.txt"
     ],
     "checkver": "github",
