@@ -1,6 +1,6 @@
 {
-    "version": "dc29307",
-    "description": "Microsoft Xbox 360 emulator",
+    "version": "20230808203703-dc29307",
+    "description": "Xbox 360 Research Emulator (development version)",
     "homepage": "https://xenia.jp",
     "license": {
         "identifier": "BSD-3-Clause",
@@ -10,7 +10,7 @@
     "hash": "e96bd260c037dac3a79b4840ad8d071c63512f791ba480ba36ed367568239091",
     "pre_install": [
         "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
         "   New-item \"$persist_dir\\portable.txt\" -ItemType File | Out-Null",
         "   New-item \"$persist_dir\\xenia-canary.config.toml\" -ItemType File | Out-Null",
         "   if (Test-Path \"$env:USERPROFILE\\Documents\\Xenia\") {",
@@ -24,20 +24,28 @@
     "shortcuts": [
         [
             "xenia_canary.exe",
-            "Xenia (canary)"
+            "Xenia Canary"
         ]
     ],
     "persist": [
         "portable.txt",
         "xenia-canary.config.toml",
         "content",
-        "cache"
+        "cache",
+        "patches"
     ],
     "checkver": {
-        "url": "https://github.com/xenia-canary/xenia-canary/releases/latest",
-        "regex": "([a-f0-9]{7})<"
+        "url": "https://github.com/xenia-canary/xenia-canary/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)_canary_experimental",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
-        "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$version/xenia_canary.zip"
+        "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$matchCommit/xenia_canary.zip"
     }
 }
