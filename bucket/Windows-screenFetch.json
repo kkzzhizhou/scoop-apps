@@ -1,5 +1,5 @@
 {
-    "version": "1.3.0",
+    "version": "1.3.2",
     "description": "A Powershell port of bash/unix screenfetch.",
     "homepage": "https://github.com/AkariiinMKII/Windows-screenFetch",
     "license": "GPL-3.0-only",
@@ -7,15 +7,22 @@
         "Run following command to import Windows-screenFetch automatically in Powershell:",
         "$dir\\add-profile-content.ps1"
     ],
-    "url": "https://github.com/AkariiinMKII/Windows-screenFetch/archive/v1.3.0.zip",
-    "hash": "2b5dca2546fb0ed19af973a759d70f00e167310094fbc3febfd4c03c054a4876",
-    "extract_dir": "Windows-screenFetch-1.3.0",
+    "url": "https://github.com/AkariiinMKII/Windows-screenFetch/archive/v1.3.2.zip",
+    "hash": "b38b678303ae2893859f3f9ed2197f6233c91ec7a5ef9809b499856a2b3f820b",
+    "extract_dir": "Windows-screenFetch-1.3.2",
     "psmodule": {
         "name": "Windows-screenFetch"
     },
+    "pre_install": [
+        "$CheckAltInstall = $(appdir Windows-screenFetch-alt $global)",
+        "if (Test-Path \"$CheckAltInstall\") {",
+        "    Write-Host \"Found conflict version, uninstalling ...\" -ForegroundColor Yellow",
+        "    scoop uninstall Windows-screenFetch-alt",
+        "}"
+    ],
     "post_install": [
         "Remove-Item \"$dir\\LICENSE\", \"$dir\\README.md\", \"$dir\\screenshots\" -Force -Recurse -ErrorAction SilentlyContinue",
-        "Import-Module Windows-screenFetch",
+        "Import-Module $manifest.psmodule.name",
         "$BucketDir = Find-BucketDirectory -Root -Name $bucket",
         "$S4UtilsPath = $BucketDir | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
         "if (Test-Path $S4UtilsPath) {",
@@ -25,11 +32,11 @@
         "    New-ProfileModifier -Behavior RemoveModule -PSModuleName $manifest.psmodule.name -AppDir $dir -BucketDir $BucketDir",
         "    Remove-Module S4Utils -ErrorAction SilentlyContinue",
         "} else {",
-        "    Write-Host 'Missing files, please re-add Scoop4kariiin bucket and re-install this app.' -ForegroundColor Red",
+        "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
         "}"
     ],
     "pre_uninstall": [
-        "Remove-Module Windows-screenFetch -ErrorAction SilentlyContinue",
+        "Remove-Module $manifest.psmodule.name -ErrorAction SilentlyContinue",
         "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
         "if (($cmd -eq 'uninstall') -and (Test-Path \"$dir\\remove-profile-content.ps1\") -and (Test-Path $S4UtilsPath)) {",
         "    Unblock-File $S4UtilsPath",
@@ -38,7 +45,7 @@
     ],
     "checkver": {
         "url": "https://api.github.com/repos/AkariiinMKII/Windows-screenFetch/tags",
-        "regex": "tags/v([\\d.]+)"
+        "regex": "tags/v([\\d.]+)\""
     },
     "autoupdate": {
         "url": "https://github.com/AkariiinMKII/Windows-screenFetch/archive/v$version.zip",
