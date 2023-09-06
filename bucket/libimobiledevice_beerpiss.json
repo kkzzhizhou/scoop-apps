@@ -43,8 +43,17 @@
         "usbmuxd.exe"
     ],
     "checkver": {
-        "url": "https://github.com/libimobiledevice-win32/imobiledevice-net/releases",
-        "regex": "/releases/download/(?:v|V)?([\\d.]+)/libimobiledevice.(?<buildversion>(?:[\\d.]+)\\-r\\d+)"
+        "script": [
+            "$limd_release_raw = Invoke-WebRequest -Uri https://api.github.com/repos/libimobiledevice-win32/imobiledevice-net/releases/latest | Select-Object -Expand Content",
+            "$limd_release = $limd_release_raw | ConvertFrom-Json",
+            "$version = $limd_release.tag_name",
+            "if (-not ($limd_release_raw -match \"libimobiledevice.(?<buildversion>(?:[\\d.]+)\\-r\\d+)\")) {",
+            "  throw 'Could not match buildversion.'",
+            "}",
+            "$build_version = $Matches.buildversion",
+            "Write-Output $version $build_version"
+        ],
+        "regex": "(?:v|V)?([\\d.]+)\\s(?<buildversion>(?:[\\d.]+)\\-r\\d+)"
     },
     "autoupdate": {
         "architecture": {

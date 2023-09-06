@@ -46,11 +46,11 @@ function New-ProfileModifier {
     $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $PSModuleName, "'") -Join ("")
 
     switch ($Behavior) {
-        { $_ -eq "ImportModule" } {
+        { 'ImportModule' -eq $_ } {
             $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $ImportModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\add-profile-content.ps1"
         }
-        { $_ -eq "RemoveModule" } {
+        { 'RemoveModule' -eq $_ } {
             $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\remove-profile-content.ps1"
         }
@@ -73,8 +73,7 @@ function Add-ProfileContent {
 
     if (-not(Test-Path $PROFILE)) {
         New-Item -Path $PROFILE -Value "$Content" -ItemType File -Force | Out-Null
-    }
-    else {
+    } else {
         Add-Content -Path $PROFILE -Value "`r`n$Content" -NoNewLine
     }
 }
@@ -192,8 +191,7 @@ function Dismount-ExternalRuntimeData {
 
     if (Test-Path $Target) {
         Remove-Item $Target -Force -Recurse
-    }
-    else {
+    } else {
         Write-Host "[ERROR] Invalid target, continue without dismounting." -ForegroundColor Red
     }
 }
