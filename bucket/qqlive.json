@@ -1,13 +1,29 @@
 {
-    "version": "11.77.7225.0",
     "homepage": "https://v.qq.com/",
-    "license": "Freeware",
-    "url": "https://dldir1.qq.com/qqtv/TencentVideo11.77.7225.0.exe#/dl.7z",
-    "hash": "22a62a9adad610bd57380a74a40296dd6b43beac0ec71b6d3733e7ea7dc6b60e",
+    "description": "腾讯视频是腾讯推出的在线视频媒体平台。",
+    "license": "BSD-3-Clause",
+    "version": "11.78.8528.0",
+    "url": "https://dldir1.qq.com/qqtv/TencentVideo11.78.8528.0.exe#/dl.7z",
+    "hash": "c1a8ba95f6636cfd5feb17ae0416105e29ad5163186263e932c787ad37f6f701",
     "post_install": [
         "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\" -Force -Recurse",
         "Copy-Item \"$dir\\QQLive.tpc\" \"$dir\\instok\""
     ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQLive\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\QQLive\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "shortcuts": [
         [
             "QQLive.exe",
@@ -16,9 +32,9 @@
     ],
     "checkver": {
         "url": "https://v.qq.com/download.html",
-        "regex": "/TencentVideo([\\d.]+)\\.exe"
+        "regex": "//(?<url>[^\"]+)/TencentVideo([\\d\\.]+)\\.exe"
     },
     "autoupdate": {
-        "url": "https://dldir1.qq.com/qqtv/TencentVideo$version.exe#/dl.7z"
+        "url": "https://$matchUrl/TencentVideo$version.exe#/dl.7z"
     }
 }
