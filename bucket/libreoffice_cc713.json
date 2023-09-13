@@ -1,73 +1,87 @@
 {
-    "version": "7.4.6.2",
+    "version": "7.6.1.2",
     "description": "Powerful and free office suite, a successor to OpenOffice(.org).",
     "homepage": "https://libreoffice.org/",
     "license": "MPL-2.0",
     "suggest": {
-        "Visual C++ Redistributable 2015-2022": "extras/vcredist2022"
+        "vcredist": "extras/vcredist2022"
     },
+    "notes": "If you are upgrading from portable version, you can migrate settings by copying \"$persist_dir\\Data\" to \"%AppData%\\LibreOffice\"",
     "architecture": {
         "64bit": {
-            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86_64/LibreOffice_7.4.6.2_Win_x64.msi#/dl.msi",
-            "hash": "870a0c2a550c03754ae7974ccc277806a772488e4fd51ea5e146580f8141dae8"
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/7.6.1.2/win/x86_64/LibreOffice_7.6.1.2_Win_x86-64.msi#/dl.msi_",
+            "hash": "0f254e6a0a6bb5747ae0c0820a400ab39028d3f39a0807d0857f7715ee9c8c7d"
         },
         "32bit": {
-            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86/LibreOffice_7.4.6.2_Win_x86.msi#/dl.msi",
-            "hash": "4f4eec66cd8d9af67fa2d536de0d88569cc4b4e85be75f71f05ce56c819ea767"
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/7.6.1.2/win/x86/LibreOffice_7.6.1.2_Win_x86.msi#/dl.msi_",
+            "hash": "5381a028471b2bd8f9df496ce2531b18388be338767af47e7d7be15be32a7258"
         },
         "arm64": {
-            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/aarch64/LibreOffice_7.4.6.2_Win_aarch64.msi#/dl.msi",
-            "hash": "5652281be78bd79d2a71df9529e8277ace8491525f1d6896421130e80869539f"
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/7.6.1.2/win/aarch64/LibreOffice_7.6.1.2_Win_aarch64.msi#/dl.msi_",
+            "hash": "679018bf5eaec1b1868c5fb3e5b6d4d798c276ce48a621dd476474a9190d9c80"
         }
     },
     "pre_install": [
-        "Move-Item \"$dir\\Fonts\" \"$dir\\LibreOffice\\share\" -Force",
-        "Remove-Item \"$dir\\System*\" -Recurse -Force"
+        "# keeping files in 'LibreOffice' directory so that bundled font can work properly",
+        "ensure \"$dir\\LibreOffice\\share\\fonts\" | Out-Null",
+        "# usage: get_config ($name, $default). $default ==> set to what value if the value is empty (not being set before)",
+        "if (get_config USE_LESSMSI $false) {",
+        "    # if 'use_lessmsi' is true",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\" | Out-Null",
+        "    Move-Item \"$dir\\Fonts\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -Force",
+        "    Remove-Item \"$dir\\System*\" -Recurse -Force",
+        "} else {",
+        "    # if 'use_lessmsi' is false or not set",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\" | Out-Null",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -ExtractDir 'Fonts' | Out-Null",
+        "    Remove-Item \"$dir\\LibreOffice\\Fonts\", \"$dir\\LibreOffice\\System*\" -Recurse -Force",
+        "}",
+        "Remove-Item \"$dir\\dl.msi_\""
     ],
     "shortcuts": [
         [
-            "LibreOffice\\program\\soffice.exe",
+            "LibreOffice\\LibreOffice\\program\\soffice.exe",
             "LibreOffice\\LibreOffice"
         ],
         [
-            "LibreOffice\\program\\sbase.exe",
+            "LibreOffice\\LibreOffice\\program\\sbase.exe",
             "LibreOffice\\LibreOffice Base"
         ],
         [
-            "LibreOffice\\program\\scalc.exe",
+            "LibreOffice\\LibreOffice\\program\\scalc.exe",
             "LibreOffice\\LibreOffice Calc"
         ],
         [
-            "LibreOffice\\program\\sdraw.exe",
+            "LibreOffice\\LibreOffice\\program\\sdraw.exe",
             "LibreOffice\\LibreOffice Draw"
         ],
         [
-            "LibreOffice\\program\\simpress.exe",
+            "LibreOffice\\LibreOffice\\program\\simpress.exe",
             "LibreOffice\\LibreOffice Impress"
         ],
         [
-            "LibreOffice\\program\\smath.exe",
+            "LibreOffice\\LibreOffice\\program\\smath.exe",
             "LibreOffice\\LibreOffice Math"
         ],
         [
-            "LibreOffice\\program\\swriter.exe",
+            "LibreOffice\\LibreOffice\\program\\swriter.exe",
             "LibreOffice\\LibreOffice Writer"
         ]
     ],
     "checkver": {
         "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86_64/",
-        "regex": "LibreOffice_([\\d.]+)_Win_x64.msi"
+        "regex": "LibreOffice_([\\d.]+)_Win_x86-64.msi"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86_64/LibreOffice_$version_Win_x64.msi#/dl.msi"
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86_64/LibreOffice_$version_Win_x86-64.msi#/dl.msi_"
             },
             "32bit": {
-                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86/LibreOffice_$version_Win_x86.msi#/dl.msi"
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86/LibreOffice_$version_Win_x86.msi#/dl.msi_"
             },
             "arm64": {
-                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/aarch64/LibreOffice_$version_Win_aarch64.msi#/dl.msi"
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/aarch64/LibreOffice_$version_Win_aarch64.msi#/dl.msi_"
             }
         },
         "hash": {
