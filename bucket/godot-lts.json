@@ -17,16 +17,20 @@
         "Remove-Item \"$dir\\Godot_*_console.*\"",
         "Get-Item \"$dir\\Godot_*.exe\" | Rename-Item -NewName 'godot.exe'",
         "# Self contained mode",
-        "New-Item \"$dir\\_sc_\" | Out-Null"
+        "if (Test-Path \"$persist_dir\\_sc_\") { Copy-Item \"$persist_dir\\_sc_\" \"$dir\\_sc_\" }"
     ],
     "bin": "godot.exe",
     "shortcuts": [
         [
             "godot.exe",
-            "Godot Engine (LTS)"
+            "Godot Engine - LTS"
         ]
     ],
     "persist": "editor_data",
+    "pre_uninstall": [
+        "# Self contained mode",
+        "if (Test-Path \"$dir\\_sc_\") { Copy-Item \"$dir\\_sc_\" \"$persist_dir\\_sc_\" }"
+    ],
     "checkver": {
         "regex": "Download LTS[\\s\\S]+>([\\d.]+)</div>"
     },
