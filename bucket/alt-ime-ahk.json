@@ -1,16 +1,13 @@
 {
     "version": "0.4.6",
-    "description": "左右 Alt キーの空打ちで IME を OFF/ON する AutoHotKey スクリプトです。",
+    "description": "An AutoHotKey script to turn off/on Japanese IME by hitting left/right Alt key alone. // 左右 Alt キーの空打ちで IME を OFF/ON する AutoHotKey スクリプト",
     "homepage": "https://github.com/karakaram/alt-ime-ahk",
-    "depends": "pswinutil",
-    "url": "https://github.com/karakaram/alt-ime-ahk/releases/download/v0.4.6/alt-ime-ahk.zip",
-    "hash": "3838551e8b9fb65504e8e9af3d9b38b147e9b5af2a651f65b92ba727a95634b2",
-    "installer": {
-        "script": [
-            "$programFileName = 'alt-ime-ahk.exe'",
-            "$programFilePath = Join-Path $dir $programFileName",
-            "PSWinUtil\\Register-Startup -LiteralPath $programFilePath -Scope CurrentUser"
-        ]
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/karakaram/alt-ime-ahk/releases/download/v0.4.6/alt-ime-ahk.zip",
+            "hash": "3838551e8b9fb65504e8e9af3d9b38b147e9b5af2a651f65b92ba727a95634b2"
+        }
     },
     "bin": "alt-ime-ahk.exe",
     "shortcuts": [
@@ -19,8 +16,24 @@
             "alt-ime-ahk"
         ]
     ],
+    "pre_install": [
+        "# Additionally download AutoHotKey source code",
+        "$sourcePath = (Join-Path $dir dl.zip)",
+        "Invoke-WebRequest https://github.com/karakaram/alt-ime-ahk/archive/refs/tags/v${version}.zip -OutFile $sourcePath",
+        "",
+        "Add-Type -Assembly System.IO.Compression.FileSystem",
+        "$zip = [IO.Compression.ZipFile]::OpenRead($sourcePath)",
+        "$zip.Entries | Where-Object FullName -match '^[^/]+/.+' `",
+        "| ForEach-Object { [System.IO.Compression.ZipFileExtensions]::ExtractToFile($_, (Join-Path $dir $_.Name)) }",
+        "$zip.Dispose()",
+        "Remove-Item $sourcePath"
+    ],
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/karakaram/alt-ime-ahk/releases/download/v$version/alt-ime-ahk.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/karakaram/alt-ime-ahk/releases/download/v$version/alt-ime-ahk.zip"
+            }
+        }
     }
 }
