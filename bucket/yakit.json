@@ -1,30 +1,20 @@
 {
     "version": "1.2.5-sp3",
-    "description": " Cyber Security ALL-IN-ONE Platform 交互式应用安全测试平台 ",
+    "description": "Cyber Security ALL-IN-ONE Platform(Scoop bucket by arch3rpro)",
     "homepage": "https://github.com/yaklang/yakit",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json，会将yakit自动添加到防火墙允许规则中",
-    "license": "AGPL-3.0-or-later",
+    "notes": "安装成功后需手动启动并初始化本地引擎^-^",
+    "license": "AGPL-3.0",
     "architecture": {
         "64bit": {
             "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.2.5-sp3/Yakit-1.2.5-sp3-windows-amd64.exe#/dl.7z",
             "hash": "7f78ed447b7cf967a1e48312b8ebe3a69041879e1cc08300a1a2abdb3137d8f4",
-            "pre_install": [
-                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
-            ]
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR/app-64.7z\" \"$dir\""
+            }
         }
     },
-    "post_install": [
-        "$existingRule = Get-NetFirewallRule -DisplayName YakitVi -ErrorAction SilentlyContinue",
-        "if ($existingRule) {  sudo Set-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
-        "else { sudo New-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }"
-    ],
-    "shortcuts": [
-        [
-            "Yakit.exe",
-            "Yakit"
-        ]
-    ],
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse",
+    "bin": "Yakit.exe",
     "checkver": {
         "url": "https://github.com/yaklang/yakit/releases/latest",
         "regex": "/releases/tag/(?:v|V)?([\\d.]+(-sp\\d)?)"
