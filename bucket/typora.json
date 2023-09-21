@@ -1,5 +1,5 @@
 {
-    "version": "1.7.4",
+    "version": "1.7.5",
     "description": "A minimal Markdown editor and reader",
     "homepage": "https://typora.io",
     "license": {
@@ -9,12 +9,16 @@
     "notes": "For old beta version, install: versions/typora0.11.18",
     "architecture": {
         "64bit": {
-            "url": "https://download.typora.io/windows/typora-setup-x64-1.7.4.exe",
-            "hash": "0159c1f5ae961285920c1ff77fe4560518bb5b8c69a8e6e2c2733435dc1b4f97"
+            "url": "https://download.typora.io/windows/typora-setup-x64-1.7.5.exe",
+            "hash": "99a470e8b7a57165096604df0c3757a5bc4a25403c193d87f988553d214873a2"
+        },
+        "arm64": {
+            "url": "https://download.typora.io/windows/typora-setup-arm64-1.7.5.exe",
+            "hash": "29853a2cf88e6ea4b401c82cec0af09bbb6028f1b14f051dec1a579a3b1d2a26"
         },
         "32bit": {
-            "url": "https://download.typora.io/windows/typora-setup-ia32-1.7.4.exe",
-            "hash": "11af5fcf5f13ad5c08b68f4e5ba29c99e61bc9fee8366cd7866d30b67507d6d0"
+            "url": "https://download.typora.io/windows/typora-setup-ia32-1.7.5.exe",
+            "hash": "3c8389db5fb18f0dd30ba8d73205f9a66db6c1e13ad8b188d8cb13b2cd465748"
         }
     },
     "innosetup": true,
@@ -26,16 +30,32 @@
         ]
     ],
     "checkver": {
-        "url": "https://typora.io/releases/stable",
-        "regex": "<h2>([\\d.]+)"
+        "script": [
+            "$url = 'https://typora.io/releases/stable'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'typora-setup-x64-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'typora-setup-ia32-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$ia32 = $matches[1]",
+            "$r = 'typora-setup-arm64-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $ia32 $arm64"
+        ],
+        "regex": "([\\d.]+) (?<ia32>[\\d.]+) (?<arm64>[\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://download.typora.io/windows/typora-setup-x64-$version.exe"
             },
+            "arm64": {
+                "url": "https://download.typora.io/windows/typora-setup-arm64-$matchArm64.exe"
+            },
             "32bit": {
-                "url": "https://download.typora.io/windows/typora-setup-ia32-$version.exe"
+                "url": "https://download.typora.io/windows/typora-setup-ia32-$matchIa32.exe"
             }
         }
     }

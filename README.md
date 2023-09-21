@@ -94,12 +94,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ViCrack/scoop-bucket
 - niheaven/scoop-sysinternals
 - naderi/scoop-bucket
+- amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
 - ygguorun/scoop-bucket
 - iquiw/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
-- amorphobia/siku
 - jfut/scoop-jfut
 - batkiz/backit
 - mogeko/scoop-sysinternals
