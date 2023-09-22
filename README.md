@@ -84,9 +84,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - borger/scoop-emulators
 - Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
+- arch3rPro/PST-Bucket
 - wangzq/scoop-bucket
 - kiennq/scoop-misc
-- arch3rPro/PST-Bucket
 - zhoujin7/tomato
 - akirco/aki-apps
 - TheRandomLabs/Scoop-Python
