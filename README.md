@@ -80,9 +80,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - dodorz/scoop
+- Qv2ray/mochi
 - TheRandomLabs/Scoop-Bucket
 - borger/scoop-emulators
-- Qv2ray/mochi
 - ZvonimirSun/scoop-iszy
 - arch3rPro/PST-Bucket
 - wangzq/scoop-bucket
