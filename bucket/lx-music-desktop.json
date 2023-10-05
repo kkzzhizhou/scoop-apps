@@ -2,32 +2,57 @@
     "version": "2.5.0",
     "description": "一个基于 electron 的音乐软件",
     "homepage": "https://github.com/lyswhut/lx-music-desktop",
-    "license": "Apache-2.0 license",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.5.0/lx-music-desktop-v2.5.0-win_x64-green.7z",
-            "hash": "49d6c449718dad540add3134442c3e9e8d02f5c9a7cb12951aa60fe08505d621"
-        },
-        "arm64": {
-            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.5.0/lx-music-desktop-v2.5.0-win_arm64-green.7z",
-            "hash": "79104266da9b645f0f1ae7dafc342fa41d8c2815b7163af75b0ee0d69d930d68"
-        }
+    "license": "Apache License 2.0",
+    "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.5.0/lx-music-desktop-v2.5.0-win_x64-green.7z",
+    "hash": "md5:5600f7e6d3c2579cf9b5574501deefe3",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\lx-music-desktop\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
     },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\lx-music-desktop\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "lx-music-desktop.exe",
+            "lx-music-desktop"
+        ]
+    ],
     "shortcuts": [
         [
             "lx-music-desktop.exe",
-            "洛雪音乐助手"
+            "洛雪音乐助手桌面版"
         ]
     ],
     "checkver": "github",
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win_x64-green.7z"
-            },
-            "arm64": {
-                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win_arm64-green.7z"
-            }
+        "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win_x64-green.7z",
+        "hash": {
+            "url": "https://github.com/lyswhut/lx-music-desktop/releases",
+            "regex": "$md5 +lx-music-desktop v$version win_x64 green.7z"
         }
     }
 }
