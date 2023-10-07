@@ -1,23 +1,57 @@
 {
-    "homepage": "https://electerm.html5beta.com/",
-    "description": "electerm is a terminal/ssh/sftp client(linux, mac, win) based on electron/ssh2/node-pty/xterm/antd and many other libs.",
-    "version": "1.34.0",
+    "version": "1.34.6",
+    "description": "Terminal/ssh/serial port/sftp client",
+    "homepage": "https://electerm.github.io/electerm/",
     "license": "MIT",
-    "url": "https://github.com/electerm/electerm/releases/download/v1.34.0/electerm-1.34.0-win-x64.tar.gz",
-    "hash": "31534024b7008c74367896470fd1b698242928f94eb1f62c9d8251d01c993ef5",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/electerm/electerm/releases/download/v1.34.6/electerm-1.34.6-win-x64.tar.gz",
+            "hash": "660ea6bcd6b6b11a1cfe4e06cc91119eddb8793f40ea08c006696f9b214e54ce",
+            "extract_dir": "electerm-1.34.6-win-x64"
+        }
+    },
     "bin": "electerm.exe",
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
+            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\electerm\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\electerm\"",
+            "$runtimeCachePersist = \"$persist_dir\"",
+            "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "Remove-Item $runtimeCachePersist -Force -Recurse -ErrorAction SilentlyContinue"
+        ]
+    },
     "shortcuts": [
         [
             "electerm.exe",
-            "Electerm"
+            "electerm"
         ]
     ],
-    "extract_dir": "electerm-1.34.0-win-x64",
     "checkver": {
-        "github": "https://github.com/electerm/electerm/"
+        "github": "https://github.com/electerm/electerm"
     },
     "autoupdate": {
-        "url": "https://github.com/electerm/electerm/releases/download/v$version/electerm-$version-win-x64.tar.gz",
-        "extract_dir": "electerm-$version-win-x64"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/electerm/electerm/releases/download/v$version/electerm-$version-win-x64.tar.gz",
+                "extract_dir": "electerm-$version-win-x64"
+            }
+        }
     }
 }

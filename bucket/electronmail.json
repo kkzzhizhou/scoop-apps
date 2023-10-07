@@ -1,27 +1,46 @@
 {
-    "version": "5.2.0",
-    "homepage": "https://github.com/vladimiry/ElectronMail",
+    "version": "5.2.1",
     "description": "An Electron-based unofficial desktop client for ProtonMail.",
+    "homepage": "https://github.com/vladimiry/ElectronMail",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/vladimiry/ElectronMail/releases/download/v5.2.0/electron-mail-5.2.0-windows-x64-nsis-installer.exe#/dl.7z",
-            "hash": "12fbf2fcc797b7354ce19ea2b82dcf336574c9257c44d386993b404183bfcd4e"
+            "url": "https://github.com/vladimiry/ElectronMail/releases/download/v5.2.1/electron-mail-5.2.1-windows-x64-nsis-installer.exe#/dl.7z",
+            "hash": "9a36c57efa8534a0eef567afea9ed0c5e3cfef2e655230915adce33696ac4edc",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\", \"$dir\\resources\\app-update.yml\"  -Force -Recurse"
+            ]
         }
     },
-    "extract_dir": "$PLUGINSDIR",
-    "pre_install": "Expand-7zipArchive \"$dir\\app-64.7z\" $dir -Removal",
+    "bin": [
+        [
+            "ElectronMail.exe",
+            "ElectronMail",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
     "shortcuts": [
         [
             "ElectronMail.exe",
-            "ElectronMail"
+            "ElectronMail",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
+    "env_set": {
+        "ELECTRON_MAIL_USER_DATA_DIR": "$dir\\User Data"
+    },
+    "persist": "User Data",
+    "notes": "Desktop notification is not working when using portable version.",
     "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/vladimiry/ElectronMail/releases/download/v$version/electron-mail-$version-windows-x64-nsis-installer.exe#/dl.7z"
+                "url": "https://github.com/vladimiry/ElectronMail/releases/download/v$version/electron-mail-$version-windows-x64-nsis-installer.exe#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/vladimiry/ElectronMail/releases/tag/v$version",
+                    "regex": "$sha256\\s+$basename"
+                }
             }
         }
     }
