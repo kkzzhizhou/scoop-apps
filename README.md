@@ -80,10 +80,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cderv/r-bucket
 - everyx/scoop-bucket
 - dodorz/scoop
+- arch3rPro/PST-Bucket
 - Qv2ray/mochi
 - TheRandomLabs/Scoop-Bucket
 - borger/scoop-emulators
-- arch3rPro/PST-Bucket
 - ZvonimirSun/scoop-iszy
 - wangzq/scoop-bucket
 - kiennq/scoop-misc
@@ -98,6 +98,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - jonz94/scoop-sarasa-nerd-fonts
 - ygguorun/scoop-bucket
 - iquiw/scoop-bucket
+- charmbracelet/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
 - jfut/scoop-jfut
