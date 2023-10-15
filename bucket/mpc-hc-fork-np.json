@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "description": "An extremely light-weight, open source media player for Windows.",
+    "homepage": "https://github.com/clsid2/mpc-hc",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/clsid2/mpc-hc/releases/download/2.0.0/MPC-HC.2.0.0.x64.exe#/setup.exe",
+            "hash": "638b7afb9d6757266cf2247d01ffe116585bddbbc56c87ab5df789082ed979b2"
+        },
+        "32bit": {
+            "url": "https://github.com/clsid2/mpc-hc/releases/download/2.0.0/MPC-HC.2.0.0.x86.exe#/setup.exe",
+            "hash": "23f643b3bc7d0f12fb46e34f29f2c93aa92e20fbae0b49f44410d3a8573e723d"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\setup.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', \"/DIR=$dir\", '/ALLUSERS', '/SUPPRESSMSGBOXES')",
+        "Remove-Item \"$dir\\setup.exe\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\unins000.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', '/FORCECLOSEAPPLICATIONS', '/SUPPRESSMSGBOXES')"
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/clsid2/mpc-hc",
+        "jsonpath": "$.assets..browser_download_url",
+        "regex": "(?<Tag>[\\d.]+)\\/MPC-HC.([\\d.]+).(?:x64|x86)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/clsid2/mpc-hc/releases/download/$matchTag/MPC-HC.$version.x64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/clsid2/mpc-hc/releases/download/$matchTag/MPC-HC.$version.x86.exe#/setup.exe"
+            }
+        }
+    }
+}

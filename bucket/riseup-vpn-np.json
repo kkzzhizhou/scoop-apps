@@ -1,0 +1,42 @@
+{
+    "version": "0.21.11-47-g7c5a8fa",
+    "homepage": "https://riseup.net/en/vpn",
+    "description": "A free personal VPN service for censorship circumvention, location anonymization and traffic encryption.",
+    "license": "GPL-3.0",
+    "url": "https://downloads.leap.se/RiseupVPN/windows/RiseupVPN-installer-0.21.11-47-g7c5a8fa.exe",
+    "hash": "ddde44e1643e9580b6ee27ac4da366f0cc6d308ec055e484d12135480659f900",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$dir\\$fname\" -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('in', '--am', '--confirm-command', '--al')",
+            "Remove-Item \"$dir\\$fname\", \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\RiseupVPN\\Uninstall.lnk\" -Force"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/x', \"`\"${env:ProgramFiles(x86)}\\RiseupVPN\\openvpn-installer.msi`\"\", '/qn', '/norestart')",
+            "Start-Process \"${env:ProgramFiles(x86)}\\RiseupVPN\\uninstall.exe\" -Wait -Verb 'RunAs' -Args @('pr', '--confirm-command', '--am', '--al')",
+            "Start-Sleep -Seconds 2"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "# This checkver script is needed because the files, are not in a newest-to-oldest order",
+            "$content = Invoke-RestMethod 'https://downloads.leap.se/RiseupVPN/windows/'",
+            "$releaseDates = Select-String -InputObject $content -AllMatches '([\\d]+-[\\w]+-[\\d]+\\s[\\d:]+)'",
+            "$releaseDates = ($releaseDates.Matches.Value | Get-Date) | Sort-Object -Unique -Descending",
+            "$newestDate = $releaseDates[0].ToString('dd-MMM-yyyy hh:mm').Replace('.', '')",
+            "$regex = \"RiseupVPN-installer-(?<version>[\\w.-]+)\\.exe.*?\\s+$newestDate\"",
+            "$content -match $regex | Out-Null; $version = $Matches.version; $version | Write-Output"
+        ],
+        "regex": "([\\w.-]+)"
+    },
+    "autoupdate": {
+        "url": "https://downloads.leap.se/RiseupVPN/windows/RiseupVPN-installer-$version.exe",
+        "hash": {
+            "url": "$url.sha256.asc",
+            "regex": "$sha256\\s$basename"
+        }
+    }
+}

@@ -1,0 +1,56 @@
+{
+    "version": "2023.9.2",
+    "description": "Password management solutions for individuals, teams, and business organizations",
+    "homepage": "https://bitwarden.com",
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/bitwarden/clients/releases/download/desktop-v2023.9.2/bitwarden-2023.9.2-ia32.nsis.7z",
+            "hash": "e8db206d50dd57c7c22399cd4019b6c4f629dbdd840db5df479af095c20f9c71"
+        },
+        "64bit": {
+            "url": "https://github.com/bitwarden/clients/releases/download/desktop-v2023.9.2/bitwarden-2023.9.2-x64.nsis.7z",
+            "hash": "0beb9b2b6046c2ba70ec02ae0ac96b10ad13e3f60a29b139ac71e775b2c06110"
+        },
+        "arm64": {
+            "url": "https://github.com/bitwarden/clients/releases/download/desktop-v2023.9.2/bitwarden-2023.9.2-arm64.nsis.7z",
+            "hash": "da1bed895b43229192832ae0824d203152fd4c43617e9884f4dc11dcf1891bac"
+        }
+    },
+    "pre_install": [
+        "# copy config from portable data folder to Appdata folder",
+        "if (Test-Path \"$persist_dir\\bitwarden-appdata\") {",
+        "   Copy-Item \"$persist_dir\\bitwarden-appdata\\*\" \"$env:Appdata\\Bitwarden\" -Recurse -ErrorAction 'SilentlyContinue'",
+        "   Remove-Item $persist_dir -Recurse",
+        "}",
+        "Remove-Item \"$dir\\resources\\app-update.yml\""
+    ],
+    "shortcuts": [
+        [
+            "Bitwarden.exe",
+            "Bitwarden"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/bitwarden/clients/releases",
+        "jsonpath": "$[*].tag_name",
+        "regex": "desktop-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/bitwarden/clients/releases/download/desktop-v$version/bitwarden-$version-ia32.nsis.7z"
+            },
+            "64bit": {
+                "url": "https://github.com/bitwarden/clients/releases/download/desktop-v$version/bitwarden-$version-x64.nsis.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/bitwarden/clients/releases/download/desktop-v$version/bitwarden-$version-arm64.nsis.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/sha256-checksums.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}

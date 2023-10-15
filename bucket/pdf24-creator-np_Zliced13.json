@@ -1,0 +1,41 @@
+{
+    "version": "11.10.0",
+    "homepage": "https://tools.pdf24.org/en/creator",
+    "description": "Free and easy to use PDF software with several functions",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.pdf24.org/en/terms-of-use"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download.pdf24.org/pdf24-creator-11.10.0.msi#/setup.msi_",
+            "hash": "1a4ea10687a8470f498249274c0e7bb36316c239c2e65fa250023622e3be459e"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Write-Host \"Please wait and don't cancel the script...\" -F 'Yellow'",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', \"INSTALLDIR=$dir\", \"TARGETDIR=$dir\")",
+        "Stop-Service -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'; Stop-Process -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'",
+        "Stop-Process -Name 'explorer' -Force -ErrorAction 'SilentlyContinue'; Start-Sleep -Seconds 3"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Stop-Service -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'; Stop-Process -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'",
+        "Write-Host \"Please wait and don't cancel the script...\" -F 'Yellow'",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn')",
+        "Stop-Process -Name 'explorer' -Force -ErrorAction 'SilentlyContinue'; Start-Sleep -Seconds 3"
+    ],
+    "checkver": "Version\\s([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.pdf24.org/pdf24-creator-$version.msi#/setup.msi_",
+                "hash": {
+                    "url": "https://creator.pdf24.org/listVersions.php",
+                    "find": "<td>$sha256</td>"
+                }
+            }
+        }
+    }
+}

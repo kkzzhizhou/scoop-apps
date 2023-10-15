@@ -1,0 +1,77 @@
+{
+    "version": "1.0.7",
+    "homepage": "https://github.com/Maplespe/ExplorerBlurMica",
+    "description": "Add a background Blur effect or Acrylic or Mica effect to explorer for Windows 10 and Windows 11.",
+    "license": "LGPL-3.0-or-later",
+    "notes": [
+        "To register/unregister ExplorerBlurMica into your explorer, use",
+        "register-explorerblurmica.cmd",
+        "unregister-explorerblurmica.cmd"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Maplespe/ExplorerBlurMica/releases/download/1.0.7/Release_x64.zip",
+            "hash": "a79a1416bae311d9d1c8462dcf9d7b981e03db2e9ea996c8979ce4244d0d25d2"
+        }
+    },
+    "extract_dir": "Release",
+    "pre_install": [
+        "ensure $persist_dir | Out-Null; Remove-Item \"$dir\\*.cmd\"",
+        "Copy-Item \"$persist_dir\\config.ini\" \"$dir\\config.ini\" -ErrorAction 'SilentlyContinue'",
+        "$content1 = @'",
+        "@echo off",
+        "fltmc >nul 2>&1 || (",
+        "    powershell -ex \"unrestricted\" -c \"Start-Process '%0' -Verb 'RunAs'\" 2> nul || (",
+        "        echo Please run this script with administrator privileges!",
+        "        pause & exit 1",
+        "    )",
+        "    exit 0",
+        ")",
+        "start /w regsvr32 \"%~dp0ExplorerBlurMica.dll\" /s && echo ExplorerBlurMica was successfully registered!",
+        "powershell -noprofile -ex \"unrestricted\" -c \"Stop-Process -Name 'explorer' -Force\"",
+        "exit /b",
+        "'@",
+        "",
+        "$content2 = @'",
+        "@echo off",
+        "fltmc >nul 2>&1 || (",
+        "    powershell -ex \"unrestricted\" -c \"Start-Process '%0' -Verb 'RunAs'\" 2> nul || (",
+        "        echo Please run this script with administrator privileges!",
+        "        pause & exit 1",
+        "    )",
+        "    exit 0",
+        ")",
+        "start /w regsvr32 /u \"%~dp0ExplorerBlurMica.dll\" /s && echo ExplorerBlurMica was successfully unregistered!",
+        "powershell -noprofile -ex \"unrestricted\" -c \"Stop-Process -Name 'explorer' -Force\"",
+        "exit /b",
+        "'@",
+        "",
+        "[System.IO.File]::WriteAllLines(\"$dir\\register-explorerblurmica.cmd\", $content1, [System.text.UTF8Encoding]($false))",
+        "[System.IO.File]::WriteAllLines(\"$dir\\unregister-explorerblurmica.cmd\", $content2, [System.text.UTF8Encoding]($false))",
+        "[System.IO.File]::WriteAllLines(\"$dir\\Open-ExplorerBlurMica-Folder.cmd\", '@start explorer \"%~dp0\"', [System.text.UTF8Encoding]($false))"
+    ],
+    "bin": [
+        "register-explorerblurmica.cmd",
+        "unregister-explorerblurmica.cmd"
+    ],
+    "shortcuts": [
+        [
+            "Open-ExplorerBlurMica-Folder.cmd",
+            "Open ExplorerBlurMica Folder"
+        ]
+    ],
+    "pre_uninstall": [
+        "Copy-Item \"$dir\\config.ini\" \"$persist_dir\\config.ini\" -ErrorAction 'SilentlyContinue'",
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'regsvr32' -Wait -Verb 'RunAs' -Args @('/u', \"$dir\\ExplorerBlurMica.dll\", '/s'); Stop-Process -Name 'explorer' -Force",
+        "Start-Sleep -Seconds 2"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Maplespe/ExplorerBlurMica/releases/download/$version/Release_x64.zip"
+            }
+        }
+    }
+}

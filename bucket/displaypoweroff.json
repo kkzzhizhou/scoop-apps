@@ -1,0 +1,58 @@
+{
+    "version": "4.1",
+    "homepage": "https://sourceforge.net/projects/doff/",
+    "description": "A utility for turning off your monitor, or laptop display.",
+    "license": "MIT|LGPL-3.0",
+    "url": "https://sourceforge.net/projects/doff/files/DisplayPowerOff/DisplayPowerOff-4.1.7z",
+    "hash": "sha1:ce3a0dadfeba5894bec8086fe9c5c2b8369b43ca",
+    "architecture": {
+        "32bit": {
+            "extract_dir": "DisplayPowerOff-4.1",
+            "pre_install": [
+                "Remove-Item $dir -Include 'x64', '*.bat' -Recurse",
+                "if (Test-Path \"$persist_dir\\doff.ini\") { Copy-Item \"$persist_dir\\doff.ini\" \"$dir\\doff.ini\" } else { ensure $persist_dir | Out-Null }"
+            ]
+        },
+        "64bit": {
+            "extract_dir": "DisplayPowerOff-4.1/x64",
+            "pre_install": [
+                "Remove-Item $dir -Include '*.bat', 'DisplayPowerOff-*' -Recurse",
+                "if (Test-Path \"$persist_dir\\doff.ini\") { Copy-Item \"$persist_dir\\doff.ini\" \"$dir\\doff.ini\" } else { ensure $persist_dir | Out-Null }"
+            ]
+        }
+    },
+    "bin": "doff.exe",
+    "shortcuts": [
+        [
+            "doff.exe",
+            "Display Power Off"
+        ],
+        [
+            "doff.exe",
+            "Display Power Off Tray",
+            "/tray"
+        ],
+        [
+            "doff.exe",
+            "Display Power Off Help",
+            "/?"
+        ]
+    ],
+    "pre_uninstall": "if (Test-Path \"$dir\\doff.ini\") { Copy-Item \"$dir\\doff.ini\" \"$persist_dir\\doff.ini\" }",
+    "checkver": "sourceforge",
+    "autoupdate": {
+        "url": "https://sourceforge.net/projects/doff/files/DisplayPowerOff/DisplayPowerOff-$version.7z",
+        "hash": {
+            "url": "$baseurl",
+            "regex": "$basename\",.*?sha1\":\"$sha1"
+        },
+        "architecture": {
+            "32bit": {
+                "extract_dir": "DisplayPowerOff-$version"
+            },
+            "64bit": {
+                "extract_dir": "DisplayPowerOff-4.1/x64"
+            }
+        }
+    }
+}

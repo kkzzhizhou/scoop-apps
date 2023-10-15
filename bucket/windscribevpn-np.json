@@ -1,0 +1,38 @@
+{
+    "##": "This package is non-portable because the app requires installing drivers/services to work properly.",
+    "version": "2.6.14",
+    "description": "Open Source VPN with AdBlocking Proxy.",
+    "homepage": "https://windscribe.com/",
+    "license": "GPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://deploy.totallyacdn.com/desktop-apps/2.6.14/Windscribe_2.6.14.exe#/windscribe-setup.exe",
+            "hash": "f5534fd03b47615cac91ddbcbd204a4ce35fe5ad2d420f9fde019f4612db0281"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\windscribe-setup.exe\" -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args '-silent'",
+        "Stop-Process -Name 'Windscribe' -Force -ErrorAction 'SilentlyContinue'",
+        "Stop-Service -Name 'WindscribeService' -Force -ErrorAction 'SilentlyContinue'; Remove-Item \"$dir\\windscribe-setup.exe\"",
+        "[System.IO.File]::WriteAllLines(\"$dir\\windscribe-cli.cmd\", '@\"%ProgramFiles%\\Windscribe\\windscribe-cli.exe\"  %*', [System.text.UTF8Encoding]($false))"
+    ],
+    "bin": "windscribe-cli.cmd",
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Stop-Service -Name 'WindscribeService' -Force -ErrorAction 'SilentlyContinue'",
+        "sc.exe delete 'WindscribeService'",
+        "Stop-Process -Name 'Windscribe' -Force -ErrorAction 'SilentlyContinue'",
+        "Start-Process \"$env:ProgramFiles\\Windscribe\\uninstall.exe\" -Wait -WindowStyle 'Hidden' -Verb 'RunAs' -Args '/VERYSILENT'"
+    ],
+    "checkver": {
+        "script": [
+            "$ua = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome",
+            "(Invoke-WebRequest 'https://windscribe.com/install/desktop/windows' -UserAgent $ua).BaseResponse.RequestMessage.RequestUri.AbsoluteUri"
+        ],
+        "regex": "/desktop-apps/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://deploy.totallyacdn.com/desktop-apps/$version/Windscribe_$version.exe#/windscribe-setup.exe"
+    }
+}
