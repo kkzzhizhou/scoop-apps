@@ -55,8 +55,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - chawyehsu/dorado
 - matthewjberger/scoop-nerd-fonts
 - ivaquero/scoopet
-- ScoopInstaller/Java
 - Calinou/scoop-games
+- ScoopInstaller/Java
 - TheRandomLabs/Scoop-Spotify
 - borger/scoop-galaxy-integrations
 - ScoopInstaller/Versions
@@ -90,8 +90,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - akirco/aki-apps
 - TheRandomLabs/Scoop-Python
-- wzv5/ScoopBucket
 - ViCrack/scoop-bucket
+- wzv5/ScoopBucket
 - niheaven/scoop-sysinternals
 - naderi/scoop-bucket
 - amorphobia/siku
@@ -105,14 +105,15 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - ChungZH/peach
+- starise/Scoop-Gaming
 - DoveBoy/Apps
 - Velgus/Scoop-Portapps
 - hu3rror/scoop-muggle
-- starise/Scoop-Gaming
 - cc713/ownscoop
 - aoisummer/scoop-bucket
 - seumsc/scoop-seu
 - rivy/scoop-bucket
+- aliesbelik/poldi
 - SayCV/scoop-cvp
 - starise/Scoop-Confetti
 - brian6932/dank-scoop
@@ -124,7 +125,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Darkatse/Scoop-KanColle
 - Zliced13/MyScoop
 - The-Simples/scoop-minecraft
-- aliesbelik/poldi
 - MCOfficer/scoop-bucket
 - KnotUntied/scoop-fonts
 - beerpiss/scoop-bucket

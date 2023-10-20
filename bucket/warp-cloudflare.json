@@ -8,11 +8,22 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi",
+            "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi#/setup.msi_",
             "hash": "md5:ef2b8e7d34e86c694af66733ca11fbda"
         }
     },
-    "extract_dir": "Cloudflare\\Cloudflare WARP",
+    "pre_install": [
+        "Rename-Item $dir\\setup.msi_ Cloudflare_WARP_Release-x64.msi -ErrorVariable LockError -ErrorAction Stop",
+        "sudo msiexec /i $dir\\Cloudflare_WARP_Release-x64.msi /qn",
+        "Expand-MsiArchive -Path $dir\\Cloudflare_WARP_Release-x64.msi -ExtractDir 'Cloudflare\\Cloudflare WARP'"
+    ],
+    "uninstaller": {
+        "script": [
+            "sudo Stop-Process -Name 'Cloudflare WARP' -ErrorAction 'SilentlyContinue' -Force",
+            "sudo Stop-Service -Name 'CloudflareWARP' -ErrorAction 'SilentlyContinue' -Force",
+            "sudo Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/x', \"$dir\\Cloudflare_WARP_Release-x64.msi\", '/qn')"
+        ]
+    },
     "bin": "warp-cli.exe",
     "shortcuts": [
         [
@@ -25,7 +36,7 @@
         "jsonpath": "$.version"
     },
     "autoupdate": {
-        "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi",
+        "url": "https://1111-releases.cloudflareclient.com/windows/Cloudflare_WARP_Release-x64.msi#/setup.msi_",
         "hash": {
             "url": "https://install.appcenter.ms/api/v0.1/apps/cloudflare/1.1.1.1-windows-1/distribution_groups/release/releases/latest",
             "jsonpath": "$.fingerprint"
