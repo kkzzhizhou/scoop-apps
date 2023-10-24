@@ -3,10 +3,18 @@
     "description": "Easily backup, restore and transfer video games save data",
     "homepage": "https://www.gamesave-manager.com",
     "license": "Freeware",
-    "url": "https://www.gamesave-manager.com/?s=download&file-id=dab3599c-414d-4f7f-99ca-ba0a86c084f8&action=start#/dl.zip",
+    "url": "https://www.gamesave-manager.com/file/1736495a-99fc-4be6-89f5-b1853ec30c4c/#/dl.zip",
     "hash": "md5:1bf6b803566d8976d61014b350b588c8",
-    "pre_install": "if (!(Test-Path \"$dir\\settings\")) { New-Item \"$dir\\settings\" -Type directory | Out-Null }",
-    "persist": "settings",
+    "pre_install": [
+        "if (!(Test-Path \"$dir\\settings\")) { New-Item \"$dir\\settings\" -Type directory | Out-Null }",
+        "if (!(Test-Path \"$dir\\bin\\config.ini\")) {",
+        "    Set-Content \"$dir\\bin\\config.ini\" @('[CustomEntries]', 'ListOfficialEntries=true', '[Settings]', 'SeparateDBPerUser=false', 'StoreWithinLaunchDir=true', '[InstallWizard]', 'HasAlreadyBeenAsked=true') -Encoding ASCII",
+        "}"
+    ],
+    "persist": [
+        "bin/config.ini",
+        "settings"
+    ],
     "bin": "gs_mngr_3.exe",
     "shortcuts": [
         [
@@ -15,13 +23,14 @@
         ]
     ],
     "checkver": {
-        "regex": "(?si)releasedetailsvalues\">\\s+([\\d.]+).+?file-id=(?<UUID>[0-9a-f-]+)"
+        "url": "https://www.gamesave-manager.com/data/download.json",
+        "regex": "\"version\":\"([\\d.]+)\".+?\"download_direct\":\".+?file\\\\?\\/(?<UUID>[0-9a-f-]+)\\\\?\\/\""
     },
     "autoupdate": {
-        "url": "https://www.gamesave-manager.com/?s=download&file-id=$matchUUID&action=start#/dl.zip",
+        "url": "https://www.gamesave-manager.com/file/$matchUUID/#/dl.zip",
         "hash": {
-            "url": "https://www.gamesave-manager.com/?s=download&file-id=$matchUUID&action=thanks",
-            "regex": "(?si)\\(md5\\):.+?<td>($md5)"
+            "url": "https://www.gamesave-manager.com/data/download.json",
+            "jsonpath": "$.list[0].checksums.md5"
         }
     }
 }

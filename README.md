@@ -101,12 +101,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - charmbracelet/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
+- DoveBoy/Apps
 - jfut/scoop-jfut
 - batkiz/backit
 - mogeko/scoop-sysinternals
 - ChungZH/peach
 - starise/Scoop-Gaming
-- DoveBoy/Apps
 - Velgus/Scoop-Portapps
 - hu3rror/scoop-muggle
 - cc713/ownscoop
