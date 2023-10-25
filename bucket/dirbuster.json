@@ -11,10 +11,14 @@
     },
     "url": "https://jaist.dl.sourceforge.net/project/dirbuster/DirBuster%20%28jar%20%2B%20lists%29/1.0-RC1/DirBuster-1.0-RC1.zip",
     "hash": "da80d17bd363bc60d3e7216a3c43329617cbd620ac55e55e2751bd3177d09ea1",
-    "installer": {
-        "script": [
-            "Move-Item \"$dir\\DirBuster-1.0-RC1\\*\" \"$dir\" -Force"
-        ]
-    },
-    "bin": "DirBuster-1.0-RC1.bat"
+    "extract_dir": "DirBuster-1.0-RC1",
+    "bin": "DirBuster.bat",
+    "pre_install": [
+        "$content = Get-Content -Path $(Join-Path $dir 'DirBuster-1.0-RC1.bat')",
+        "$content = 'cd /d %~dp0' + [Environment]::NewLine + $content",
+        "Set-Content -Path $(Join-Path $dir 'DirBuster-1.0-RC1.bat') -Value $content",
+        "$oldPath = Join-Path $dir 'DirBuster-1.0-RC1.bat'",
+        "$newPath = Join-Path $dir 'DirBuster.bat'",
+        "Rename-Item -Path $oldPath -NewName $newPath"
+    ]
 }
