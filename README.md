@@ -77,8 +77,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Nonportable
 - cderv/r-bucket
 - hermanjustnu/scoop-emulators
-- couleur-tweak-tips/utils
 - arch3rPro/PST-Bucket
+- couleur-tweak-tips/utils
 - everyx/scoop-bucket
 - borger/scoop-emulators
 - dodorz/scoop
