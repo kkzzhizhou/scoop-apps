@@ -1,13 +1,32 @@
 {
-    "version": "1.3.7",
-    "description": "A Clash GUI based on Tauri.",
+    "version": "1.3.8",
+    "description": "A Clash GUI based on tauri. Supports Windows and macOS.",
     "homepage": "https://github.com/zzzgydi/clash-verge",
-    "license": "GPL-3.0-only",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/zzzgydi/clash-verge/blob/main/LICENSE"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/zzzgydi/clash-verge/releases/download/v1.3.7/Clash.Verge_1.3.7_x64_portable.zip",
-            "hash": "ac5d96de6ffacdf06904172ceda90059f42dc3eae267ef0e560c22f77df9a04f"
+            "url": "https://github.com/zzzgydi/clash-verge/releases/download/v1.3.8/Clash.Verge_1.3.8_x64_portable.zip",
+            "hash": "dea759e984c1591b640d5985517a4941af50cb7511a7e5888bdda0459163283b"
         }
+    },
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\*\") {",
+        "    ensure \"$env:USERNAME\\.config\\clash-verge\" | Out-Null",
+        "    Copy-Item \"$persist_dir\\*\" \"$env:USERNAME\\.config\\clash-verge\\\" -Recurse -Force | Out-Null ",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$env:USERNAME\\.config\\clash-verge\\*\") { ",
+            "    ensure \"$persist_dir\" | Out-Null",
+            "    Copy-Item \"$env:USERNAME\\.config\\clash-verge\\*\" \"$persist_dir\\\" -Recurse -Force | Out-Null ",
+            "}"
+        ]
     },
     "shortcuts": [
         [
@@ -15,21 +34,14 @@
             "Clash Verge"
         ]
     ],
-    "persist": ".config",
-    "post_install": [
-        "if (!(Test-Path \"$persist_dir\\.config\\PORTABLE\")) {",
-        "    New-Item -Path \"$persist_dir\\.config\\PORTABLE\" -ItemType file | Out-Null",
-        "}"
-    ],
-    "pre_uninstall": [
-        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "Start-Process \"$dir\\resources\\uninstall-service.exe\" -Wait -Verb 'RunAs' -WindowStyle 'Hidden'; Start-Sleep -Seconds 3"
-    ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/zzzgydi/clash-verge/releases",
+        "regex": "(?sm)browser_download_url.*?(?<file>Clash.Verge_([\\d.]+)_x64_(?:green|portable)\\.zip)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/zzzgydi/clash-verge/releases/download/v$version/Clash.Verge_$version_x64_portable.zip"
+                "url": "https://github.com/zzzgydi/clash-verge/releases/download/v$version/$matchFile"
             }
         }
     }

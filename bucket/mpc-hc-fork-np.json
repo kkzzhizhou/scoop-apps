@@ -16,10 +16,12 @@
     "post_install": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
         "Start-Process \"$dir\\setup.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', \"/DIR=$dir\", '/ALLUSERS', '/SUPPRESSMSGBOXES')",
-        "Remove-Item \"$dir\\setup.exe\""
+        "Remove-Item \"$dir\\setup.exe\"; Rename-Item \"$dir\\unins000.exe\" 'unins000.exe_'"
     ],
+    "env_add_path": ".",
     "pre_uninstall": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Rename-Item \"$dir\\unins000.exe_\" 'unins000.exe'",
         "Start-Process \"$dir\\unins000.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', '/FORCECLOSEAPPLICATIONS', '/SUPPRESSMSGBOXES')"
     ],
     "checkver": {
