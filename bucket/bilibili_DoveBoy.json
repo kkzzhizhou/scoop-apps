@@ -1,0 +1,54 @@
+{
+    "version": "1.12.5",
+    "description": "Bilibili(bilibili.com) Official Client.",
+    "homepage": "https://app.bilibili.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.bilibili.com/blackboard/protocal/privacy-pc-desktop.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe#/dl.7z",
+            "hash": "sha512:162b0554e2423b3803e67916e9d44b0009c31aa59ec010092449d54584c7e12bfc31b0f26e09e1fabeba60402f9801bfc29f0a4f8e8be35149394ca60d9fcd9f",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\bilibili\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\bilibili\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "哔哩哔哩.exe",
+            "哔哩哔哩"
+        ]
+    ],
+    "checkver": {
+        "url": "http://api.bilibili.com/x/elec-frontend/update/latest.yml",
+        "regex": "bilibili-setup-v([\\d\\.]+)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe#/dl.7z",
+                "hash": {
+                    "url": "http://api.bilibili.com/x/elec-frontend/update/latest.yml",
+                    "regex": "sha512: ([\\w\\d+\\/=]{24,88})"
+                }
+            }
+        }
+    }
+}

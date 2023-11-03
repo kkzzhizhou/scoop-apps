@@ -15,14 +15,11 @@
         ]
     },
     "pre_uninstall": [
-        "'sshfs*', 'ssh' | ForEach-Object { Stop-Process -Force -Name $_ -ErrorAction SilentlyContinue }",
-        "'WinFsp.Launcher', 'WinFsp', 'StorSvc' | ForEach-Object { sc.exe stop $_ | Out-Null }"
+        "if ($fsptool = where.exe fsptool.exe | Select-Object -First 1) { & $fsptool unload }",
+        "'WinFsp.Launcher', 'WinFsp' | ForEach-Object { sc.exe stop $_ | Out-Null }"
     ],
     "uninstaller": {
-        "script": [
-            "Invoke-ExternalCommand msiexec.exe -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn /norestart') -RunAs | Out-Null",
-            "sc.exe start StorSvc | Out-Null"
-        ]
+        "script": "Invoke-ExternalCommand msiexec.exe -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn /norestart') -RunAs | Out-Null"
     },
     "bin": [
         "install\\bin\\fsptool.exe",
