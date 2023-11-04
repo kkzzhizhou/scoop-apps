@@ -74,8 +74,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Paxxs/Cluttered-bucket
 - echoiron/echo-scoop
 - ACooper81/scoop-apps
-- ScoopInstaller/Nonportable
 - arch3rPro/PST-Bucket
+- ScoopInstaller/Nonportable
 - hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - couleur-tweak-tips/utils
@@ -89,8 +89,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kiennq/scoop-misc
 - zhoujin7/tomato
 - akirco/aki-apps
-- TheRandomLabs/Scoop-Python
 - ViCrack/scoop-bucket
+- TheRandomLabs/Scoop-Python
 - wzv5/ScoopBucket
 - niheaven/scoop-sysinternals
 - naderi/scoop-bucket
