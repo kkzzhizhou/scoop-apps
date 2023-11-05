@@ -1,0 +1,49 @@
+{
+    "version": "11.5.1",
+    "description": "(libportable patched Lightning version) A new privacy-preserving Firefox-based browser developedby a community of students in Japan.",
+    "homepage": "https://floorp.app/en/",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Floorp-Projects/Floorp/releases/download/v11.5.1-lightning/floorp-win64.installer.exe#/dl.7z",
+            "hash": "59fd4696d2c848c2b568dc9ad34e54b0f4f77b61e1423decf80f24ca983de155"
+        }
+    },
+    "depends": "lemon/libportable",
+    "pre_install": [
+        "if ($env:CI -eq \"true\") { Exit }",
+        "Remove-Item \"$dir\\setup.exe\", \"$dir\\core\\updater.*\" -Force",
+        "Copy-Item \"$(appdir libportable $global)\\current\\portable64.dll\" \"$dir\\core\\\"",
+        "if (!(installed 'libportable' $global)) { error 'Please install `libportable` first, then reinstall `libportable-floorp`.' ; Exit }",
+        "Invoke-ExternalCommand \"$(appdir libportable $global)\\current\\setdll64.exe\" -ArgumentList (\"/d:$dir\\core\\portable64.dll\", \"$dir\\core\\mozglue.dll\") -Activity \"Applying libportable patch...\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\App\\portable.ini\" )) {",
+        "  Copy-Item \"$(appdir libportable $global)\\current\\portable(example).ini\" \"$dir\\core\\portable.ini\"",
+        "  ((Get-Content -path \"$dir\\core\\portable.ini\" -Raw) -replace 'Update=1','Update=0') | Set-Content -Path \"$dir\\core\\portable.ini\"",
+        "}"
+    ],
+    "bin": [
+        "core\\floorp.exe",
+        "floorp-lightning"
+    ],
+    "shortcuts": [
+        [
+            "core\\floorp.exe",
+            "Floorp Lightning"
+        ]
+    ],
+    "persist": [
+        "core\\portable.ini",
+        "Profiles",
+        "Plugins"
+    ],
+    "checkver": {
+        "github": "https://github.com/Floorp-Projects/Floorp"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Floorp-Projects/Floorp/releases/download/v$version-lightning/floorp-win64.installer.exe#/dl.7z"
+            }
+        }
+    }
+}

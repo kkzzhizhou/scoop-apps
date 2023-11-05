@@ -1,0 +1,55 @@
+{
+    "version": "2.2.0rc5",
+    "description": "ZFS filesystem driver for Windows",
+    "homepage": "https://github.com/openzfsonwindows/openzfs",
+    "license": "CDDL",
+    "url": "https://github.com/openzfsonwindows/openzfs/releases/download/zfswin-2.2.0rc5/OpenZFSOnWindows-debug-2.2.0rc5.exe",
+    "hash": "8b70f59c4d9890510c08aa234d7f04d6dc069dd91fdc54773927851beedda907",
+    "innosetup": true,
+    "pre_install": [
+        "if (!$global) { Write-Host -Foreground Red \"$app should be installed globally.\"; break }",
+        "'symbols', 'CODE_OF_CONDUCT.md', 'HowToDebug.txt', 'README,*.md' | ForEach-Object { Remove-Item -Recurse \"$dir\\$_\" }"
+    ],
+    "installer": {
+        "script": [
+            "using namespace System.Security.Cryptography.X509Certificates",
+            "# Add cert first before installing driver",
+            "$cert = (Get-AuthenticodeSignature \"$dir/OpenZFS.cat\").SignerCertificate",
+            "if (!(Get-ChildItem Cert:/CurrentUser/TrustedPublisher -Recurse | Where-Object { $_.Thumbprint -eq $cert.Thumbprint })) {",
+            "    Write-Host 'Cert not found, adding to trusted store...'",
+            "    $store = [X509Store]::new([StoreName]::TrustedPublisher, [StoreLocation]::LocalMachine)",
+            "    $store.Open([OpenFlags]::ReadWrite)",
+            "    $store.Add($cert.Export([X509ContentType]::Cert))",
+            "    $store.Close()",
+            "}",
+            "",
+            "Write-Host 'Installing driver...'",
+            "Invoke-ExternalCommand pnputil -ArgumentList @('/add-driver', \"$dir/OpenZFS.inf\", '/install') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the installation.' } | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($cmd -ne 'uninstall') { return }",
+            "Invoke-ExternalCommand pnputil -ArgumentList @('/remove-device', 'ROOT\\OpenZFS\\0000') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null",
+            "pnputil.exe /delete-driver \"$dir/OpenZFS.inf\" /uninstall | Out-Null",
+            "sc.exe delete OpenZFS | Out-Null"
+        ]
+    },
+    "bin": [
+        "kstat.exe",
+        "raidz_test.exe",
+        "zdb.exe",
+        "zfs.exe",
+        "zfsinstaller.exe",
+        "zpool.exe",
+        "zstreamdump.exe"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repositories/283909729/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "\\Azfswin-([\\w.]+)\\Z"
+    },
+    "autoupdate": {
+        "url": "https://github.com/openzfsonwindows/openzfs/releases/download/zfswin-$version/OpenZFSOnWindows-debug-$version.exe"
+    }
+}
