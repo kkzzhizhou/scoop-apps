@@ -1,0 +1,66 @@
+{
+    "version": "1.84.1",
+    "description": "Lightweight but powerful source code editor",
+    "homepage": "https://code.visualstudio.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://code.visualstudio.com/License/"
+    },
+    "notes": "Add Visual Studio Code as a context menu option by running: \"$dir\\install-context.reg\"",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://az764295.vo.msecnd.net/stable/2b35e1e6d88f1ce073683991d1eff5284a32690f/VSCode-win32-x64-1.84.1.zip",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/install-context.reg",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/uninstall-context.reg"
+            ],
+            "hash": [
+                "af24cde1f60286bbd69b6bbb4ab8ddcd78edd2acdd4d8d260acc41db84e5a940",
+                "8ef94c82319b69754bdae0099af266d184d179a37af8b8beb11334c6ab639752",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        }
+    },
+    "env_add_path": "bin",
+    "shortcuts": [
+        [
+            "code.exe",
+            "Visual Studio Code"
+        ]
+    ],
+    "post_install": [
+        "if (Test-Path \"$dir\\install-context.reg\") {",
+        "  $codepath = \"$dir\\Code.exe\".Replace('\\', '\\\\')",
+        "  $content = Get-Content \"$dir\\install-context.reg\"",
+        "  $content = $content.Replace('$code', $codepath)",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\install-context.reg\"",
+        "}",
+        "if (Test-Path \"$dir\\uninstall-context.reg\") {",
+        "  $content = Get-Content \"$dir\\uninstall-context.reg\"",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\uninstall-context.reg\"",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://code.visualstudio.com/sha?build=stable",
+        "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].url",
+        "regex": "^https?://(?<domain>.*)/stable/(?<release>\\w+)/VSCode-win32-x64-(?<version>[\\d.]+).zip",
+        "replace": "${3}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://$matchDomain/stable/$matchRelease/VSCode-win32-x64-$matchVersion.zip",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=stable",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].sha256hash"
+                }
+            }
+        }
+    }
+}
