@@ -1,0 +1,35 @@
+{
+    "version": "4.6.0",
+    "description": "Wazuh Agent. It communicates with the Wazuh server, sending data in near real-time through an encrypted and authenticated channel.",
+    "homepage": "https://wazuh.com/",
+    "license": "GPL-2.0-only",
+    "changelog": "https://documentation.wazuh.com/current/release-notes/index.html",
+    "url": "https://packages.wazuh.com/4.x/windows/wazuh-agent-4.6.0-1.msi#/setup.msi_",
+    "hash": "323355a136541b331e39de71cacdfdeae38646d14686b98e5bbe0fe5809f77ff",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"programname*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\ossec-agent\\VERSION\"",
+            "$fileversion = Get-Content -Path $filepath",
+            "$fileversion = $fileversion.substring(1)",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Version]\"$fileversion\" -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Version]\"$fileversion\" -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://documentation.wazuh.com/current/release-notes/index.html",
+        "regex": "<span class=\"doc\">([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://packages.wazuh.com/$majorVersion.x/windows/wazuh-agent-$version-1.msi#/setup.msi_"
+    }
+}
