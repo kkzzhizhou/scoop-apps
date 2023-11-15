@@ -8,7 +8,7 @@
     "innosetup": true,
     "pre_install": [
         "if (!$global) { Write-Host -Foreground Red \"$app should be installed globally.\"; break }",
-        "'symbols', 'CODE_OF_CONDUCT.md', 'HowToDebug.txt', 'README,*.md' | ForEach-Object { Remove-Item -Recurse \"$dir\\$_\" }"
+        "'symbols', 'CODE_OF_CONDUCT.md', 'HowToDebug.txt', 'README,*.md' | ForEach-Object { Remove-Item -Recurse \"$dir/$_\" }"
     ],
     "installer": {
         "script": [
@@ -17,21 +17,21 @@
             "$cert = (Get-AuthenticodeSignature \"$dir/OpenZFS.cat\").SignerCertificate",
             "if (!(Get-ChildItem Cert:/CurrentUser/TrustedPublisher -Recurse | Where-Object { $_.Thumbprint -eq $cert.Thumbprint })) {",
             "    Write-Host 'Cert not found, adding to trusted store...'",
-            "    $store = [X509Store]::new([StoreName]::TrustedPublisher, [StoreLocation]::CurrentUser)",
+            "    $store = [X509Store]::new([StoreName]::TrustedPublisher, [StoreLocation]::LocalMachine)",
             "    $store.Open([OpenFlags]::ReadWrite)",
             "    $store.Add($cert.Export([X509ContentType]::Cert))",
             "    $store.Close()",
             "}",
             "",
             "Write-Host 'Installing driver...'",
-            "Invoke-ExternalCommand pnputil -ArgumentList @('/add-driver', \"$dir/OpenZFS.inf\", '/install') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the installation.' } | Out-Null"
+            "Invoke-ExternalCommand pnputil -ArgumentList @('/add-driver', \"$dir\\OpenZFS.inf\", '/install') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the installation.' } | Out-Null"
         ]
     },
     "uninstaller": {
         "script": [
             "if ($cmd -ne 'uninstall') { return }",
             "Invoke-ExternalCommand pnputil -ArgumentList @('/remove-device', 'ROOT\\OpenZFS\\0000') -RunAs -ContinueExitCodes @{ 3010 = 'A system reboot is required to finalize the uninstallation.' } | Out-Null",
-            "pnputil.exe /delete-driver \"$dir/OpenZFS.inf\" /uninstall | Out-Null",
+            "pnputil.exe /delete-driver \"$dir\\OpenZFS.inf\" /uninstall | Out-Null",
             "sc.exe delete OpenZFS | Out-Null"
         ]
     },
