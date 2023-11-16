@@ -1,0 +1,68 @@
+{
+    "homepage": "https://u.tools/",
+    "description": "新一代效率工具平台.(Scoop bucket by arch3rpro)",
+    "license": "Unknown",
+    "version": "4.3.1",
+    "architecture": {
+        "64bit": {
+            "url": "https://publish.u-tools.cn/version2/uTools-4.3.1.exe#/dl.7z",
+            "hash": "8d0187b991c818a2fb28f757b11f7e225b94e2b698f539fb3339826767ee32d7",
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+            }
+        },
+        "32bit": {
+            "url": "https://publish.u-tools.cn/version2/uTools-4.3.1-ia32.exe#/dl.7z",
+            "hash": "54c557f971b62fa309789ab9433ef0ba1d657f03cc60d03ec22a3c3092601bb3",
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\"",
+        "$runtimeCache = \"$env:APPDATA\\uTools\"",
+        "$runtimeCachePersist = \"$persist_dir\\data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "} else {",
+        "    if (Test-Path $runtimeCache) {",
+        "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\uTools\"",
+            "$runtimeCachePersist = \"$persist_dir\\data\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "uTools.exe",
+            "uTools"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://u.tools/",
+        "regex": "uTools-([\\d.]+)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://publish.u-tools.cn/version2/uTools-$version.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://publish.u-tools.cn/version2/uTools-$version-ia32.exe#/dl.7z"
+            }
+        }
+    }
+}
