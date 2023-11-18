@@ -21,6 +21,32 @@
             "Zotero"
         ]
     ],
+    "notes": [
+        "To register the 'zotero://' URL protocol, run:",
+        "$dir\\install-zotero-url-protocol.ps1",
+        "",
+        "Existing 'zotero://' URL protocol may be overwrite.",
+        "",
+        "To unregister the 'zotero://' URL protocol, run:",
+        "$dir\\uninstall-zotero-url-protocol.ps1"
+    ],
+    "post_install": [
+        "if (!$bucket) { return }",
+        "$scriptsDir = \"$bucketsdir\\$bucket\\scripts\"",
+        "Get-ChildItem \"$scriptsDir\\zotero\\*.ps1\" | ForEach-Object {",
+        "    $content = Get-Content $_",
+        "    $content = $content.Replace('REPLACE_HERE', $dir)",
+        "    if ($global) { $content = $content.Replace('HKCU', 'HKLM') }",
+        "    Set-Content \"$dir\\$($_.Name)\" $content -Encoding 'utf8' -Force",
+        "}"
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    Write-Host 'Unregistering the ''zotero://'' URL protocol...'",
+        "    Remove-Item 'HKCU:\\SOFTWARE\\Classes\\zotero', 'HKLM:\\SOFTWARE\\Classes\\zotero' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "    Write-Host 'Done!'",
+        "}"
+    ],
     "checkver": {
         "script": [
             "try { $detail = Invoke-WebRequest 'https://www.zotero.org/download/client/dl?platform=win-x64-zip&channel=beta' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
