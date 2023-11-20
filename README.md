@@ -101,6 +101,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
+- hu3rror/scoop-muggle
 - DoveBoy/Apps
 - jfut/scoop-jfut
 - batkiz/backit
@@ -108,7 +109,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - starise/Scoop-Gaming
 - Velgus/Scoop-Portapps
-- hu3rror/scoop-muggle
 - Weidows-projects/scoop-3rd
 - cc713/ownscoop
 - aoisummer/scoop-bucket
