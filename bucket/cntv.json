@@ -1,26 +1,55 @@
 {
     "##": "央视影音",
-    "version": "5.1.2.1",
+    "version": "6.0.0.0",
     "description": "[央视影音] - 央视影音客户端创新融合央视内容和互联网科技，在内容创新、用户体验、模式创优等各方面不断深耕细作，引领中国电视观众内容消费方式的转型升级，树立了主流媒体融合的行业标杆，实现\"大屏带小屏、小屏回大屏、多屏联受众\"",
     "license": "Freeware",
     "homepage": "https://tv.cctv.com/live",
-    "url": "https://download.cntv.cn/cbox/v5/ysyy_v5.1.2.1_1001_setup.exe#/dl.7z",
-    "hash": "8192ab0744cf803ec07c6d8c1dde9a07d08dd4b2c97dd1401d681504a181bc80",
-    "installer": {
-        "script": "Expand-7zipArchive \"$dir\\CBox.7z\" -ExtractDir 'bin' -Removal"
+    "architecture": {
+        "64bit": {
+            "url": "https://download.cntv.cn/cbox/v6/ysyy_v6.0.0.0_1001_setup_x64.exe#/dl.7z",
+            "hash": "03a8383377fc845b7accab6850219626a559737e9daa8b510355a6130e81451c"
+        },
+        "32bit": {
+            "url": "https://download.cntv.cn/cbox/v6/ysyy_v6.0.0.0_1001_setup_x32.exe#/dl.7z",
+            "hash": "33ff20611aa7c7c5c96aec98db61c704a29230b28bdaed79540f53227e05e6af"
+        }
     },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninst.exe.nsis\" -Force -Recurse",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\CBox.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\CBox.7z\", \"$dir\\uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\\CNTV\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\CNTV\" -ItemType Junction -Target \"$persist_dir\\CNTV\" | Out-Null",
+            "ensure \"$persist_dir\\cbox\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\cbox\" -ItemType Junction -Target \"$persist_dir\\cbox\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item \"$env:LOCALAPPDATA\\CNTV\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+            "Remove-Item \"$env:LOCALAPPDATA\\cbox\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        ]
+    },
     "shortcuts": [
         [
-            "CBox.exe",
+            "cbox.exe",
             "央视影音"
         ]
     ],
     "checkver": {
         "url": "https://app.cctv.com/",
-        "regex": "v5/ysyy_v([\\d.]+)"
+        "regex": "/ysyy_v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://download.cntv.cn/cbox/v5/ysyy_v$version_1001_setup.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://download.cntv.cn/cbox/v$majorVersion/ysyy_v$version_1001_setup_x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download.cntv.cn/cbox/v$majorVersion/ysyy_v$version_1001_setup_x32.exe#/dl.7z"
+            }
+        }
     }
 }
