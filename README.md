@@ -67,8 +67,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/scoop-clojure
 - kkzzhizhou/scoop-zapps
 - rasa/scoops
-- kidonng/sushi
 - ScoopInstaller/Nirsoft
+- kidonng/sushi
 - scoopcn/scoopcn
 - hoilc/scoop-lemon
 - KNOXDEV/wsl
@@ -98,11 +98,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - jonz94/scoop-sarasa-nerd-fonts
 - amorphobia/siku
 - iquiw/scoop-bucket
+- DoveBoy/Apps
 - ygguorun/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - 42wim/scoop-bucket
 - hu3rror/scoop-muggle
-- DoveBoy/Apps
 - jfut/scoop-jfut
 - batkiz/backit
 - mogeko/scoop-sysinternals
