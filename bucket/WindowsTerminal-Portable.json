@@ -1,5 +1,5 @@
 {
-    "version": "1.16.10261.0",
+    "version": "1.18.3181.0",
     "description": "Windows Terminal. The new Windows Terminal, and the original Windows console host - all in the same place!",
     "homepage": "https://github.com/microsoft/terminal",
     "license": "MIT",
@@ -9,14 +9,46 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/LizardByte/Sunshine/releases/download/v0/sunshine-windows-portable.zip",
-            "extract_dir": "terminal-$version"
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.18.3181.0/Microsoft.WindowsTerminal_1.18.3181.0_x64.zip",
+            "hash": "8bb41f8552a8ab50f9ad0317ee2d7007cf42ee9780c62f9b5a15c1cbd3e4d71a"
         },
         "32bit": {
-            "url": "https://github.com/LizardByte/Sunshine/releases/download/v0/sunshine-windows-portable.zip",
-            "extract_dir": "terminal-$version"
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.18.3181.0/Microsoft.WindowsTerminal_1.18.3181.0_x86.zip",
+            "hash": "5a34110d68559ec83589d1f2d43538d00c4f34b72a538b7ed37d0717ce378f34"
+        },
+        "arm64": {
+            "url": "https://github.com/microsoft/terminal/releases/download/v1.18.3181.0/Microsoft.WindowsTerminal_1.18.3181.0_arm64.zip",
+            "hash": "fbb2fb7ff4b16561effb03a952cdcc3dac2fb1ddfc44a3a2baf276e35319437f"
         }
     },
+    "extract_dir": "terminal-1.18.3181.0",
+    "pre_install": [
+        "# Remove this hint in 2023-12-01",
+        "$settings_path = \"$env:LOCALAPPDATA\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\"",
+        "if (!(Test-Path \"$persist_dir\\settings\") -and (Test-Path $settings_path)) {",
+        "  $current_setings = $dir.Replace($version, 'current') + \"\\settings\"",
+        "  warn \"Portable mode is enabled from version 1.17.11391.0, please migrate the settings manually:\"",
+        "  warn \"Original settings dir: `'$settings_path`'\"",
+        "  warn \"Portable settings dir: `'$current_setings`'\"",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$winVer = [Environment]::OSVersion.Version",
+            "if (($winver.Major -lt '10') -or ($winVer.Build -lt 19041)) { error 'At least Windows 10 20H1 (build 19041) is required.'; break }",
+            "if (!(Test-Path \"$persist_dir\\.portable\")) { Add-Content \"$dir\\.portable\" '' -Encoding Ascii }"
+        ]
+    },
+    "post_install": [
+        "'install-context', 'uninstall-context' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\windows-terminal\\$_.reg\") {",
+        "        $wtPath = \"$dir\\wt.exe\".Replace('\\', '\\\\')",
+        "        $content = (Get-Content \"$bucketsdir\\extras\\scripts\\windows-terminal\\$_.reg\").Replace('$wt', $wtPath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
     "bin": [
         "WindowsTerminal.exe",
         "wt.exe"
@@ -27,17 +59,28 @@
             "Windows Terminal"
         ]
     ],
+    "persist": [
+        ".portable",
+        "settings"
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
     "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x64.zip",
-                "extract_dir": "terminal-$version"
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x64.zip"
             },
             "32bit": {
-                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x86.zip",
-                "extract_dir": "terminal-$version"
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_x86.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_arm64.zip"
             }
-        }
+        },
+        "hash": {
+            "url": "https://github.com/microsoft/terminal/releases/tag/v$version",
+            "regex": "(?s)$basename.*?$sha256"
+        },
+        "extract_dir": "terminal-$version"
     }
 }
