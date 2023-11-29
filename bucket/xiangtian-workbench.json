@@ -1,0 +1,49 @@
+{
+    "version": "7.2.8",
+    "description": "想天工作台，开源免费的副屏“操作系统”",
+    "homepage": "https://gitee.com/tsbrowser/xiangtian-workbench",
+    "license": "APGL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://up.apps.vip/%E6%83%B3%E5%A4%A9%E5%B7%A5%E4%BD%9C%E5%8F%B0%20Setup%207.2.8.exe#/dl.7z",
+            "hash": "A1E4245D0E025407A52925F7ED16ADE51D2B174DB88408DAF8932F86C311BDC3"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\"",
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('想天工作台')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
+    ],
+    "bin": "想天工作台.exe",
+    "shortcuts": [
+        [
+            "想天工作台.exe",
+            "想天工作台"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.apps.vip/download/",
+        "regex": "https://up.apps.vip/%E6%83%B3%E5%A4%A9%E5%B7%A5%E4%BD%9C%E5%8F%B0%20Setup%20([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://up.apps.vip/%E6%83%B3%E5%A4%A9%E5%B7%A5%E4%BD%9C%E5%8F%B0%20Setup%20$version.exe#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
