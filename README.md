@@ -67,8 +67,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/scoop-clojure
 - kkzzhizhou/scoop-zapps
 - rasa/scoops
-- ScoopInstaller/Nirsoft
 - kidonng/sushi
+- ScoopInstaller/Nirsoft
 - scoopcn/scoopcn
 - hoilc/scoop-lemon
 - KNOXDEV/wsl
@@ -88,9 +88,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wangzq/scoop-bucket
 - kiennq/scoop-misc
 - zhoujin7/tomato
+- TheRandomLabs/Scoop-Python
 - akirco/aki-apps
 - ViCrack/scoop-bucket
-- TheRandomLabs/Scoop-Python
 - wzv5/ScoopBucket
 - niheaven/scoop-sysinternals
 - naderi/scoop-bucket
