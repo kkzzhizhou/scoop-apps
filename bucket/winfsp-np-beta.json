@@ -8,18 +8,18 @@
     "installer": {
         "script": [
             "$install = \"$dir\\install\"",
-            "New-Item -ItemType dir $install | Out-Null",
-            "Invoke-ExternalCommand msiexec.exe -ArgumentList @('/i', \"$dir\\setup.msi_\", 'ADDLOCAL=F.Developer,F.KernelDeveloper', \"/qn /norestart INSTALLLEVEL=1000 INSTALLDIR=$install\") -RunAs | Out-Null",
+            "$null = New-Item -ItemType dir $install",
+            "$null = Invoke-ExternalCommand msiexec.exe -ArgumentList @('/i', \"$dir\\setup.msi_\", 'ADDLOCAL=F.Developer,F.KernelDeveloper', \"/qn /norestart INSTALLLEVEL=1000 INSTALLDIR=$install\") -RunAs",
             "$arch = if ($architecture -eq 'arm64') { '-a64' } else { \"-x$($architecture.Substring(0, 2))\" }",
             "'fsptool', 'launchctl', 'launcher', 'memfs' | ForEach-Object { Get-ChildItem \"$install/bin/$_$arch.exe\" } | Rename-Item -NewName { $_.name.Replace($arch, '') }"
         ]
     },
     "pre_uninstall": [
         "if ($fsptool = where.exe fsptool.exe | Select-Object -First 1) { & $fsptool unload }",
-        "'WinFsp.Launcher', 'WinFsp' | ForEach-Object { sc.exe stop $_ | Out-Null }"
+        "'$null = WinFsp.Launcher', 'WinFsp' | ForEach-Object { sc.exe stop $_ }"
     ],
     "uninstaller": {
-        "script": "Invoke-ExternalCommand msiexec.exe -ArgumentList @('/x', \"$dir/setup.msi_\", '/qn /norestart') -RunAs | Out-Null"
+        "script": "$null = Invoke-ExternalCommand msiexec.exe -ArgumentList @('/x', \"$dir/setup.msi_\", '/qn /norestart') -RunAs"
     },
     "bin": [
         "install/bin/fsptool.exe",
