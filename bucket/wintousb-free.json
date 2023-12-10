@@ -1,0 +1,40 @@
+{
+    "version": "8.4",
+    "description": "A free Windows To Go (WTG) Creator which allows you to install and run a fully-functional Windows on external drive.",
+    "homepage": "https://www.easyuefi.com/wintousb/index.html",
+    "license": "Liteware",
+    "url": "https://www.easyuefi.com/wintousb/downloads/WinToUSB_Free.exe",
+    "hash": "40fcfc392ac498c258ce1c7d9aa5f9d44729ca4928010100c37e2ea02f266f4f",
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "Get-ChildItem \"$dir\" '*,2.*' -Recurse | ForEach-Object { Rename-Item $_.Fullname ($_.Name -Replace ',2') }",
+                "Get-ChildItem \"$dir\" '*,1.*' -Recurse | Remove-Item"
+            ]
+        },
+        "32bit": {
+            "pre_install": [
+                "Get-ChildItem \"$dir\" '*,1.*' -Recurse | ForEach-Object { Rename-Item $_.Fullname ($_.Name -Replace ',1') }",
+                "Get-ChildItem \"$dir\" '*,2.*' -Recurse | Remove-Item"
+            ]
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\unins*\"",
+        "Get-ChildItem \"$dir\" 'WinToUSB.ini' -Recurse | ForEach-Object { (Get-Content -Raw $_.Fullname) -replace 'AutoCheckUpdate=1','AutoCheckUpdate=0' | Set-Content -Encoding Unicode  $_.Fullname }"
+    ],
+    "innosetup": true,
+    "shortcuts": [
+        [
+            "bin\\WinToUSB.exe",
+            "WinToUSB"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.easyuefi.com/wintousb/change-logs.html",
+        "regex": "Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.easyuefi.com/wintousb/downloads/WinToUSB_Free.exe"
+    }
+}
