@@ -109,13 +109,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChungZH/peach
 - starise/Scoop-Gaming
 - Velgus/Scoop-Portapps
+- brian6932/dank-scoop
 - starise/Scoop-Confetti
 - Weidows-projects/scoop-3rd
 - cc713/ownscoop
 - aoisummer/scoop-bucket
 - seumsc/scoop-seu
 - rivy/scoop-bucket
-- brian6932/dank-scoop
 - aliesbelik/poldi
 - SayCV/scoop-cvp
 - mo-san/scoop-bucket
