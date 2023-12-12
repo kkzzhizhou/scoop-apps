@@ -124,7 +124,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - yuusakuri/scoop-bucket
 - Darkatse/Scoop-KanColle
-- Zliced13/MyScoop
+- FlawlessCasual17/MyScoop
 - The-Simples/scoop-minecraft
 - MCOfficer/scoop-bucket
 - KnotUntied/scoop-fonts
