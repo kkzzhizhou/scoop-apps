@@ -93,9 +93,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/Scoop-Python
 - ViCrack/scoop-bucket
 - niheaven/scoop-sysinternals
+- charmbracelet/scoop-bucket
 - naderi/scoop-bucket
 - amorphobia/siku
-- charmbracelet/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - iquiw/scoop-bucket
 - DoveBoy/Apps
