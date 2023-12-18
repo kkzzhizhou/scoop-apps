@@ -125,12 +125,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - yuusakuri/scoop-bucket
 - Darkatse/Scoop-KanColle
+- AkinoKaede/maple
 - FlawlessCasual17/MyScoop
 - The-Simples/scoop-minecraft
 - MCOfficer/scoop-bucket
 - KnotUntied/scoop-fonts
 - beerpiss/scoop-bucket
 - HUMORCE/nuke
-- AkinoKaede/maple
 - hulucc/bucket
 - jingyu9575/scoop-jingyu9575
