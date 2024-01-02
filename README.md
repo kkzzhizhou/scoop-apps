@@ -12,7 +12,7 @@
 
 此仓库每天自动合并其他scoop仓库的更新
 
-注意：如有问题，请根据仓库根路径的app-contributor-list.csv到相应的仓库提交issues
+注意：如果仓库描述文件过时或者安装等问题，请根据仓库根路径的app-contributor-list.csv到相应的仓库提交issues
 
 ## 特性
 
