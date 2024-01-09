@@ -1,5 +1,5 @@
 {
-    "version": "2022.06.30",
+    "version": "1656628233",
     "description": "Provides a command to refresh environment variables in command prompt (cmd).",
     "homepage": "https://chocolatey.org/",
     "license": "Apache-2.0",
@@ -7,16 +7,8 @@
     "hash": "8b6b1d8f6bfab3dc9fbee30d6b2f3093ea3eccd5c66e57161dbe1b8f703fa74c",
     "bin": "RefreshEnv.cmd",
     "checkver": {
-        "script": [
-            "# Using script to get version number from date, e.g. 6 Mar, 2019 -> 2019.03.06",
-            "$url = 'https://github.com/chocolatey/choco/commits/HEAD/src/chocolatey.resources/redirects/RefreshEnv.cmd'",
-            "$regex = 'Commits on ([\\w\\s,]+)</h2>'",
-            "$cont = $(Invoke-WebRequest $url).Content",
-            "if(!($cont -match $regex)) { error \"Could match '$regex' on '$url'\"; return }",
-            "$script_ver = $(Get-Date $matches[1]).ToString('yyyy.MM.dd')",
-            "Write-Output $script_ver"
-        ],
-        "regex": "([\\d.]+)"
+        "script": "try { Get-Date (Invoke-RestMethod https://api.github.com/repos/chocolatey/choco/commits?path=src/chocolatey.resources/redirects/RefreshEnv.cmd)[0].commit.committer.date -UFormat %s } catch { '' }",
+        "regex": "\\A(\\d+)\\Z"
     },
     "autoupdate": {
         "url": "https://raw.githubusercontent.com/chocolatey/choco/HEAD/src/chocolatey.resources/redirects/RefreshEnv.cmd"
