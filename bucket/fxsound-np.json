@@ -1,0 +1,39 @@
+{
+    "version": "1.1.20.0",
+    "homepage": "https://www.fxsound.com/",
+    "description": "A free open-source software to boost sound quality, volume, and bass. Including an equalizer, effects, and presets for customized audio.",
+    "license": "GPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://drive.fxsound.com/cs/XITRVihzhkzzl72/downloads3.fxsound.com/fxsound/1.1.20.0/fxsound_setup.exe/download#/fxsound_setup.exe",
+            "hash": "3541df625affa384feacf3cd3d64c47d2372eab9a2055d57dde08afe7f85862c"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\fxsound_setup.exe\" -Wait -Verb 'RunAs' -Args @('/exenoui', '/qn')",
+        "Start-Process \"$dir\\fxsound_setup.exe\" -Wait -Verb 'RunAs' -Args @('/extract', \"$dir\")",
+        "Remove-Item \"$dir\\fxsound_setup.exe\"; Start-Sleep -Seconds 10; taskkill /f /im 'FxSound.exe' | Out-Null"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "$msg = \"Please make sure the application, '$app' isn't running in the background before uninstalling!\"",
+        "if ($cmd -eq 'uninstall') {",
+        "    if (Get-Process -Name 'FxSound' -ErrorAction 'SilentlyContinue') { error $msg; break }",
+        "",
+        "    Start-Process 'msiexec' -Wait -Verb 'RunAs' `",
+        "      -Args @('/x', \"$dir\\fxsound.x64.msi\", '/qn', 'REBOOT=ReallySuppress', '/norestart')",
+        "}"
+    ],
+    "checkver": {
+        "script": "(Invoke-WebRequest 'https://download.fxsound.com/fxsoundlatest').BaseResponse.RequestMessage.RequestUri.AbsoluteUri",
+        "regex": "cs/(?<Id>[\\w]+)/downloads3\\.fxsound\\.com/fxsound/([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://drive.fxsound.com/cs/$matchId/downloads3.fxsound.com/fxsound/$version/fxsound_setup.exe/download#/fxsound_setup.exe"
+            }
+        }
+    }
+}
