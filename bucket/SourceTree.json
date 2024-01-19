@@ -6,8 +6,6 @@
         "identifier": "Proprietary",
         "url": "https://www.atlassian.com/legal/software-license-agreement"
     },
-    "notes": "Use scoop-git-all instead of sourcetree's git.",
-    "depends": "git-all",
     "architecture": {
         "64bit": {
             "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTree-3.4.16-full.nupkg",
@@ -17,6 +15,7 @@
     },
     "post_install": [
         "mkdir -p \"$env:LOCALAPPDATA\\Atlassian\\SourceTree -ErrorAction SilentlyContinue",
+
         "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
         "  if (-not (Test-Path $runtimeCache)) { return }",
         "  if (Test-Path $runtimeCachePersist) {",
@@ -28,11 +27,10 @@
         "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
         "  }",
         "}",
-        "foreach ($folder in @('encore')) {",
+        "foreach ($folder in @('Atlassian')) {",
         "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
         "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
         "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
-        "  New-Item -Type Junction -Path \"$env:LOCALAPPDATA\\$folder\\SourceTree\\git_local\" -Target $scoopdir\\apps\\git-all\\current | Out-Null",
         "}"
     ],
     "bin": "SourceTree.exe",

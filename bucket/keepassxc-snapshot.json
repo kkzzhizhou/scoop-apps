@@ -1,0 +1,50 @@
+{
+    "version": "2.8.0-238530",
+    "description": "(Snapshot Build) Community fork of KeePass",
+    "homepage": "https://snapshot.keepassxc.org",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://snapshot.keepassxc.org/build-238530/KeePassXC-2.8.0-snapshot-Win64.zip",
+            "hash": "6c1ddf83c57cc68c0f9c0c21d5078620eab1f10f2877239135f7547bb97f519f",
+            "extract_dir": "KeePassXC-2.8.0-snapshot-Win64"
+        }
+    },
+    "post_install": "if (Test-Path \"$persist_dir\\keepassxc.ini\") { Move-Item \"$persist_dir\\keepassxc.ini\" \"$dir\\config\" -Force }",
+    "bin": [
+        "KeePassXC.exe",
+        "keepassxc-cli.exe",
+        "keepassxc-proxy.exe"
+    ],
+    "shortcuts": [
+        [
+            "KeePassXC.exe",
+            "KeePassXC Snapshot"
+        ]
+    ],
+    "persist": "config",
+    "checkver": {
+        "script": [
+            "$result = Invoke-WebRequest -Method 'Get' 'https://snapshot.keepassxc.org'",
+            "$result.Content -match 'build-(\\d+)/'",
+            "$build = $Matches.1",
+            "$result2 = Invoke-WebRequest -Method 'Get' ('https://snapshot.keepassxc.org/' + $Matches.0)",
+            "$result2.Content -match 'KeePassXC-([\\d.]+)-snapshot-Win64'",
+            "$version = $Matches.1",
+            "return \"{0}/{1}\" -f $version, $build"
+        ],
+        "regex": "(?<main>[\\d.]+)/(?<build>\\d+)",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://snapshot.keepassxc.org/build-$matchBuild/KeePassXC-$matchMain-snapshot-Win64.zip",
+                "extract_dir": "KeePassXC-$matchMain-snapshot-Win64"
+            }
+        },
+        "hash": {
+            "url": "$url.DIGEST"
+        }
+    }
+}
