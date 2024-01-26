@@ -1,0 +1,39 @@
+{
+    "version": "0.0.193+7545d9a.7317810289",
+    "description": "A command line tool for editing and distributing Minecraft modpacks, using a git-friendly TOML format. Supports CurseForge and Modrinth mods with automated updates!",
+    "homepage": "https://github.com/comp500/packwiz/",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/comp500/packwiz/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://nightly.link/packwiz/packwiz/actions/runs/7317810289/Windows%2064-bit.zip",
+            "hash": "e4d657dd49071e0799046469c00cdc48626cb1d8821e140b6522307f20210e91"
+        },
+        "arm64": {
+            "url": "https://nightly.link/packwiz/packwiz/actions/runs/7317810289/Windows%2064-bit%20ARM.zip",
+            "hash": "cc349121a15c8bfa6e349eb0681f79ce3d6b018d0c30d9cd52e29d20edc047b0"
+        }
+    },
+    "checkver": {
+        "script": [
+            "$actions = Invoke-RestMethod -Uri 'https://api.github.com/repos/packwiz/packwiz/actions/workflows/go.yml/runs'",
+            "$latest_develop = $actions.workflow_runs.PSObject.Properties.Value | Where-Object { $_.head_branch -eq 'main' } | Where-Object { $_.conclusion -eq 'success' } | Select-Object -first 1",
+            "$version = '0.0.' + $latest_develop.run_number + '+' + $latest_develop.head_sha.substring(0,7) + '.' + $latest_develop.id",
+            "Write-Output $version $latest_develop.id"
+        ],
+        "regex": "(?<version>[^\\s]+)\\s(?<id>\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://nightly.link/packwiz/packwiz/actions/runs/$matchId/Windows%2064-bit.zip"
+            },
+            "arm64": {
+                "url": "https://nightly.link/packwiz/packwiz/actions/runs/$matchId/Windows%2064-bit%20ARM.zip"
+            }
+        }
+    },
+    "bin": "packwiz.exe"
+}
