@@ -1,40 +1,30 @@
 {
-    "version": "0.79.2",
-    "description": "KOOK(Kaiheila), a useful voice communication tool. KOOK is a free and ad-free voice communication tool, which currently covers PC, Android, iOS and web devices. No matter where you are, you can communicate smoothly. There are servers with various themes in KOOK, and you can also create servers with games, music, reading, foreign languages and other topics according to your preferences, and invite friends to join your server to chat.",
-    "homepage": "https://www.kookapp.cn",
-    "license": {
-        "identifier": "Proprietary",
-        "url": "https://www.kookapp.cn/protocol.html"
-    },
-    "url": "https://img.kookapp.cn/assets/release/html_pc/kook_681/Kook_PC_Setup_v0.79.2.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe#/dl.7z",
+    "version": "0.79.2.0",
+    "description": "KOOK, formerly KaiHeiLa, is a voice communication tool that is known as the Chinese Discord",
+    "homepage": "https://www.kookapp.cn/",
+    "license": "Proprietary",
+    "url": "https://dl.kookapp.cn/assets/release/html_pc/kook_681/Kook_PC_Setup_v0.79.2.0_b2ZmaWNpYWwuc2l0ZS4uLi5wYw==.exe#/dl.7z",
     "hash": "eef9a57ef8aa76dd8e169650b1daab561648c16b0ca2732c76e6624cd00bf9ec",
-    "extract_to": "tmp",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\tmp\\`$1\\SquirrelTemp\\app.7z\" \"$dir\"",
-        "Expand-Archive \"$dir\\KOOK-$version-full.nupkg\" \"$dir\""
-    ],
-    "post_install": [
-        "Remove-Item \"$dir\\tmp\" -ErrorAction SilentlyContinue -Recurse -Force",
-        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:AppData\\kook\")) {",
-        "    info '[Portable Mode]: Copying user data...'",
-        "    ensure \"$dir\\User Data\" | Out-Null",
-        "    Copy-Item \"$env:AppData\\kook\\*\" \"$dir\\User Data\" -Recurse -Force -ErrorAction SilentlyContinue",
-        "}"
-    ],
+    "installer": {
+        "script": [
+            "Expand-7zipArchive -Path \"$dir\\`$1\\SquirrelTemp\\app.7z\" -Destination \"$dir\" -Removal",
+            "Expand-7zipArchive -Path \"$dir\\KOOK-*-full.nupkg\" -ExtractDir \"lib\\net45\" -Removal",
+            "@('$PLUGINSDIR', '$1') | ForEach-Object {",
+            "    Remove-Item \"$dir\\$_\" -Recurse -Force",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
-            "lib\\net45\\KOOK.exe",
-            "KOOK",
-            "--user-data-dir=\"$dir\\User Data\""
+            "KOOK.exe",
+            "KOOK"
         ]
     ],
-    "persist": "User Data",
     "checkver": {
         "url": "https://www.kookapp.cn/api/v2/updates/latest-version?platform=windows",
-        "jsonpath": "$.url",
-        "regex": "(?<path>assets/release/.*?v([\\d.]+)\\.\\d.*?\\.exe)"
+        "regex": "https://(?<path>.*?)/Kook_PC_Setup_v([\\d.]+)_(?<base64>.*?).exe"
     },
     "autoupdate": {
-        "url": "https://img.kookapp.cn/$matchPath#/dl.7z"
+        "url": "https://$matchPath/Kook_PC_Setup_v$version_$matchBase64.exe#/dl.7z"
     }
 }

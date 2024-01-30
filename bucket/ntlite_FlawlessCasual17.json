@@ -1,0 +1,63 @@
+{
+    "version": "2023.12.9552",
+    "description": "Local control for updating and editing Windows images and deployments.",
+    "homepage": "https://www.ntlite.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.ntlite.com/shop/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.ntlite.com/files/NTLite_setup_x64.exe",
+            "hash": "9c98c8799f720b66ad93919e070d713a05b7cc37953fe7c9f03bc800ca4d9fda"
+        },
+        "32bit": {
+            "url": "https://downloads.ntlite.com/files/NTLite_setup_x86.exe",
+            "hash": "227fa0ef3808181f5e0b5f0e9b3a6e787a62ff1e7681b74f545217fcdf0056b8"
+        }
+    },
+    "innosetup": true,
+    "pre_install": [
+        "$value = @'",
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+        "<GeneralOptions xmlns=\"urn:schemas-nliteos-com:pn.v1\">",
+        "    <CheckUpdate>false</CheckUpdate>",
+        "    <AutoUpdate>false</AutoUpdate>",
+        "</GeneralOptions>",
+        "'@",
+        "if (!(Test-Path \"$persist_dir\\settings.xml\")) {",
+        "    Set-Content \"$dir\\settings.xml\" $value -Encoding $(if ($PSEdition -eq 'Core') { Write-Output 'utf8bom' } else { Write-Output 'utf8' })",
+        "}"
+    ],
+    "bin": "NTLite.exe",
+    "shortcuts": [
+        [
+            "NTLite.exe",
+            "NTLite"
+        ]
+    ],
+    "persist": [
+        "Cache",
+        "Presets",
+        "Updates",
+        "settings.xml"
+    ],
+    "checkver": {
+        "url": "https://www.ntlite.com/download/",
+        "regex": "\\>v([\\d.]+)\\<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.ntlite.com/files/NTLite_setup_x64.exe"
+            },
+            "32bit": {
+                "url": "https://downloads.ntlite.com/files/NTLite_setup_x86.exe"
+            }
+        },
+        "hash": {
+            "url": "https://www.ntlite.com/download/",
+            "regex": "$basename.*?\\>SHA-256\\:\\s$sha256\\<"
+        }
+    }
+}

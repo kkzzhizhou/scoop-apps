@@ -1,13 +1,29 @@
 {
-    "version": "1.5.3",
-    "description": "A high-speed downloader developed by Golang+Flutter, which supports (HTTP, BitTorrent, Magnet) protocol.",
-    "homepage": "https://github.com/monkeyWie/gopeed",
+    "##": "The installer is made with InnoSetup.",
+    "version": "1.5.4",
+    "description": "High speed downloader that supports all platforms.",
+    "homepage": "https://github.com/GopeedLab/gopeed",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/monkeyWie/gopeed/releases/download/v1.5.3/Gopeed-v1.5.3-windows-amd64.zip",
-            "hash": "0bb4c040e06c4fd569e26d5d9cf0cef9967ce9835d26a03c0d9b70861f9cce18"
+            "url": "https://github.com/GopeedLab/gopeed/releases/download/v1.5.4/Gopeed-v1.5.4-windows-amd64.zip",
+            "hash": "4a8a3f406167acdcb763a82437cf728ad92e32c37d74a9fe1c4bc750c09b2f06"
         }
+    },
+    "pre_install": "Get-ChildItem \"$dir\" 'Gopeed*.exe' | Rename-Item -NewName 'setup.exe'",
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/SP-', '/VERYSILENT', '/PORTABLE', \"/DIR=`\"$dir`\"\")",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/verysilent",
+            "/nocancel",
+            "/norestart"
+        ]
     },
     "shortcuts": [
         [
@@ -15,13 +31,14 @@
             "Gopeed"
         ]
     ],
-    "pre_install": "if (!(Test-Path \"$persist_dir\\gopeed.db\")) { Set-Content -Encoding ASCII -Path \"$dir\\gopeed.db\" -Value $null }",
-    "persist": "gopeed.db",
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/GopeedLab/gopeed/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/monkeyWie/gopeed/releases/download/v$version/Gopeed-v$version-windows-amd64.zip"
+                "url": "https://github.com/GopeedLab/gopeed/releases/download/v$version/Gopeed-v$version-windows-amd64.zip"
             }
         }
     }
