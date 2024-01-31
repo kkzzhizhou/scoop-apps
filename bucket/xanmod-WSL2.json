@@ -1,0 +1,49 @@
+{
+    "homepage": "https://github.com/Locietta/xanmod-kernel-WSL2",
+    "description": "Xanmod Kernel for WSL2.",
+    "license": "GPL-2.0",
+    "extract_dir": "",
+    "bin": "",
+    "post_install": [
+        "#########################################",
+        "# set `.wslconfig` to use custom kernel #",
+        "#########################################",
+        "$ini = Add-Type -memberDefinition @\"",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern long WritePrivateProfileString (string section, string key, string val, string filePath);",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern int GetPrivateProfileString (string section, string key, string def, StringBuilder retVal, int size, string filePath);",
+        "\"@ -passthru -name CustomWSL2ProfileInstall -UsingNamespace System.Text",
+        "$kernel_path=\"$dir\\bzImage\" -replace \"\\\\\", \"\\\\\" # double all back-slashess",
+        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $kernel_path, \"$env:USERPROFILE\\.wslconfig\")"
+    ],
+    "post_uninstall": [
+        "##########################################",
+        "# recover `.wslconfig` to default kernel #",
+        "##########################################",
+        "$ini = Add-Type -memberDefinition @\"",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern long WritePrivateProfileString (string section,string key, string val, string filePath);",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern int GetPrivateProfileString (string section, string key, string def, StringBuilder retVal, int size, string filePath);",
+        "\"@ -passthru -name CustomWSL2ProfileUninstall -UsingNamespace System.Text",
+        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $null, \"$env:USERPROFILE\\.wslconfig\")"
+    ],
+    "version": "6.6.13-1.1",
+    "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/6.6.13-locietta-WSL2-xanmod1.1/bzImage",
+    "hash": "3e9d198e5c3b2dae1a1c9cbb4a341c7e93f36d3a9344f744aa4b18e9185d3735",
+    "checkver": {
+        "script": [
+            "$LATEST = ((curl.exe -sL -H \"Authorization: Bearer $(Get-GitHubToken)\" https://api.github.com/repos/Locietta/xanmod-kernel-WSL2/tags?per_page=60 | ConvertFrom-Json).name | Select-String 'lts' -NotMatch)[0]",
+            "$LATEST"
+        ],
+        "regex": "(?<main>[\\d.]+)-locietta-WSL2-xanmod(?<xanmod>[\\d.]+)",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod/bzImage",
+        "hash": {
+            "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod/bzImage.sha256"
+        }
+    }
+}
