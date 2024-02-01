@@ -1,46 +1,39 @@
 {
-    "homepage": "https://www.xmind.net/",
-    "version": "2024",
-    "license": "shareware",
+    "version": "23.11.04336",
+    "description": "A full-featured mind mapping and brainstorming tool",
+    "homepage": "https://xmind.app/",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://xmind.app/terms/"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://www.xmind.net/zen/download/win64/#/dl.7z",
-            "hash": "424c0c9acb0bc4a69fa847177cd8e57f0c842aaa377f7471b51f27351fd781f7",
+            "url": "https://dl3.xmind.net/Xmind-for-Windows-x64bit-23.11.04336-202311170132.exe#/dl.7z",
+            "hash": "17a39f2afa750cdda1d4041a624a45393a49b15c26603b70f7c7d89a94864f9f",
             "installer": {
-                "script": [
-                    "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
-                ]
-            }
-        },
-        "32bit": {
-            "url": "https://www.xmind.net/zen/download/win32/#/dl.7z",
-            "hash": "7099f476850e2a3a3d1a71dac1635af914412556dc3b1b3048fc68cec239d2cd",
-            "installer": {
-                "script": [
-                    "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\" -Removal",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
-                ]
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
             }
         }
     },
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse",
     "shortcuts": [
         [
             "XMind.exe",
-            "XMind 2020"
+            "XMind"
         ]
     ],
     "checkver": {
-        "url": "https://www.xmind.net/xmind2020/release-notes/",
-        "regex": "<h5 class=\"text-muted\">([\\d.]+)"
+        "script": [
+            "$url = 'https://www.xmind.app/zen/download/win64/'",
+            "$req = Invoke-WebRequest -Uri $url -MaximumRedirection 0 -ErrorAction SilentlyContinue",
+            "Write-Output $req.Headers.Location"
+        ],
+        "regex": "Xmind-for-Windows-x64bit-([\\d.]+)-(?<dt>\\d{12})\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://www.xmind.net/zen/download/win64/#/dl.7z"
-            },
-            "32bit": {
-                "url": "https://www.xmind.net/zen/download/win32/#/dl.7z"
+                "url": "https://dl3.xmind.net/Xmind-for-Windows-x64bit-$version-$matchDt.exe#/dl.7z"
             }
         }
     }

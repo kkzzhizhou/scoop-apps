@@ -14,15 +14,17 @@
         }
     },
     "installer": {
-        "args": [
-            "/S",
-            "/D=$dir"
+        "script": [
+            "Start-Process \"$dir\\$fname\" -ArgumentList @('/S', \"/D=$dir\") -Wait -Verb RunAs | Out-Null",
+            "Remove-Item \"$dir\\$fname\""
         ]
     },
-    "post_install": "Remove-Item -Recurse \"$([Environment]::GetFolderPath('startmenu'))\\Programs\\Everything\"",
+    "post_install": [
+        "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Everything.lnk\"",
+        "Remove-Item -Recurse \"$Env:Public\\Desktop\\Everything.lnk\""
+    ],
     "uninstaller": {
-        "file": "Uninstall.exe",
-        "args": "/S"
+        "script": "Start-Process \"$dir\\Uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null"
     },
     "bin": "Everything.exe",
     "shortcuts": [
@@ -31,6 +33,7 @@
             "Everything"
         ]
     ],
+    "pre_uninstall": "Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
     "checkver": "Download Everything ([\\d.]+)",
     "autoupdate": {
         "architecture": {

@@ -1,6 +1,6 @@
 {
     "version": "8.6.2",
-    "description": "Text and source code editor.",
+    "description": "Text and source code editor",
     "homepage": "https://notepad-plus-plus.org/",
     "license": "GPL-2.0-only",
     "architecture": {
@@ -15,16 +15,18 @@
     },
     "installer": {
         "script": [
-            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null",
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Wait -Verb RunAs | Out-Null",
             "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Notepad++.lnk\"",
             "if (Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\")) { Copy-Item \"$env:AppData\\Notepad++_Scoop_backup\\*\" \"$Env:AppData\\Notepad++\" -Force -Recurse }"
         ]
     },
     "uninstaller": {
         "script": [
-            "if (!(Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\"))) { New-Item \"$env:AppData\\Notepad++_Scoop_backup\" -ItemType Directory }",
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "if (!(Test-Path(\"$env:AppData\\Notepad++_Scoop_backup\"))) { New-Item \"$env:AppData\\Notepad++_Scoop_backup\" -ItemType Directory | Out-Null }",
             "Copy-Item \"$Env:AppData\\Notepad++\\*\" \"$env:AppData\\Notepad++_Scoop_backup\" -Force -Recurse",
-            "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList @('/S') -RunAs | Out-Null",
+            "Start-Process \"$dir\\uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
             "Stop-Process -Name explorer"
         ]
     },

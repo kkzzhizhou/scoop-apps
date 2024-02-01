@@ -1,22 +1,60 @@
 {
-    "version": "3.9.9.35",
-    "homepage": "https://weixin.qq.com/",
-    "license": "Freeware",
-    "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
-    "hash": "001aedccb59ec9e9067d0703ba0ba9f8e1454159dd7aa4fa9f82c0f9b9a57428",
-    "extract_dir": "[3.9.9.35]",
+    "version": "3.9.8.25",
+    "description": "Free messaging and calling app by Tencent",
+    "homepage": "https://pc.weixin.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z"
+        },
+        "32bit": {
+            "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup_x86.exe#/dl.7z"
+        }
+    },
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+            "$configpath = \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\"",
+            "ensure \"$configpath\" | Out-Null",
+            "Set-Content -NoNewline -Path \"$configpath\\3ebffe94.ini\" -Value \"$persist_dir\"",
+            "$regpath = \"HKCU:Software\\Tencent\\WeChat\"",
+            "if (!(Test-Path \"$regpath\")) {",
+            "    New-Item -Path \"$regpath\" -Type Directory -Force | Out-Null",
+            "}",
+            "New-ItemProperty -Path $regpath -Name \"FileSavePath\" -Value \"$persist_dir\" -Force | Out-Null"
+        ]
+    },
     "shortcuts": [
         [
             "wechat.exe",
             "WeChat"
         ]
     ],
+    "persist": "WeChat Files",
+    "uninstaller": {
+        "script": [
+            "Remove-Item -Path \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\\3ebffe94.ini\" -Force | Out-Null",
+            "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\WeChat\" -Name \"FileSavePath\" -Force | Out-Null"
+        ]
+    },
     "checkver": {
-        "url": "https://s.pc.qq.com/softdetail_v3/114/88/detail_11488.html",
-        "regex": "<li>版本：([\\d.]+)</li>"
+        "script": [
+            "$resp = Invoke-WebRequest -UseBasicParsing -Uri 'https://luban.m.qq.com/api/public/software-manager/softwareProxy' -Body 'cmdid=3318&jprxReq%5Breq%5D%5Bsoft_id_list%5D%5B%5D=11488' -Method 'POST'",
+            "Write-Output $resp.Content"
+        ],
+        "jsonpath": "$..ver_name"
     },
     "autoupdate": {
-        "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
-        "extract_dir": "[$version]"
+        "architecture": {
+            "64bit": {
+                "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup_x86.exe#/dl.7z"
+            }
+        }
     }
 }

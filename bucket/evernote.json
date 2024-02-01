@@ -1,21 +1,26 @@
 {
-    "version": "10.73.3",
+    "version": "10.58.8",
+    "description": "App for note taking, organizing, task lists, and archiving",
     "homepage": "https://evernote.com/",
-    "description": "Remember everything and tackle any project with your notes, tasks, and schedule all in one place.",
     "license": {
-        "identifier": "Freeware",
-        "url": "https://evernote.com/legal"
+        "identifier": "EULA",
+        "url": "https://evernote.com/legal/terms-of-service"
     },
-    "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip",
-    "hash": "9eb2baf5523c56c420a695f69dff1ceb6337da5da14fb86e59b6d05ca8fcc37a",
-    "pre_install": [
-        "if ($architecture -eq '32bit') {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
-        "}",
-        "else {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
-        "}"
-    ],
+    "notes": "We don't persist your Evernote data, they are still storaged in \"$env:APPDATA\\Evernote\".",
+    "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-10.58.8-win-ddl-ga-4175-bf1b4b33d6-setup.exe#/dl.7z",
+    "hash": "25c74faa5d2fa24ce2e557e46352d6d03d601aaf6004bf2f21cad05f020d5663",
+    "installer": {
+        "script": [
+            "if ([Environment]::Is64BitOperatingSystem) {",
+            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir -Removal",
+            "} else {",
+            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" $dir -Removal",
+            "}",
+            "Remove-Item \"$dir\\Uninstall Evernote.exe\"",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "Remove-Item \"$dir\\resources\" -Force -Recurse"
+        ]
+    },
     "shortcuts": [
         [
             "Evernote.exe",
@@ -23,10 +28,10 @@
         ]
     ],
     "checkver": {
-        "url": "https://evernote.com/release-notes",
-        "regex": "Version.*?([\\d.]+)"
+        "url": "https://evernote.com/download",
+        "regex": "Evernote-([\\d.]+)(?<tail>.+)\\.exe"
     },
     "autoupdate": {
-        "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip"
+        "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-$version$matchTail.exe#/dl.7z"
     }
 }
