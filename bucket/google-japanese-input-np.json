@@ -17,16 +17,10 @@
         }
     },
     "installer": {
-        "script": [
-            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-            "Start-Process msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart') -Wait -Verb RunAs | Out-Null"
-        ]
+        "script": "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart') -RunAs | Out-Null"
     },
     "uninstaller": {
-        "script": [
-            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-            "Start-Process msiexec -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn', '/norestart') -Wait -Verb RunAs | Out-Null"
-        ]
+        "script": "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn', '/norestart') -RunAs -ContinueExitCodes @{3010 = 'You may need to restart the computer for Google Japanese Input to be completely removed.'} | Out-Null"
     },
     "checkver": {
         "url": "https://forest.watch.impress.co.jp/library/software/googleime/",
