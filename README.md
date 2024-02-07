@@ -76,12 +76,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Paxxs/Cluttered-bucket
 - echoiron/echo-scoop
 - ScoopInstaller/Nonportable
-- cderv/r-bucket
 - hermanjustnu/scoop-emulators
+- cderv/r-bucket
 - couleur-tweak-tips/utils
 - dodorz/scoop
-- Qv2ray/mochi
 - borger/scoop-emulators
+- Qv2ray/mochi
 - ViCrack/scoop-bucket
 - TheRandomLabs/Scoop-Python
 - akirco/aki-apps
