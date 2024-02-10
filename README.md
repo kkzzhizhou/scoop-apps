@@ -91,6 +91,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - batkiz/backit
 - iquiw/scoop-bucket
+- AStupidBear/scoop-bear
 - hu3rror/scoop-muggle
 - aoisummer/scoop-bucket
 - KnotUntied/scoop-fonts
