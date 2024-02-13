@@ -1,46 +1,43 @@
 {
-    "version": "20.4",
-    "description": "Open source home theater/media center software and entertainment hub for digital media",
-    "homepage": "https://kodi.tv/",
+    "homepage": "https://kodi.tv",
+    "description": "Kodi is an award-winning free and open source software media player and entertainment hub for digital media",
     "license": "GPL-2.0-or-later",
-    "suggest": {
-        "vcredist": "extras/vcredist2022"
-    },
+    "version": "20.4",
     "architecture": {
         "64bit": {
-            "url": "https://mirrors.kodi.tv/releases/windows/win64/kodi-20.4-Nexus-x64.exe#/dl.7z",
+            "url": "https://mirrors.kodi.tv/releases/windows/win64/kodi-20.4-Nexus-x64.exe#/kodi-20.4-Nexus-x64.7z",
             "hash": "408f6808564239153af9b5fa50e8ad82114e6a9905b7e58957a4cb18b296913c"
         },
         "32bit": {
-            "url": "https://mirrors.kodi.tv/releases/windows/win32/kodi-20.4-Nexus-x86.exe#/dl.7z",
+            "url": "https://mirrors.kodi.tv/releases/windows/win32/kodi-20.4-Nexus-x86.exe#/kodi-20.4-Nexus-x86.7z",
             "hash": "74fc0e01b299a1f239f47d8ef95c3d1098788fcb3b00dffec9bd3b5437d5aace"
         }
     },
-    "post_install": "'$PLUGINSDIR', '$TEMP', 'AppxManifest.xml', 'Uninstall.exe' | ForEach-Object { Remove-Item \"$dir\\$_\" -Recurse -Force }",
+    "installer": {
+        "script": [
+            "@('$PLUGINSDIR', '$TEMP', 'Uninstall.exe') | ForEach-Object {",
+            "    Remove-Item \"$dir\\$_\" -Recurse -Force",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "kodi.exe",
-            "Kodi",
-            "-p"
+            "Kodi"
         ]
     ],
-    "persist": "portable_data",
     "checkver": {
         "url": "https://kodi.tv/download/windows",
-        "regex": "Kodi v(?<version>[\\d.]+) \\((?<name>\\w+)\\)"
+        "regex": "kodi-([\\d.]+)-(?<codename>\\w+)-x64.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://mirrors.kodi.tv/releases/windows/win64/kodi-$version-$matchName-x64.exe#/dl.7z"
+                "url": "https://mirrors.kodi.tv/releases/windows/win64/kodi-$version-$matchCodename-x64.exe#/kodi-$version-$matchCodename-x64.7z"
             },
             "32bit": {
-                "url": "https://mirrors.kodi.tv/releases/windows/win32/kodi-$version-$matchName-x86.exe#/dl.7z"
+                "url": "https://mirrors.kodi.tv/releases/windows/win32/kodi-$version-$matchCodename-x86.exe#/kodi-$version-$matchCodename-x86.7z"
             }
-        },
-        "hash": {
-            "url": "$url?mirrorlist",
-            "regex": "$sha256"
         }
     }
 }

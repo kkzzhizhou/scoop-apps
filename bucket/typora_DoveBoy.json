@@ -1,0 +1,62 @@
+{
+    "version": "1.8.9",
+    "description": "A minimal Markdown editor and reader",
+    "homepage": "https://typora.io",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://support.typora.io/License-Agreement/"
+    },
+    "notes": "For old beta version, install: versions/typora0.11.18",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.typora.io/windows/typora-setup-x64-1.8.9.exe",
+            "hash": "5dffa55000750d041dc87a686e1e3f55379ea70805d38d0393d1554f7dd6a892"
+        },
+        "arm64": {
+            "url": "https://download.typora.io/windows/typora-setup-arm64-1.8.5.exe",
+            "hash": "fc2f57fabc5bd75bfb4c34c6b81544e884948ceb2b287a7703fe276f20188f26"
+        },
+        "32bit": {
+            "url": "https://download.typora.io/windows/typora-setup-ia32-1.8.9.exe",
+            "hash": "86bb7ed1157bd1a0d1239f8919c509c3b8bf9ff66a9ff5eb945a447872653142"
+        }
+    },
+    "innosetup": true,
+    "bin": "Typora.exe",
+    "shortcuts": [
+        [
+            "Typora.exe",
+            "Typora"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://typora.io/releases/stable'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'typora-setup-x64-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'typora-setup-ia32-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$ia32 = $matches[1]",
+            "$r = 'typora-setup-arm64-([\\d.]+)\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $ia32 $arm64"
+        ],
+        "regex": "([\\d.]+) (?<ia32>[\\d.]+) (?<arm64>[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.typora.io/windows/typora-setup-x64-$version.exe"
+            },
+            "arm64": {
+                "url": "https://download.typora.io/windows/typora-setup-arm64-$matchArm64.exe"
+            },
+            "32bit": {
+                "url": "https://download.typora.io/windows/typora-setup-ia32-$matchIa32.exe"
+            }
+        }
+    }
+}

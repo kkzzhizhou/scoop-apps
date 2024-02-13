@@ -1,32 +1,41 @@
 {
     "version": "2.9.9",
+    "description": "Upscayl. Free and Open Source AI Image Upscaler for Linux, MacOS and Windows built with Linux-First philosophy.",
     "homepage": "https://github.com/upscayl/upscayl",
-    "description": "A Free and Open Source AI Image Upscaler.",
-    "license": "AGPL-3.0",
+    "license": {
+        "identifier": "AGPL-3.0-or-later",
+        "url": "https://github.com/upscayl/upscayl/raw/main/LICENSE"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/upscayl/upscayl/releases/download/v2.9.9/upscayl-2.9.9-win.exe#/dl.7z",
-            "hash": "sha512:d7978628df100d3211f898804d0f7e34c082e709e409b48f4b464db8a396ac5b2e5c77f4b6c23c2124d6df09510dff5a9ae5b6faf92ca01f8a82697b7a98dfbf"
+            "hash": "sha512:f0caf49ec4635ec6f61fae12ca222717a8f3e15d083b89a7c9b8934aac93ea91314cbcfa491ac3a42102e78b322b80fef2c9a717aecc8c6e6bc8d39cf25cd3b2",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal"
         }
     },
-    "extract_dir": "$PLUGINSDIR",
-    "pre_install": "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\"  -ErrorAction 'SilentlyContinue' -Force -Recurse",
     "shortcuts": [
         [
             "Upscayl.exe",
-            "Upscayl"
+            "Upscayl",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "checkver": "github",
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://api.github.com/repos/upscayl/upscayl/releases",
+        "regex": "(?sm)browser_download_url.*?releases/download/v([\\w.-]+)/upscayl-([\\w.-]+)-win\\.exe"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/upscayl/upscayl/releases/download/v$version/upscayl-$version-win.exe#/dl.7z"
+                "url": "https://github.com/upscayl/upscayl/releases/download/v$version/upscayl-$version-win.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)$basename.*?sha512:\\s*?$base64"
+                }
             }
-        },
-        "hash": {
-            "url": "$baseurl/latest.yml",
-            "regex": "sha512:\\s$base64"
         }
     }
 }

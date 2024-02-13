@@ -1,0 +1,72 @@
+{
+    "version": "24.01",
+    "description": "A multi-format file archiver with high compression ratios",
+    "homepage": "https://www.7-zip.org/",
+    "license": "LGPL-2.1-or-later",
+    "notes": "Add 7-Zip as a context menu option by running: \"$dir\\install-context.reg\"",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.7-zip.org/a/7z2401-x64.msi",
+            "hash": "646954cd0eb1eda1da31e0806efc903c652c9d19f8359fb466f6fd1d59bc0507",
+            "extract_dir": "Files\\7-Zip"
+        },
+        "32bit": {
+            "url": "https://www.7-zip.org/a/7z2401.msi",
+            "hash": "1c3c3560906974161f25f5f81de4620787b55ca76002ac3c4fc846d57a06df99",
+            "extract_dir": "Files\\7-Zip"
+        },
+        "arm64": {
+            "url": "https://www.7-zip.org/a/7z2401-arm64.exe",
+            "hash": "920658e4d91706e3deba82284daa1180e97ebffae6c8cc289f6197a2deb1ce76",
+            "pre_install": [
+                "$7zr = Join-Path $env:TMP '7zr.exe'",
+                "Invoke-WebRequest https://www.7-zip.org/a/7zr.exe -OutFile $7zr",
+                "Invoke-ExternalCommand $7zr @('x', \"$dir\\$fname\", \"-o$dir\", '-y') | Out-Null",
+                "Remove-Item \"$dir\\Uninstall.exe\", \"$dir\\*-arm64.exe\", $7zr"
+            ]
+        }
+    },
+    "post_install": [
+        "$7zip_root = \"$dir\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    $content = Get-Content \"$bucketsdir\\apps\\scripts\\7-zip\\$_\"",
+        "    $content = $content.Replace('$7zip_root', $7zip_root)",
+        "    if ($global) {",
+        "       $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    Set-Content \"$dir\\$_\" $content -Encoding Ascii",
+        "}"
+    ],
+    "bin": [
+        "7z.exe",
+        "7zFM.exe",
+        "7zG.exe"
+    ],
+    "shortcuts": [
+        [
+            "7zFM.exe",
+            "7-Zip"
+        ]
+    ],
+    "persist": [
+        "Codecs",
+        "Formats"
+    ],
+    "checkver": {
+        "url": "https://www.7-zip.org/download.html",
+        "regex": "Download 7-Zip ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion-x64.msi"
+            },
+            "32bit": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion.msi"
+            },
+            "arm64": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion-arm64.exe"
+            }
+        }
+    }
+}

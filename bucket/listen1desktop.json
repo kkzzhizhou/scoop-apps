@@ -13,7 +13,32 @@
             ]
         }
     },
-    "bin": "Listen1.exe",
+    "installer": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\listen1\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\listen1\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Listen1.exe",

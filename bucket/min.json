@@ -2,37 +2,52 @@
     "version": "1.31.1",
     "description": "A fast, minimal browser that protects your privacy",
     "homepage": "https://minbrowser.org/",
-    "license": "Apache-2.0",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/minbrowser/min/blob/master/LICENSE.txt"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/minbrowser/min/releases/latest/download/Min-v1.31.1-windows.zip",
-            "hash": "029586b7131178aabdd89d01408f01402683d665f074c726109d70a801fa73e4"
-        },
-        "32bit": {
-            "url": "https://github.com/minbrowser/min/releases/latest/download/Min-v1.31.1-windows-ia32.zip",
-            "hash": "396faf0b045a677ae5d1e7bfa0cc48534b4d9e645b211449fda8b19108837620"
+            "url": "https://github.com/minbrowser/min/releases/download/v1.31.1/min-1.31.1-setup.exe#/dl.7z",
+            "hash": "d5b713a9bb07187770d756997adba66ece201e077f1cbb87f643279a6fd47108",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\min-1.31.1-full.nupkg\" \"$dir\"",
+                "    Copy-Item \"$dir\\lib\\net45\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "    Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\*.ico\", \"$dir\\Update.*\", \"$dir\\lib\", \"$dir\\package\", \"$dir\\_rels\", \"$dir\\*.nuspec\", \"$dir\\*.xml\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+            ]
         }
     },
-    "extract_dir": "Min-v1.31.1",
-    "bin": "Min.exe",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\Min\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\Min\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "bin": "min.exe",
     "shortcuts": [
         [
-            "Min.exe",
+            "min.exe",
             "Min"
         ]
     ],
     "checkver": {
-        "github": "https://github.com/minbrowser/min"
+        "url": "https://api.github.com/repos/minbrowser/min/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)/min-([\\w.-]+)-setup\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/minbrowser/min/releases/latest/download/Min-v$version-windows.zip"
-            },
-            "32bit": {
-                "url": "https://github.com/minbrowser/min/releases/latest/download/Min-v$version-windows-ia32.zip"
+                "url": "https://github.com/minbrowser/min/releases/download/v$version/min-$version-setup.exe#/dl.7z",
+                "pre_install": [
+                    "Expand-7zipArchive \"$dir\\min-$version-full.nupkg\" \"$dir\"",
+                    "    Copy-Item \"$dir\\lib\\net45\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                    "    Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\*.ico\", \"$dir\\Update.*\", \"$dir\\lib\", \"$dir\\package\", \"$dir\\_rels\", \"$dir\\*.nuspec\", \"$dir\\*.xml\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+                ]
             }
-        },
-        "extract_dir": "Min-v$version"
+        }
     }
 }

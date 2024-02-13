@@ -1,23 +1,27 @@
 {
-    "version": "1.18.11",
-    "description": "balenaEtcher lets you flash OS images to SD cards & USB drives, safely and easily.",
-    "homepage": "https://www.balena.io/etcher/",
-    "license": "Apache-2.0",
-    "url": "https://github.com/balena-io/etcher/releases/download/v1.18.11/balenaEtcher-Setup-1.18.11.exe#/dl.7z",
-    "hash": "sha512:124ec711881e68d96a0fb4dc3c8ef424f54b536de7e0ae6ace615b3c0858ea6dd9f4aec448b29466a8b5ac0b934959a3ad8117cad3eb675247f19ac5d5c68be2",
-    "architecture": {
-        "64bit": {
-            "installer": {
-                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR/app-64.7z\" \"$dir\""
-            }
-        },
-        "32bit": {
-            "installer": {
-                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR/app-32.7z\" \"$dir\""
-            }
-        }
+    "version": "1.19.4",
+    "description": "Flash OS images to SD cards & USB drives, safely and easily.",
+    "homepage": "https://etcher.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/balena-io/etcher/blob/master/LICENSE"
     },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse",
+    "url": "https://github.com/balena-io/etcher/releases/download/v1.19.4/balenaEtcher-1.19.4.Setup.exe#/dl.7z",
+    "hash": "a465451390e3e0c2862bcf57a69237f3416fdaa75e35772bc1b9736fac7e7cda",
+    "pre_install": [
+        "Get-Item \"$dir\\balena_etcher*.nupkg\" | Rename-Item -NewName 'balenaetcher.nupkg'",
+        "Expand-7zipArchive \"$dir\\balenaetcher.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+        "Remove-Item \"$dir\\lib\", \"$dir\\background.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\setupIcon.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\balena-etcher\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\balena-etcher\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
     "shortcuts": [
         [
             "balenaEtcher.exe",
@@ -25,13 +29,11 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/balena-io/etcher"
+        "url": "https://api.github.com/repos/balena-io/etcher/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "(?<file>balenaEtcher(?:-Setup)?-([\\d.]+)(?:.Setup)?\\.exe)"
     },
     "autoupdate": {
-        "url": "https://github.com/balena-io/etcher/releases/download/v$version/balenaEtcher-Setup-$version.exe#/dl.7z",
-        "hash": {
-            "url": "$baseurl/latest.yml",
-            "regex": "sha512: $base64"
-        }
+        "url": "https://github.com/balena-io/etcher/releases/download/v$version/$matchFile#/dl.7z"
     }
 }

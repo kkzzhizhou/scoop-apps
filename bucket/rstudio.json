@@ -1,51 +1,42 @@
 {
     "version": "2023.12.1-402",
-    "description": "An IDE for R with console, syntax-highlighting, editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
-    "homepage": "https://posit.co/products/open-source/rstudio/",
+    "homepage": "https://posit.co/download/rstudio-desktop/",
+    "description": "An IDE for R, which includes a console, syntax-highlighting editor that supports direct code execution, as well as tools for plotting, history, debugging and workspace management.",
     "license": "AGPL-3.0-only",
     "notes": "For 32bit, please install 'versions/rstudio11",
     "depends": "r",
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/rstudio-desktop/electron/windows/RStudio-2023.12.1-402.exe#/dl.7z",
-            "hash": "d3c03c42a42c9b5cd4f3d72a0cfc0859f0099b8199af842da762b0584ab4bea0",
-            "post_install": [
-                "Remove-Item \"$dir\\`$*\" -Recurse",
-                "if (!(Test-Path \"$env:Appdata\\RStudio\")) {",
-                "    New-Item \"$env:Appdata\\RStudio\" -ItemType Directory -Force | Out-Null",
-                "}",
-                "$conf = \"$env:Appdata\\RStudio\\desktop.ini\"",
-                "$rpath = \"$(appdir r $global)\\current\\bin\\x64\".Replace('\\', '/')",
-                "if (!(Test-Path $conf)) {",
-                "    @(",
-                "        '[General]'",
-                "        \"RBinDir=$rpath\"",
-                "    ) | Add-Content -Path $conf -Encoding UTF8 -Force",
-                "}"
-            ]
+            "url": "https://download1.rstudio.org/electron/windows/RStudio-2023.12.1-402.zip",
+            "hash": "19f9ab65b7f4d9c2c8d75796459327033cdf029b31f136ad6f6cdb93617b5f99"
         }
     },
-    "bin": "rstudio.exe",
+    "bin": [
+        [
+            "bin\\rstudio.exe",
+            "rstudio-preview"
+        ]
+    ],
     "shortcuts": [
         [
-            "rstudio.exe",
-            "RStudio"
+            "bin\\rstudio.exe",
+            "RStudio Preview"
         ]
     ],
     "checkver": {
-        "url": "https://www.rstudio.com/wp-content/downloads.json",
-        "jsonpath": "$.rstudio.open_source.stable.desktop.installer.windows.basename",
-        "regex": "RStudio-([\\d.-]+).exe"
+        "url": "https://posit.co/download/rstudio-desktop/",
+        "regex": "RStudio-(?<date>[\\d.]+)-(?<build>\\d+)",
+        "replace": "${date}-${build}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/rstudio-desktop/electron/windows/RStudio-$version.exe#/dl.7z",
-                "hash": {
-                    "url": "https://www.rstudio.com/wp-content/downloads.json",
-                    "jsonpath": "$.rstudio.open_source.stable.desktop.installer.windows.sha256"
-                }
+                "url": "https://download1.rstudio.org/electron/windows/RStudio-$matchDate-$matchBuild.zip"
             }
+        },
+        "hash": {
+            "url": "https://posit.co/download/rstudio-desktop/",
+            "find": "(?s)$url.*?data-content=\"$sha256\""
         }
     }
 }
