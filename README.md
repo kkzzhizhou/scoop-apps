@@ -79,13 +79,13 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - hermanjustnu/scoop-emulators
 - cderv/r-bucket
 - couleur-tweak-tips/utils
-- dodorz/scoop
 - borger/scoop-emulators
+- dodorz/scoop
 - Qv2ray/mochi
+- niheaven/scoop-sysinternals
 - ViCrack/scoop-bucket
 - TheRandomLabs/Scoop-Python
 - akirco/aki-apps
-- niheaven/scoop-sysinternals
 - charmbracelet/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - DoveBoy/Apps
