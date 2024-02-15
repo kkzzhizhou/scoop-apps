@@ -1,47 +1,36 @@
 {
-    "version": "0.3.0",
-    "description": "A Scoop tab completion module for PowerShell",
     "homepage": "https://github.com/Moeologist/scoop-completion",
+    "description": "Scoop tab completion, work with powershell",
     "license": "MIT",
-    "notes": [
-        "Run following command to import scoop-completion automatically in Powershell:",
-        "$dir\\add-profile-content.ps1"
+    "version": "0.3.0",
+    "url": [
+        "https://raw.githubusercontent.com/Moeologist/scoop-completion/v0.3.0/src/scoop-completion.psm1",
+        "https://raw.githubusercontent.com/Moeologist/scoop-completion/v0.3.0/src/scoop-completion.psd1"
     ],
-    "url": "https://github.com/Moeologist/scoop-completion/archive/v0.3.0.zip",
-    "hash": "ee6e59137ebfc04f2633756ba0b9f0868e70c1ecb3abfd54c770c9d812deca94",
-    "extract_dir": "scoop-completion-0.3.0\\src",
+    "hash": [
+        "c0e8455b88bb30ddc93f50c5a9ad2add97abb3de58fb44a5138e0327047681f4",
+        "a1476f858aa5c6ea511f83a1c9a923f22c5b5672b844793c7363ee7cff719edf"
+    ],
     "psmodule": {
         "name": "scoop-completion"
     },
     "post_install": [
-        "Get-ChildItem -Path \"$dir\" -Filter \"scoop-completion-$version\" -Directory | Remove-Item -Force -Recurse",
-        "Import-Module scoop-completion",
-        "$BucketDir = Find-BucketDirectory -Root -Name $bucket",
-        "$UtilsPath = $BucketDir | Join-Path -ChildPath \"scripts\\ModifyPSProfile.psm1\"",
-        "if (Test-Path $UtilsPath) {",
-        "    Unblock-File $UtilsPath",
-        "    Import-Module $UtilsPath",
-        "    New-ProfileModifier -Type ImportModule -Name scoop-completion -BucketDir $BucketDir",
-        "    New-ProfileModifier -Type RemoveModule -Name scoop-completion -BucketDir $BucketDir",
-        "    Remove-Module ModifyPSProfile -ErrorAction SilentlyContinue",
-        "} else {",
-        "    Write-Host 'Missing files, please update scoop buckets and reinstall this app.' -ForegroundColor Red",
-        "}"
+        "scoop config alias @{}",
+        "Import-Module scoop-completion"
     ],
-    "pre_uninstall": [
-        "Remove-Module scoop-completion -ErrorAction SilentlyContinue",
-        "$UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\ModifyPSProfile.psm1\"",
-        "if (($cmd -eq 'uninstall') -and (Test-Path \"$dir\\remove-profile-content.ps1\") -and (Test-Path $UtilsPath)) {",
-        "    Unblock-File $UtilsPath",
-        "    & \"$dir\\remove-profile-content.ps1\"",
-        "}"
-    ],
+    "post_install": "Import-Module $env:SCOOP\\modules\\scoop-completion",
     "checkver": {
-        "url": "https://api.github.com/repos/Moeologist/scoop-completion/tags",
-        "regex": "tags/v([\\d.]+)"
+        "url": "https://github.com/Moeologist/scoop-completion/tags",
+        "regex": "version ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/Moeologist/scoop-completion/archive/v$version.zip",
-        "extract_dir": "scoop-completion-$version\\src"
-    }
+        "url": [
+            "https://raw.githubusercontent.com/Moeologist/scoop-completion/v$version/src/scoop-completion.psm1",
+            "https://raw.githubusercontent.com/Moeologist/scoop-completion/v$version/src/scoop-completion.psd1"
+        ]
+    },
+    "notes": [
+        "To enable completion autoload, you need to add scoop-completion module to PowerShell $PROFILE by running:",
+        "Add-Content -Path $Profile -Value \"`nImport-Module $env:SCOOP\\modules\\scoop-completion\""
+    ]
 }
