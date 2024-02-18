@@ -1,0 +1,62 @@
+{
+    "version": "9.5.0",
+    "description": "Disk partition tool.",
+    "homepage": "https://www.disk-partition.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.disk-partition.com/eula/pa-standard.pdf"
+    },
+    "url": "http://www2.aomeisoftware.com/download/pa/PAssist_Std.exe",
+    "hash": "b3b4709e0e9cb7dad78fa10f24c720449dd0a727f221f685a17b495a518cde64",
+    "pre_install": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to install $app.\"",
+        "    exit 1",
+        "}",
+        "",
+        "Start-Job {",
+        "    do {",
+        "        Start-Sleep -Milliseconds 250",
+        "        $partassist_process = Get-Process | Where-Object { $_.name -eq 'PartAssist' }",
+        "    } while ($partassist_process -eq $null)",
+        "",
+        "    $partassist_process | ForEach-Object { Stop-Process -Id $_.Id }",
+        "} | Out-Null"
+    ],
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-",
+            "/DIR=$dir"
+        ]
+    },
+    "post_install": [
+        "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\AOMEI Partition Assistant\"",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\AOMEI Partition Assistant *.lnk\""
+    ],
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/SUPPRESSMSGBOXES",
+            "/NORESTART",
+            "/SP-"
+        ]
+    },
+    "bin": "PartAssist.exe",
+    "shortcuts": [
+        [
+            "PartAssist.exe",
+            "AOMEI Partition Assistant Standard"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.disk-partition.com/download-home.html",
+        "regex": " \\| v([\\d+.]+)<"
+    },
+    "autoupdate": {
+        "url": "http://www2.aomeisoftware.com/download/pa/PAssist_Std.exe"
+    }
+}

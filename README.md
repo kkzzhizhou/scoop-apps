@@ -82,10 +82,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - borger/scoop-emulators
 - dodorz/scoop
 - Qv2ray/mochi
+- TheRandomLabs/Scoop-Bucket
+- akirco/aki-apps
 - niheaven/scoop-sysinternals
 - ViCrack/scoop-bucket
 - TheRandomLabs/Scoop-Python
-- akirco/aki-apps
 - charmbracelet/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - DoveBoy/Apps
