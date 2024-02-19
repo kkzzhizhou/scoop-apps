@@ -1,11 +1,5 @@
 #!/bin/bash
-###
- # @Author: zzz
- # @Date: 2021-03-03 05:13:39
- # LastEditTime: 2022-07-09 09:56:00
- # @Description: autoupdate bucket:scoop-apps
- # @FilePath: /data/scoop-apps/autoupdate.sh
-###
+# @Description: autoupdate bucket:scoop-apps
 
 # get bucket from rasa/scoop-directory
 gen_bucket_config(){
