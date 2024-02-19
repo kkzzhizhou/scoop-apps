@@ -1,0 +1,58 @@
+{
+    "version": "6.6.1-1",
+    "description": "A command-line utility that pipes video streams from various services into a video player.",
+    "homepage": "https://streamlink.github.io/",
+    "license": "BSD-2-Clause",
+    "notes": "You will find your config file here: '$dir\\config'. To customise it, read the docs here: https://streamlink.github.io/cli/config.html#syntax",
+    "suggest": {
+        "ffmpeg": "ffmpeg",
+        "VLC Player": "extras/vlc"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/streamlink/windows-builds/releases/download/6.6.1-1/streamlink-6.6.1-1-py312-x86_64.zip",
+            "hash": "85b0f4ab6ba6f59d2a71dab0d9981214be703e102b4b7949d768f38030010a7f",
+            "extract_dir": "streamlink-6.6.1-1-py312-x86_64"
+        },
+        "32bit": {
+            "url": "https://github.com/streamlink/windows-builds/releases/download/6.6.1-1/streamlink-6.6.1-1-py312-x86.zip",
+            "hash": "5787cf25366830d46b27d598d6f0291f6f7bdab49357c7a9bf0b086cb4e79f75",
+            "extract_dir": "streamlink-6.6.1-1-py312-x86"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config\")) {",
+        "    if (Test-Path \"$env:APPDATA\\streamlink\\config\") {",
+        "        info 'Copying existing ''config'' from ''%APPDATA%\\streamlink\\config'''",
+        "        Copy-Item \"$env:APPDATA\\streamlink\\config\" \"$dir\\config\"",
+        "    } else {",
+        "        New-Item \"$dir\\config\" | Out-Null",
+        "    }",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin\\streamlink.exe",
+            "streamlink",
+            "--ffmpeg-ffmpeg \"$dir\\ffmpeg\\ffmpeg.exe\" --config \"$dir\\config\""
+        ],
+        "bin\\streamlinkw.exe"
+    ],
+    "persist": "config",
+    "checkver": {
+        "url": "https://github.com/streamlink/windows-builds/releases/",
+        "regex": "tree/([\\d.\\-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/streamlink/windows-builds/releases/download/$version/streamlink-$version-py312-x86_64.zip",
+                "extract_dir": "streamlink-$version-py312-x86_64"
+            },
+            "32bit": {
+                "url": "https://github.com/streamlink/windows-builds/releases/download/$version/streamlink-$version-py312-x86.zip",
+                "extract_dir": "streamlink-$version-py312-x86"
+            }
+        }
+    }
+}
