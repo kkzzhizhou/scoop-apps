@@ -96,9 +96,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - AStupidBear/scoop-bear
 - hu3rror/scoop-muggle
 - aoisummer/scoop-bucket
+- brian6932/dank-scoop
 - KnotUntied/scoop-fonts
 - Darkatse/Scoop-Darkatse
-- brian6932/dank-scoop
 - beerpiss/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Small-Ku/turbo-bucket
