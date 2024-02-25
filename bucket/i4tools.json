@@ -1,10 +1,18 @@
 {
-    "version": "7.98.80",
+    "version": "8.19.022",
     "description": "简单好用的多功能苹果设备管理助手。轻松备份、恢复、删除、储存、各种设备资料，一键传输您的视频、照片、音乐、通讯录、短信等各种文件，支持管理应用、照片、音乐、铃声、视频以及其他多媒体文件，为iOS用户提供智能化一键刷机、验机功能。",
     "homepage": "https://www.i4.cn/pro_pc.html",
     "license": "Freeware",
-    "url": "https://d-app6.i4.cn/i4tools/V7/v7.98/80/i4Tools_v7.98.80_Setup.exe#/dl.7z",
-    "hash": "839e65aa0f5ce0f7bd5c659b1bab1ad486379a535469f47c3eb8f7a9fe770137",
+    "architecture": {
+        "64bit": {
+            "url": "https://d-updater.i4.cn/i4tools8/download/2023/i4Tools8_v8.19.022_Setup_x64.exe#/dl.7z",
+            "hash": "993c0301ee272c69890c10748e8d6b326705b503933a59a46e1d3344de5cb659"
+        },
+        "32bit": {
+            "url": "https://d-updater.i4.cn/i4tools8/download/2023/i4Tools8_v8.19.022_Setup_x86.exe#/dl.7z",
+            "hash": "28a2b4054cb24583c666a5020ca7ae012eeacce248d50bec5964b5940ba89760"
+        }
+    },
     "bin": "i4Tools.exe",
     "shortcuts": [
         [
@@ -14,13 +22,14 @@
     ],
     "persist": [
         "Download",
-        "cache"
+        "cache",
+        "extrastools"
     ],
     "pre_install": [
         "if (Test-Path \"$persist_dir\\data.db\") { Move-Item \"$persist_dir\\data.db\" \"$dir\" -Force }",
         "if (Test-Path \"$persist_dir\\setting.cfg\") { Move-Item \"$persist_dir\\setting.cfg\" \"$dir\" -Force }"
     ],
-    "post_install": "Remove-Item \"$dir\\Uninstall*\" -Force -Recurse",
+    "post_install": "Remove-Item \"$dir\\Uninstall*\", \"$dir\\updater*\" -Force -Recurse",
     "uninstaller": {
         "script": [
             "if(Test-Path \"$dir\\data.db\") { Move-Item \"$dir\\data.db\" \"$persist_dir\" -Force }",
@@ -29,12 +38,19 @@
     },
     "checkver": {
         "script": [
-            "try { $detail = Invoke-WebRequest 'https://url.i4.cn/faIfqyaa' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "try { $detail = Invoke-WebRequest 'https://url.i4.cn/2MvQruaa' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
             "return $detail.Headers.Location"
         ],
-        "regex": "https://(?<host>[^/]+)/.*/i4Tools_v([\\d.]+)"
+        "regex": "https://(?<partialurl>.*)/i4Tools8_v([\\d.]+?)_Setup_x64.exe"
     },
     "autoupdate": {
-        "url": "https://$matchHost/i4tools/V$majorVersion/v$majorVersion.$minorVersion/$patchVersion/i4Tools_v$version_Setup.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://$matchPartialurl/i4Tools8_v$version_Setup_x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://$matchPartialurl/i4Tools8_v$version_Setup_x86.exe#/dl.7z"
+            }
+        }
     }
 }
