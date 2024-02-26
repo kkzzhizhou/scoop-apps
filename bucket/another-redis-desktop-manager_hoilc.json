@@ -1,18 +1,16 @@
 {
-    "homepage": "https://github.com/qishibo/AnotherRedisDesktopManager",
-    "description": "A faster, better and more stable redis desktop manager, compatible with Linux, windows, mac.",
     "version": "1.6.3",
+    "description": "Another Redis Desktop Manager is a faster and stable redis desktop manager [GUI client]， which won't crash when loading massive keys.",
+    "homepage": "https://github.com/qishibo/AnotherRedisDesktopManager",
     "license": "MIT",
     "architecture": {
         "64bit": {
             "url": "https://github.com/qishibo/AnotherRedisDesktopManager/releases/download/v1.6.3/Another-Redis-Desktop-Manager.1.6.3.exe#/dl.7z",
             "hash": "sha512:5e4a4083f0ecb284165a5ba4010837dbc7a8a042d2c54eefc34d77ecd4b8159bb1cef3f23fa712e8d97e6fc6748bdc21fb9285f61ec339e567d93db0878e1130",
-            "installer": {
-                "script": [
-                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
-                ]
-            }
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\", \"$dir\\resources\\app-update.yml\"  -Force -Recurse"
+            ]
         }
     },
     "shortcuts": [
@@ -21,15 +19,17 @@
             "Another Redis Desktop Manager"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://github.com/qishibo/AnotherRedisDesktopManager/releases",
+        "regex": "/tree/v([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/qishibo/AnotherRedisDesktopManager/releases/download/v$version/Another-Redis-Desktop-Manager.$version.exe#/dl.7z",
                 "hash": {
-                    "url": "https://github.com/qishibo/AnotherRedisDesktopManager/releases/download/v$version/latest.yml",
-                    "mode": "extract",
-                    "regex": "(?sm)$version.exe.*?sha512: $base64"
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s*$base64"
                 }
             }
         }
