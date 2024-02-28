@@ -1,0 +1,65 @@
+{
+    "version": "3.4.2",
+    "description": "Audacity. An easy-to-use, multi-track audio editor and recorder",
+    "homepage": "https://www.audacityteam.org",
+    "license": "GPL-2.0-or-later",
+    "changelog": "https://wiki.audacityteam.org/wiki/Audacity_Versions",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/audacity/audacity/releases/download/Audacity-3.4.2/audacity-win-3.4.2-64bit.exe#/setup.exe",
+            "hash": "d7bd5ae775db9e42da6058da4a65a8f898a46ce467d9f21585084566213c36bf"
+        },
+        "32bit": {
+            "url": "https://github.com/audacity/audacity/releases/download/Audacity-3.4.2/audacity-win-3.4.2-32bit.exe#/setup.exe",
+            "hash": "7f7dd6f96643a1a826d1c91a5217721f97474f171a6335c47d4c50a76c7aceaa"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Audacity\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Audacity*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Audacity\\Audacity.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /verysilent /norestart | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Audacity\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://github.com/audacity/audacity/releases",
+        "regex": "\">Audacity ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/audacity/audacity/releases/download/Audacity-$version/audacity-win-$version-64bit.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/audacity/audacity/releases/download/Audacity-$version/audacity-win-$version-32bit.exe#/setup.exe"
+            }
+        }
+    }
+}

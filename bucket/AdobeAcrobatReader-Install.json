@@ -1,0 +1,68 @@
+{
+    "##": "Patch Downloads https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html#installers",
+    "version": "23.008.20555",
+    "description": "Adobe Acrobat Reader DC. Not only view, but print, sign, and annotate PDFs with the free Adobe Acrobat Reader DC.",
+    "homepage": "https://acrobat.adobe.com/us/en/acrobat/pdf-reader.html",
+    "license": {
+        "identifier": "Copyright (c) Adobe",
+        "url": "https://www.adobe.com/content/dam/cc/en/legal/licenses-terms/pdf/Reader-EULA-en_US-20181207.pdf"
+    },
+    "changelog": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html#AcrobatDCandAcrobatReaderDCContinuousTrackreleasenotes",
+    "notes": "This manifest only installs and updates Adobe Acrobat Reader DC",
+    "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/2300820555/AcroRdrDCUpd2300820555_MUI.msp#/setup.msp_",
+    "hash": "dc552a2befc923cf1eb629c8c397c739cc82c8d7cfd5315cfd60610e131b7e4f",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"AcroRd32\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Adobe Acrobat Reader DC*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Adobe\\Acrobat Reader DC\\Reader\\AcroRd32.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   $ProgramFilesX86Path = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $true) -and ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "      Invoke-ExternalCommand msiexec -ArgumentList @('/p', \"$dir\\setup.msp_\", '/norestart', '/quiet') -RunAs | Out-Null",
+            "   }",
+            "   else",
+            "   {",
+            "       $url = \"https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/1500720033/AcroRdrDC1500720033_MUI.exe\"",
+            "       $destination = \"$dir\\setup.exe\"",
+            "      (New-Object System.Net.WebClient).DownloadFile($url, $destination)",
+            "       &\"$dir\\setup.exe\" /sAll /msi /norestart /quiet PATCH=\"$dir\\setup.msp_\" ALLUSERS=1 EULA_ACCEPT=YES DISABLEDESKTOPSHORTCUT=1 | Out-Null",
+            "       if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.msp_\" -Force }",
+            "   }",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msp_\") { Remove-Item \"$dir\\setup.msp_\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Acrobat Reader DC.lnk\") {Remove-Item \"$CommonDesktopPath\\Acrobat Reader DC.lnk\" -Force}",
+        "if (Test-Path \"$CommonDesktopPath\\Acrobat Reader.lnk\") {Remove-Item \"$CommonDesktopPath\\Acrobat Reader.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html",
+        "regex": "<link rel=\"next\" title=\"([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://ardownload2.adobe.com/pub/adobe/reader/win/AcrobatDC/$cleanVersion/AcroRdrDCUpd$cleanVersion_MUI.msp#/setup.msp_"
+    }
+}

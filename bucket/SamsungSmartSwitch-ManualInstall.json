@@ -1,0 +1,51 @@
+{
+    "version": "4.3.23043.3",
+    "description": "Samsung Smart Switch. A sure and secure way to move your data to Galaxy",
+    "homepage": "https://www.samsung.com/au/apps/smart-switch/#downloadforPCorMAC",
+    "license": "Freeware",
+    "changelog": "",
+    "url": "https://www.samsung.com/global/download/smartswitchwin#/setup.exe",
+    "hash": "72524f71d254cf33448fecbe6e0a90b36930bc85775e13751da9e79c5b64aa6d",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"SmartSwitchPC\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Smart Switch*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Samsung\\Smart Switch PC\\SmartSwitchPC.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" | Out-Null",
+            "   Start-Sleep -Seconds 60",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Smart Switch\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "http://wingetgui.com/apps/Samsung-SmartSwitch",
+        "regex": "Release version: ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.samsung.com/global/download/smartswitchwin#/setup.exe"
+    }
+}

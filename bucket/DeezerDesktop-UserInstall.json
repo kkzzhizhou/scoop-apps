@@ -1,0 +1,52 @@
+{
+    "version": "6.0.10",
+    "description": "Deezer Desktop. Enjoy all of your music and usual features, plus HotKeys, Offline Mode and an improved look and feel.",
+    "homepage": "https://www.deezer.com/explore/en-us/download/?utm_source=web_link",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.deezer.com/legal/cgu"
+    },
+    "changelog": "",
+    "url": "https://www.deezer.com/desktop/download/artifact/win32/x86/6.0.10#/setup.exe",
+    "hash": "a1b768800a8c4b7e6a2d3909bb535530c93071101c5cf0474c70d6e78c389aa0",
+    "pre_install": [
+        "$processname = \"Deezer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Deezer*\"",
+            "$processname = \"Deezer.exe\"",
+            "$AppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$filepath = \"$AppData\\Programs\\deezer-desktop\\Deezer.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /quiet | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Deezer\"",
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\$programname.lnk\") {Remove-Item \"$DesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "script": "return \"6.0.10\""
+    },
+    "autoupdate": {
+        "url": "https://www.deezer.com/desktop/download/artifact/win32/x86/$version#/setup.exe"
+    }
+}

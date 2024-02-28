@@ -1,0 +1,60 @@
+{
+    "version": "2.24.1",
+    "description": "BrickLink Studio. Studio is a desktop application that allows users to build LEGO models using virtual parts.",
+    "homepage": "https://www.bricklink.com/v2/build/studio.page",
+    "license": "Unknown",
+    "changelog": "https://www.bricklink.com/v2/build/studio.page",
+    "architecture": {
+        "64bit": {
+            "url": "https://s3.amazonaws.com/blstudio/Studio2.0/Studio+2.0.exe#/setup.exe",
+            "hash": "15e3033f9de579c326b4f4c653a2f1c0a1586b3d4a8eff8512f5e2c4c3564288"
+        },
+        "32bit": {
+            "url": "https://s3.amazonaws.com/blstudio/Studio2.0/Studio+2.0_32.exe#/setup.exe",
+            "hash": "562c6a27cb81ca89b68b34a4aa1df731b00b3e7164c45cce132e6c2e91375392"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Studio\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Studio 2.0*\"",
+            "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "if(!(Select-String -Path \"$ProgramFilesPath\\$programname\\version.txt\" -Pattern \"$version\" -SimpleMatch -Quiet -ErrorAction SilentlyContinue))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- | Out-Null",
+            "   if(!(Select-String -Path \"$ProgramFilesPath\\$programname\\version.txt\" -Pattern \"$version\" -SimpleMatch -Quiet -ErrorAction SilentlyContinue))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.bricklink.com/v2/build/studio.page",
+        "regex": "\"strVersion\":\"([\\d.]+)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://s3.amazonaws.com/blstudio/Studio$majorVersion.0/Studio+$majorVersion.0.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://s3.amazonaws.com/blstudio/Studio$majorVersion.0/Studio+$majorVersion.0_32.exe#/setup.exe"
+            }
+        }
+    }
+}

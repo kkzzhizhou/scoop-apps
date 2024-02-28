@@ -1,0 +1,39 @@
+{
+    "version": "6.01.60731.0",
+    "description": "Royal TS. Comprehensive Remote Management Solution",
+    "homepage": "https://www.royalapps.com/ts/win",
+    "license": "Shareware",
+    "changelog": "https://support.royalapps.com/support/solutions/articles/17000113667-royal-ts-v6-release-notes",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.royalapps.com/RoyalTS/RoyalTS_6.01.60731.0.zip",
+            "hash": "60c928d7475d6f1d4555489d487e908bbaa385b9796dffca0072cc8dd772e841"
+        }
+    },
+    "post_install": [
+        "$appsetting = Get-Content -Raw \"$dir\\appsettings-sample.json\" | ConvertFrom-Json",
+        "$appsetting.RoyalTS.CreateApplicationShortcut = $false",
+        "$appsetting.RoyalTS.ConfigurationPath = \"$dir\\config\"",
+        "ConvertTo-json $appsetting | Set-Content -Encoding ASCII -Path \"$dir\\appsettings.json\"",
+        "if(Test-Path \"$env:APPDATA\\code4ward\") { warn \"Found config in $env:APPDATA\\code4ward with higher priority. Royal TS would be NOT portable.\" }"
+    ],
+    "persist": "config",
+    "bin": "rtscli.exe",
+    "shortcuts": [
+        [
+            "RoyalTS.exe",
+            "Royal TS"
+        ]
+    ],
+    "checkver": {
+        "url": "https://support.royalapps.com/support/solutions/articles/17000128633",
+        "regex": "/RoyalTS/royalts_([\\d.]+).0_x64.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.royalapps.com/RoyalTS/RoyalTS_$version_x64.zip"
+            }
+        }
+    }
+}

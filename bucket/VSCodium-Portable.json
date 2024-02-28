@@ -1,0 +1,57 @@
+{
+    "version": "1.86.2.24057",
+    "description": "Binary releases of VS Code without MS branding/telemetry/licensing (Portable Edition).",
+    "homepage": "https://github.com/VSCodium/vscodium",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/VSCodium/vscodium/releases/download/1.86.2.24057/VSCodium-win32-x64-1.86.2.24057.zip",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/install-context.reg",
+                "https://raw.githubusercontent.com/ScoopInstaller/Extras/master/scripts/vscode/uninstall-context.reg"
+            ],
+            "hash": [
+                "a02d703eb4ff1ee992c6a2baa5521b20f71f716c2e6e97cea59cb054314e9da5",
+                "8ef94c82319b69754bdae0099af266d184d179a37af8b8beb11334c6ab639752",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        }
+    },
+    "notes": "Add VSCodium Portable as a context menu option by running: \"$dir\\vscodium-install-context.reg\"",
+    "bin": "bin\\codium.cmd",
+    "shortcuts": [
+        [
+            "VSCodium.exe",
+            "VSCodium"
+        ]
+    ],
+    "post_install": [
+        "if (Test-Path \"$dir\\vscodium-install-context.reg\") {",
+        "  $codepath = \"$dir\\VSCodium.exe\".Replace('\\', '\\\\')",
+        "  $content = Get-Content \"$dir\\vscodium-install-context.reg\"",
+        "  $content = $content.Replace('$code', $codepath)",
+        "  $content = $content.Replace('Code', 'VSCodium')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\vscodium-install-context.reg\"",
+        "}",
+        "if (Test-Path \"$dir\\vscodium-uninstall-context.reg\") {",
+        "  $content = Get-Content \"$dir\\vscodium-uninstall-context.reg\"",
+        "  $content = $content.Replace('Code', 'VSCodium')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\vscodium-uninstall-context.reg\"",
+        "}"
+    ],
+    "persist": "data",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/VSCodium/vscodium/releases/download/$version/VSCodium-win32-x64-$version.zip"
+            }
+        }
+    }
+}

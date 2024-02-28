@@ -1,0 +1,42 @@
+{
+    "version": "4.2.5.294",
+    "description": "IPVanish. provides a secure environment for everyday internet activity",
+    "homepage": "https://www.ipvanish.com",
+    "license": "Proprietary",
+    "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe",
+    "hash": "431c75c60163ba27a69f144b28e9b8964f05e703826a4c75e856c9cb4dcc4c1c",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"IPVanish*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\IPVanish VPN\\IPVanish.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /quiet | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"IPVanish\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe'",
+            "$dl = cache_path 'IPVanish' 'unknown' $dl_url",
+            "do_dl $dl_url $dl",
+            "$version = (Get-Item $dl).VersionInfo.FileVersion",
+            "return $version"
+        ]
+    },
+    "autoupdate": {
+        "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe"
+    }
+}

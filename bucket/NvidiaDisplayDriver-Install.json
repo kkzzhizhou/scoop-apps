@@ -1,0 +1,50 @@
+{
+    "version": "551.61",
+    "description": "nVidia Display Driver. Display driver for Nvidia graphics cards",
+    "homepage": "https://www.nvidia.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.nvidia.com/en-us/about-nvidia/eula-agreement/"
+    },
+    "changelog": "https://www.nvidia.com/en-au/geforce/tags/?tag=drivers",
+    "suggest": {
+        "GeForce Experience": "gaming/nvidia-geforce-experience"
+    },
+    "url": "https://us.download.nvidia.com/Windows/551.61/551.61-desktop-win10-win11-64bit-international-dch-whql.exe#/dl.7z",
+    "hash": "3b04341d0a65e89f13e0d209377f80fe06ab06bc5a55c153cd8412e384eb88ad",
+    "extract_to": "_FullPackage",
+    "pre_install": [
+        "$srcdir = \"$dir\\_FullPackage\"",
+        "Move-Item ($srcdir + \"\\Display.Driver\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\Display.Optimus\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NVI2\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\PhysX\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\EULA.txt\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\ListDevices.txt\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\setup.cfg\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\setup.exe\") -Destination \"$dir\" | Out-Null",
+        "New-Item \"$dir\\GFExperience\" -Type Directory | Out-Null",
+        "Move-Item ($srcdir + \"\\GFExperience\\PrivacyPolicy\") -Destination \"$dir\\GFExperience\" | Out-Null",
+        "Move-Item ($srcdir + \"\\GFExperience\\EULA.html\") -Destination \"$dir\\GFExperience\" | Out-Null",
+        "Move-Item ($srcdir + \"\\GFExperience\\FunctionalConsent_*\") -Destination \"$dir\\GFExperience\" | Out-Null",
+        "Remove-Item $srcdir -Recurse -Force | Out-Null"
+    ],
+    "post_install": "Remove-Item \"$dir\\*\" -Recurse -Force | Out-Null",
+    "installer": {
+        "file": "setup.exe",
+        "args": [
+            "/s",
+            "/noreboot"
+        ]
+    },
+    "uninstaller": {
+        "script": "Write-Host \"To remove this driver, please use Display Driver Uninstaller: 'scoop install ddu'\" -ForegroundColor Magenta"
+    },
+    "checkver": {
+        "url": "https://community.chocolatey.org/packages/nvidia-display-driver",
+        "regex": "NVidia Display Driver ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://us.download.nvidia.com/Windows/$version/$version-desktop-win10-win11-64bit-international-dch-whql.exe#/dl.7z"
+    }
+}

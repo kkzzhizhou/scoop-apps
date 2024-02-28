@@ -1,0 +1,52 @@
+{
+    "version": "4.2.5.294",
+    "description": "IPVanish. provides a secure environment for everyday internet activity",
+    "homepage": "https://www.ipvanish.com",
+    "license": "Proprietary",
+    "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe",
+    "hash": "431c75c60163ba27a69f144b28e9b8964f05e703826a4c75e856c9cb4dcc4c1c",
+    "depends": "dark",
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": [
+                    "Invoke-ExternalCommand dark -ArgumentList @(\"$dir\\setup.exe\", \"x\", \"$dir\") | Out-Null",
+                    "lessmsi x \"$dir\\AttachedContainer\\ipvanish64.msi\" \"$dir\\\"",
+                    "Remove-Item \"$dir\\AttachedContainer\\\" -Force -Recurse -ErrorAction SilentlyContinue",
+                    "Remove-Item \"$dir\\UX\\\" -Force -Recurse -ErrorAction SilentlyContinue",
+                    "Remove-Item \"$dir\\setup.exe\""
+                ]
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": [
+                    "Invoke-ExternalCommand dark -ArgumentList @(\"$dir\\setup.exe\", \"x\", \"$dir\") | Out-Null",
+                    "lessmsi x \"$dir\\AttachedContainer\\ipvanish.msi\" \"$dir\\\"",
+                    "Remove-Item \"$dir\\AttachedContainer\\\" -Force -Recurse -ErrorAction SilentlyContinue",
+                    "Remove-Item \"$dir\\UX\\\" -Force -Recurse -ErrorAction SilentlyContinue",
+                    "Remove-Item \"$dir\\setup.exe\""
+                ]
+            }
+        }
+    },
+    "bin": "SourceDir\\INSTALLDIR\\IPVanish.exe",
+    "shortcuts": [
+        [
+            "SourceDir\\INSTALLDIR\\IPVanish.exe",
+            "IPVanish"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe'",
+            "$dl = cache_path 'IPVanish' 'unknown' $dl_url",
+            "do_dl $dl_url $dl",
+            "$version = (Get-Item $dl).VersionInfo.FileVersion",
+            "return $version"
+        ]
+    },
+    "autoupdate": {
+        "url": "https://www.ipvanish.com/software/setup-prod-v2/ipvanish-setup.exe#/setup.exe"
+    }
+}

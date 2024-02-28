@@ -1,0 +1,64 @@
+{
+    "version": "4.8.3.0",
+    "description": "Computer monitoring and classroom management software.",
+    "homepage": "https://veyon.io/",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.8.3/veyon-4.8.3.0-win64-setup.exe#/setup.exe",
+            "hash": "4a8e0696447d85600fde1c034e56db1d4b49e49d49e10c1e90c3aa7ecc8e6351"
+        },
+        "32bit": {
+            "url": "https://github.com/veyon/veyon/releases/download/v4.8.3/veyon-4.8.3.0-win32-setup.exe#/setup.exe",
+            "hash": "f9f839bd3b733266bb8ee477a0f00122a0d992046e07567edc7bda116bae09ce"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"veyon-master\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Veyon*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Veyon\\veyon-master.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+            "if (Test-Path -Path \"$CommonDesktopPath\\Veyon Master.lnk\")",
+            "{",
+            "   Remove-Item \"$CommonDesktopPath\\Veyon Master.lnk\" -Force",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://veyon.io/download/",
+        "regex": "veyon-([\\d.]+)-win64-setup.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win64-setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/veyon/veyon/releases/download/v$majorVersion.$minorVersion.$patchVersion/veyon-$version-win32-setup.exe#/setup.exe"
+            }
+        }
+    }
+}

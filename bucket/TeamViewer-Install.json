@@ -1,0 +1,52 @@
+{
+    "version": "15.51.5",
+    "description": "TeamViewer. Software for remote control, desktop sharing, online meetings, web conferencing and file transfer between computers.",
+    "homepage": "https://www.teamviewer.com",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.teamviewer.com/en/eula/"
+    },
+    "changelog": "https://community.teamviewer.com/English/categories/change-logs-en",
+    "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe",
+    "hash": "ef8824da91a919aa4e610ec73d07cb8f78b0934ef49d7073b86d0a98120b6838",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"teamviewer*\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Teamviewer*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\TeamViewer\\TeamViewer.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S /norestart | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\TeamViewer.lnk\") {Remove-Item \"$CommonDesktopPath\\TeamViewer.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.teamviewer.com/en/download/windows/",
+        "regex": "Current version:.*?([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://dl.teamviewer.com/download/TeamViewer_Setup.exe#/setup.exe"
+    }
+}

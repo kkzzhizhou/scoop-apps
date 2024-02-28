@@ -1,0 +1,53 @@
+{
+    "version": "3.29.1",
+    "description": "Scratch. Educational drag-and-drop programming environment",
+    "homepage": "https://scratch.mit.edu/about",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://scratch.mit.edu/info/faq"
+    },
+    "changelog": "https://en.scratch-wiki.info/wiki/Scratch_Update_History",
+    "url": "https://downloads.scratch.mit.edu/desktop/Scratch%203.29.1%20Setup.exe#/setup.exe",
+    "hash": "dfca2f1a842aea69a2b0a22ca66fa7852f86259e3da4f576f8ae7fa16f1e9134",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"Scratch 3\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Scratch*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Scratch 3\\Scratch 3.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S /allusers | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"Scratch*\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/LLK/scratch-desktop/tags",
+        "regex": "refs/tags/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://downloads.scratch.mit.edu/desktop/Scratch%20$version%20Setup.exe#/setup.exe"
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "version": "3.3.9",
+    "description": "GitHub Desktop. Extend your GitHub workflow beyond your browser.",
+    "homepage": "https://desktop.github.com/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://central.github.com/deployments/desktop/desktop/latest/win32?format=msi#/setup.msi_",
+            "hash": "58e5073cb74ff093cb384d6eb1bc645a7da9cb631dc90d0a698aea397b270d83"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"GitHubDesktop\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"GitHub Desktop Machine-Wide Installer*\"",
+            "$programname2 = \"GitHub Desktop\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$regPath = \"HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GitHubDesktop\"",
+            "if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   Start-Sleep -s 10",
+            "   &\"$ProgramFilesPath\\GitHub Desktop Deployment\\GitHubDesktopDeploymentTool.exe\" -s | Out-Null",
+            "   Start-Sleep -s 30",
+            "   if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$DesktopDirectory = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopDirectory\\GitHub Desktop.lnk\") {Remove-Item \"$DesktopDirectory\\GitHub Desktop.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://github.com/desktop/desktop/tags",
+        "regex": "/desktop/desktop/releases/tag/release-([\\d.]+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://central.github.com/deployments/desktop/desktop/latest/win32?format=msi#/setup.msi_"
+            }
+        }
+    }
+}

@@ -1,0 +1,66 @@
+{
+    "version": "1.4.4",
+    "description": "4K Video Downloader+. Download videos from all popular websites including YouTube, Vimeo, TikTok, SoundCloud, Facebook, Twitch, Bilibili and more in high-quality",
+    "homepage": "https://www.4kdownload.com/products/videodownloader",
+    "notes": "This manifest only installs and updates 4K Video Downloader+",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.4kdownload.com/agreement/freeware"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.4kdownload.com/app/4kvideodownloaderplus_1.4.4_x64.msi?source=website#/setup.msi_",
+            "hash": "9bcb24600d7b5ceaf1b323443fad0224819e89f437b5d57dd97d5e01c80318c5"
+        },
+        "32bit": {
+            "url": "https://dl.4kdownload.com/app/4kvideodownloaderplus_1.4.4.msi?source=website#/setup.msi_",
+            "hash": "784a3b47c86296863a54c0ebf8f386bb257ed6043017c6f2e97b392a78abc6f5"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"4kvideodownloaderplus\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\4KDownload\\4kvideodownloaderPlus\\4kvideodownloaderplus.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\4K Video Downloader+.lnk\") {Remove-Item \"$CommonDesktopPath\\4K Video Downloader+.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.4kdownload.com/downloads/",
+        "regex": "4kvideodownloaderplus_([\\d.]+).zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.4kdownload.com/app/4kvideodownloaderplus_$majorVersion.$minorVersion.$patchVersion_x64.msi?source=website#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://dl.4kdownload.com/app/4kvideodownloaderplus_$majorVersion.$minorVersion.$patchVersion.msi?source=website#/setup.msi_"
+            }
+        }
+    }
+}
