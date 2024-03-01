@@ -1,0 +1,36 @@
+{
+    "version": "4.6.2",
+    "description": "VMware OVF Tool is a command-line utility that helps you import and export OVF packages to and from many VMware products.",
+    "homepage": "https://developer.vmware.com/web/tool/ovf-tool/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://vdc-download.vmware.com/vmwb-repository/dcr-public/16ff35c0-5367-4472-ad66-89ce7f71410a/344d051f-cf3e-47c8-8222-72fd3341c772/VMware-ovftool-4.6.2-22220919-win.x86_64.zip",
+            "hash": "a7a9e8695cd3e2a7ba2455eedfdec23f601511384cc0d19d4c4becd5122577e3"
+        },
+        "32bit": {
+            "url": "https://vdc-download.vmware.com/vmwb-repository/dcr-public/90638442-5633-4880-9865-ed33bb1bbc3a/74244db9-1f6e-4b5b-a38d-9c4297c793e2/VMware-ovftool-4.6.2-22220919-win.i386.zip",
+            "hash": "70f3f3cc6fc8f899f6329547e21a8b59e98c1c2390f3b9efe7d4b1758c437133"
+        }
+    },
+    "extract_dir": "ovftool",
+    "bin": "ovftool.exe",
+    "checkver": {
+        "url": "https://1.1.1.1",
+        "script": [
+            "try { $detail = Invoke-WebRequest -Method GET 'https://developer.vmware.com/web/tool/ovf-tool/' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "if ($detail.StatusCode -eq 200) { return $detail.Content } else { return '' }"
+        ],
+        "regex": "(?sm)/dcr-public/(?<win32id1>[a-f0-9-]+)/(?<win32id2>[a-f0-9-]+)/VMware-ovftool-[\\d.]+-\\d+-win.i386.zip.*/dcr-public/(?<id1>[a-f0-9-]+)/(?<id2>[a-f0-9-]+)/VMware-ovftool-([\\d.]+)-(?<build>\\d+)-win.x86_64.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://vdc-download.vmware.com/vmwb-repository/dcr-public/$matchId1/$matchId2/VMware-ovftool-$version-$matchBuild-win.x86_64.zip"
+            },
+            "32bit": {
+                "url": "https://vdc-download.vmware.com/vmwb-repository/dcr-public/$matchWin32id1/$matchWin32id2/VMware-ovftool-$version-$matchBuild-win.i386.zip"
+            }
+        }
+    }
+}
