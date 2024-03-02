@@ -66,8 +66,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheRandomLabs/scoop-nonportable
 - kodybrown/scoop-nirsoft
 - littleli/scoop-clojure
-- kkzzhizhou/scoop-zapps
 - rasa/scoops
+- kkzzhizhou/scoop-zapps
 - ScoopInstaller/Nirsoft
 - kidonng/sushi
 - hoilc/scoop-lemon
