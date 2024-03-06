@@ -100,6 +100,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - brian6932/dank-scoop
 - KnotUntied/scoop-fonts
 - Darkatse/Scoop-Darkatse
+- littleli/Scoop-littleli
 - beerpiss/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Small-Ku/turbo-bucket
