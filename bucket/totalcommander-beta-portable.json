@@ -1,0 +1,85 @@
+{
+    "version": "1100_b4",
+    "description": "Total Commander is a Shareware file manager for Windows® 95/98/ME/NT/2000/XP/Vista/7/8/8.1/10, and Windows® 3.1.",
+    "homepage": "https://www.ghisler.com",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.totalcommander.ch/beta/tc1100x64_b4.exe",
+            "hash": "033b352c7b48b434f4901e80f7d6752f10b7e7109ea19a1eb437b9a6c475fedb",
+            "bin": [
+                [
+                    "TOTALCMD64.EXE",
+                    "tcmd"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "TOTALCMD64.EXE",
+                    "Total Commander (beta)"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://www.totalcommander.ch/beta/tc1100x32_b4.exe",
+            "hash": "f9c284ac1d5a4b80c8542cb3ee5473f38646012707fee47361d555a5375ba2d2",
+            "bin": [
+                [
+                    "TOTALCMD.EXE",
+                    "tcmd"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "TOTALCMD.EXE",
+                    "Total Commander (beta)"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\$fname\" \"$dir\\_tmp\"",
+        "Expand-7zipArchive \"$dir\\_tmp\\INSTALL.CAB\" \"$dir\" -Removal",
+        "Move-Item \"$dir\\e\\*\" \"$dir\"",
+        "Remove-Item -Recurse \"$dir\\d\", \"$dir\\e\", \"$dir\\_tmp\", \"$dir\\$fname\"",
+        "\"[Configuration]`r`nUseIniInProgramDir=7`r`nAlternateUserIni=wincmd_user.ini\" | Out-File -Encoding ASCII \"$dir\\wincmd.ini\"",
+        "ForEach ($emptyFile in $manifest.persist) {New-Item \"$dir\\$emptyFile\" -ItemType file -ErrorAction SilentlyContinue | Out-Null}"
+    ],
+    "persist": [
+        "plugins",
+        "language",
+        "no.bar",
+        "default.bar",
+        "default.br2",
+        "vertical.bar",
+        "vertical.br2",
+        "system.bar",
+        "system.br2",
+        "usercmd.ini",
+        "wcx_ftp.ini",
+        "wincmd.ini",
+        "wincmd.key",
+        "wincmd_user.ini",
+        "wincmd_history.ini",
+        "wincmd_plugins.ini",
+        "contplug.ini",
+        "fsplugin.ini",
+        "lsplugin.ini",
+        "pkplugin.ini"
+    ],
+    "checkver": {
+        "url": "https://www.ghisler.com/1100_beta.htm",
+        "regex": "/beta/tc(?<ver>[\\d]+).+_(?<build>[\\w]+).exe",
+        "replace": "${1}_${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.totalcommander.ch/beta/tc$matchVerx64_$matchBuild.exe"
+            },
+            "32bit": {
+                "url": "https://www.totalcommander.ch/beta/tc$matchVerx32_$matchBuild.exe"
+            }
+        }
+    }
+}

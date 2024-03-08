@@ -1,0 +1,128 @@
+{
+    "version": "1.14.6.29673",
+    "description": "An Apache™ Subversion (SVN)® client, implemented as a Windows shell extension.",
+    "homepage": "https://tortoisesvn.net",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://sourceforge.net/projects/tortoisesvn/files/1.14.6/Application/TortoiseSVN-1.14.6.29673-x64-svn-1.14.3.msi",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoise-svn/tortoisesvn-install-tools.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoise-svn/tortoisesvn-install.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoise-svn/tortoisesvn-uninstall.reg"
+            ],
+            "hash": [
+                "sha1:ea4fe96d79a4ee0fea0e4662c538ac20c34ef40e",
+                "730bc1e2454d68402d092f5435df4e43017e8af6d8c7779093746254722ff8f3",
+                "2ee3d8b6db8134f298d00b6d1fed6b245514598206e9a80ef5af6323438166ab",
+                "3aeb9e65c620d877563e5ec61d93dc910296d427a334622451802117431d1982"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://sourceforge.net/projects/tortoisesvn/files/1.14.6/Application/TortoiseSVN-1.14.6.29673-win32-svn-1.14.3.msi",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-install-tools.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-install.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-uninstall.reg"
+            ],
+            "hash": [
+                "sha1:886baeab59f5ab687a1e5d5d64a7dc86f79d5416",
+                "730bc1e2454d68402d092f5435df4e43017e8af6d8c7779093746254722ff8f3",
+                "2ee3d8b6db8134f298d00b6d1fed6b245514598206e9a80ef5af6323438166ab",
+                "3aeb9e65c620d877563e5ec61d93dc910296d427a334622451802117431d1982"
+            ]
+        },
+        "arm64": {
+            "url": [
+                "https://sourceforge.net/projects/tortoisesvn/files/1.14.6/Application/TortoiseSVN-1.14.6.29673-ARM64-svn-1.14.3.msi",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-install-tools.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-install.reg.templ",
+                "https://raw.githubusercontent.com/naderi/scoop-bucket/master/scripts/tortoisesvn/tortoisesvn-uninstall.reg"
+            ],
+            "hash": [
+                "sha1:5dcd779a946972a990e4187264e486a353405b3d",
+                "730bc1e2454d68402d092f5435df4e43017e8af6d8c7779093746254722ff8f3",
+                "2ee3d8b6db8134f298d00b6d1fed6b245514598206e9a80ef5af6323438166ab",
+                "3aeb9e65c620d877563e5ec61d93dc910296d427a334622451802117431d1982"
+            ]
+        }
+    },
+    "extract_dir": "Program Files\\TortoiseSVN",
+    "bin": [
+        "bin\\svn.exe",
+        "bin\\svnadmin.exe",
+        "bin\\svnbench.exe",
+        "bin\\svndumpfilter.exe",
+        "bin\\svnlook.exe",
+        "bin\\svnmucc.exe",
+        "bin\\svnrdump.exe",
+        "bin\\svnserve.exe",
+        "bin\\svnsync.exe",
+        "bin\\svnversion.exe"
+    ],
+    "shortcuts": [
+        [
+            "bin\\TortoiseIDiff.exe",
+            "TortoiseIDiff"
+        ],
+        [
+            "bin\\TortoiseMerge.exe",
+            "TortoiseMerge"
+        ],
+        [
+            "bin\\TortoiseProc.exe",
+            "TortoiseSVN",
+            "/command:rtfm"
+        ],
+        [
+            "bin\\TortoiseProc.exe",
+            "TortoiseSVN Project Monitor",
+            "/command:monitor"
+        ],
+        [
+            "bin\\TortoiseProc.exe",
+            "TortoiseSVN Repository Browser",
+            "/command:repobrowser"
+        ],
+        [
+            "bin\\TortoiseProc.exe",
+            "TortoiseSVN Settings",
+            "/command:settings"
+        ]
+    ],
+    "post_install": [
+        "$escdir = \"$dir\" -replace '\\\\', '\\\\'",
+        "'install', 'install-tools' | ForEach-Object {",
+        "    (Get-Content \"$dir\\tortoisesvn-$_.reg.templ\") -replace '%TSVNHOME%', \"$escdir\" | Set-Content -LiteralPath \"$dir\\tortoisesvn-$_.reg\" -Encoding Ascii",
+        "    Remove-Item \"$dir\\tortoisesvn-$_.reg.templ\"",
+        "}",
+        "sudo New-Item -Path \"$env:CommonProgramFiles\\TortoiseOverlays\" -Target \"$dir\\Common\\TortoiseOverlays\" -ItemType Junction | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "sudo reg import \"$dir\\tortoisesvn-uninstall.reg\"",
+            "sudo Remove-Item \"$Env:CommonProgramFiles\\TortoiseOverlays\""
+        ]
+    },
+    "notes": [
+        "To add TortoiseSVN as a context menu option, run '$dir\\tortoisesvn-install.reg'",
+        "For file associations, run '$dir\\tortoisesvn-install-tools.reg'"
+    ],
+    "checkver": {
+        "url": "https://tortoisesvn.net/downloads.html",
+        "re": "tortoisesvn/files/(?<release>[\\d.]+)/Application/TortoiseSVN-([\\d.]+)-x64-svn-(?<svn>[\\d.]+).msi"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://sourceforge.net/projects/tortoisesvn/files/$matchRelease/Application/TortoiseSVN-$version-x64-svn-$matchSvn.msi"
+            },
+            "32bit": {
+                "url": "https://sourceforge.net/projects/tortoisesvn/files/$matchRelease/Application/TortoiseSVN-$version-win32-svn-$matchSvn.msi"
+            },
+            "arm64": {
+                "url": "https://sourceforge.net/projects/tortoisesvn/files/$matchRelease/Application/TortoiseSVN-$version-ARM64-svn-$matchSvn.msi"
+            }
+        }
+    }
+}
