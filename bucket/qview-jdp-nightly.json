@@ -1,0 +1,47 @@
+{
+    "version": "8073355481",
+    "description": "Practical and minimal image viewer",
+    "homepage": "https://github.com/jdpurcell/qView",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://nightly.link/jdpurcell/qView/workflows/build/master/qView-JDP-2024-02-28.9785567-Windows_64.zip",
+            "hash": "b9fb72312bbfe45dccf292a108a08e8def07d2f7509d0a45c22fee4654c3ec25"
+        },
+        "32bit": {
+            "url": "https://nightly.link/jdpurcell/qView/workflows/build/master/qView-JDP-2024-02-28.9785567-Windows_32.zip",
+            "hash": "433c9e080d0a0872408b8e99bb5a394f530310b11631f3bb96eb9c2c5cdb9937"
+        }
+    },
+    "pre_install": [
+        "Get-ChildItem \"$dir\\qView-nightly-*.exe\" | Rename-Item -NewName { $_.name -Replace '-nightly.+', '.exe' }",
+        "Remove-Item \"$dir\\qView-*.*-win*.exe\""
+    ],
+    "bin": "qView.exe",
+    "shortcuts": [
+        [
+            "qView.exe",
+            "qView"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "try {",
+            "    $api = (Invoke-RestMethod 'https://api.github.com/repositories/554598108/actions/workflows/build.yml/runs?branch=master&status=success').workflow_runs[0]",
+            "    ($api.id, $api.updated_at.ToString('yyyy-MM-dd'), $api.head_sha.Substring(0, 7)) -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(\\d+) (?<date>\\d{4}(?:-\\d{2}){2}) (?<sha>\\d+)\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://nightly.link/jdpurcell/qView/workflows/build/master/qView-JDP-$matchDate.$matchSha-Windows_64.zip"
+            },
+            "32bit": {
+                "url": "https://nightly.link/jdpurcell/qView/workflows/build/master/qView-JDP-$matchDate.$matchSha-Windows_32.zip"
+            }
+        }
+    }
+}

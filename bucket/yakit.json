@@ -1,13 +1,13 @@
 {
-    "version": "1.3.1-sp1",
+    "version": "1.3.1-sp2",
     "description": " Cyber Security ALL-IN-ONE Platform 交互式应用安全测试平台 ",
     "homepage": "https://github.com/yaklang/yakit",
     "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json，会将yakit自动添加到防火墙允许规则中",
     "license": "AGPL-3.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.3.1-sp1/Yakit-1.3.1-sp1-windows-amd64.exe#/dl.7z",
-            "hash": "b75ffcca3e991fa3df11184f4f80b85e1d20ab390f09a4de6a248434e6a062c6",
+            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.3.1-sp2/Yakit-1.3.1-sp2-windows-amd64.exe#/dl.7z",
+            "hash": "e650a6330306180a75ad785c3c52fa2653feac107d5a280a72aefcd788f81cea",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
                 "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
@@ -15,9 +15,18 @@
         }
     },
     "post_install": [
+        "ensure \"$persist_dir\" | Out-Null",
         "$existingRule = Get-NetFirewallRule -DisplayName YakitVi -ErrorAction SilentlyContinue",
         "if ($existingRule) {  sudo Set-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
-        "else { sudo New-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }"
+        "else { sudo New-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
+        "$filesToDelete = Get-ChildItem -Path \"$persist_dir\\yakit-projects\\yak-engine\" -Recurse | Where-Object { $_.Name -match '^yak-v\\d'}",
+        "foreach ($file in $filesToDelete) {  Remove-Item $file.FullName -Force;  Write-Host \"已删除旧版本yak.exe文件: $($file.FullName)\";  }"
+    ],
+    "uninstall": {
+        "script": "Remove-NetFirewallRule -DisplayName 'YakitVi' -ErrorAction SilentlyContinue"
+    },
+    "persist": [
+        "yakit-projects"
     ],
     "shortcuts": [
         [
