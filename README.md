@@ -77,8 +77,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ScoopInstaller/Nonportable
 - echoiron/echo-scoop
 - ACooper81/scoop-apps
-- hermanjustnu/scoop-emulators
 - cderv/r-bucket
+- hermanjustnu/scoop-emulators
 - couleur-tweak-tips/utils
 - dodorz/scoop
 - borger/scoop-emulators
@@ -89,10 +89,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ViCrack/scoop-bucket
 - akirco/aki-apps
 - TheRandomLabs/Scoop-Python
+- DoveBoy/Apps
 - naderi/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - charmbracelet/scoop-bucket
-- DoveBoy/Apps
 - amorphobia/siku
 - batkiz/backit
 - iquiw/scoop-bucket
