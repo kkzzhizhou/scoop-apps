@@ -1,0 +1,83 @@
+{
+    "version": "1.7.18958",
+    "description": "Highly customizable media player, this version is the last version without advertisements.",
+    "homepage": "https://potplayer.daum.net",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://potplayer.daum.net/publicRelation"
+    },
+    "notes": "PotPlayer Mini is recommended.",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.videohelp.com/download/PotPlayerSetup64-1.7.18958.exe#/dl.7z",
+            "hash": "77dda835d76f9a526dbca1e8420163e2e751cee2cecb3506a294c846ff378cf8",
+            "shortcuts": [
+                [
+                    "PotPlayer64.exe",
+                    "PotPlayer"
+                ],
+                [
+                    "PotPlayerMini64.exe",
+                    "PotPlayer Mini"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://www.videohelp.com/download/PotPlayerSetup-1.7.18958.exe#/dl.7z",
+            "hash": "fc8cf408a575b13df98e3e27c874e21bbfe767d69642bccad83f2ce52dd36d06",
+            "shortcuts": [
+                [
+                    "PotPlayer.exe",
+                    "PotPlayer"
+                ],
+                [
+                    "PotPlayerMini.exe",
+                    "PotPlayer Mini"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+        "$CONT = @(",
+        "    '[Settings]'",
+        "    'AutoDownloadFile=0'",
+        "    'AutoUpdateStart=0'",
+        "    'CheckAutoUpdate=0'",
+        "    'FastAutoUpdate=0'",
+        ")",
+        "    # Set Configs for all executables",
+        "foreach ($f in @('PotPlayerMini64.ini', 'PotPlayerMini.ini', 'PotPlayer64.ini', 'PotPlayer.ini')) {",
+        "    if (-not (Test-Path \"$persist_dir\\$f\")) {",
+        "        Write-Host 'File' $f 'does not exists. Creating' -f Yellow",
+        "        Set-Content \"$dir\\$f\" $CONT -Encoding Ascii",
+        "    }",
+        "}"
+    ],
+    "post_install": [
+        "Write-Host \"Registering potplayer:// protocol handler\"",
+        "$regpath = \"HKCU:\\SOFTWARE\\Classes\\potplayer\"",
+        "New-Item -Path $regpath -Value \"URL:potplayer\" -Force | Out-Null",
+        "New-ItemProperty -Path $regpath -Name \"URL Protocol\" -PropertyType String -Force | Out-Null",
+        "New-Item -Path \"$regpath\\shell\\Open\\command\" -Value \"`\"$dir\\PotPlayerMini64.exe`\" `\"%1`\"\" -Force| Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "Write-Host \"Unregistering potplayer:// protocol handler\"",
+            "Remove-Item \"HKCU:\\SOFTWARE\\Classes\\potplayer\" -Recurse -Force"
+        ]
+    },
+    "persist": [
+        "Capture",
+        "Extention",
+        "IconPack",
+        "Logos",
+        "Playlist",
+        "Skins",
+        "UrlList",
+        "PotPlayer.ini",
+        "PotPlayer64.ini",
+        "PotPlayerMini.ini",
+        "PotPlayerMini64.ini"
+    ]
+}

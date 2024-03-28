@@ -1,0 +1,58 @@
+{
+    "version": "2.6.0",
+    "description": "一个基于 electron 的音乐软件",
+    "homepage": "https://github.com/lyswhut/lx-music-desktop",
+    "license": "Apache License 2.0",
+    "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.6.0/lx-music-desktop-v2.6.0-win_x64-green.7z",
+    "hash": "md5:adb9682ff562fcd8438192f366091678",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\lx-music-desktop\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\lx-music-desktop\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "lx-music-desktop.exe",
+            "lx-music-desktop"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "lx-music-desktop.exe",
+            "洛雪音乐助手桌面版"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win_x64-green.7z",
+        "hash": {
+            "url": "https://github.com/lyswhut/lx-music-desktop/releases",
+            "regex": "$md5 +lx-music-desktop v$version win_x64 green.7z"
+        }
+    }
+}

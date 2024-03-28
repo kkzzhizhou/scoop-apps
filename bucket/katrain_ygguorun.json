@@ -1,0 +1,53 @@
+{
+    "version": "1.14.0",
+    "description": "Improve your Baduk skills by training with KataGo!",
+    "homepage": "https://github.com/sanderland/katrain",
+    "license": "Unknown",
+    "url": "https://github.com/sanderland/katrain/releases/download/v1.14.0/KaTrain.zip",
+    "hash": "60b6ba64b1e16cb1fff079128decdbb5e9edff427c16e22df0f26b0030f5c4d7",
+    "extract_dir": "KaTrain",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:HOMEDRIVE$env:HOMEPATH\\.katrain\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:HOMEDRIVE$env:HOMEPATH\\.katrain\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "KaTrain.exe",
+            "KaTrain"
+        ],
+        [
+            "DebugKaTrain.exe",
+            "DebugKaTrain"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/sanderland/katrain/releases/download/v$version/KaTrain.zip"
+    }
+}

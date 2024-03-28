@@ -1,0 +1,59 @@
+{
+    "version": "1.3.2",
+    "description": "PC版网易云客户端插件管理器",
+    "homepage": "https://github.com/MicroCBer/BetterNCM",
+    "license": "GNU General Public License v3.0",
+    "notes": "Only support neteasemusic installed by scoop.",
+    "url": "https://github.com/MicroCBer/BetterNCM/releases/download/1.3.2/BetterNCMII.dll",
+    "hash": "a39111e7ddd13c8d7dd8c8b87214adcdcd21b04bba1b2bff6b23c26c69543746",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    New-Item $runtimeCachePersist -Type Directory -Force | Out-Null",
+            "}",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (Test-Path $runtimeCachePersist\\$folderName) {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "        New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "    } else {",
+            "        if (Test-Path $folder) {",
+            "            Move-Item $folder $runtimeCachePersist -Force",
+            "            New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "        }",
+            "    }",
+            "}",
+            "@(\"C:\\betterncm\") | ForEach-Object { PersistsFolder $_ }",
+            "# install",
+            "New-Item $scoopdir\\apps\\neteasemusic\\current\\msimg32.dll -Type HardLink -Target $dir\\BetterNCMII.dll | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (!(Test-Path $runtimeCachePersist\\$folderName)) {",
+            "        Move-Item $folder $runtimeCachePersist -Force",
+            "    } else {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "    }",
+            "}",
+            "@(\"C:\\betterncm\") | ForEach-Object { PersistsFolder $_ }",
+            "# uninstall",
+            "Remove-Item -Force $scoopdir\\apps\\neteasemusic\\current\\msimg32.dll | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/MicroCBer/BetterNCM/releases",
+        "regex": "tag/(\\d.*?)\""
+    },
+    "autoupdate": {
+        "url": "https://github.com/MicroCBer/BetterNCM/releases/download/$version/BetterNCMII.dll"
+    }
+}

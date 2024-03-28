@@ -1,19 +1,55 @@
 {
-    "version": "6.1.1",
-    "description": "Display real-time trends of Chinese funds in the menubar",
-    "homepage": "https://www.aliyundrive.com/",
-    "license": "LGPL-3.0-only",
-    "url": "https://github.com/1zilc/fishing-funds/releases/download/v6.1.1/Fishing-Funds-Setup-6.1.1.exe#/dl.7z",
-    "hash": "sha512:1c6ab8d7d497dbe2f1495611a638fdc71c41522125bfeb7d17d8f3f1cfc39a29551268414d3791692d8e4eaa12ce67faf5673e7391db271e2fb4b3b95a5a0fa2",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-        "Move-Item \"$dir\\`$R0\\*\" \"$dir\"",
-        "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\`$R0\" -Force -Recurse"
-    ],
+    "version": "8.2.3",
+    "description": "基金,大盘,股票,虚拟货币状态栏显示小应用,基于Electron开发,支持MacOS,Windows,Linux客户端,数据源来自天天基金,蚂蚁基金,爱基金,腾讯证券等",
+    "homepage": "https://github.com/1zilc/fishing-funds",
+    "license": "GPL-3.0 license",
+    "url": "https://github.com/1zilc/fishing-funds/releases/download/v8.2.3/Fishing-Funds-Setup-8.2.3.exe#/dl.7z",
+    "hash": "sha512:1b91e3d66698f371b12cf2a5ca654e2957aa8481b676f63a5f15208b64d52ce0120c2c123873ef711f80a88ad9b6b460c6fa2fbe9e0c7e3ac9eb7a6eda24d79c",
+    "installer": {
+        "script": [
+            "# Expand-7zipArchive",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\Fishing Funds\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\Fishing Funds\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Fishing Funds.exe",
             "Fishing Funds"
         ]
-    ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/1zilc/fishing-funds/releases/download/v$version/Fishing-Funds-Setup-$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://github.com/1zilc/fishing-funds/releases/download/v$version/latest.yml",
+            "regex": "sha512.*?$base64"
+        }
+    }
 }
