@@ -13,6 +13,15 @@
         "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" | Out-Null",
         "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
     ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\yesplaymusic\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\yesplaymusic\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
     "shortcuts": [
         [
             "YesPlayMusic.exe",
@@ -20,13 +29,14 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/qier222/YesPlayMusic",
-        "regex": "v([\\d.-]+)"
+        "url": "https://api.github.com/repos/qier222/YesPlayMusic/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.-]+)/(?<file>YesPlayMusic(?:.|-)([\\d.]+)\\.exe)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/qier222/YesPlayMusic/releases/download/v$version/YesPlayMusic.$matchHead.exe#/dl.7z"
+                "url": "https://github.com/qier222/YesPlayMusic/releases/download/v$version/$matchFile#/dl.7z"
             }
         }
     }
