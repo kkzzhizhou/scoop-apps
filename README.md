@@ -104,7 +104,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - KnotUntied/scoop-fonts
 - Darkatse/Scoop-Darkatse
-- TianXiaTech/scoop-txt
 - littleli/Scoop-littleli
 - beerpiss/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket

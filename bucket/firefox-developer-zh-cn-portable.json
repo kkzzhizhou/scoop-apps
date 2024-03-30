@@ -1,0 +1,80 @@
+{
+    "version": "125.0b6",
+    "description": "Developer. Developer builds of Firefox: the popular open source web browser",
+    "homepage": "https://www.mozilla.org/zh-CN/firefox/developer/",
+    "license": "MPL-2.0",
+    "changelog": "https://www.mozilla.org/en-US/firefox/104.0beta/releasenotes/",
+    "architecture": {
+        "64bit": {
+            "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/125.0b6/win64/zh-CN/Firefox%20Setup%20125.0b6.exe#/firefox-developer.7z",
+            "hash": "sha512:67cbbbd2441c62beae08d7ae6cd00749bfa8e61904be390b3f7d7cdad12430155898c488640996986f6447e43d5ef9800cebed42253f737e2ccafa22146b211b"
+        },
+        "32bit": {
+            "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/125.0b6/win32/zh-CN/Firefox%20Setup%20125.0b6.exe#/firefox-developer.7z",
+            "hash": "sha512:1ac679f78541f7c4b21f6dcffcdff6cd13b2a4245dd28be2ba4ff21374a76bec0fa5846cf9a295325f7ee13e0d8a8a53a3d52afd59741ce9201d46924e16cfc6"
+        }
+    },
+    "extract_dir": "core",
+    "bin": [
+        [
+            "firefox.exe",
+            "firefox-dev"
+        ],
+        [
+            "firefox.exe",
+            "firefox-developer"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "firefox.exe",
+            "Firefox Developer"
+        ],
+        [
+            "firefox.exe",
+            "Firefox Developer Profile Manager",
+            "-P"
+        ]
+    ],
+    "post_install": [
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('Mozilla/Firefox')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://aus5.mozilla.org/update/6/Firefox/93.0/_/WINNT_x86_64-msvc-x64/zh-CN/aurora/_/_/_/_/update.xml",
+        "xpath": "/updates/update/patch/@URL",
+        "regex": "devedition-([\\db.]+)-"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/win64/zh-CN/Firefox%20Setup%20$version.exe#/firefox-developer.7z",
+                "hash": {
+                    "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win64/zh-CN/$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/win32/zh-CN/Firefox%20Setup%20$version.exe#/firefox-developer.7z",
+                "hash": {
+                    "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win32/zh-CN/$basename"
+                }
+            }
+        }
+    }
+}
