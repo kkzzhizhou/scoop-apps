@@ -95,6 +95,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - jonz94/scoop-sarasa-nerd-fonts
 - charmbracelet/scoop-bucket
 - amorphobia/siku
+- NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
 - batkiz/backit
 - iquiw/scoop-bucket
