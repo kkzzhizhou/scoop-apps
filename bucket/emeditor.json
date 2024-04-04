@@ -1,14 +1,31 @@
 {
-    "version": "24.1.0",
-    "description": "world’s fastest text editor.",
-    "homepage": "https://www.emeditor.com/download/",
-    "license": "BSD-3-Clause",
-    "url": "https://support.emeditor.com/en/downloads/latest/portable/64#/dl.7z",
+    "version": "24.1.1",
+    "description": "A fast, lightweight and extensible text editor for Windows. Useful for opening very large files.",
+    "homepage": "https://www.emeditor.com/",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://emeditor.blob.core.windows.net/emed64_24.1.1_portable.zip",
+            "hash": "ffa712eeecb6122a43d0a788debd1b222eb741c8ce37425d5489c75b23675895"
+        },
+        "32bit": {
+            "url": "https://emeditor.blob.core.windows.net/emed32_24.1.1_portable.zip",
+            "hash": "63e6496a61e6033e6cf609eba2474ceaf55d5a1db587615cf26c6143010be3c0"
+        }
+    },
     "pre_install": [
-        "if(!(Test-Path \"$persist_dir\\eeCommon.ini\")) { Add-Content \"$dir\\eeCommon.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eeConfig.ini\")) { Add-Content \"$dir\\eeConfig.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eeLM.ini\")) { Add-Content \"$dir\\eeLM.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eePlugins.ini\")) { Add-Content \"$dir\\eePlugins.ini\" $null }"
+        "$manifest.persist | ForEach-Object {",
+        "    if ([io.path]::GetExtension($_)) {",
+        "        if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+        "    }",
+        "}"
+    ],
+    "bin": "EmEditor.exe",
+    "shortcuts": [
+        [
+            "EmEditor.exe",
+            "EmEditor"
+        ]
     ],
     "persist": [
         "eeCommon.ini",
@@ -16,10 +33,18 @@
         "eeLM.ini",
         "eePlugins.ini"
     ],
-    "shortcuts": [
-        [
-            "EmEditor.exe",
-            "EmEditor"
-        ]
-    ]
+    "checkver": {
+        "url": "https://www.emeditor.com/",
+        "regex": "EmEditor v([\\d.]+) released"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://emeditor.blob.core.windows.net/emed64_$version_portable.zip"
+            },
+            "32bit": {
+                "url": "https://emeditor.blob.core.windows.net/emed32_$version_portable.zip"
+            }
+        }
+    }
 }
