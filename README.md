@@ -60,8 +60,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Calinou/scoop-games
 - ivaquero/scoopet
 - ScoopInstaller/Java
-- TheRandomLabs/Scoop-Spotify
 - ScoopInstaller/Versions
+- TheRandomLabs/Scoop-Spotify
 - TheCjw/scoop-retools
 - TheRandomLabs/scoop-nonportable
 - kodybrown/scoop-nirsoft
@@ -74,14 +74,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - scoopcn/scoopcn
 - Paxxs/Cluttered-bucket
 - KNOXDEV/wsl
-- ScoopInstaller/Nonportable
 - echoiron/echo-scoop
+- ScoopInstaller/Nonportable
 - ACooper81/scoop-apps
 - cderv/r-bucket
 - hermanjustnu/scoop-emulators
 - couleur-tweak-tips/utils
-- everyx/scoop-bucket
 - dodorz/scoop
+- everyx/scoop-bucket
 - borger/scoop-emulators
 - Qv2ray/mochi
 - TheRandomLabs/Scoop-Bucket
@@ -89,6 +89,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ViCrack/scoop-bucket
 - niheaven/scoop-sysinternals
 - akirco/aki-apps
+- wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - DoveBoy/Apps
 - naderi/scoop-bucket
