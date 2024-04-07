@@ -6,6 +6,10 @@
     "changelog": "",
     "url": "https://binary-factory.kde.org/job/kdeconnect-kde_Release_win64/1615/artifact/kdeconnect-kde-23.08.4-1615-windows-cl-msvc2019-x86_64.7z",
     "hash": "9e4d70c6acb290060be50de9edabdfad371752f12e811f24b3353eeddd6d34c3",
+    "pre_install": [
+        "Remove-Item \"$dir\\*\" -Exclude kdeconnect-*.7z -Recurse",
+        "Expand-7zipArchive \"$dir\\kdeconnect-*.7z\" \"$dir\" -Removal"
+    ],
     "bin": "bin\\kdeconnect-cli.exe",
     "shortcuts": [
         [
@@ -14,14 +18,25 @@
         ]
     ],
     "checkver": {
-        "url": "https://kdeconnect.kde.org/download.html",
-        "regex": "kdeconnect-kde-([\\d.]+-(?<build>\\d+))-windows"
+        "script": [
+            "$relRes = $(Invoke-WebRequest 'https://cdn.kde.org/ci-builds/network/kdeconnect-kde/?C=M;O=D').Content",
+            "$relRes -match 'release-([\\d.]+)'",
+            "$major = $Matches.1",
+            "$verRes = $(Invoke-WebRequest \"https://cdn.kde.org/ci-builds/network/kdeconnect-kde/release-$major/windows/\").Content",
+            "$verRes -match \"kdeconnect-kde-release_$major-(\\d+)\"",
+            "$build = $Matches.1",
+            "\"$major-$build\""
+        ],
+        "regex": "((?<release>[\\d.]+)-\\d+)"
     },
     "autoupdate": {
-        "url": "https://binary-factory.kde.org/job/kdeconnect-kde_Release_win64/$matchBuild/artifact/kdeconnect-kde-$version-windows-cl-msvc2019-x86_64.7z",
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn.kde.org/ci-builds/network/kdeconnect-kde/release-$matchRelease/windows/kdeconnect-kde-release_$version-windows-cl-msvc2022-x86_64.exe#/dl.7z"
+            }
+        },
         "hash": {
-            "url": "$url.sha256",
-            "regex": "$sha256"
+            "url": "$url.sha256"
         }
     },
     "notes": "Scoop doesn't persist your KDE Connect data, they are still storaged in '%LOCALAPPDATA%\\kdeconnect'."
