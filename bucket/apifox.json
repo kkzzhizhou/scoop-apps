@@ -1,43 +1,58 @@
 {
-    "version": "2.5.19",
-    "description": "All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
-    "homepage": "https://apifox.com",
-    "license": "Freeware",
-    "architecture": {
-        "64bit": {
-            "url": "https://cdn.apifox.cn/download/2.5.19/Apifox-2.5.19.exe#/dl.7z",
-            "hash": "sha512:c23e687b53551c63fdf0bb328b62fa0ec6f3fd195207ea74dacdda075cec9277deeb861f533851da5b6aaae2939c4d3ce2963e060101a7a9715ead21f901339c"
-        }
+    "version": "2.5.20",
+    "description": "API 文档、API 调试、API Mock、API 自动化测试",
+    "homepage": "https://www.apifox.cn",
+    "license": "Unknown",
+    "url": "http://cdn.apifox.cn/download/2.5.20/Apifox-2.5.20.exe#/dl.7z",
+    "hash": "sha512:ca10b5277e6fe8048df4be3e544f66043de44b66ce5ef8d3b51d2d4fb655176bf175799d62c669d73ca03e499a7f49895d376eab3b2a82bea65b3e07d106e73c",
+    "installer": {
+        "script": [
+            "# Expand-7zipArchive",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\apifox\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
     },
-    "pre_install": [
-        "Get-Item \"$dir\\`$PLUGINSDIR\\app*.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
-    ],
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\apifox\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "Apifox.exe",
-            "Apifox",
-            "--user-data-dir=\"$dir\\UserData\""
+            "Apifox"
         ]
-    ],
-    "persist": "UserData",
-    "pre_uninstall": [
-        "Stop-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue",
-        "Wait-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue -Timeout 30"
     ],
     "checkver": {
         "url": "https://apifox.com/help/app/changelog",
         "regex": ">([\\d.]+)<"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://cdn.apifox.cn/download/$version/Apifox-$version.exe#/dl.7z",
-                "hash": {
-                    "url": "$baseurl/latest.yml",
-                    "regex": "sha512: $base64"
-                }
-            }
+        "url": "http://cdn.apifox.cn/download/$version/Apifox-$version.exe#/dl.7z",
+        "hash": {
+            "url": "http://cdn.apifox.cn/download/latest.yml",
+            "regex": "sha512.*?$base64"
         }
     }
 }
