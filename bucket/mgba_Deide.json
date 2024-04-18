@@ -1,0 +1,70 @@
+{
+    "homepage": "https://mgba.io/",
+    "description": "A fast, accurate, and portable GBA emulator",
+    "license": "MPL-2.0",
+    "version": "0.10.3",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mgba-emu/mgba/releases/download/0.10.3/mGBA-0.10.3-win64.7z",
+            "hash": "fab66a2d6e799ddcd94adc2eae93be7f1a9042109fe48367b345341c1323aceb",
+            "extract_dir": "mGBA-0.10.3-win64"
+        },
+        "32bit": {
+            "url": "https://github.com/mgba-emu/mgba/releases/download/0.10.3/mGBA-0.10.3-win32.7z",
+            "hash": "a93ed754f51765c7dd3cc3a96d646463a7715d1fa26f3113bcce10c53077c454",
+            "extract_dir": "mGBA-0.10.3-win32"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\qt.ini\")) {",
+            "   New-Item \"$dir\\qt.ini\" -ItemType \"file\" | Out-Null ",
+            "}",
+            "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
+            "   Set-Content \"$dir\\config.ini\" '[ports.qt]'",
+            "   'cheats', 'patch', 'savegame', 'savestate', 'screenshot' | ForEach-Object {",
+            "       Add-Content -Path \"$dir\\config.ini\" -Value $_`Path`=$persist_dir\\$_ }",
+            "}"
+        ]
+    },
+    "bin": [
+        "mGBA.exe",
+        "mgba-sdl.exe"
+    ],
+    "shortcuts": [
+        [
+            "mGBA.exe",
+            "mGBA"
+        ]
+    ],
+    "persist": [
+        "cheats",
+        "patch",
+        "savegame",
+        "savestate",
+        "screenshot",
+        "shaders",
+        "qt.ini",
+        "config.ini"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/mgba-emu/mgba/releases",
+        "jsonpath": {
+            "version": "$.[0].tag_name",
+            "download32": "$.[0].assets[?(@.content_type == 'application/x-7z-compressed' && @.name =~ /.*win32\\.7z/)].browser_download_url",
+            "download64": "$.[0].assets[?(@.content_type == 'application/x-7z-compressed' && @.name =~ /.*win64\\.7z/)].browser_download_url"
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload64",
+                "extract_dir": "mGBA-$version-win64"
+            },
+            "32bit": {
+                "url": "$matchDownload32",
+                "extract_dir": "mGBA-$version-win32"
+            }
+        }
+    }
+}

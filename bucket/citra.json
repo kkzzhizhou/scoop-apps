@@ -1,0 +1,43 @@
+{
+    "homepage": "https://citra-emu.org",
+    "version": "nightly-2103",
+    "description": "3DS Emulator",
+    "license": {
+        "identifier": "GPL-2.0",
+        "url": "https://github.com/citra-emu/citra-nightly/blob/master/license.txt"
+    },
+    "url": "https://github.com/citra-emu/citra-nightly/releases/download/nightly-2103/citra-windows-msvc-20240227-69e758d.7z",
+    "hash": "0c61098547e21e742d1bf0c735f275b03a2967019675da3303ee2ead3c6071d1",
+    "extract_dir": "nightly",
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/user Directory"
+    ],
+    "bin": [
+        "citra.exe",
+        "citra-qt.exe",
+        "citra-room.exe"
+    ],
+    "shortcuts": [
+        [
+            "citra-qt.exe",
+            "3DS"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "url": "https://api.github.com/repos/citra-emu/citra-nightly/releases",
+        "jsonpath": {
+            "version": "$.[0].name",
+            "download": "$.[0].assets[?(@.name =~ /citra-windows-msvc-\\d{8}-[\\w\\d]{7}\\.7z/i)].browser_download_url"
+        }
+    },
+    "autoupdate": {
+        "url": "$matchDownload"
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "version": "5.1.0",
+    "description": "A compression (jpg/png/webp/svg/gif/css/js/html/mp4/mov) App, it can convert different format pictures, support for macOS and Windows.",
+    "homepage": "https://arayofsunshine.dev/hummingbird",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/leibnizli/hummingbird#MIT-1-ov-file"
+    },
+    "url": "https://github.com/leibnizli/hummingbird/releases/download/v5.1.0/hummingbird-Setup-5.1.0.exe#/dl.7z",
+    "hash": "sha512:0b2363a9d2bdd99e95d8a3ec1288d25c19693f09b1869d725952d5074482570d7ca7b0a15ce3bd78e90a8853723ff5bfc42a41bf1fff4d1bbf7e566c77881eb7",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\hummingbird\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\hummingbird\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "hummingbird.exe",
+            "hummingbird"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/leibnizli/hummingbird/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/leibnizli/hummingbird/releases/download/v$version/hummingbird-Setup-$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "mode": "extract",
+            "regex": "(?sm)$basename.*?sha512:\\s*?$base64"
+        }
+    }
+}
