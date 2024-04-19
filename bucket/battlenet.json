@@ -8,17 +8,17 @@
     },
     "url": "https://us.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe#/Battle.net-Setup.exe",
     "hash": "002f33fee7b8a159058368b7e93e492931c4ca72e90660bdb2691bcd62fedd3c",
-    "pre_install": "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-    "installer": {
-        "script": [
-            "& \"$dir/Battle.net-Setup.exe\" --installpath=$dir",
-            "$StartDate = Get-Date",
-            "Do { $SetupProcess = Get-Process Battle.net-Setup -ErrorAction SilentlyContinue } Until ($null -ne $SetupProcess -or $StartDate.AddSeconds(10) -lt (Get-Date))",
-            "if ($null -ne $SetupProcess) { Wait-Process $SetupProcess.Id }",
-            "$BattlenetProcess = Get-Process Battle.net -ErrorAction SilentlyContinue",
-            "if ($null -ne $BattlenetProcess) { Stop-Process $BattlenetProcess -Force -ErrorAction SilentlyContinue } else { error \"Unable to $cmd $app\" successfully; break }"
-        ]
-    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "$setup = \"$dir/Battle.net-Setup.exe\"",
+        "& $setup --installpath=$dir",
+        "$StartDate = Get-Date",
+        "Do { $SetupProcess = Get-Process Battle.net-Setup -ErrorAction SilentlyContinue } Until ($null -ne $SetupProcess -or $StartDate.AddSeconds(10) -lt (Get-Date))",
+        "if ($null -ne $SetupProcess) { Wait-Process $SetupProcess.Id }",
+        "$BattlenetProcess = Get-Process Battle.net -ErrorAction SilentlyContinue",
+        "if ($null -ne $BattlenetProcess) { Stop-Process $BattlenetProcess -Force -ErrorAction SilentlyContinue } else { error \"Unable to $cmd $app\" successfully; break }",
+        "Remove-Item $setup, \"$dir/.battlenet\" -Recurse -ErrorAction SilentlyContinue"
+    ],
     "pre_uninstall": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
         "if ($null -ne (Get-Process 'Agent', 'Battle.net' -ErrorAction SilentlyContinue)) { error 'Make sure Battle.net nor Agent.exe are running before uninstalling.'; break }"

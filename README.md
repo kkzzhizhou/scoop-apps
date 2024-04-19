@@ -106,12 +106,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aliesbelik/poldi
 - brian6932/dank-scoop
 - aoisummer/scoop-bucket
+- littleli/Scoop-littleli
 - AkariiinMKII/Scoop4kariiin
 - beerpiss/scoop-bucket
 - KnotUntied/scoop-fonts
 - Darkatse/Scoop-Darkatse
 - Deide/deide-bucket
-- littleli/Scoop-littleli
 - ShuguangSun/sgs-scoop-bucket
 - Small-Ku/turbo-bucket
 - mo-san/scoop-bucket
