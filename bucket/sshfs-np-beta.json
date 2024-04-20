@@ -14,12 +14,10 @@
         }
     },
     "depends": "winfsp-np-beta",
-    "installer": {
-        "script": [
-            "$null = Invoke-ExternalCommand msiexec.exe -ArgumentList @('/i', \"$dir\\setup.msi_\", \"/qn /norestart INSTALLLEVEL=1000 INSTALLDIR=$dir\") -RunAs",
-            "$null = if (!(Test-Path \"$persist_dir/etc/ssh_config\")) { New-Item \"$dir/etc/ssh_config\" }"
-        ]
-    },
+    "pre_install":[
+        "$null = Invoke-ExternalCommand msiexec.exe -ArgumentList @('/i', \"$dir\\setup.msi_\", \"/qn /norestart INSTALLLEVEL=1000 INSTALLDIR=$dir\") -RunAs",
+        "$null = if (!(Test-Path \"$persist_dir$($cfg = '/etc/ssh_config')\")) { New-Item \"$dir$cfg\" }"
+    ],
     "post_install": "'', '.k', '.kr', '.r' | ForEach-Object { Set-ItemProperty \"HKLM:/SOFTWARE/WOW6432Node/WinFsp/Services/sshfs$_\" CommandLine \"svc %1 %2 %U -ofollow_symlinks -odirect_io -ocreate_umask=0000 -oThreadCount=$env:NUMBER_OF_PROCESSORS\" }",
     "persist": "etc/ssh_config",
     "bin": [

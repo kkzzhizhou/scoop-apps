@@ -48,14 +48,12 @@
         "Move-Item -Force \"$dir/twitch.py\" \"$dir/pkgs/streamlink/plugins\"",
         "$session = (Get-ChildItem \"$dir/pkgs/streamlink/session/session.py\").FullName",
         "(Get-Content -Raw $session).Replace('plugins_lazy: bool = True', 'plugins_lazy: bool = False') | Set-Content $session",
-        "if (!(Test-Path \"$persist_dir/config\")) {",
-        "    if (Test-Path \"$env:APPDATA/streamlink/config\") {",
-        "        info 'Copying existing ''config'' from ''%APPDATA%\\streamlink\\config'''",
-        "        $null = Copy-Item \"$env:APPDATA/streamlink/config\" \"$dir/config\"",
-        "    } else {",
-        "        $null = New-Item \"$dir/config\"",
-        "    }",
-        "}"
+        "if ((Test-Path \"$persist_dir/config\")) { return }",
+        "if (Test-Path \"$env:APPDATA/streamlink/config\") {",
+        "    info 'Copying existing ''config'' from ''%APPDATA%\\streamlink\\config'''",
+        "    return $null = Copy-Item \"$env:APPDATA/streamlink/config\" \"$dir/config\"",
+        "}",
+        "$null = New-Item \"$dir/config\""
     ],
     "bin": [
         [
