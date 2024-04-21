@@ -1,0 +1,62 @@
+{
+    "version": "124.0.1-1",
+    "description": "A fork of Firefox, focused on privacy, security and freedom",
+    "homepage": "https://librewolf.net/",
+    "license": "MPL-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://gitlab.com/api/v4/projects/44042130/packages/generic/librewolf/124.0.1-1/librewolf-124.0.1-1-windows-x86_64-portable.zip",
+            "hash": "73df055697b227bb3c788240073dc36468d6bf12135818bfddca3d92f28982af"
+        },
+        "32bit": {
+            "url": "https://gitlab.com/api/v4/projects/44042130/packages/generic/librewolf/124.0.1-1/librewolf-124.0.1-1-windows-i686-portable.zip",
+            "hash": "614ec5524cd6328ae61e2d3ecdf0d333f89ca659352241f998fed4461a576095"
+        }
+    },
+    "extract_dir": "librewolf-124.0.1-1",
+    "pre_install": [
+        "Remove-Item \"$dir\\LibreWolf-WinUpdater.exe\"",
+        "# Customizing LibreWolf Using AutoConfig",
+        "# https://support.mozilla.org/en-US/kb/customizing-firefox-using-autoconfig",
+        "$Addition = \"$persist_dir\\addition\"",
+        "if (Test-Path $Addition) {",
+        "  info 'Copying additional items...'",
+        "  Copy-Item -Path $Addition\\* -Destination \"$dir\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "}"
+    ],
+    "bin": [
+        [
+            "LibreWolf-Portable.exe",
+            "librewolf"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "LibreWolf-Portable.exe",
+            "LibreWolf"
+        ]
+    ],
+    "persist": "Profiles",
+    "pre_uninstall": [
+        "Copy-Item \"$dir\\LibreWolf\\defaults\\pref\\*\" \"$persist_dir\\LibreWolf\\defaults\\pref\" -Exclude 'channel-prefs.js'",
+        "Copy-Item \"$dir\\LibreWolf\\*.js\", \"$dir\\LibreWolf\\*.cfg\" \"$persist_dir\\LibreWolf\" -Exclude 'librewolf.cfg'"
+    ],
+    "checkver": {
+        "url": "https://gitlab.com/api/v4/projects/44042130/releases/permalink/latest",
+        "jsonpath": "$.tag_name"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://gitlab.com/api/v4/projects/44042130/packages/generic/librewolf/$version/librewolf-$version-windows-x86_64-portable.zip"
+            },
+            "32bit": {
+                "url": "https://gitlab.com/api/v4/projects/44042130/packages/generic/librewolf/$version/librewolf-$version-windows-i686-portable.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256sum"
+        },
+        "extract_dir": "librewolf-$version"
+    }
+}

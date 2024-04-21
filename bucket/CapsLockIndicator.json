@@ -1,0 +1,38 @@
+{
+    "version": "3.16.1.2",
+    "description": "A small utility that indicates the state of the Num lock, Caps lock and Scroll lock key.",
+    "homepage": "https://github.com/jonaskohl/CapsLockIndicator",
+    "license": "Apache-2.0",
+    "url": "https://github.com/jonaskohl/CapsLockIndicator/releases/download/3.16.1.2/CLIv3-3.16.1.2.exe",
+    "hash": "04c36a520cea729650ebda59cbf1f5353999d478ff706914c3fccf5558fa2495",
+    "installer": {
+        "script": [
+            "Move-Item $original_dir\\CLI*.exe  $original_dir\\CapsLockIndicator.exe",
+            "#Download translation file",
+            "$LocaleFileNames = 'de', 'fr', 'es', 'zh-CN', 'ru', 'pt-PT', 'pt-BR', 'it'",
+            "$LocaleNames = 'de-*', 'fr-*', 'es-*', 'zh-CN', 'ru-RU', 'pt-PT', 'pt-BR', 'it-*'",
+            "$LocaleName = (Get-WinSystemLocale).Name",
+            "for ($i = 0; $i -lt $LocaleNames.Length; $i++) {",
+            "    if ($LocaleName -like $LocaleNames[$i]) {",
+            "        break",
+            "    }",
+            "}",
+            "if ($LocaleFileNames[$i]) {",
+            "    Invoke-WebRequest -Uri \"https://cli.jonaskohl.de/uicul/$($LocaleFileNames[$i]).zip\" -OutFile $original_dir\\$($LocaleFileNames[$i]).zip",
+            "    Expand-Archive $original_dir\\$($LocaleFileNames[$i]).zip -DestinationPath $original_dir\\$($LocaleFileNames[$i])",
+            "    Remove-Item $original_dir\\$($LocaleFileNames[$i]).zip",
+            "}"
+        ]
+    },
+    "bin": "CapsLockIndicator.exe",
+    "shortcuts": [
+        [
+            "CapsLockIndicator.exe",
+            "CapsLockIndicator"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/jonaskohl/CapsLockIndicator/releases/download/$version/CLIv3-$version.exe"
+    }
+}

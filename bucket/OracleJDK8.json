@@ -1,0 +1,52 @@
+{
+    "homepage": "https://www.oracle.com/technetwork/java/javase/overview/index.html",
+    "description": "Oracle JDK 8",
+    "license": "https://java.com/otnlicense",
+    "version": "8u371",
+    "architecture": {
+        "64bit": {
+            "url": "https://sourceforge.net/projects/tomato-extra/files/apps/jdk-8u371-windows-x64.exe#/dl.7z",
+            "hash": "e1c8e1b5ec827e6681f80091c3c4f4e1aafc84dc8151fc4ec1279f1b3d121988"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "# Java Source (src.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB9\\110\" \"$dir\"",
+            "# JDK (tools.zip)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB10\\111\" \"$dir\\tmp\"",
+            "Expand-7zipArchive \"$dir\\tmp\\tools.zip\" \"$dir\"",
+            "# Copyright (COPYRIGHT)",
+            "Expand-7zipArchive \"$dir\\tmp\\.rsrc\\1033\\JAVA_CAB11\\112\" \"$dir\"",
+            "# Convert .pack to .jar, and remove .pack",
+            "pushd \"$dir\"",
+            "ls \"$dir\" -recurse | ? name -match '^[^_].*?\\.(?i)pack$' | % {",
+            "    $name = $_.fullname -replace '\\.(?i)pack$', ''",
+            "    $pack = \"$name.pack\"",
+            "    $jar = \"$name.jar\"",
+            "    & \"bin\\unpack200.exe\" \"-r\" \"$pack\" \"$jar\"",
+            "}",
+            "rm -r tmp | out-null",
+            "popd"
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/tomato-extra/files/apps/",
+        "regex": "jdk-(8u\\d+)-windows-x64.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://sourceforge.net/projects/tomato-extra/files/apps/jdk-$version-windows-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "https://master.dl.sourceforge.net/project/tomato-extra/apps/sha256sum.txt"
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "version": "6.3.3",
+    "description": "Copy files between a local computer and remote servers using FTP, FTPS, SCP, SFTP, WebDAV or S3 file transfer protocols.",
+    "homepage": "https://winscp.net",
+    "license": "GPL-3.0-or-later",
+    "url": "https://downloads.sourceforge.net/project/winscp/WinSCP/6.3.3/WinSCP-6.3.3-Portable.zip",
+    "hash": "7f68f9cc324cc8a8195829c83d0443bd2cd73fdb253d776aa2aeb4ed2d42711d",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\winscp.ini\")) {",
+        "    @(",
+        "        '[Configuration\\Interface]'",
+        "        'RandomSeedFile=.\\winscp.rnd'",
+        "    ) | Add-Content -Path \"$dir\\winscp.ini\" -Encoding ASCII -Force",
+        "}",
+        "#Download translation file",
+        "$LocaleFileNames = 'pt', 'ca', 'cs', 'nl', 'fi', 'fr', 'de', 'hu', 'is', 'it', 'jp', 'ko', 'no', 'pl', 'ptg', 'ro', 'ru', 'chs', 'sk', 'es', 'sv', 'ch', 'tr', 'uk', 'fa', 'hr', 'lt', 'xxk', 'ar', 'et', 'srl', 'in', 'be', 'vi', 'el', 'da', 'ms', 'bg', 'he', 'fp', 'th', 'mya', 'bn', 'mk'",
+        "$LocaleNames = 'pt-*', 'ca-*', 'cs-*', 'nl-*', 'fi-*', 'fr-*', 'de-*', 'hu-*', 'is-*', 'it-*', 'ja-JP', 'ko-*', 'nb-*', 'pl-*', 'pt-*', 'ro-*', 'ru-*', 'zh-CN', 'sk-*', 'es-*', 'sv-*', 'zh-TW', 'tr-*', 'uk-*', 'fa-*', 'hr-*', 'lt-*', 'kab-*', 'ar-*', 'et-*', 'sr-*', 'id-*', 'be-*', 'vi-*', 'el-*', 'da-*', 'ms-*', 'bg-*', 'he-*', 'fil-*', 'th-*', 'my-*', 'bn-*', 'mk-*'",
+        "$LocaleName = (Get-WinSystemLocale).Name",
+        "for ($i = 0; $i -lt $LocaleNames.Length; $i++) {",
+        "    if ($LocaleName -like $LocaleNames[$i]) {",
+        "        break",
+        "    }",
+        "}",
+        "if ($LocaleFileNames[$i]) {",
+        "    Invoke-WebRequest -Uri \"https://winscp.net/translations/dll/$version/$($LocaleFileNames[$i]).zip\" -OutFile $original_dir\\$($LocaleFileNames[$i]).zip",
+        "    Expand-Archive $original_dir\\$($LocaleFileNames[$i]).zip -DestinationPath $original_dir",
+        "    Remove-Item $original_dir\\$($LocaleFileNames[$i]).zip",
+        "}"
+    ],
+    "bin": "WinSCP.exe",
+    "shortcuts": [
+        [
+            "WinSCP.exe",
+            "WinSCP"
+        ]
+    ],
+    "persist": "winscp.ini",
+    "checkver": {
+        "url": "https://winscp.net/eng/downloads.php",
+        "regex": "WinSCP-([\\d.]+)-Portable\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://downloads.sourceforge.net/project/winscp/WinSCP/$version/WinSCP-$version-Portable.zip",
+        "hash": {
+            "url": "https://winscp.net/download/WinSCP-$version-ReadMe.txt",
+            "regex": "(?sm)$basename.*?SHA-256: $sha256"
+        }
+    }
+}

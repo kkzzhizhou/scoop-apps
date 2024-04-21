@@ -1,0 +1,70 @@
+{
+    "version": "0.77.2",
+    "description": "Open-Source DirectShow Media Splitter and Decoders",
+    "homepage": "https://github.com/Nevcairiel/LAVFilters",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Nevcairiel/LAVFilters/releases/download/0.77.2/LAVFilters-0.77.2-x64.zip",
+            "hash": "4e4c3eb8cac657375983dc5df71706470f32812b2876a5f48eee6be4fb4ff9dd"
+        },
+        "32bit": {
+            "url": "https://github.com/Nevcairiel/LAVFilters/releases/download/0.77.2/LAVFilters-0.77.2-x86.zip",
+            "hash": "cb4875fb50806b4ef599905a5d18026cca2a967d698dd08e25a7784b71ed66ff"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "'LAVAudio', 'LAVVideo', 'LAVSplitter' | %{",
+            "    $codec = \"$dir\\$_.ax\"",
+            "    regsvr32 /s $codec",
+            "    $WshShell = New-Object -comObject WScript.Shell",
+            "    $Shortcut = $WshShell.CreateShortcut(\"$dir\\$_.lnk\")",
+            "    $Shortcut.TargetPath = 'rundll32.exe'",
+            "    $Shortcut.Arguments = \"$codec,OpenConfiguration\"",
+            "    $Shortcut.IconLocation = $codec",
+            "    $Shortcut.Save()",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "'LAVAudio', 'LAVVideo', 'LAVSplitter' | %{",
+            "    regsvr32 /u /s \"$dir\\$_.ax\"",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "LAVAudio.lnk",
+            "LAV Audio Configuration"
+        ],
+        [
+            "LAVSplitter.lnk",
+            "LAV Splitter Configuration"
+        ],
+        [
+            "LAVVideo.lnk",
+            "LAV Video Configuration"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Nevcairiel/LAVFilters/releases/download/$version/LAVFilters-$version-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/Nevcairiel/LAVFilters/releases/download/$version/LAVFilters-$version-x86.zip"
+            }
+        }
+    }
+}

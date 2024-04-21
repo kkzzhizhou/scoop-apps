@@ -1,0 +1,39 @@
+{
+    "version": "2.0.142",
+    "description": "YAPA-2 is minimalistic desktop timer app for Pomodoro Technique users.",
+    "homepage": "https://github.com/YetAnotherPomodoroApp/YAPA-2",
+    "license": "MIT",
+    "url": "https://github.com/YetAnotherPomodoroApp/YAPA-2/releases/download/v2.0.142/Setup.exe",
+    "hash": "c84d71304490c27ca51991352b4f566071168901dd55b301a98c6f2e994d5f7a",
+    "installer": {
+        "script": [
+            "$tmpDir = [GUID]::NewGuid().ToString('N')",
+            "Expand-7zipArchive \"$original_dir\\Setup.exe\" \"$original_dir\\$tmpDir\" -Removal",
+            "$nupkg = (Get-Item \"$original_dir\\$tmpDir\\*.nupkg\").name",
+            "Expand-7zipArchive \"$original_dir\\$tmpDir\\$nupkg\" \"$original_dir\\$tmpDir\"",
+            "New-Item -Path $original_dir\\app-$version\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\$tmpDir\\lib\\net45\\* $original_dir\\app-$version\\",
+            "New-Item -Path $original_dir\\packages\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\$tmpDir\\$nupkg $original_dir\\packages\\",
+            "Move-Item $original_dir\\$tmpDir\\RELEASES $original_dir\\packages\\",
+            "Move-Item $original_dir\\$tmpDir\\Update.exe $original_dir\\",
+            "New-Item -Path $original_dir\\app-$version\\Resources\\ -ItemType Directory -Force | Out-Null",
+            "Move-Item $original_dir\\app-$version\\*.png $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\*.ico $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\*.wav $original_dir\\app-$version\\Resources\\",
+            "Move-Item $original_dir\\app-$version\\YAPA_ExecutionStub.exe $original_dir\\YAPA.exe",
+            "Remove-Item $original_dir\\$tmpDir -Recurse -Force"
+        ]
+    },
+    "bin": "YAPA.exe",
+    "shortcuts": [
+        [
+            "YAPA.exe",
+            "YAPA 2"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/YetAnotherPomodoroApp/YAPA-2/releases/download/v$version/Setup.exe"
+    }
+}

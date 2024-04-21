@@ -1,0 +1,54 @@
+{
+    "version": "4.2.2",
+    "description": "A feature-packed, cross-platform game engine to create 2D and 3D games from a unified interface (with C# support)",
+    "homepage": "https://godotengine.org/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_mono_win64.zip",
+            "hash": "sha512:d6bf8ae60c4e83e89db5a8da74ce56464f8890736e40a18a3c3e593aefb8c755f2fa4992ee24be1074ccaed7b7d12a22342d9a7d576648255bf0c489227ecd5f",
+            "extract_dir": "Godot_v4.2.2-stable_mono_win64"
+        },
+        "32bit": {
+            "url": "https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_mono_win32.zip",
+            "hash": "sha512:35ffd4cf79b1780358f87995170a04fea25c02136192ad982ecc26d7eb913779de057a5e96f98ab52c2170d3eee1c6a723d958b86821d2c62cee53171808b6d7",
+            "extract_dir": "Godot_v4.2.2-stable_mono_win32"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\Godot_*_console.*\"",
+        "Get-Item \"$dir\\Godot_*.exe\" | Rename-Item -NewName 'godot.exe'",
+        "# Self contained mode",
+        "if (Test-Path \"$persist_dir\\_sc_\") { Copy-Item \"$persist_dir\\_sc_\" \"$dir\\_sc_\" }"
+    ],
+    "bin": "godot.exe",
+    "shortcuts": [
+        [
+            "godot.exe",
+            "Godot Engine Mono"
+        ]
+    ],
+    "pre_uninstall": [
+        "# Self contained mode",
+        "if (Test-Path \"$dir\\_sc_\") { Copy-Item \"$dir\\_sc_\" \"$persist_dir\\_sc_\" }"
+    ],
+    "checkver": {
+        "url": "https://github.com/godotengine/godot/releases/latest",
+        "regex": "(?<version>[\\d\\w.]+)-stable"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/godotengine/godot/releases/download/$version-stable/Godot_v$version-stable_mono_win64.zip",
+                "extract_dir": "Godot_v$version-stable_mono_win64"
+            },
+            "32bit": {
+                "url": "https://github.com/godotengine/godot/releases/download/$version-stable/Godot_v$version-stable_mono_win32.zip",
+                "extract_dir": "Godot_v$version-stable_mono_win32"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA512-SUMS.txt"
+        }
+    }
+}

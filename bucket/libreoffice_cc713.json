@@ -1,0 +1,91 @@
+{
+    "version": "24.2.2.2",
+    "description": "Powerful and free office suite, a successor to OpenOffice(.org).",
+    "homepage": "https://libreoffice.org/",
+    "license": "MPL-2.0",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "notes": "If you are upgrading from portable version, you can migrate settings by copying \"$persist_dir\\Data\" to \"%AppData%\\LibreOffice\"",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/x86_64/LibreOffice_24.2.2.2_Win_x86-64.msi#/dl.msi_",
+            "hash": "a7251bca75603c3075477d090e17931dbeff32eb18808421d540fe5b21497a5f"
+        },
+        "32bit": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/x86/LibreOffice_24.2.2.2_Win_x86.msi#/dl.msi_",
+            "hash": "17b796ed35f73699635383e157b2a9d2c9401a73097c5db501242441c43e4cda"
+        },
+        "arm64": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/aarch64/LibreOffice_24.2.2.2_Win_aarch64.msi#/dl.msi_",
+            "hash": "ba82b5c1d30ae2a18e1baffd5aa6ef5b9c4454c5db84698535b38b8d86ef0cb7"
+        }
+    },
+    "pre_install": [
+        "# keeping files in 'LibreOffice' directory so that bundled font can work properly",
+        "ensure \"$dir\\LibreOffice\\share\\fonts\" | Out-Null",
+        "# usage: get_config ($name, $default). $default ==> set to what value if the value is empty (not being set before)",
+        "if (get_config USE_LESSMSI $false) {",
+        "    # if 'use_lessmsi' is true",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\" | Out-Null",
+        "    Move-Item \"$dir\\Fonts\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -Force",
+        "    Remove-Item \"$dir\\System*\" -Recurse -Force",
+        "} else {",
+        "    # if 'use_lessmsi' is false or not set",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\" | Out-Null",
+        "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -ExtractDir 'Fonts' | Out-Null",
+        "    Remove-Item \"$dir\\LibreOffice\\Fonts\", \"$dir\\LibreOffice\\System*\" -Recurse -Force",
+        "}",
+        "Remove-Item \"$dir\\dl.msi_\""
+    ],
+    "shortcuts": [
+        [
+            "LibreOffice\\LibreOffice\\program\\soffice.exe",
+            "LibreOffice\\LibreOffice"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\sbase.exe",
+            "LibreOffice\\LibreOffice Base"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\scalc.exe",
+            "LibreOffice\\LibreOffice Calc"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\sdraw.exe",
+            "LibreOffice\\LibreOffice Draw"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\simpress.exe",
+            "LibreOffice\\LibreOffice Impress"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\smath.exe",
+            "LibreOffice\\LibreOffice Math"
+        ],
+        [
+            "LibreOffice\\LibreOffice\\program\\swriter.exe",
+            "LibreOffice\\LibreOffice Writer"
+        ]
+    ],
+    "checkver": {
+        "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86_64/",
+        "regex": "LibreOffice_([\\d.]+)_Win_x86-64.msi"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86_64/LibreOffice_$version_Win_x86-64.msi#/dl.msi_"
+            },
+            "32bit": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86/LibreOffice_$version_Win_x86.msi#/dl.msi_"
+            },
+            "arm64": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/aarch64/LibreOffice_$version_Win_aarch64.msi#/dl.msi_"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}
