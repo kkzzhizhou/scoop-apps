@@ -1,0 +1,48 @@
+{
+    "version": "8.0.1",
+    "description": "Office suite that combines text, spreadsheet and presentation editors allowing to create, view and edit documents.",
+    "homepage": "https://www.onlyoffice.com/apps.aspx",
+    "license": "AGPL-3.0-only",
+    "notes": [
+        "'x2t.exe' is added to your PATH. You can verify by running the following in your terminal,",
+        "x2t"
+    ],
+    "suggest": {
+        "Microsoft Visual C++ Redistibutable 2015": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v8.0.1/DesktopEditors_x64.exe#/setup.exe",
+            "hash": "2c0966bdb2731583c0f5a51b0476da754bd64df51e76ffdd937839cf395eceb8"
+        },
+        "32bit": {
+            "url": "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v8.0.1/DesktopEditors_x86.exe#/setup.exe",
+            "hash": "eb6c5387df714fcead983b8ceed7ef619703ddd997299dcd78a6c3928533ca14"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\setup.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', \"/DIR=$dir\\ONLYOFFICE\", '/ALLUSERS', '/SUPPRESSMSGBOXES')",
+        "Remove-Item \"$dir\\setup.exe\""
+    ],
+    "env_add_path": "ONLYOFFICE\\converter",
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\ONLYOFFICE\\unins000.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', '/FORCECLOSEAPPLICATIONS', '/SUPPRESSMSGBOXES')"
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/ONLYOFFICE/DesktopEditors",
+        "jsonpath": "$.assets[*].browser_download_url",
+        "regex": "v([\\d.]+)/DesktopEditors_(?:x64|x86)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v$version/DesktopEditors_x64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/ONLYOFFICE/DesktopEditors/releases/download/v$version/DesktopEditors_x86.exe#/setup.exe"
+            }
+        }
+    }
+}

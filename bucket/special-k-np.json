@@ -1,0 +1,58 @@
+{
+    "version": "23.9.10.5",
+    "homepage": "https://www.special-k.info/",
+    "description": "Lovingly referred to as the Swiss Army Knife of PC gaming, Special K does a bit of everything.",
+    "license": "GPL-3.0",
+    "url": "https://sk-data.special-k.info/repository/SpecialK_23.9.10.5.exe",
+    "hash": "ef1ec047af4623ada6682e4fc289c960bc9422a826ef7a034294238ddfdee5f4",
+    "pre_install": [
+        "$special_k_dir = \"$env:LOCALAPPDATA\\Programs\\Special K\"",
+        "if (Test-Path \"$persist_dir\\Profiles\") {",
+        "    Copy-Item \"$persist_dir\\Profiles\" \"$special_k_dir\\Profiles\" -Recurse",
+        "}",
+        "if (Test-Path \"$persist_dir\\Global\") {",
+        "    Copy-Item \"$persist_dir\\Global\" \"$special_k_dir\\Global\" -Recurse",
+        "}"
+    ],
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/SP-",
+            "/NORESTART",
+            "/CURRENTUSER"
+        ]
+    },
+    "env_add_path": ".",
+    "uninstaller": {
+        "script": [
+            "$special_k_dir = \"$env:LOCALAPPDATA\\Programs\\Special K\"",
+            "if ($cmd -eq 'uninstall') {",
+            "    if (!$purge) {",
+            "        ensure \"$persist_dir\" | Out-Null",
+            "        Write-Host 'Backing up Special K profiles and global config...' -F 'Yellow'",
+            "        Copy-Item \"$special_k_dir\\Profiles\" \"$persist_dir\\Profiles\" -Recurse -Force",
+            "        Copy-Item \"$special_k_dir\\Global\" \"$persist_dir\\Profiles\" -Recurse -Force",
+            "        Write-Host 'Done! Special K profiles and global config were successfully backed up' -F 'Green'",
+            "        Write-Output \"You can find a backup of your Special K profiles in '$persist_dir\\Profiles'\"",
+            "    }",
+            "    Start-Process \"$special_k_dir\\Servlet\\unins000.exe\" -Wait `",
+            "      -Args @('/VERYSILENT', '/SP-', '/NORESTART', '/CURRENTUSER')",
+            "}"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "$jsonContent = Invoke-RestMethod 'https://sk-data.special-k.info/repository.json'",
+            "$version = $jsonContent.Main.Versions.Where({$_.Branches -eq 'Website'}).Name[0]",
+            "Write-Output $version"
+        ],
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://sk-data.special-k.info/repository/SpecialK_$version.exe",
+        "hash": {
+            "url": "https://sk-data.special-k.info/repository.json",
+            "jsonpath": "$.Main.Versions[?(@.Name == '$version')].SHA256"
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "version": "20231213",
+    "description": "This doesn't actually contain iTunes, instead it only contains Apple Application Support QuickTime AAC codecs (AMDS will be supported soon)",
+    "homepage": "https://www.apple.com/itunes/",
+    "license": "Proprietary",
+    "depends": "main/lessmsi",
+    "notes": [
+        "You'll probably want to create the following symlink",
+        "$_ = '/Apple Application Support'; New-Item -ItemType SymbolicLink -Target \"$(scoop prefix itunes-lean)$_\" -Path \"/Program Files/Common Files/Apple$_\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://secure-appldnld.apple.com/itunes12/042-92440-20231213-DDE54149-6537-4DB9-97D6-69413CD6CF86/iTunes64Setup.exe#/_.zip",
+            "hash": "541c30b2d72705afe75649f97e3daf677b8576e6e73d6f78f7265a0ded61011f"
+        },
+        "32bit": {
+            "url": "https://secure-appldnld.apple.com/itunes12/042-92439-20231213-99D32FA3-9E6E-4444-ADB4-FE61BB83716E/iTunesSetup.exe#/_.zip",
+            "hash": "cd6891afada9f940bc551a215a6c40f51a93b140026375bd30b1ee686dc73bd2"
+        }
+    },
+    "post_install": [
+        "$arch = if ($architecture -ne '32bit') { '64' }",
+        "$null = lessmsi.exe x \"$dir\\iTunes$arch.msi\" \"$dir\\\" ('ASL', 'CoreAudioToolbox', 'CoreFoundation', 'libdispatch', 'libicuin', 'libicuuc', 'objc', 'icudt62', 'msvcp140', 'vcruntime140' | ForEach-Object { $_+'.dll' })",
+        "$SourceDir = \"$dir/SourceDir\"",
+        "Move-Item (Get-ChildItem -File (Get-ChildItem $SourceDir)) (New-Item -ItemType Directory \"$dir/Apple Application Support\")",
+        "Remove-Item -Recurse $SourceDir",
+        "Get-ChildItem -File \"$dir\" | Remove-Item -Recurse"
+    ],
+    "checkver": {
+        "script": [
+            "('64', '32' | ForEach-Object {",
+            "    $_ = [Net.HttpWebRequest]::Create(\"https://www.apple.com/itunes/download/win$_\")",
+            "    $_.Method = 'head'",
+            "    $_.GetResponse().ResponseUri.Segments[-2]",
+            "}) -join ''"
+        ],
+        "regex": "\\A(?<64>\\d{3}-\\d{5}-(\\d{8})-[A-F\\d]{8}(?:-[A-F\\d]{4}){3}-[A-F\\d]{12})/(?<32>\\d{3}-\\d{5}-\\d{8}-[A-F\\d]{8}(?:-[A-F\\d]{4}){3}-[A-F\\d]{12})/\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://secure-appldnld.apple.com/itunes12/$match64/iTunes64Setup.exe#/_.zip"
+            },
+            "32bit": {
+                "url": "https://secure-appldnld.apple.com/itunes12/$match32/iTunesSetup.exe#/_.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "version": "4.13.1",
+    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘，由阿里巴巴集团出品",
+    "homepage": "https://www.aliyundrive.com/",
+    "license": "Unknown",
+    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/4.13.1/win32/ia32/aDrive-4.13.1.exe#/dl.7z",
+    "hash": "a57ecfcb06e4f6dcbb0d2ad11a0f8e88392364746894f34133ad084174974020",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "aDrive.exe",
+            "阿里云盘"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
+        "Remove-Item -Force -Recurse \"$dir\\`$TEMP\""
+    ],
+    "checkver": {
+        "url": "https://www.aliyundrive.com/desktop/version/update.json",
+        "regex": "/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/ia32/aDrive-$version.exe#/dl.7z"
+    }
+}

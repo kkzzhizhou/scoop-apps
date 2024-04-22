@@ -1,0 +1,30 @@
+{
+    "version": "2021.06.30T22.48.16.000Z",
+    "homepage": "https://github.com/Fleex255/PolicyPlus",
+    "description": "Local Group Policy Editor plus more, for all Windows editions.",
+    "license": "CC-BY-4.0",
+    "url": "https://github.com/Fleex255/PolicyPlus/releases/download/June2021/PolicyPlus.exe",
+    "hash": "md5:412e1ca22a531bb23f5878e6e3c0bb5b",
+    "shortcuts": [
+        [
+            "PolicyPlus.exe",
+            "Policy Plus"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$cont = Invoke-RestMethod 'https://s3-us-west-2.amazonaws.com/policy-plus/'",
+            "$date = $cont.ListBucketResult.Contents['Key' -eq ('Policy Plus.exe' -or 'PolicyPlus.exe')].LastModified",
+            "$dateVersion = $date -replace ('\\:|-', '.'); $date = ([datetime]$date).toString('MMMMyyyy')",
+            "Write-Output \"$dateVersion $date\""
+        ],
+        "regex": "([\\w.]+)\\s(?<Date>[\\w]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Fleex255/PolicyPlus/releases/download/$matchDate/PolicyPlus.exe",
+        "hash": {
+            "url": "https://s3-us-west-2.amazonaws.com/policy-plus/",
+            "regex": "$basename.*?\\</LastModified\\>\\<ETag\\>&quot;$md5"
+        }
+    }
+}

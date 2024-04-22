@@ -1,0 +1,53 @@
+{
+    "version": "5.23.31884",
+    "homepage": "https://aws.amazon.com/chime/",
+    "description": "A communications service that lets you meet, chat, and place business calls inside and outside your organization, all using a single application.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://aws.amazon.com/terms/"
+    },
+    "notes": [
+        "To add 'Amazon Chime' to the context menu run:",
+        "chime-context-menu.ps1 install",
+        "To remove 'Amazon Chime' from the context menu run:",
+        "chime-context-menu.ps1 uninstall"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://clients.chime.aws/win-nme/AmazonChime-5.23.31884-full.nupkg",
+            "hash": "sha1:617dfa0cf037946fd817ea88e04d8099acf6a610"
+        }
+    },
+    "extract_dir": "lib\\net45",
+    "shortcuts": [
+        [
+            "Chime.exe",
+            "Amazon Chime"
+        ]
+    ],
+    "post_install": [
+        "Write-Host \"Registering 'URL:chime' protocol handler\"",
+        "New-Item 'HKCU:\\SOFTWARE\\Classes\\Chime\\DefaultIcon' -Value \"$dir\\Chime.exe,0\" -Force | Out-Null",
+        "New-Item 'REGISTRY::HKEY_CURRENT_USER\\SOFTWARE\\Classes\\Chime\\shell\\open\\command' -Value \"$dir\\Chime.exe %1\" -Force | Out-Null",
+        "New-ItemProperty 'HKCU:\\SOFTWARE\\Classes\\Chime' -Name '(Default)' -Value 'URL:chime' -Force | Out-Null",
+        "New-ItemProperty 'HKCU:\\SOFTWARE\\Classes\\Chime' -Name 'URL Protocol' -Value '' -Force | Out-Null",
+        "New-ItemProperty 'HKCU:\\SOFTWARE\\Classes\\Chime' -Name 'UseOriginalUrlEncoding' -PropertyType 'Dword' -Value '1' -Force | Out-Null",
+        "Write-Host 'Done!'"
+    ],
+    "pre_uninstall": "Write-Host \"Unregistering 'URL:chime' protocol handler\"; Remove-Item 'HKCU:\\SOFTWARE\\Classes\\Chime' -Recurse -Force; Write-Host 'Done!'",
+    "checkver": {
+        "url": "https://clients.chime.aws/win-nme/RELEASES",
+        "regex": "AmazonChime-([\\d.]+)-full\\.nupkg"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://clients.chime.aws/win-nme/AmazonChime-$version-full.nupkg",
+                "hash": {
+                    "url": "$baseurl/RELEASES",
+                    "regex": "$sha1\\s$basename"
+                }
+            }
+        }
+    }
+}

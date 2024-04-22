@@ -1,0 +1,78 @@
+{
+    "version": "24.2.2.2",
+    "description": "Powerful and free office suite, a successor to OpenOffice(.org).",
+    "homepage": "https://libreoffice.org/",
+    "license": "MPL-2.0",
+    "suggest": {
+        "Visual C++ Redistributable 2015-2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/x86_64/LibreOffice_24.2.2.2_Win_x86-64.msi#/setup.msi_",
+            "hash": "a7251bca75603c3075477d090e17931dbeff32eb18808421d540fe5b21497a5f",
+            "pre_install": [
+                "foreach ($z in @('soffice', 'unopkg')) {",
+                "    [System.IO.File]::WriteAllLines(\"$dir\\$z.cmd\", \"@`\"%ProgramFiles%\\LibreOffice\\program\\$z.com`\"  %*\", [System.text.UTF8Encoding]($false))",
+                "}"
+            ]
+        },
+        "32bit": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/x86/LibreOffice_24.2.2.2_Win_x86.msi#/setup.msi_",
+            "hash": "17b796ed35f73699635383e157b2a9d2c9401a73097c5db501242441c43e4cda",
+            "pre_install": [
+                "foreach ($z in @('soffice', 'unopkg')) {",
+                "    [System.IO.File]::WriteAllLines(\"$dir\\$z.cmd\", \"@`\"%ProgramFiles(x86)%\\LibreOffice\\program\\$z.com`\"  %*\", [System.text.UTF8Encoding]($false))",
+                "}"
+            ]
+        },
+        "arm64": {
+            "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/24.2.2.2/win/aarch64/LibreOffice_24.2.2.2_Win_aarch64.msi#/setup.msi_",
+            "hash": "ba82b5c1d30ae2a18e1baffd5aa6ef5b9c4454c5db84698535b38b8d86ef0cb7",
+            "pre_install": [
+                "foreach ($z in @('soffice', 'unopkg')) {",
+                "    [System.IO.File]::WriteAllLines(\"$dir\\$z.cmd\", \"@`\"%ProgramFiles%\\LibreOffice\\program\\$z.com`\"  %*\", [System.text.UTF8Encoding]($false))",
+                "}"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart')"
+        ]
+    },
+    "bin": [
+        "soffice.cmd",
+        [
+            "soffice.cmd",
+            "libreoffice"
+        ],
+        "unopkg.cmd"
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "    Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/x', \"$dir\\setup.msi_\", '/qn', '/norestart')",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/latest/win/x86_64/",
+        "regex": "LibreOffice_([\\d.]+)_Win_x86-64\\.msi"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86_64/LibreOffice_$version_Win_x86-64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/x86/LibreOffice_$version_Win_x86.msi#/setup.msi_"
+            },
+            "arm64": {
+                "url": "https://downloadarchive.documentfoundation.org/libreoffice/old/$version/win/aarch64/LibreOffice_$version_Win_aarch64.msi#/setup.msi_"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

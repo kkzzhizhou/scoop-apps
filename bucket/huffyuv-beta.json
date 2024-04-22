@@ -1,0 +1,20 @@
+{
+    "version": "2.2",
+    "homepage": "https://web.archive.org/web/20020607190222/http://www.math.berkeley.edu/~benrg/huffyuv.html#Installation",
+    "description": "A very fast, lossless Win32 video codec. (Beta release)",
+    "license": "GPL-2.0-or-later",
+    "url": "https://www.videohelp.com/download/huffyuv_220.zip",
+    "hash": "369b416ac0f4acf2c07211eeb4b0275173c15d6f701ae19b17fc746ca0fa1a52",
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'InfDefaultInstall' -Wait -Verb 'RunAs' -Args \"$dir\\huffyuv.inf\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'rundll32.exe' -Wait -Verb 'RunAs' -Args @('setupapi,InstallHinfSection', 'Remove_HFYU', '132', \"$env:windir\\INF\\HUFFYUV.INF\")",
+        "Remove-Item 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\MediaResources\\icm\\VIDC.HFYU' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "Remove-Item \"$env:windir\\System32\\HUFFYUV.*\" -ErrorAction 'SilentlyContinue' -Force",
+        "Remove-Item \"$env:windir\\inf\\HUFFYUV.*\" -ErrorAction 'SilentlyContinue' -Force",
+        "Remove-Item 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\HUFFYUV' -ErrorAction 'SilentlyContinue' -Recurse -Force"
+    ]
+}

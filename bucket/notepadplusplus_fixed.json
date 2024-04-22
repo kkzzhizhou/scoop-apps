@@ -1,0 +1,90 @@
+{
+    "version": "8.6.5",
+    "description": "A free source code editor and Notepad replacement that supports several languages.",
+    "homepage": "https://notepad-plus-plus.org",
+    "license": "GPL-3.0-or-later",
+    "notes": "Add Notepad++ as a context menu option by running: reg import \"$dir\\install-context.reg\"",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.5/npp.8.6.5.portable.x64.zip",
+            "hash": "de106490247c9d7c0075f30c9e0e8931ac551706231507b5c9d0869a8acd5e56"
+        },
+        "32bit": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.5/npp.8.6.5.portable.zip",
+            "hash": "b8fb5dc47aaca773f9179cf767754e863bc5c6d51ebfa94e7b8028ad5114af4f"
+        },
+        "arm64": {
+            "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.6.5/npp.8.6.5.portable.arm64.zip",
+            "hash": "6047c7da8393ca4c56c2cb051723a0309fefa405c65f0140b1ac4fe8aa4736ae"
+        }
+    },
+    "pre_install": [
+        "'session.xml', 'userDefineLang.xml', 'nativeLang.xml' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" -ItemType File | Out-Null }",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\stylers.xml\")) { Copy-Item \"$dir\\stylers.model.xml\" \"$dir\\stylers.xml\" }",
+        "'config.xml', 'contextMenu.xml', 'shortcuts.xml' | ForEach-Object {",
+        "   Copy-Item \"$persist_dir\\$_\" \"$dir\\$_\" -ErrorAction 'SilentlyContinue'",
+        "}",
+        "'themes', 'userDefineLangs', 'plugins' | ForEach-Object {",
+        "   Copy-Item \"$persist_dir\\$_\\*\" \"$dir\\$_\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}"
+    ],
+    "post_install": [
+        "'install-context', 'uninstall-context' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\notepadplusplus\\$_.reg\") {",
+        "        $nppPath = \"$dir\\notepad++.exe\".Replace('\\', '\\\\')",
+        "        $content = (Get-Content \"$bucketsdir\\extras\\scripts\\notepadplusplus\\$_.reg\").Replace('$npp', $nppPath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($cmd -eq 'uninstall') {",
+            "    reg import \"$dir\\uninstall-context.reg\"",
+            "}",
+            "'config.xml', 'contextMenu.xml', 'shortcuts.xml' | ForEach-Object {",
+            "   Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -ErrorAction 'SilentlyContinue'",
+            "}",
+            "'themes', 'userDefineLangs', 'plugins' | ForEach-Object {",
+            "   Copy-Item \"$dir\\$_\\*\" \"$persist_dir\\$_\" -ErrorAction 'SilentlyContinue' -Recurse",
+            "}"
+        ]
+    },
+    "bin": "notepad++.exe",
+    "shortcuts": [
+        [
+            "notepad++.exe",
+            "Notepad++ Fixed"
+        ]
+    ],
+    "persist": [
+        "backup",
+        "cloud",
+        "nativeLang.xml",
+        "session.xml",
+        "stylers.xml",
+        "userDefineLang.xml"
+    ],
+    "checkver": {
+        "github": "https://github.com/notepad-plus-plus/notepad-plus-plus"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.arm64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/npp.$version.checksums.sha256"
+        }
+    }
+}

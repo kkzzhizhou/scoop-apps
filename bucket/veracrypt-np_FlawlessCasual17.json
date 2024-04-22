@@ -1,0 +1,44 @@
+{
+    "version": "1.26.7",
+    "homepage": "https://www.veracrypt.fr/en/Home.html",
+    "description": "A free open source disk encryption software.",
+    "license": "Apache-2.0",
+    "notes": [
+        "Make sure you decrypt your disks (encrypted with VeraCrypt) before uninstalling the app.",
+        "You may have to restart your computer in order for VeraCrypt to work correctly.",
+        "If you are having any VeraCrypt-related issues, please see,",
+        "https://www.veracrypt.fr/en/Troubleshooting.html",
+        "https://www.veracrypt.fr/en/Issues%20and%20Limitations.html"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://launchpad.net/veracrypt/trunk/1.26.7/+download/VeraCrypt_Setup_x64_1.26.7.msi#/setup.msi_",
+            "hash": "md5:d7824445f363880a0a452a8dc08b6f15"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart', 'ACCEPTLICENSE=YES')"
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "    Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/x', \"$dir\\setup.msi_\", '/qn', '/norestart')",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://launchpad.net/veracrypt/trunk",
+        "regex": "Latest\\sversion\\sis\\s([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://launchpad.net/veracrypt/trunk/$version/+download/VeraCrypt_Setup_x64_$version.msi#/setup.msi_",
+                "hash": {
+                    "url": "$url/+md5",
+                    "regex": "$md5\\s$basename"
+                }
+            }
+        }
+    }
+}

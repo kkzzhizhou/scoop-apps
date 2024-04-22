@@ -1,0 +1,19 @@
+{
+    "version": "7.2.1",
+    "homepage": "https://web.archive.org/web/20020607190222/http://www.math.berkeley.edu/~benrg/huffyuv.html",
+    "description": "A very fast, lossless Win32 video codec. (MultiThreaded support version)",
+    "license": "GPL-2.0-or-later",
+    "url": "https://www.videohelp.com/download/huffyuv_mt_712.zip",
+    "hash": "81b1243938cd2ee7a1eed6d0aa96c7150f371438aeb806f599fb02b93b3928c6",
+    "extract_dir": "huffyuv_mt",
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "if ([CultureInfo]::InstalledUICulture.Name -match 'en-*') { Rename-Item \"$dir\\huffyuv_mt_en.dll\" 'huffyuv_mt.dll'; Remove-Item \"$dir\\huffyuv_mt_jp.dll\" }",
+        "elseif ([CultureInfo]::InstalledUICulture.Name -in ('ja', 'ja-JP')) { Rename-Item \"$dir\\huffyuv_mt_jp.dll\" 'huffyuv_mt.dll'; Remove-Item \"$dir\\huffyuv_mt_en.dll\" }",
+        "Start-Process 'InfDefaultInstall' -Wait -Verb 'RunAs' -Args \"$dir\\huffyuv_mt.inf\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'rundll32.exe' -Wait -Verb 'RunAs' -Args @('setupapi,InstallHinfSection', 'DefaultUninstall', '132', \"$env:windir\\INF\\HUFFYUV_MT.INF\")"
+    ]
+}

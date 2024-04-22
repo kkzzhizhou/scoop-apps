@@ -1,0 +1,42 @@
+{
+    "version": "2.2.1",
+    "description": "An extremely light-weight, open source media player for Windows.",
+    "homepage": "https://github.com/clsid2/mpc-hc",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/clsid2/mpc-hc/releases/download/2.2.1/MPC-HC.2.2.1.x64.exe#/setup.exe",
+            "hash": "626b31239a0534b23abd15dd60ba12275bca12de32561c206e96a96dfe6a6e44"
+        },
+        "32bit": {
+            "url": "https://github.com/clsid2/mpc-hc/releases/download/2.2.1/MPC-HC.2.2.1.x86.exe#/setup.exe",
+            "hash": "643629286da58fcf17047721acc4b9c395282affbea28e9d389d0eea284fcf2b"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\setup.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', \"/DIR=$dir\", '/ALLUSERS', '/SUPPRESSMSGBOXES')",
+        "Remove-Item \"$dir\\setup.exe\"; Rename-Item \"$dir\\unins000.exe\" 'unins000.exe_'"
+    ],
+    "env_add_path": ".",
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Rename-Item \"$dir\\unins000.exe_\" 'unins000.exe'",
+        "Start-Process \"$dir\\unins000.exe\" -Wait -Verb 'RunAs' -Args @('/VERYSILENT', '/FORCECLOSEAPPLICATIONS', '/SUPPRESSMSGBOXES')"
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/clsid2/mpc-hc",
+        "jsonpath": "$.assets..browser_download_url",
+        "regex": "(?<Tag>[\\d.]+)\\/MPC-HC.([\\d.]+).(?:x64|x86)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/clsid2/mpc-hc/releases/download/$matchTag/MPC-HC.$version.x64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/clsid2/mpc-hc/releases/download/$matchTag/MPC-HC.$version.x86.exe#/setup.exe"
+            }
+        }
+    }
+}

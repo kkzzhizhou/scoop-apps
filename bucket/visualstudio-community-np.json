@@ -1,0 +1,71 @@
+{
+    "version": "17.9.3",
+    "homepage": "https://visualstudio.microsoft.com",
+    "description": "The community edition of the comprehensive and feature-packed IDE for .NET and C/C++ developers.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.microsoft.com/en-ca/legal/terms-of-use"
+    },
+    "notes": "You may have to restart your system after installing this app for it to work properly!",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.visualstudio.microsoft.com/download/pr/472cc819-3436-4b61-a313-56f28c0243cc/facc1882d28c4e817282786749ca1effad3a8c74d6e0ab9a69be116dc9903bf7/vs_Community.exe",
+            "hash": "facc1882d28c4e817282786749ca1effad3a8c74d6e0ab9a69be116dc9903bf7"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"Admin privileges are required to $cmd $app\"; break }",
+            "if ($cmd -eq 'update') {",
+            "    $installDir = (Get-ChildItem \"$env:ProgramFiles\\Microsoft Visual Studio\" -Filter 'Community' -Recurse).FullName",
+            "    Start-Process \"$dir\\vs_Community.exe\" -Wait -Verb 'RunAs' `",
+            "      -Args @('update', '--installPath',  \"`\"$installDir`\"\", '-q', '--norestart', '--wait')",
+            "}",
+            "else { Start-Process \"$dir\\vs_Community.exe\" -Wait -Verb 'RunAs' -Args @('-q', '--norestart', '--wait') }",
+            "Start-Sleep -Seconds 2; Remove-Item \"$dir\\vs_Community.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"Admin privileges are required to $cmd $app\"; break }",
+            "if ($cmd -eq 'uninstall') {",
+            "    $setupFile = \"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\setup.exe\"",
+            "    $installDir = (Get-ChildItem \"$env:ProgramFiles\\Microsoft Visual Studio\" -Filter 'Community' -Recurse).FullName",
+            "    Start-Process $setupFile -Wait -Verb 'RunAs' -Args @('uninstall', '--installPath', \"`\"$installDir`\"\", '-q', '--norestart')",
+            "    Start-Sleep -Seconds 2; Start-Process $setupFile -Wait -Verb 'RunAs' -Args @('/uninstall', '-q')",
+            "    if ($purge) { ",
+            "        foreach ($i in @(\"$env:ProgramFiles\\Microsoft Visual Studio\",",
+            "            \"$env:LOCALAPPDATA\\Microsoft\\VisualStudio\")) {",
+            "            Remove-Item $i -Force -Recurse; Start-Sleep -Milliseconds 1500",
+            "        }",
+            "        Remove-Item 'HKCU:\\SOFTWARE\\Microsoft\\VisualStudio' -Force -Recurse",
+            "    }",
+            "}"
+        ]
+    },
+    "post_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    if (Test-Path \"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\setup.exe\") {",
+        "        warn \"$app might have left some unwanted files!\"; warn \"You can uninstall the rest of $app using:\"",
+        "        Write-Host '& \"${env:ProgramFiles(x86)}\\Microsoft Visual Studio\\Installer\\setup.exe\" /uninstall -q' -F 'Red'",
+        "    }",
+        "    warn \"`nYou may have to restart your system after uninstalling this app for it to be completely removed!\"",
+        "}"
+    ],
+    "checkver": {
+        "script": [
+            "$cont = Invoke-RestMethod 'https://visualstudio.microsoft.com/downloads/'",
+            "$cont -match '/releases/(?<Year>[\\d]+)' | Out-Null; $year = $Matches.Year",
+            "$uri = \"https://learn.microsoft.com/visualstudio/releases/$year/release-history\"",
+            "(Invoke-RestMethod $uri) -match 'tr\\>\\n\\<tr\\>\\n.*?Current\\</td\\>\\n.*?\\>(?<Version>[\\d.]+)\\<' | Out-Null",
+            "$version = $Matches.Version; $majorVersion = $version.Split('.')[0]",
+            "$uri2 = \"https://aka.ms/vs/$majorVersion/release/vs_community.exe\"",
+            "$response = (Invoke-WebRequest $uri2).BaseResponse.RequestMessage.RequestUri.AbsolutePath",
+            "Write-Output \"$version $response\""
+        ],
+        "regex": "([\\d.]+)\\s/download/pr/(?<Uuid>[\\w-]+)/(?<Hash>[\\w]+)/"
+    },
+    "autoupdate": {
+        "url": "https://download.visualstudio.microsoft.com/download/pr/$matchUuid/$matchHash/vs_Community.exe"
+    }
+}

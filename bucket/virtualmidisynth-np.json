@@ -1,0 +1,42 @@
+{
+    "version": "2.13.5",
+    "homepage": "https://coolsoft.altervista.org/en/virtualmidisynth",
+    "description": "A software MIDI synthesizer implemented as a Windows multimedia user driver, accessible as a standard MIDI Out device.",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://coolsoft.altervista.org/download/CoolSoft_VirtualMIDISynth_2.13.5.exe?tckt=1678918011#/setup.exe",
+            "hash": "md5:45b5aa72e6de449b1bf9dfc1bcab6e52"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\setup.exe\" -Wait -Verb 'RunAs' -Args '/S'; Remove-Item \"$dir\\setup.exe\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$env:ProgramFiles\\VirtualMIDISynth\\uninstall.exe\" -Wait -Verb 'RunAs' -Args '/S'; Stop-Process -Name 'Un_A' -Force",
+        "Remove-Item \"$env:ProgramFiles\\VirtualMIDISynth\" -Force -Recurse"
+    ],
+    "checkver": {
+        "script": [
+            "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'",
+            "$regular_ex1 = '(?<Url>https://.*./CoolSoft_VirtualMIDISynth_[\\d.]+\\.exe)'",
+            "(Invoke-RestMethod 'https://coolsoft.altervista.org/en/virtualmidisynth' -UserAgent $userAgent) -match $regular_ex1 | Out-Null",
+            "$url = $Matches['Url']; $regular_ex2 = 'CoolSoft_VirtualMIDISynth_([\\d.]+)\\.exe\\?tckt=([\\d]+)'",
+            "(Invoke-RestMethod $url -UserAgent $userAgent) -match $regular_ex2 | Out-Null",
+            "$data = $Matches[0] -replace ($regular_ex2, '$1, $2'); Write-Output $data"
+        ],
+        "regex": "([\\d.]+),\\s(?<Ticket>[\\d]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://coolsoft.altervista.org/download/CoolSoft_VirtualMIDISynth_$version.exe?tckt=$matchTicket#/setup.exe",
+                "hash": {
+                    "regex": "MD5</a></td>\\s\\n\\s+<td\\sclass=\"file-hash\"\\scolspan=\"[\\d]+\">$md5"
+                }
+            }
+        }
+    }
+}
