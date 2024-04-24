@@ -1,0 +1,68 @@
+{
+    "version": "2.2-20240415",
+    "description": "An advanced freeware audio player for the Windows platform.",
+    "homepage": "https://www.foobar2000.org/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.foobar2000.org/license"
+    },
+    "suggest": {
+        "Encoders": "extras/foobar2000-encoders"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.foobar2000.org/files/foobar2000-x64_v2.2_preview_2024-04-15.exe#/dl.7z",
+            "hash": "d1f44038ff690c630a685ff04fdfbb13aa3bf1a346425ff864c0be93282c70f6"
+        },
+        "32bit": {
+            "url": "https://www.foobar2000.org/files/foobar2000_v2.2_preview_2024-04-15.exe",
+            "hash": "fa3be60e9d285a45f1976a8fbba22dc5a2f56c7a56180cc4b98f4a393a2f6e46"
+        }
+    },
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$*\", \"$dir\\uninstall.exe\" -Force -Recurse",
+            "New-Item \"$dir\\portable_mode_enabled\" -Force | Out-Null",
+            "$EncodersDir = $(appdir foobar2000-encoders $global)",
+            "if (Test-Path \"$EncodersDir\") {",
+            "    New-Item \"$dir\\encoders\" -ItemType Junction -Target \"$EncodersDir\\current\" | Out-Null",
+            "}"
+        ]
+    },
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\profile\\*\")) {",
+        "    Get-ChildItem -Path \"$persist_dir\" -Exclude \"profile\" | Move-Item -Destination \"$persist_dir\\profile\" -Force",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\profile\\*\") -and (Test-Path \"$env:AppData\\foobar2000\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:AppData\\foobar2000\\*\" -Destination \"$persist_dir\\profile\" -Force -Recurse",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\profile\\playlists-v1.4\")) {",
+        "    Get-ChildItem -Path \"$persist_dir\\profile\" -Filter \"playlists\" -Directory | Rename-Item -NewName \"playlists-v1.4\" -Force",
+        "}",
+        "Get-ChildItem -Path \"$persist_dir\\profile\" -Filter \"playlists\" | Remove-Item -Force -Recurse"
+    ],
+    "bin": "foobar2000.exe",
+    "shortcuts": [
+        [
+            "foobar2000.exe",
+            "Foobar2000 Preview"
+        ]
+    ],
+    "persist": "profile",
+    "checkver": {
+        "url": "https://www.foobar2000.org/download",
+        "regex": "foobar2000 v([\\d.]+) preview (\\d{4})-(\\d{2})-(\\d{2})",
+        "replace": "${1}-${2}${3}${4}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.foobar2000.org/files/foobar2000-x64_v$match1_preview_$match2-$match3-$match4.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://www.foobar2000.org/files/foobar2000_v$match1_preview_$match2-$match3-$match4.exe"
+            }
+        }
+    }
+}

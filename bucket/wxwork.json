@@ -13,8 +13,11 @@
     ],
     "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse",
     "checkver": {
-        "url": "https://pc.qq.com/detail/14/detail_22554.html",
-        "regex": "最新([\\d.]+)官方正式版"
+        "script": [
+            "try { $detail = Invoke-WebRequest 'https://work.weixin.qq.com/wework_admin/commdownload?platform=win&from=wwindex' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "return $detail.Headers.Location"
+        ],
+        "regex": "WeCom_([\\d.]+?).exe"
     },
     "autoupdate": {
         "url": "https://dldir1.qq.com/wework/work_weixin/WeCom_$version.exe#/dl.7z"
