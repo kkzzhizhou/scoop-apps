@@ -1,0 +1,44 @@
+{
+    "version": "0.1.17",
+    "description": "another rss reader",
+    "homepage": "https://zhanglun.github.io/lettura/",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zhanglun/lettura/releases/download/v0.1.17/Lettura_0.1.17_x64-setup.exe#/dl.7z",
+            "hash": "d10974ad3d3d19a0dd11025e57fedb99ddf8eff8b00c2fd56a9fe1a481028147"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\com.lettura.dev\" -ItemType Junction -Target \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\com.lettura.dev\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item \"$env:APPDATA\\com.lettura.dev\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+            "Remove-Item \"$env:LOCALAPPDATA\\com.lettura.dev\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Lettura.exe",
+            "Lettura"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/zhanglun/lettura/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "Lettura_([\\d.-]+)_x64-setup\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zhanglun/lettura/releases/download/v$version/Lettura_$version_x64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}
