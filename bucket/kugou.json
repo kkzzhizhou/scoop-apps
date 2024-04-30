@@ -1,24 +1,36 @@
 {
-    "version": "nightly",
-    "description": "Hello, KuGou!",
-    "homepage": "https://www.kugou.com/",
+    "##": "酷狗音乐",
+    "version": "10.2.50",
+    "description": "[酷狗音乐] - 一款音乐播放软件，也是中国国内最大的 P2P 音乐共享软件",
+    "bin": "KuGou.exe",
+    "hash": "4df0aceb15bbd181abab392fe3718178cd68b1b5b97f453717b16fa1628e7c29",
+    "homepage": "https://www.kugou.com",
     "license": {
-        "identifier": "Unknown"
+        "identifier": "Proprietary",
+        "url": "https://www.kugou.com/about/protocol.html"
     },
-    "url": "http://download.kugou.com/download/kugou_pc#/dl.7z",
-    "installer": {
-        "script": [
-            "Get-ChildItem -Path  \"$dir\\`$PLUGINSDIR\" -Recurse -Exclude KuGou.7z | Remove-Item -Recurse -Force",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\KuGou.7z\" \"$dir\"",
-            "New-Item -ItemType Junction -Path \"$dir\\$([System.Diagnostics.FileVersionInfo]::GetVersionInfo(\"$dir\\KuGou.exe\").FileVersion)\" -Target \"$dir\"",
-            "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\""
-        ],
-        "keep": false
-    },
+    "url": "https://downmini.yun.kugou.com/web/kugou_10250.exe#/dl.7z",
+    "pre_install": [
+        "Move-Item \"$dir\\`$PLUGINSDIR\\KuGou.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "Expand-7zipArchive \"$dir\\KuGou.7z\" -DestinationPath \"$dir\\kugou\" -Removal",
+        "Copy-Item \"$dir\\kugou\\KuGou.exe\" $dir -Recurse",
+        "Expand-7zipArchive \"$dir\\KuGou.exe\" -Switches \"**\\**\\version.txt\"",
+        "$match = Select-String -Path \"$dir\\.rsrc\\**\\version.txt\" -Encoding unicode -Pattern 'FileVersion.*\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"'",
+        "Rename-Item \"$dir\\kugou\" \"$dir\\$($match[0].Matches.Groups[1].Value)\" -Force",
+        "Remove-Item \"$dir\\.rsrc\" -Force -Recurse"
+    ],
     "shortcuts": [
         [
             "KuGou.exe",
-            "KuGou"
+            "酷狗音乐"
         ]
-    ]
+    ],
+    "checkver": {
+        "url": "http://download.kugou.com",
+        "regex": "V ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://downmini.yun.kugou.com/web/kugou_$cleanVersion.exe#/dl.7z"
+    }
 }

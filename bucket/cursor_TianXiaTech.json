@@ -1,0 +1,40 @@
+{
+    "##": "cursor 编辑器",
+    "version": "0.2.36",
+    "description": "Cursor 是一个集成了 GPT-4 的代码编辑器，可以让你快速地编写、修改和讨论代码1。Cursor 还提供了 API SDK，可以用于调用 Cursor的接口",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.cursor.so/"
+    },
+    "homepage": "https://www.cursor.so",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+    ],
+    "url": "https://dl.todesktop.com/230313mzl4w4u92/windows/nsis/x64#/dl.7z",
+    "hash": "78926fbbb120971866c127c78bd079fdf8868a1ebff05a5195fac057a76083e3",
+    "shortcuts": [
+        [
+            "Cursor.exe",
+            "Cursor"
+        ]
+    ],
+    "persist": "resources/lsp",
+    "checkver": {
+        "script": [
+            "$response = Invoke-WebRequest -Uri 'https://www.cursor.so/'",
+            "$downloadUrl = $response.Links | Where-Object href -match 'windows/nsis/x64' | Select-Object -first 1 -expand href",
+            "$res = Invoke-WebRequest -Uri $downloadUrl -MaximumRedirection 0 -UseBasicParsing",
+            "$filePath = Join-Path $cachedir $res.Headers['Content-Disposition'].Split('=')[1].TrimStart(\"`\"\").TrimEnd(\"`\"\")",
+            "$version = [regex]::Match($filePath, '([\\d.]+)').Groups[1].Value",
+            "Write-Output $version $downloadUrl"
+        ],
+        "regex": "^([\\d.]+)\\s+https://dl.todesktop.com/(?<dlquerypath>.+)$"
+    },
+    "autoupdate": {
+        "url": "https://dl.todesktop.com/$matchDlquerypath#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
