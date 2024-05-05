@@ -1,5 +1,5 @@
 {
-    "version": "2.48.1",
+    "version": "2.48.1-202405050244",
     "description": "LunaTranslator is a Visual Novel translate tool, support clipboard / OCR/ HOOK, support 40+ translate engines.",
     "homepage": "https://github.com/HIllya51/LunaTranslator",
     "license": "GPL-3.0-only",
@@ -7,12 +7,12 @@
         "64bit": {
             "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v2.48.1/LunaTranslator.zip",
             "extract_dir": "LunaTranslator",
-            "hash": "c1f86ac2f5f01d67c3b49b407ae2d186a1cee1b76d72da5f7729aaf8a9923a1e"
+            "hash": "7cc0ad18a9dc24bc53cb3e5efded5201e0df51159d5ccb8967c8f30bbab98859"
         },
         "32bit": {
             "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v2.48.1/LunaTranslator_x86.zip",
             "extract_dir": "LunaTranslator_x86",
-            "hash": "07442e495bfc79facf67beb82567c7f0c42b99850980414beb860f361819f449"
+            "hash": "0621300c8fb60e8122c75aebe5368b2bb093543bd4b47c088b2349743397ce10"
         }
     },
     "shortcuts": [
@@ -30,14 +30,22 @@
         "translation_record",
         "cache"
     ],
-    "checkver": "github",
+    "checkver": {
+        "script": [
+            "try { $detail = Invoke-WebRequest 'https://github.com/HIllya51/LunaTranslator/releases.atom' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "$atom = [xml]$detail.Content",
+            "$result =  $atom.feed.entry[0].id + '-' + ([DateTime]$atom.feed.entry[0].updated).ToUniversalTime().AddHours(8).ToString('yyyyMMddHHmm')",
+            "return $result"
+        ],
+        "regex": "v((?<main>[\\d.]+)-\\d+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v$version/LunaTranslator.zip"
+                "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v$matchMain/LunaTranslator.zip"
             },
             "32bit": {
-                "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v$version/LunaTranslator_x86.zip"
+                "url": "https://github.com/HIllya51/LunaTranslator/releases/download/v$matchMain/LunaTranslator_x86.zip"
             }
         }
     }
