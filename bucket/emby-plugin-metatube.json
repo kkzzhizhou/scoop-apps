@@ -1,0 +1,32 @@
+{
+    "version": "2024.205.435.0",
+    "description": "The MetaTube Plugin for Emby.",
+    "homepage": "https://metatube-community.github.io/",
+    "license": "MIT",
+    "url": "https://github.com/metatube-community/jellyfin-plugin-metatube/releases/download/v2024.205.435.0/Emby.MetaTube@v2024.205.435.0.zip",
+    "hash": "6a5949f4270e168fb4848214b6ee043eadf42c7f4119f1fad82473a8b46c8fc2",
+    "installer": {
+        "script": [
+            "if ($env:CI -eq \"true\") { Return }",
+            "if (!(installed 'emby' $global)) { error \"Please install 'lemon/emby' first, then reinstall '$app'.\" ; Exit }",
+            "$plugindir = \"$(appdir emby $global)\\current\\programdata\\plugins\"",
+            "ensure $plugindir | Out-Null",
+            "Copy-Item \"$dir\\MetaTube.dll\" $plugindir"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($env:CI -eq \"true\") { Return }",
+            "if (!(installed 'emby' $global)) { Return }",
+            "$pluginpath = \"$(appdir emby $global)\\current\\programdata\\plugins\\MetaTube.dll\"",
+            "if (Test-Path $pluginpath) { Remove-Item $pluginpath | Out-Null }"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/metatube-community/jellyfin-plugin-metatube/releases.atom",
+        "regex": "Repository/\\d+/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/metatube-community/jellyfin-plugin-metatube/releases/download/v$version/Emby.MetaTube@v$version.zip"
+    }
+}

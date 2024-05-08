@@ -1,0 +1,40 @@
+{
+    "##": "The shortcut will be created when adding the Appx package",
+    "version": "1.2.8",
+    "description": "音流 (Stream Music) 是一款 NAS 音乐播放器，可以连接到 Subsonic/Navidrome/Jellyfin/Emby/AudioStation 等音乐服务",
+    "homepage": "https://music.aqzscn.cn/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://oss.aqzscn.cn/stream-music/versions/1.2.8/stream_music_1.2.8.0.msix#/stream_music.msix",
+            "hash": "b3ef2f877b5f7a063541ac1730968ffda5b725b299d72046344acda0395fbf4e"
+        }
+    },
+    "pre_install": [
+        "if ($env:CI -eq \"true\") { Return }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "Add-AppxPackage \"$dir\\stream_music.msix\" -ForceTargetApplicationShutdown -AllowUnsigned"
+    ],
+    "pre_uninstall": [
+        "if ($env:CI -eq \"true\") { Return }",
+        "if ($PSVersionTable.PSVersion.Major -ge 6) { Import-Module Appx -UseWindowsPowershell 3>$null }",
+        "$package = Get-AppxPackage 'cn.aqzscn.streammusic'",
+        "if (!$package) { warn \"$app is already uninstalled out of scoop.\" ; return }",
+        "if ($purge) {",
+        "    Remove-AppxPackage $package",
+        "} else {",
+        "    Remove-AppxPackage $package -PreserveRoamableApplicationData",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://music.aqzscn.cn/docs/versions/latest/",
+        "regex": "stream_music_([\\d.]+?).0.msix"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://oss.aqzscn.cn/stream-music/versions/$version/stream_music_$version.0.msix#/stream_music.msix"
+            }
+        }
+    }
+}
