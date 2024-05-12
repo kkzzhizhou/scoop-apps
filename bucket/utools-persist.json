@@ -1,56 +1,44 @@
 {
     "homepage": "https://u.tools/",
     "description": "新一代效率工具平台",
-    "license": "Unknown",
+    "license": "Freeware",
     "version": "5.1.0",
     "architecture": {
         "64bit": {
-            "url": "https://publish.u-tools.cn/version2/uTools-5.1.0.exe#/dl.7z",
-            "hash": "sha512:d796d93f66cb5aeedcfdf0e6fbbe5272e4adde4852aa03c13a3debaf99c603ff6366129ededc05c13db932cf5d8a126a64bb49838dab7ecc12d4b2477dd6eb41",
-            "installer": {
-                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
-            }
+            "url": "https://open.u-tools.cn/download/uTools-5.1.0.exe#/setup.exe",
+            "hash": "sha512:d796d93f66cb5aeedcfdf0e6fbbe5272e4adde4852aa03c13a3debaf99c603ff6366129ededc05c13db932cf5d8a126a64bb49838dab7ecc12d4b2477dd6eb41"
         },
         "32bit": {
-            "url": "https://publish.u-tools.cn/version2/uTools-5.1.0-ia32.exe#/dl.7z",
-            "hash": "sha512:15f692c4578284c0ff88640a90d83ea4ed75e9d20bc8d12fde45712f5a4dcd2cc13c5b75201fbd46c896d36f09d2218e5e8d6dd2b2ebec4c389be7bb10aee0d0",
-            "installer": {
-                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
-            }
+            "url": "https://open.u-tools.cn/download/uTools-5.1.0-ia32.exe#/setup.exe",
+            "hash": "sha512:15f692c4578284c0ff88640a90d83ea4ed75e9d20bc8d12fde45712f5a4dcd2cc13c5b75201fbd46c896d36f09d2218e5e8d6dd2b2ebec4c389be7bb10aee0d0"
         }
     },
+    "installer": {
+        "file": "setup.exe"
+    },
     "post_install": [
-        "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\"",
-        "$runtimeCache = \"$env:APPDATA\\uTools\"",
-        "$runtimeCachePersist = \"$persist_dir\\data\"",
-        "if (Test-Path $runtimeCachePersist) {",
+        "Move-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\uTools.lnk\" \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\"",
+
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
         "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
         "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
-        "} else {",
-        "    if (Test-Path $runtimeCache) {",
-        "        Move-Item $runtimeCache $runtimeCachePersist -Force",
-        "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
-        "    }",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('uTools')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
         "}"
     ],
-    "uninstaller": {
-        "script": [
-            "$runtimeCache = \"$env:APPDATA\\uTools\"",
-            "$runtimeCachePersist = \"$persist_dir\\data\"",
-            "if (!(Test-Path $runtimeCachePersist)) {",
-            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
-            "} else {",
-            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-            "}"
-        ]
-    },
-    "shortcuts": [
-        [
-            "uTools.exe",
-            "uTools"
-        ]
+    "post_uninstall": [
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\uTools.lnk\" -ErrorAction SilentlyContinue"
     ],
-    "persist": "data",
     "checkver": {
         "url": "https://publish.u-tools.cn/version2/latest.yml",
         "regex": "version: (.+)"
@@ -58,14 +46,14 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://publish.u-tools.cn/version2/uTools-$version.exe#/dl.7z",
+                "url": "https://open.u-tools.cn/download/uTools-$version.exe#/setup.exe",
                 "hash": {
                     "url": "https://publish.u-tools.cn/version2/latest.yml",
                     "regex": "sha512: $base64"
                 }
             },
             "32bit": {
-                "url": "https://publish.u-tools.cn/version2/uTools-$version-ia32.exe#/dl.7z",
+                "url": "https://open.u-tools.cn/download/uTools-$version-ia32.exe#/setup.exe",
                 "hash": {
                     "url": "https://publish.u-tools.cn/version2/latest-ia32.yml",
                     "regex": "sha512: $base64"
