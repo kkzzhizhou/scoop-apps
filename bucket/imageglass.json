@@ -1,19 +1,19 @@
 {
-    "version": "9.0.10.201",
+    "version": "9.0.11.502",
     "description": "A lightweight, versatile image viewer",
     "homepage": "https://imageglass.org",
     "license": "GPL-3.0-only",
     "notes": "If this app doesn't work maybe you need to clean '$dir\\igconfig.json' and reinstall '$dir\\Themes'.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.0.10.201/ImageGlass_9.0.10.201_x64.zip",
-            "hash": "222b97a8746b337b06dc7f072fedaf4b22884ecc4152657e80da1461a432759c",
-            "extract_dir": "ImageGlass_9.0.10.201_x64"
+            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.0.11.502/ImageGlass_9.0.11.502_x64.zip",
+            "hash": "ed9c0a3616d262dd1c094ae7205c6833bdfbc962d99d4c8ddb8f4a792a7ab882",
+            "extract_dir": "ImageGlass_9.0.11.502_x64"
         },
         "arm64": {
-            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.0.10.201/ImageGlass_9.0.10.201_arm64.zip",
-            "hash": "f9706df1e975772e94295b648ad3a3b572e4954ee74d3c2ee6a3dabd5b10f7dd",
-            "extract_dir": "ImageGlass_9.0.10.201_arm64"
+            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.0.9.1230/ImageGlass_9.0.9.1230_arm64.zip",
+            "hash": "f0ec35ac08bfbbcac52a107c1218ff05c46a534fabe4e21fe44cb74ffbf25ffd",
+            "extract_dir": "ImageGlass_9.0.11.502_arm64"
         }
     },
     "pre_install": [
@@ -36,7 +36,18 @@
         "igconfig.json"
     ],
     "checkver": {
-        "github": "https://github.com/d2phap/ImageGlass"
+        "script": [
+            "$url = 'https://api.github.com/repos/d2phap/ImageGlass/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'ImageGlass_([\\d.]+)_x64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'ImageGlass_([\\d.]+)_arm64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $arm64"
+        ],
+        "regex": "([\\d.]+) (?<arm64>[\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
@@ -45,7 +56,7 @@
                 "extract_dir": "ImageGlass_$version_x64"
             },
             "arm64": {
-                "url": "https://github.com/d2phap/ImageGlass/releases/download/$version/ImageGlass_$version_arm64.zip",
+                "url": "https://github.com/d2phap/ImageGlass/releases/download/$matchArm64/ImageGlass_$matchArm64_arm64.zip",
                 "extract_dir": "ImageGlass_$version_arm64"
             }
         }
