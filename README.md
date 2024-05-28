@@ -100,10 +100,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - charmbracelet/scoop-bucket
 - naderi/scoop-bucket
 - ygguorun/scoop-bucket
-- hu3rror/scoop-muggle
 - NyaMisty/scoop_bucket_misty
-- 42wim/scoop-bucket
+- hu3rror/scoop-muggle
 - iquiw/scoop-bucket
+- 42wim/scoop-bucket
 - batkiz/backit
 - brian6932/dank-scoop
 - jfut/scoop-jfut
@@ -113,10 +113,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - starise/Scoop-Gaming
 - Velgus/Scoop-Portapps
 - cc713/ownscoop
-- Darkatse/Scoop-Darkatse
+- noql-net/scoop
 - seumsc/scoop-seu
 - Weidows-projects/scoop-3rd
-- noql-net/scoop
+- Darkatse/Scoop-Darkatse
 - starise/Scoop-Confetti
 - AkariiinMKII/Scoop4kariiin
 - littleli/Scoop-littleli
