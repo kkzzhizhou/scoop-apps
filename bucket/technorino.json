@@ -1,12 +1,12 @@
 {
-    "version": "9154213923",
+    "version": "9312502114",
     "description": "Chat client for twitch.tv. Only nightlies are supported (fork of Chatterino 2).",
     "homepage": "https://github.com/2547techno/technorino",
     "license": "MIT",
     "architecture": {
         "64bit": {
             "url": "https://github.com/2547techno/technorino/releases/download/nightly-build/chatterino-windows-x86-64-Qt-6.5.0.zip",
-            "hash": "4c4457669150a7d8ae9441a864d7bc35fbbd12fc506b758b6577987507d51865",
+            "hash": "122be0c09cd91343907a393d095c3838dc82d23b6523519af6a142917ccd628f",
             "extract_dir": "Chatterino2",
             "pre_install": "Get-ChildItem \"$dir/chatterino.exe\" | Rename-Item -NewName { $_.name.Replace('chatte', 'techno') }"
         }
@@ -19,13 +19,16 @@
     ],
     "bin": "technorino.exe",
     "checkver": {
-        "url": "https://api.github.com/repositories/604452497/actions/workflows/build.yml/runs?branch=technorino&status=success",
-        "jsonpath": "$.workflow_runs[0].id"
+        "script": [
+            "(Invoke-RestMethod 'https://api.github.com/repositories/604452497/actions/workflows/build.yml/runs?branch=technorino&status=success').workflow_runs[0].id,",
+            "(Invoke-RestMethod https://raw.githubusercontent.com/2547techno/technorino/technorino/.github/workflows/build.yml | Select-String 'os: windows-latest\\s+qt-version: ([\\d.]+)').Matches.Groups[1].Value -join ' '"
+        ],
+        "regex": "(\\d+) (?<qt>[\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/2547techno/technorino/releases/download/nightly-build/chatterino-windows-x86-64-Qt-6.7.1.zip"
+                "url": "https://github.com/2547techno/technorino/releases/download/nightly-build/chatterino-windows-x86-64-Qt-$matchQt.zip"
             }
         }
     }
