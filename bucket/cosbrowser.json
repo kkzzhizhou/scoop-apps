@@ -1,39 +1,43 @@
 {
-    "version": "2.11.17",
-    "description": "COSBrowser is an official tool for accessing Tencent Cloud COS.",
-    "homepage": "https://github.com/tencentyun/cosbrowser",
-    "license": "Unknown",
-    "url": "https://cosbrowser-1253960454.cos.ap-shanghai.myqcloud.com/releases/cosbrowser-setup-2.11.17.exe#/dl.7z",
-    "hash": "131ac405788792d2040fb468961fca77c4959459a4e085f7294b1062b0670b8e",
+    "version": "2.11.18",
+    "description": "COSBrowser 是腾讯云对象存储 COS 推出的可视化界面工具，让您可以使用更简单的交互轻松实现对 COS 资源的查看、传输和管理",
+    "homepage": "https://cloud.tencent.com/document/product/436/11366",
+    "license": "Shareware",
+    "url": "https://cos5.cloud.tencent.com/cosbrowser/cosbrowser-setup-2.11.18.exe#/dl.7z",
+    "hash": "sha512:aec833d3f0faaf80a3d688309b84864a5545cbd0e932553f6acfc351c35639d102588088eea2110fa7489e1ff62770e0dec6da96acedceccc7c195dc0f823c7b",
     "architecture": {
         "64bit": {
-            "installer": {
-                "script": [
-                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
-                ]
-            }
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
         },
         "32bit": {
-            "installer": {
-                "script": [
-                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
-                ]
-            }
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
         }
     },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\", \"$dir\\resources\\app-update.yml\"  -Force -Recurse",
+    "bin": [
+        [
+            "cosbrowser.exe",
+            "cosbrowser",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
     "shortcuts": [
         [
             "cosbrowser.exe",
-            "cosbrowser"
+            "COSBrowser",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
+    "persist": "User Data",
     "checkver": {
-        "url": "https://raw.githubusercontent.com/tencentyun/cosbrowser/master/changelog.md",
-        "re": "v([\\d.]+)"
+        "url": "https://cos5.cloud.tencent.com/cosbrowser/latest.yml",
+        "regex": "version: ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://cosbrowser-1253960454.cos.ap-shanghai.myqcloud.com/releases/cosbrowser-setup-$version.exe#/dl.7z"
+        "url": "https://cos5.cloud.tencent.com/cosbrowser/cosbrowser-setup-$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s*$base64"
+        }
     }
 }

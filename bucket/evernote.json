@@ -1,20 +1,21 @@
 {
-    "version": "10.65.2",
+    "version": "10.91.3",
     "homepage": "https://evernote.com/",
-    "license": "Freeware",
-    "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-10.65.2-win-ddl-stage-20231027153932-c6b1b587de93d3065ffa3836221cd7723d2e4996-setup.exe#/dl.7z",
-    "hash": "sha512:a9c35987b4587c51e91dd4782457e277d6be7d280875a05bedc23b96989229e3fc9ea68fe97f9898a57b7c30c708f6108fec6d2bcdebe71afccca28f77d6220b",
-    "installer": {
-        "script": [
-            "Remove-Item \"$dir\\Unins*\", \"$dir\\resources\" -Force -Recurse",
-            "if ($architecture -eq '64bit') {",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-            "} elseif ($architecture -eq '32bit') {",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
-            "}",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
-        ]
+    "description": "Remember everything and tackle any project with your notes, tasks, and schedule all in one place.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://evernote.com/legal"
     },
+    "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip",
+    "hash": "ffddf2531de2991cf7cda0502369afd13ead2cc16ff5de7243165cf55d4dce17",
+    "pre_install": [
+        "if ($architecture -eq '32bit') {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
+        "}",
+        "else {",
+        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
+        "}"
+    ],
     "shortcuts": [
         [
             "Evernote.exe",
@@ -22,14 +23,10 @@
         ]
     ],
     "checkver": {
-        "url": "https://evernote.s3.amazonaws.com/boron/win/public/latest.yml",
-        "regex": "Evernote-([\\d.]+)-(?<tail>.+).exe"
+        "url": "https://evernote.com/release-notes",
+        "regex": "Version.*?([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://cdn1.evernote.com/boron/win/builds/Evernote-$version-$matchTail.exe#/dl.7z",
-        "hash": {
-            "url": "https://evernote.s3.amazonaws.com/boron/win/public/latest.yml",
-            "regex": "sha512: $base64"
-        }
+        "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip"
     }
 }
