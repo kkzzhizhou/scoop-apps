@@ -1,7 +1,7 @@
 {
     "version": "3.11",
     "homepage": "https://gamebanana.com/tools/6321",
-    "description": "A tool to help download, install and manage mods available through Gamebanana for a variety of different games.",
+    "description": "Tool to help download, install and manage mods available through Gamebanana for a variety of different games",
     "license": "CC-BY-NC-ND-4.0",
     "url": "https://files.gamebanana.com/tools/modboy_install_68c70.exe",
     "hash": "md5:5718560ab093f903b3e6ef51e68575ac",
@@ -22,7 +22,8 @@
     "pre_uninstall": "Write-Host 'Unregistering the ''modboy://'' Protocol...'; Remove-Item 'HKCU:\\SOFTWARE\\Classes\\modboy' -Recurse -Force",
     "checkver": {
         "script": [
-            "$getData = ((Invoke-RestMethod 'https://gamebanana.com/apiv10/Tool/6321/Updates')._aRecords)[0]",
+            "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'",
+            "$getData = ((Invoke-RestMethod 'https://gamebanana.com/apiv10/Tool/6321/Updates' -UserAgent $userAgent)._aRecords)[0]",
             "$getFile = $getData._aFiles._sFile",
             "($getData._sName) -match 'v([\\d.]+)' | Out-Null; $getVersion = $Matches[1]",
             "Write-Output \"$getFile, $getVersion\""
@@ -30,10 +31,12 @@
         "regex": "(?<File>[\\w_]+\\.exe),\\s([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://files.gamebanana.com/tools/$matchFile.exe",
+        "url": "https://files.gamebanana.com/tools/$matchFile",
         "hash": {
+            "type": "md5",
             "url": "https://gamebanana.com/apiv10/Tool/6321/Updates",
-            "jsonpath": "$._aRecords[?(@._sName == 'v$version*')]._aFiles[?(@._sFile == '$matchFile')]._sMd5Checksum",
+            "mode": "json",
+            "jsonpath": "$._aRecords[0]._aFiles[0]._sMd5Checksum",
             "find": "$md5"
         }
     }
