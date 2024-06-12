@@ -18,11 +18,14 @@
     },
     "pre_install": [
         "ensure \"$persist_dir\" | Out-Null",
-        "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object { Copy-Item \"$persist_dir\\$_\" \"$dir\\$_\" -ErrorAction 'SilentlyContinue' }",
-        "$taskmgr = (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe' -ErrorAction 'SilentlyContinue').Debugger",
-        "if (($cmd -eq 'update') -and ($taskmgr -match '\\\\*\\\\([\\d.]+)\\\\SystemInformer\\.exe')) {",
-        "   if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "   Set-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe' -Name 'Debugger' -Value \"\"\"$dir\\SystemInformer.exe\"\"\" -Force",
+        "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object {",
+        "    Copy-Item \"$persist_dir\\$_\" \"$dir\\$_\" -ErrorAction 'SilentlyContinue'",
+        "}",
+        "$key = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe'",
+        "$get_Taskmgr = Get-ItemProperty $key -Name 'Debugger' -ErrorAction 'SilentlyContinue'",
+        "if (($cmd -eq 'update') -and $get_Taskmgr) {",
+        "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "    Set-ItemProperty $key -Name 'Debugger' -Value \"\"\"$dir\\SystemInformer.exe\"\"\" -Force",
         "}"
     ],
     "shortcuts": [
@@ -40,10 +43,14 @@
         "$settingsXml.Save($settings)"
     ],
     "pre_uninstall": [
-        "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object { Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -ErrorAction 'SilentlyContinue' }",
-        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "if ($cmd -eq 'uninstall') {",
-        "   Remove-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe' -Name 'Debugger' -Force",
+        "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object {",
+        "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -ErrorAction 'SilentlyContinue'",
+        "}",
+        "$key = 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\taskmgr.exe'",
+        "$get_Taskmgr = Get-ItemProperty $key -Name 'Debugger' -ErrorAction 'SilentlyContinue'",
+        "if (($cmd -eq 'uninstall') -and $get_Taskmgr) {",
+        "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "    Remove-ItemProperty $key -Name 'Debugger' -Force",
         "}"
     ],
     "checkver": {

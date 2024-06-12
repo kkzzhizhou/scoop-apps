@@ -1,5 +1,5 @@
 {
-    "version": "3.5.6.416",
+    "version": "3.26.11.412",
     "description": "Tencent Meeting provides one-stop audio and video conferencing solutions.",
     "homepage": "https://meeting.tencent.com/",
     "license": {
@@ -7,13 +7,14 @@
         "url": "https://meeting.tencent.com/declare.html"
     },
     "notes": "We don't persist your Tencent Meeting data, they are still storaged in \"$env:APPDATA\\Tencent\\WeMeet\".",
-    "url": "https://updatecdn.meeting.qq.com/cos/8d470eda782890abc7cc8cc3c2629cb3/TencentMeeting_0300000000_3.5.6.416.publish.exe#/dl.7z",
-    "hash": "dacd74f99d97c1776b28a971b63818c0afe51146824c242bb826987526222d4e",
+    "url": "https://updatecdn.meeting.qq.com/cos/70cb9a5a25dcb201db07c7ab07be3f2b/TencentMeeting_0300000000_3.26.11.412.publish.officialwebsite.exe#/dl.7z",
+    "hash": "md5:70cb9a5a25dcb201db07c7ab07be3f2b",
     "post_install": [
-        "Rename-Item \"$dir\\`$_9_\" \"$dir\\$version\"",
-        "Remove-Item \"$dir\\$*\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Rename-Item -Path \"$dir\\`$_*\" -NewName \"$version\" -Force",
+        "Remove-Item \"$dir\\`$*\" -Recurse -Force -ErrorAction SilentlyContinue",
         "Remove-Item \"$dir\\wemeetapp_new.exe\" -Force -ErrorAction SilentlyContinue",
-        "create_startmenu_shortcuts $manifest $dir\\..\\$version $global $arch"
+        "create_startmenu_shortcuts $manifest $original_dir $global $architecture",
+        "$manifest.shortcuts = @()"
     ],
     "bin": [
         [
@@ -28,11 +29,19 @@
         ]
     ],
     "checkver": {
-        "url": "https://meeting.tencent.com/wemeet-webapi/v2/config/query-download-info",
-        "script": "(Invoke-WebRequest -Body '[{\"instance\":\"windows\",\"type\":\"0300000000\"}]' -Method 'POST' -Uri $url).Content",
-        "regex": "https://(?<url>.*?\\.exe).*?version\".*?\"([\\d.]+)\""
+        "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%220300000000%22,%22platform%22:%22windows%22%7D%5D&nonce=0000000000000000",
+        "script": [
+            "$script:ver = json_path $page '$.info-list[0].version' -single $true",
+            "$script:matchesHashtable = @{'url' = json_path $page '$.info-list[0].url' -single $true}",
+            "$script:regexp = $null"
+        ]
     },
     "autoupdate": {
-        "url": "https://$matchUrl#/dl.7z"
+        "url": "$matchUrl#/dl.7z",
+        "hash": {
+            "jsonpath": "$.info-list[0].md5",
+            "mode": "json",
+            "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%220300000000%22,%22platform%22:%22windows%22%7D%5D&nonce=AAAAAAAAAAAAAAAA"
+        }
     }
 }
