@@ -1,5 +1,5 @@
 {
-    "version": "9.9.11",
+    "version": "9.9.11_240606_01",
     "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family, Build with Electron",
     "homepage": "https://im.qq.com",
     "license": {
@@ -22,7 +22,10 @@
             "if (!(Test-Path \"$configpath\")) {",
             "    New-Item -Path \"$configpath\" -Type Directory -Force | Out-Null",
             "}",
-            "Set-Content -NoNewline -Path \"$configpath\\UserDataInfo.ini\" -Value \"[UserDataSet]`nUserDataSavePathType=2`nUserDataSavePath=$persist_dir\\QQ Files\""
+            "Set-Content -NoNewline -Path \"$configpath\\UserDataInfo.ini\" -Value \"[UserDataSet]`nUserDataSavePathType=2`nUserDataSavePath=$persist_dir\\QQ Files\"",
+            "# handle runtime cache",
+            "ensure \"$persist_dir\\appdata\" | Out-Null",
+            "New-Item \"$env:APPDATA\\QQ\" -ItemType Junction -Target \"$persist_dir\\appdata\" | Out-Null"
         ]
     },
     "shortcuts": [
@@ -33,11 +36,16 @@
     ],
     "persist": "QQ Files",
     "uninstaller": {
-        "script": "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null"
+        "script": [
+            "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null",
+            "#remove handle runtime cache",
+            "Remove-Item \"$env:APPDATA\\QQ\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        ]
     },
     "checkver": {
         "url": "https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/windowsDownloadUrl.js",
-        "regex": "QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x86_([\\d.]+).exe.*QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x64_([\\d.]+).exe"
+        "regex": "QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x86_([\\d.]+).exe.*QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x64_([\\d.]+).exe",
+        "replace": "${1}_${2}_${3}"
     },
     "autoupdate": {
         "architecture": {
