@@ -1,0 +1,65 @@
+{
+    "homepage": "https://www.cube-soft.jp/cubepdfutility/",
+    "version": "3.0.0",
+    "description": "CubePDF Utility: CubePDF series and their library codes. The project is based on PDFium, iTextSharp, and Ghostscript.",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cube-soft/Cube.Pdf/releases/download/8.7.2-net47/cubepdf-utility-3.0.0-x64.exe",
+            "hash": "93a56b25206cbdc1666912cb9f0f9fb089154d31b77b8e538f27e4bab9d9f26a",
+            "installer": {
+                "script": [
+                    "Get-ChildItem \"$dir\" '*,1*' -Recurse | Remove-Item -Force",
+                    "Get-ChildItem \"$dir\" '*,2*' -Recurse | ForEach-Object { Rename-Item $_.Fullname ($_.Name -Replace ',2') }"
+                ]
+            }
+        },
+        "32bit": {
+            "url": "https://github.com/cube-soft/Cube.Pdf/releases/download/8.7.2-net47/cubepdf-utility-3.0.0.exe",
+            "hash": "9c084d98a45f92a61eb8d8c650afbb5dda67e744d90916b702cbcca7c0842720",
+            "installer": {
+                "script": [
+                    "Get-ChildItem \"$dir\" '*,2*' -Recurse | Remove-Item -Force",
+                    "Get-ChildItem \"$dir\" '*,1*' -Recurse | ForEach-Object { Rename-Item $_.Fullname ($_.Name -Replace ',1') }"
+                ]
+            }
+        }
+    },
+    "innosetup": true,
+    "bin": "CubePdfUtility.exe",
+    "shortcuts": [
+        [
+            "CubePdfUtility.exe",
+            "CubePDF Utility"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "# Using checkver script",
+            "$url = 'https://github.com/cube-soft/Cube.Pdf/releases'",
+            "",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'tag/([\\w.-]+)'",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$githubversion = $matches[1]",
+            "",
+            "$assetUrl = \"https://github.com/cube-soft/cube.pdf/releases/expanded_assets/$githubversion\"",
+            "$assetCont = (Invoke-WebRequest $assetUrl).Content",
+            "$r = \"cubepdf-utility-([\\d.]+)-x64.exe\"",
+            "if (!($assetCont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "Write-Output $githubversion $version"
+        ],
+        "regex": "(?<githubversion>[\\w.-]+) (?<version>[\\w.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cube-soft/Cube.Pdf/releases/download/$matchGithubversion/cubepdf-utility-$version-x64.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/cube-soft/Cube.Pdf/releases/download/$matchGithubversion/cubepdf-utility-$version.exe"
+            }
+        }
+    }
+}
