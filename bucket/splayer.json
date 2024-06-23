@@ -1,0 +1,41 @@
+{
+    "version": "2.0.9",
+    "description": "🎉 一个简约的音乐播放器，支持逐字歌词，下载歌曲，展示评论区，音乐云盘及歌单管理，音乐频谱，移动端基础适配 | A minimalist music player",
+    "homepage": "https://github.com/imsyy/SPlayer",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/imsyy/SPlayer#AGPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/imsyy/SPlayer/releases/download/v2.0.9/SPlayer-2.0.9-setup.exe#/dl.7z",
+    "hash": "sha512:06f5c59012df318ada3e68ae8aef795bc5bd6b211ee14b9dd344ce825b96516288fabd923c36fc1b6512c1540f998f6b9c59bfda4bfeb984aac0e197a2314f63",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\splayer\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\splayer\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "SPlayer.exe",
+            "SPlayer"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/imsyy/SPlayer/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/imsyy/SPlayer/releases/download/v$version/SPlayer-$version-setup.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+        }
+    }
+}
