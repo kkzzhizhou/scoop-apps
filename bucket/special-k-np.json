@@ -13,10 +13,14 @@
         "if (Test-Path \"$persist_dir\\Global\") {",
         "    Copy-Item \"$persist_dir\\Global\" \"$special_k_dir\\Global\" -Recurse",
         "}",
-        "Start-Process \"$dir\\$fname\" -Wait -Args @('/VERYSILENT', '/SP-', '/NORESTART', '/CURRENTUSER')",
-        "Stop-Process -Name 'SKIF' -Force"
+        "if ($cmd -eq 'update') {",
+        "    Start-Process \"$dir\\$fname\" -Args @('/VERYSILENT', '/SP-', '/NORESTART', '/CURRENTUSER')",
+        "    Start-Sleep -Seconds 5",
+        "} else {",
+        "    Start-Process \"$dir\\$fname\" -Wait -Args @('/VERYSILENT', '/SP-', '/NORESTART', '/CURRENTUSER')",
+        "}",
+        "if (Get-Process -Name 'SKIF' -ErrorAction 'SilentlyContinue') { Stop-Process -Name 'SKIF' -Force }"
     ],
-    "env_add_path": ".",
     "uninstaller": {
         "script": [
             "$special_k_dir = \"$env:LOCALAPPDATA\\Programs\\Special K\"",

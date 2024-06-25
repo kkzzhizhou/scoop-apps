@@ -1,60 +1,18 @@
 {
     "version": "1.3.4",
     "homepage": "https://github.com/srwi/EverythingToolbar",
-    "description": "Everything integration for the Windows taskbar.",
+    "description": "Everything integration for the Windows taskbar",
+    "url": "https://github.com/stnkl/EverythingToolbar/releases/download/1.3.4/EverythingToolbar-1.3.4.msi#/setup.msi_",
     "license": "MIT",
-    "notes": [
-        "If 'everything-toolbar' is not working for you properly please read, https://github.com/srwi/EverythingToolbar#setup",
-        "You may have to sign out or restart your computer in order for 'everything-toolbar' to work correctly.",
-        "If this version is not working for you, please consider installing 'nonportable/everything-toolbar-np' instead."
-    ],
-    "suggest": {
-        "everything": "extras/everything"
+    "hash": "ed78aec2473700527c01cb0ab4950b33c0c3cee44f40372241b16d8b798b5e77",
+    "installer": {
+        "script": "Start-Process -Wait msiexec \"/i `\"$dir\\setup.msi_`\"/norestart /qn INSTALLFOLDER=`\"$dir`\"\" -Verb RunAs"
     },
-    "url": [
-        "https://github.com/srwi/EverythingToolbar/releases/download/1.3.4/EverythingToolbar-1.3.4.msi",
-        "https://github.com/srwi/EverythingToolbar/files/8919288/EverythingToolbar_install_uninstall.zip"
-    ],
-    "hash": [
-        "ed78aec2473700527c01cb0ab4950b33c0c3cee44f40372241b16d8b798b5e77",
-        "f78117a74a924cfed75a304962b251add651f4e87f9b4a552b216e2c9bcba37a"
-    ],
-    "pre_install": [
-        "$replacer1 = (Get-Content \"$dir\\install.cmd\")",
-        "$replacer1 = $replacer1.Replace('pause', '')",
-        "$replacer1 | Set-Content \"$dir\\install.cmd\"",
-        "$replacer2 = (Get-Content \"$dir\\uninstall.cmd\")",
-        "$replacer2 = $replacer2.Replace('pause', '')",
-        "$replacer2 | Set-Content \"$dir\\uninstall.cmd\"",
-        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "Start-Process 'cmd' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/c', \"$dir\\install.cmd\"); Stop-Process -Name 'explorer' -Force"
-    ],
-    "shortcuts": [
-        [
-            "EverythingToolbar.Launcher.exe",
-            "EverythingToolbar Launcher"
-        ]
-    ],
-    "pre_uninstall": [
-        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "Start-Process 'cmd' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/c', \"$dir\\uninstall.cmd\"); Start-Sleep -Seconds 2",
-        "taskkill /F /IM 'explorer.exe' | Out-Null; Start-Process 'explorer.exe' -Wait -WindowStyle 'Hidden'"
-    ],
-    "extract_dir": "EverythingToolbar",
-    "checkver": {
-        "script": [
-            "(Invoke-RestMethod 'https://github.com/srwi/EverythingToolbar/wiki/Installation-per-user-(experimental)') -match 'files/(?<scriptVer>[\\w]+)' | Out-Null",
-            "$scriptVersion = $Matches['scriptVer']",
-            "(Invoke-RestMethod 'https://github.com/srwi/EverythingToolbar/releases/latest') -match 'tag/(?<mainVer>[\\d.]+)' | Out-Null",
-            "$mainVersion = $Matches['mainVer']",
-            "Write-Output \"$scriptVersion $mainVersion\""
-        ],
-        "regex": "(?<Scriptver>[\\w]+)\\s([\\d.]+)"
+    "uninstaller": {
+        "script": "Start-Process -Wait msiexec \"/x `\"$dir\\setup.msi_`\" /qn /norestart\" -Verb RunAs"
     },
+    "checkver": "github",
     "autoupdate": {
-        "url": [
-            "https://github.com/srwi/EverythingToolbar/releases/download/$version/EverythingToolbar-$version.msi",
-            "https://github.com/srwi/EverythingToolbar/files/$matchScriptver/EverythingToolbar_install_uninstall.zip"
-        ]
+        "url": "https://github.com/stnkl/EverythingToolbar/releases/download/$version/EverythingToolbar-$version.msi#/setup.msi_"
     }
 }
