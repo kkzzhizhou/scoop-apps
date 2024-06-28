@@ -19,14 +19,27 @@
             "洛雪音乐助手"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/lyswhut/lx-music-desktop/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'lx-music-desktop-v([\\d.]+)-win_x64-green\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'lx-music-desktop-v([\\d.]+)-win7_x86-green\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$x86 = $matches[1]",
+            "Write-Output $version $x86"
+        ],
+        "regex": "([\\d.]+) (?<x86>[\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win7_x64-green.7z"
             },
             "32bit": {
-                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win7_x86-green.7z"
+                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$matchX86/lx-music-desktop-v$matchX86-win7_x86-green.7z"
             }
         }
     }
