@@ -1,29 +1,43 @@
 {
     "version": "0.1.18",
-    "description": "Another free and open-source feed reader for macOS and Window.",
+    "description": "another rss reader",
     "homepage": "https://zhanglun.github.io/lettura/",
-    "license": "Freeware",
+    "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/zhanglun/lettura/releases/download/v0.1.18/Lettura_0.1.18_x64_en-US.msi",
-            "hash": "e586ccf3f60896b5b8da372251e6a86882746d38f046c662d4c5f04f6216a6d6"
+            "url": "https://github.com/zhanglun/lettura/releases/download/v0.1.18/Lettura_0.1.18_x64-setup.exe#/dl.7z",
+            "hash": "d25a9574ab9363eb7f8caa67ba826115c785caf41fe2fedbfab537ee9a837a2c"
         }
     },
-    "extract_dir": "PFiles\\Lettura",
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\com.lettura.dev\" -ItemType Junction -Target \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\com.lettura.dev\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item \"$env:APPDATA\\com.lettura.dev\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+            "Remove-Item \"$env:LOCALAPPDATA\\com.lettura.dev\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        ]
+    },
     "shortcuts": [
         [
             "Lettura.exe",
             "Lettura"
         ]
     ],
-    "notes": "Lettura is NOT portable.",
     "checkver": {
-        "github": "https://github.com/zhanglun/lettura"
+        "url": "https://api.github.com/repos/zhanglun/lettura/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "Lettura_([\\d.-]+)_x64-setup\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/zhanglun/lettura/releases/download/v$version/Lettura_$version_x64_en-US.msi"
+                "url": "https://github.com/zhanglun/lettura/releases/download/v$version/Lettura_$version_x64-setup.exe#/dl.7z"
             }
         }
     }

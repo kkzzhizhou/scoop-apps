@@ -1,44 +1,28 @@
 {
-    "version": "1.83.1",
-    "description": "Lightweight but powerful source code editor. Italian Language Pack included.",
+    "version": "1.90.2",
+    "description": "Lightweight but powerful source code editor. Italian Language.",
     "homepage": "https://code.visualstudio.com/",
     "license": {
         "identifier": "Freeware",
         "url": "https://code.visualstudio.com/License/"
     },
-    "notes": "Add Visual Studio Code as a context menu option by running: \"$dir\\vscode-install-context-it.reg\"",
+    "notes": [
+        "Add Visual Studio Code as a context menu option by running:",
+        "'reg import \"$dir\\install-context-it.reg\"'",
+        "For file associations, run:",
+        "'reg import \"$dir\\install-associations.reg\"'"
+    ],
     "architecture": {
         "64bit": {
-            "url": [
-                "https://update.code.visualstudio.com/1.83.1/win32-x64-archive/stable#/dl.7z",
-                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/vscode-install-context-it.reg",
-                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/vscode-uninstall-context-it.reg"
-            ],
-            "hash": [
-                "bf53268e45d12cd43d4f7c61cd782d11d13646eb21e7d57532739a952f4d7ff5",
-                "a4f7db2dddcefc81257a9d7c2069a5c38f57eb94a405844de525bf8752c1dd71",
-                "1cbb05642f0f65703eec46df1453304f69f4c21e65c96b04e83a3089c4d9c41a"
-            ]
+            "url": "https://update.code.visualstudio.com/1.90.2/win32-x64-archive/stable#/dl.7z",
+            "hash": "81b01ac4d9579d82833ed8bcada0d54496b89833117142d764b1fd141714b54b"
         },
-        "32bit": {
-            "url": [
-                "https://update.code.visualstudio.com/1.83.1/win32-archive/stable#/dl.7z",
-                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/vscode-install-context-it.reg",
-                "https://raw.githubusercontent.com/starise/scoop-confetti/master/scripts/vscode-uninstall-context-it.reg"
-            ],
-            "hash": [
-                "91f1e91dfc17caaa23d7c0bdf889581b79621362eb10bda00ed0a9bb0c13ff77",
-                "a4f7db2dddcefc81257a9d7c2069a5c38f57eb94a405844de525bf8752c1dd71",
-                "1cbb05642f0f65703eec46df1453304f69f4c21e65c96b04e83a3089c4d9c41a"
-            ]
+        "arm64": {
+            "url": "https://update.code.visualstudio.com/1.90.2/win32-arm64-archive/stable#/dl.7z",
+            "hash": "8a6e200cf69d4ff35bf16aa7d6aa54c5a3847d0924318abde47a7014c2c229c7"
         }
     },
-    "bin": [
-        [
-            "bin\\code.cmd",
-            "code"
-        ]
-    ],
+    "env_add_path": "bin",
     "shortcuts": [
         [
             "code.exe",
@@ -46,24 +30,38 @@
         ]
     ],
     "post_install": [
-        "if (Test-Path \"$dir\\vscode-install-context-it.reg\") {",
-        "  $codepath = \"$dir\\Code.exe\".Replace('\\', '\\\\')",
-        "  $content = Get-Content \"$dir\\vscode-install-context-it.reg\"",
-        "  $content = $content.Replace('$code', $codepath)",
-        "  if ($global) {",
-        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "$dirpath = \"$dir\".Replace('\\', '\\\\')",
+        "$exepath = \"$dir\\Code.exe\".Replace('\\', '\\\\')",
+        "'install-associations', 'uninstall-associations', 'install-context-it', 'uninstall-context-it' | ForEach-Object {",
+        "  if (Test-Path \"$bucketsdir\\confetti\\scripts\\vscode\\$_.reg\") {",
+        "    $content = Get-Content \"$bucketsdir\\confetti\\scripts\\vscode\\$_.reg\"",
+        "    $content = $content.Replace('$codedir', $dirpath)",
+        "    $content = $content.Replace('$code', $exepath)",
+        "    if ($global) {",
+        "      $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_.reg\"",
         "  }",
-        "  $content | Set-Content -Path \"$dir\\vscode-install-context-it.reg\"",
         "}",
-        "if (Test-Path \"$dir\\vscode-uninstall-context-it.reg\") {",
-        "  $content = Get-Content \"$dir\\vscode-uninstall-context-it.reg\"",
-        "  if ($global) {",
-        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "  }",
-        "  $content | Set-Content -Path \"$dir\\vscode-uninstall-context-it.reg\"",
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.vscode\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.vscode\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Code\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Code\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=vscode(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
         "}",
         "code --install-extension MS-CEINTL.vscode-language-pack-it"
     ],
+    "uninstaller": {
+        "script": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context-it.reg\" }"
+    },
+    "persist": "data",
     "checkver": {
         "url": "https://code.visualstudio.com/sha?build=stable",
         "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].name"
@@ -77,11 +75,11 @@
                     "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].sha256hash"
                 }
             },
-            "32bit": {
-                "url": "https://update.code.visualstudio.com/$version/win32-archive/stable#/dl.7z",
+            "arm64": {
+                "url": "https://update.code.visualstudio.com/$version/win32-arm64-archive/stable#/dl.7z",
                 "hash": {
                     "url": "https://code.visualstudio.com/sha?build=stable",
-                    "jsonpath": "$.products[?(@.platform.os == 'win32-archive')].sha256hash"
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-arm64-archive')].sha256hash"
                 }
             }
         }

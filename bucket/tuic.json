@@ -1,39 +1,41 @@
 {
-    "version": "1.0.0",
-    "description": "Delicately-TUICed high-performance proxy built on top of the QUIC protocol.",
+    "version": "0.8.5",
+    "description": "Delicately-TUICed high-performance proxy built on top of the QUIC protocol",
     "homepage": "https://github.com/EAimTY/tuic",
-    "license": "GPL-3.0-only",
+    "license": "GPLv3",
     "architecture": {
         "64bit": {
-            "url": [
-                "https://github.com/EAimTY/tuic/releases/download/tuic-server-1.0.0/tuic-server-1.0.0-x86_64-pc-windows-msvc.exe#/tuic-server.exe",
-                "https://github.com/EAimTY/tuic/releases/download/tuic-client-1.0.0/tuic-client-1.0.0-x86_64-pc-windows-msvc.exe#/tuic-client.exe"
-            ],
-            "hash": [
-                "09c3bf3790117bf4c0d0505ada439800f19b68a52a018ca2cda7e7f8125adeb6",
-                "28abb1bab9c06450b2bb4292f4cdd725daec56181a71f098dfcb2e8b3ab12ba3"
-            ]
+            "url": "https://github.com/EAimTY/tuic/releases/download/0.8.5/tuic-client-0.8.5-x86_64-windows-msvc.exe",
+            "hash": "e0ff1d0e6be87d5a8ba02f5db37087a62cc5969d72449cecdcaaed3269f0d508"
+        },
+        "32bit": {
+            "url": "https://github.com/EAimTY/tuic/releases/download/0.8.5/tuic-client-0.8.5-i686-windows-msvc.exe",
+            "hash": "98aabc34e3c85e779d3ed72120c06463bbb3e9ba664b55db00a9ef6ebc81da53"
         }
     },
-    "bin": [
-        "tuic-server.exe",
-        "tuic-client.exe"
+    "pre_install": [
+        "function CreateFile ($name, $value = $null) {",
+        "    if (!(Test-Path \"$persist_dir\\$name\")) {",
+        "        Set-Content \"$dir\\$name\" $value -Encoding Ascii",
+        "    }",
+        "}",
+        "CreateFile 'config.json' ",
+        "Rename-Item \"$dir\\tuic-client-*.exe\" \"$dir\\tuic-client.exe\""
     ],
-    "checkver": {
-        "url": "https://github.com/EAimTY/tuic/releases",
-        "regex": "\"/EAimTY/tuic/tree/tuic-server-([^/]+?)\""
-    },
+    "persist": "config.json",
+    "bin": "tuic-client.exe",
+    "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": [
-                    "https://github.com/EAimTY/tuic/releases/download/tuic-server-$version/tuic-server-$version-x86_64-pc-windows-msvc.exe#/tuic-server.exe",
-                    "https://github.com/EAimTY/tuic/releases/download/tuic-client-$version/tuic-client-$version-x86_64-pc-windows-msvc.exe#/tuic-client.exe"
-                ]
+                "url": "https://github.com/EAimTY/tuic/releases/download/$version/tuic-client-$version-x86_64-windows-msvc.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/EAimTY/tuic/releases/download/$version/tuic-client-$version-i686-windows-msvc.exe"
             }
         },
         "hash": {
-            "url": "$url.sha256sum"
+            "url": "$baseurl/$basename.sha256sum"
         }
     }
 }
