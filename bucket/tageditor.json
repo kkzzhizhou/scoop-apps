@@ -1,12 +1,12 @@
 {
-    "version": "3.9.0",
+    "version": "3.9.1",
     "description": "A tag editor utility supporting MP4/M4A/AAC (iTunes), ID3, Vorbis, Opus, FLAC and Matroska.",
     "homepage": "https://github.com/Martchus/tageditor",
     "license": "GPL-2.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Martchus/tageditor/releases/download/v3.9.0/tageditor-3.9.0-x86_64-w64-mingw32.exe.zip",
-            "hash": "1c5f27c8dc6b6bb733f2b8b02d805862c6ac7be6143ada4b97111f98714a44b2"
+            "url": "https://github.com/Martchus/tageditor/releases/download/v3.9.1/tageditor-3.9.1-x86_64-w64-mingw32.exe.zip",
+            "hash": "ed960d716ecebc8bd1cc63e460bbb10f9197c4dcf3c30b0077c9cfab71ad043d"
         },
         "32bit": {
             "url": "https://github.com/Martchus/tageditor/releases/download/v3.9.0/tageditor-3.9.0-i686-w64-mingw32.exe.zip",
@@ -21,14 +21,27 @@
             "Tag Editor"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/Martchus/tageditor/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'tageditor-([\\d.]+)-i686-w64-mingw32\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$i686 = $matches[1]",
+            "$r = 'tageditor-([\\d.]+)-x86_64-w64-mingw32\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "Write-Output $i686 $version"
+        ],
+        "regex": "(?<i686>[\\d.]+) ([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/Martchus/tageditor/releases/download/v$version/tageditor-$version-x86_64-w64-mingw32.exe.zip"
             },
             "32bit": {
-                "url": "https://github.com/Martchus/tageditor/releases/download/v$version/tageditor-$version-i686-w64-mingw32.exe.zip"
+                "url": "https://github.com/Martchus/tageditor/releases/download/v$matchI686/tageditor-$matchI686-i686-w64-mingw32.exe.zip"
             }
         }
     }

@@ -1,0 +1,42 @@
+{
+    "version": "2.2.3-beta.1",
+    "description": "m3u8[m3u8-downloader] 视频在线提取工具 流媒体下载 m3u8下载 桌面客户端 windows mac",
+    "homepage": "https://downloader.caorushizi.cn/guides.html?form=github",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/caorushizi/mediago#MIT-1-ov-file"
+    },
+    "url": "https://github.com/caorushizi/mediago/releases/download/v2.2.3-beta.1/mediago-setup-x64-2.2.3-beta.1.exe#/dl.7z",
+    "hash": "sha512:2181adfb379d4ba53b502528cdea5d2c1fe8b8f7442263c6f0918e510ece8073c521bcf7954a88ba9ab9487aa25e8b1ea306d3c6b67995254dfcb0ea7fdca9e6",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\mediago\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\mediago\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "bin": "mediago.exe",
+    "shortcuts": [
+        [
+            "mediago.exe",
+            "mediago"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/caorushizi/mediago/releases",
+        "regex": "/releases/tag/v([\\d.]+-[\\w.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/caorushizi/mediago/releases/download/v$version/mediago-setup-x64-$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+        }
+    }
+}
