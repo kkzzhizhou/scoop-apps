@@ -1,0 +1,36 @@
+{
+    "version": "3.1.551.0",
+    "description": "Easily backup, restore and transfer video games save data",
+    "homepage": "https://www.gamesave-manager.com",
+    "license": "Freeware",
+    "url": "https://www.gamesave-manager.com/file/05b2adf3-ffba-4f87-a4a1-cb6613d5e2f3/#/dl.zip",
+    "hash": "md5:d6cc781935bddb644d8f2c9e7054e1bb",
+    "pre_install": [
+        "if (!(Test-Path \"$dir\\settings\")) { New-Item \"$dir\\settings\" -Type directory | Out-Null }",
+        "if (!(Test-Path \"$dir\\bin\\config.ini\")) {",
+        "    Set-Content \"$dir\\bin\\config.ini\" @('[CustomEntries]', 'ListOfficialEntries=true', '[Settings]', 'SeparateDBPerUser=false', 'StoreWithinLaunchDir=true', '[InstallWizard]', 'HasAlreadyBeenAsked=true') -Encoding ASCII",
+        "}"
+    ],
+    "persist": [
+        "bin/config.ini",
+        "settings"
+    ],
+    "bin": "gs_mngr_3.exe",
+    "shortcuts": [
+        [
+            "gs_mngr_3.exe",
+            "GameSave Manager"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.gamesave-manager.com/data/download.json",
+        "regex": "\"version\":\"([\\d.]+)\".+?\"download_direct\":\".+?file\\\\?\\/(?<UUID>[0-9a-f-]+)\\\\?\\/\""
+    },
+    "autoupdate": {
+        "url": "https://www.gamesave-manager.com/file/$matchUUID/#/dl.zip",
+        "hash": {
+            "url": "https://www.gamesave-manager.com/data/download.json",
+            "jsonpath": "$.list[0].checksums.md5"
+        }
+    }
+}
