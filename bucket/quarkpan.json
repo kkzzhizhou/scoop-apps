@@ -1,51 +1,38 @@
 {
-    "version": "2.5.55",
+    "version": "3.4.1",
     "description": "夸克网盘",
     "homepage": "https://pan.quark.cn/",
     "license": "Proprietary",
-    "url": "https://pdds.quark.cn/download/stfile/ppvrwquuypqtprxrg/QuarkCloudDrive-v2.5.55-release-pckk@other_ch-20231020100530.exe#/dl.7z",
-    "hash": "sha512:c899edf686f79e2a91c0ee371c8ff034725a7a457d4bd7d010358f3d1a26b2581617cc4671b1bcd70472b67dfb7971d14bd0e64284e16061c652579f572225b3",
-    "innosetup": true,
-    "installer": {
-        "script": [
-            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
-            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
-            "}",
-            "$runtimeCache = \"$env:APPDATA\\quark-cloud-drive\"",
-            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
-            "if (Test-Path $runtimeCachePersist) {",
-            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
-            "} else {",
-            "    if (Test-Path $runtimeCache) {",
-            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
-            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
-            "    }",
-            "}"
-        ]
-    },
+    "url": "https://pdds.quark.cn/download/stfile/jjpnjjqqmjknjlrle/QuarkCloudDrive_v3.4.1_release_(Build1832850-20240702172032).exe",
+    "hash": "1af807721eb33d7f9b3c1d1e1740b97c18e3e7f7ba44302841d7eafe9b9fb435",
+    "depends": ["aki/innounpacker"],
+    "shortcuts": [["QuarkCloudDrive.exe", "QuarkCloudDrive"]],
+    "pre_install": [
+        "Move-Item -Force -Path \"$dir\\$fname\" -Destination \"$dir\\Setup.exe\"",
+        "innounpack.exe -x -d\"$dir\" \"$dir\\Setup.exe\"",
+        "Move-Item -Force -Path \"$dir\\{code_GetDestDir}\\*\" -Destination \"$dir\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\{code_GetDestDir}\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\{app}\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\{autocf64}\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\{tmp}\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\{usercf}\"",
+        "Remove-Item -Force -Recurse -Path \"$dir\\Setup.exe\""
+    ],
     "uninstaller": {
         "script": [
             "$runtimeCache = \"$env:APPDATA\\quark-cloud-drive\"",
-            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
-            "if (!(Test-Path $runtimeCachePersist)) {",
-            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
-            "} else {",
-            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-            "}"
+            "write-host \"$runtimeCache\"",
+
+            "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
         ]
     },
-    "shortcuts": [["QuarkCloudDrive.exe", "QuarkCloudDrive"]],
     "checkver": {
         "url": "https://pan.quark.cn/api/client_version",
-        "jsonpath": "$.data.winInstallerUrl",
-        "re": "^https?://pdds.quark.cn/download/stfile/(?<release>\\w+)/QuarkCloudDrive-v(?<version>[\\d.]+)-release-pckk@other_ch-(?<build>[\\d]+).exe",
-        "replace": "${2}"
+        "jsonpath": "$.data.clouddrive_backup_packages[0].winInstallerUrl",
+        "re": "pdds.quark.cn/download/stfile/(?<release>\\w+)/QuarkCloudDrive_v(?<version>[\\d.]+)_release_\\(Build(?<build>\\d+)-(?<timestamp>\\d+)\\).exe",
+        "replace": "${version}"
     },
     "autoupdate": {
-        "url": "https://pdds.quark.cn/download/stfile/$matchRelease/QuarkCloudDrive-v$matchVersion-release-pckk@other_ch-$matchBuild.exe#/dl.7z",
-        "hash": {
-            "jsonpath": "$.data.packages[?(@.platform == 'win32' @.appch == 'pckk@other_ch')].sha512"
-        }
+        "url": "https://pdds.quark.cn/download/stfile/$matchRelease/QuarkCloudDrive_v$matchVersion_release_(Build$matchBuild-$matchTimestamp).exe"
     }
 }

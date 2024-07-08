@@ -9,10 +9,12 @@
             "hash": "ee26d711cb3f0f65a05027d041c55f71644db73734f872c9090ebe2f3a32eda4"
         }
     },
-    "innosetup": true,
+    "pre_install": "if ($dir -match ' ') { error 'The installation directory cannot include a space'; break}",
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
+            "Move-Item \"$dir\\$fname\" \"$dir\\..\\$fname\"",
+            "Start-Process -Wait \"$dir\\..\\$fname\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', \"/D=$dir\")",
+            "Remove-Item \"$dir\\..\\$fname\"",
             "New-Item \"$env:LOCALAPPDATA\\Buzz\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
         ]
     },
