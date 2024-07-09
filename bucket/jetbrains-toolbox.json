@@ -7,13 +7,22 @@
         "url": "https://www.jetbrains.com/legal/"
     },
     "notes": [
+        "Manual install is needed since installer is encrypted and signed.",
         "By default all your tools are installed into '$dir\\apps' folder and are persisted.",
         "This could be changed inside settings menu."
     ],
-    "url": "https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.4.0.32175.exe#/dl.7z",
-    "hash": "5e9455d652d846a83c739dd0918e13c74eaf2994b5ef246293e85f60a19efd3f",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.4.0.32175.exe#/setup.exe",
+            "hash": "5e9455d652d846a83c739dd0918e13c74eaf2994b5ef246293e85f60a19efd3f"
+        }
+    },
+    "installer": {
+        "file": "setup.exe"
+    },
     "post_install": [
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall.exe\" -Recurse",
+        "Move-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\JetBrains Toolbox\\JetBrains Toolbox.lnk\" \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\"",
+
         "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
         "  if (-not (Test-Path $runtimeCache)) { return }",
         "  if (Test-Path $runtimeCachePersist) {",
@@ -41,20 +50,19 @@
         "    Set-Content $config ($settings | ConvertToPrettyJson) -Encoding ASCII -Force",
         "}"
     ],
-    "bin": "jetbrains-toolbox.exe",
-    "shortcuts": [
-        [
-            "jetbrains-toolbox.exe",
-            "JetBrains Toolbox"
-        ]
+    "post_uninstall": [
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\JetBrains Toolbox.lnk\" -ErrorAction SilentlyContinue"
     ],
-    "persist": "apps",
+    "env_add_path": [
+        "scripts"
+    ],
+    "persist": ["apps", "scripts"],
     "checkver": {
         "url": "https://data.services.jetbrains.com/products/releases?code=TBA&latest=true&type=release",
         "jsonpath": "$.TBA..build"
     },
     "autoupdate": {
-        "url": "https://download.jetbrains.com/toolbox/jetbrains-toolbox-$version.exe#/dl.7z",
+        "url": "https://download.jetbrains.com/toolbox/jetbrains-toolbox-$version.exe#/setup.exe",
         "hash": {
             "url": "$url.sha256"
         }
