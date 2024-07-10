@@ -1,0 +1,41 @@
+{
+    "version": "6.3.4",
+    "description": "Copy files between a local computer and remote servers using FTP, FTPS, SCP, SFTP, WebDAV or S3 file transfer protocols.(Scoop bucket for Cybersecurity by s0nd9r)",
+    "homepage": "https://winscp.net",
+    "license": "GPL-3.0-or-later",
+    "notes": [
+        "Scoop bucket for Cybersecurity by s0nd9r(https://github.com/s0nd9r/scoop-security)."
+    ],
+    "url": "https://downloads.sourceforge.net/project/winscp/WinSCP/6.3.4/WinSCP-6.3.4-Portable.zip",
+    "hash": "0f7e564ac10facb04012693f4d62970e31cc09dec67b9d1aa37ff56e9bfcfb6f",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\winscp.ini\")) {",
+        "    @(",
+        "        '[Configuration\\Interface]'",
+        "        'RandomSeedFile=.\\winscp.rnd'",
+        "    ) | Add-Content -Path \"$dir\\winscp.ini\" -Encoding ASCII -Force",
+        "}"
+    ],
+    "post_install": [
+        "Invoke-WebRequest -URI \"https://winscp.net/translations/dll/$version/chs.zip\" -OutFile \"$dir\\chs.zip\"",
+        "7z x \"$dir\\chs.zip\" -o\"$dir\\\""
+    ],
+    "bin": [
+        "WinSCP.exe", [
+            "WinSCP.com",
+            "WinSCP-cli"
+        ]
+    ],
+    "persist": "winscp.ini",
+    "checkver": {
+        "url": "https://winscp.net/eng/downloads.php",
+        "regex": "WinSCP-([\\d.]+)-Portable\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://downloads.sourceforge.net/project/winscp/WinSCP/$version/WinSCP-$version-Portable.zip",
+        "hash": {
+            "url": "https://winscp.net/download/WinSCP-$version-ReadMe.txt",
+            "regex": "(?sm)$basename.*?SHA-256: $sha256"
+        }
+    }
+}
