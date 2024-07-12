@@ -4,7 +4,6 @@
     "homepage": "https://gobysec.net/",
     "license": "https://gobysec.net/faq",
     "notes": [
-        "Goby 已添加桌面快捷方式,请尽情享用~",
         "Scoop bucket for Cybersecurity by s0nd9r(https://github.com/s0nd9r/scoop-security)."
     ],
     "architecture": {
@@ -17,8 +16,22 @@
     "post_install": [
         "$wsShell = New-Object -ComObject WScript.Shell",
         "$shortcut = $wsShell.CreateShortcut([System.IO.Path]::Combine($env:USERPROFILE, 'Desktop', 'Goby.lnk'))",
-        "$shortcut.TargetPath = \"$dir\\Goby.exe\"",
+        "$shortcut.TargetPath = \"powershell.exe\"",
+        "$shortcut.Arguments = \"-NoProfile -ExecutionPolicy Bypass -Command pushd `\"$dir`\"; .\\Goby.exe \\%*; popd\"",
+        "$shortcut.IconLocation  = \"$dir\\Goby.exe,0\"",
         "$shortcut.Save()"
+    ],
+    "pre_uninstall": [
+        "$desktopPath = Join-Path $env:USERPROFILE '\\Desktop'",
+        "$shortcutName = 'Goby.lnk'",
+        "$shortcutPath = Join-Path $desktopPath $shortcutName",
+        "Write-Host ([Environment]::NewLine + 'Checking for desktop shortcut at: ' + $shortcutPath)",
+        "if (Test-Path $shortcutPath) {",
+        "    Write-Host ('Deleting desktop shortcut: ' + $shortcutPath)",
+        "    Remove-Item $shortcutPath -Force",
+        "} else {",
+        "    Write-Host ('Desktop shortcut not found at: ' + $shortcutPath)",
+        "}"
     ],
     "bin": [
         [
