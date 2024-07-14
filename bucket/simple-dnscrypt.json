@@ -1,34 +1,29 @@
 {
-    "version": "0.7.1",
-    "description": "An easy to use GUI for dnscrypt-proxy",
-    "homepage": "https://simplednscrypt.org/",
+    "version": "0.8.2",
+    "description": "A simple management tool for dnscrypt-proxy.",
+    "homepage": "https://github.com/instantsc/SimpleDnsCrypt",
     "license": "MIT",
-    "suggest": {
-        "vcredist": "extras/vcredist2022"
-    },
+    "notes": "",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/0.7.1/SimpleDNSCrypt64.msi",
-            "hash": "5ba0c94774acd7ade18446b4351e7d28a948c490aefc50dc6c08c13551f19f7f"
-        },
-        "32bit": {
-            "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/0.7.1/SimpleDNSCrypt.msi",
-            "hash": "cac6b8119af3da70a5977a2e73ee5214303990fedd7abbc5f247a1e2cf19a663"
+            "url": "https://github.com/instantsc/SimpleDnsCrypt/releases/download/0.8.2/SimpleDnsCrypt_0.8.2.msi#/SimpleDnsCrypt.msi",
+            "hash": "ca2ae4a08cb38b1915244767659e0383beb3b9b307c57dfb6fba7b1f91e66a17"
+        }
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/instantsc/SimpleDnsCrypt/releases/download/$version/SimpleDnsCrypt_$version.msi#/SimpleDnsCrypt.msi"
+            }
         }
     },
     "pre_install": [
-        "if (!(Test-Path \"$env:LOCALAPPDATA\\SimpleDnsCrypt\")) { New-Item \"$env:LOCALAPPDATA\\SimpleDnsCrypt\" -ItemType Directory -Force | Out-Null }",
         "'blacklist.txt', 'blocked.log', 'query.log', 'domain-blacklist.txt', 'domain-whitelist.txt' | ForEach-Object {",
-        "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
-        "}"
+        "    if (!(Test-Path \"$persist_dir\\dnscrypt-proxy\\$_\")) { New-Item \"$dir\\dnscrypt-proxy\\$_\" -ItemType File | Out-Null }",
+        "};",
+        "if (!(Test-Path \"$persist_dir\\dnscrypt-proxy\\$dnscrypt-proxy.toml\")) { Copy-Item \"$dir\\dnscrypt-proxy\\dnscrypt-proxy.toml.example\" \"$dir\\dnscrypt-proxy\\dnscrypt-proxy.toml\" }"
     ],
-    "shortcuts": [
-        [
-            "SimpleDnsCrypt.exe",
-            "Simple DnsCrypt"
-        ]
-    ],
-    "bin": "SimpleDnsCrypt.exe",
     "persist": [
         "dnscrypt-proxy\\dnscrypt-proxy.toml",
         "dnscrypt-proxy\\blacklist.txt",
@@ -37,6 +32,14 @@
         "dnscrypt-proxy\\domain-blacklist.txt",
         "dnscrypt-proxy\\domain-whitelist.txt"
     ],
+    "extract_dir": "SimpleDNSCrypt",
+    "shortcuts": [
+        [
+            "SimpleDnsCrypt.exe",
+            "SimpleDnsCrypt"
+        ]
+    ],
+    "bin": "SimpleDnsCrypt.exe",
     "pre_uninstall": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
         "",
@@ -51,18 +54,5 @@
         "    if (!(is_admin)) { error 'Admin rights are required to remove dnscrypt-proxy service'; break }",
         "    Remove-Service -Name 'dnscrypt-proxy' | Out-Null",
         "}"
-    ],
-    "checkver": {
-        "github": "https://github.com/bitbeans/SimpleDnsCrypt"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/$version/SimpleDNSCrypt64.msi"
-            },
-            "32bit": {
-                "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/$version/SimpleDNSCrypt.msi"
-            }
-        }
-    }
+    ]
 }
