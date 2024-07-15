@@ -13,7 +13,14 @@
         }
     },
     "pre_install": [
-        "if (-not (Test-Path -Path $persist_dir\\config.json -PathType Leaf)) {New-Item $persist_dir\\config.json}"
+        "if (Test-Path -Path $persist_dir) {",
+        "   if (-not (Test-Path -Path (Join-Path $persist_dir 'config.json'))) {",
+        "       New-Item -Path (Join-Path $persist_dir 'config.json')",
+        "   }",
+        "} else {",
+        "   New-Item -Path $persist_dir -ItemType Directory",
+        "   New-Item -Path (Join-Path $persist_dir 'config.json')",
+        "}"
     ],
     "post_install": [
         "$sourceFolders, $foldersToMove = @(\"~\\dorion\", \"$env:APPDATA\\dorion\"), @(\"plugins\", \"themes\", \"profiles\")",
