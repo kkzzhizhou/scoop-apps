@@ -98,8 +98,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - amorphobia/siku
 - naderi/scoop-bucket
 - charmbracelet/scoop-bucket
-- NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
+- NyaMisty/scoop_bucket_misty
 - hu3rror/scoop-muggle
 - AStupidBear/scoop-bear
 - iquiw/scoop-bucket
@@ -114,10 +114,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - starise/Scoop-Gaming
 - Velgus/Scoop-Portapps
+- Darkatse/Scoop-Darkatse
 - noql-net/scoop
 - seumsc/scoop-seu
 - Weidows-projects/scoop-3rd
-- Darkatse/Scoop-Darkatse
 - starise/Scoop-Confetti
 - rivy/scoop-bucket
 - TianXiaTech/scoop-txt
@@ -129,9 +129,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/Scoop-littleli
 - Small-Ku/turbo-bucket
 - ShuguangSun/sgs-scoop-bucket
+- FlawlessCasual17/MyScoop
 - babo4d/scoop-xrtools
 - The-Simples/scoop-minecraft
-- FlawlessCasual17/MyScoop
 - KnotUntied/scoop-fonts
 - yuanying1199/scoopbucket
 - Deide/deide-bucket
