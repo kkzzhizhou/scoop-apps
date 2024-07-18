@@ -1,0 +1,67 @@
+{
+    "version": "20240716.0",
+    "homepage": "https://www.swift.org/",
+    "description": "A general-purpose programming language built using a modern approach to safety, performance, and software design patterns.",
+    "license": "Apache-2.0",
+    "suggest": {
+        "python": "main/python",
+        "vcredist": "extras/vcredist2022"
+    },
+    "notes": [
+        "To make Swift toolchain work, you must have Visual Studio and Windows SDK components installed.",
+        "Read https://www.swift.org/getting-started/#support-files for Supporting Files installation guide."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20240716.0/installer-amd64.exe#/swiftsetup.exe",
+            "hash": "f173864e0b6b6ee5c6f8209ad53fafd0d6c3a6935150dacb2e203665a5db8653"
+        },
+        "arm64": {
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20240716.0/installer-arm64.exe#/swiftsetup.exe",
+            "hash": "3bb0e0c46825cd43800e95b2ae265c2e2e77cd3de2f646944aa114f359ee433c"
+        }
+    },
+    "pre_install": [
+        "Expand-DarkArchive \"$dir\\swiftsetup.exe\" \"$dir\\extract_folder\" -Removal",
+        "$xml = [xml](Get-Content -Raw \"$dir\\extract_folder\\UX\\manifest.xml\" -Encoding utf8)",
+        "$xml.BurnManifest.Payload | Where-Object { $_.FilePath.EndsWith(\".msi\") } | ForEach-Object {",
+        "    if ($($_.FilePath) -eq \"rtl.msi\") {",
+        "        Expand-MsiArchive \"$dir\\extract_folder\\AttachedContainer\\$($_.FilePath)\" \"$dir\\extract_folder\\LocalApp\\Programs\\Swift\\Runtimes\\usr\\bin\"",
+        "    } else {",
+        "        Expand-MsiArchive \"$dir\\extract_folder\\AttachedContainer\\$($_.FilePath)\" \"$dir\\extract_folder\"",
+        "    }",
+        "}",
+        "$ver = \"0.0.0\"",
+        "Move-Item -Path \"$dir\\extract_folder\\LocalApp\\Programs\\Swift\" -Destination \"$dir\"",
+        "Move-Item -Path \"$dir\\Swift\\Platforms\\$ver\\Windows.platform\" -Destination \"$dir\\Swift\\Platforms\"",
+        "Move-Item -Path \"$dir\\Swift\\Toolchains\\$($ver)+Asserts\\usr\" -Destination \"$dir\\Swift\\Toolchains\"",
+        "# Move-Item -Path \"$dir\\Swift\\Tools\\$ver\\*\" -Destination \"$dir\\Swift\\Tools\"",
+        "Remove-Item \"$dir\\Swift\\Platforms\\$ver\" | Out-Null",
+        "Remove-Item \"$dir\\Swift\\Toolchains\\$ver+Asserts\" | Out-Null",
+        "# Remove-Item \"$dir\\Swift\\Tools\\$ver\" | Out-Null",
+        "Move-Item -Path \"$dir\\Swift\\*\" -Destination \"$dir\"",
+        "Remove-Item \"$dir\\Swift\", \"$dir\\extract_folder\" -Recurse | Out-Null"
+    ],
+    "env_add_path": [
+        "Runtimes\\usr\\bin",
+        "Toolchains\\usr\\bin",
+        "Tools"
+    ],
+    "env_set": {
+        "SDKROOT": "$dir\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk"
+    },
+    "checkver": {
+        "github": "https://github.com/thebrowsercompany/swift-build",
+        "regex": "(\\d{8}\\.\\d)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-amd64.exe#/swiftsetup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-arm64.exe#/swiftsetup.exe"
+            }
+        }
+    }
+}
