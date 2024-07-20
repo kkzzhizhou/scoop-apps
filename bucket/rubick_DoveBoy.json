@@ -1,0 +1,66 @@
+{
+    "version": "4.2.5",
+    "description": "🔧 Electron based open source toolbox, free integration of rich plug-ins. 基于 electron 的开源工具箱，自由集成丰富插件。",
+    "homepage": "https://rubickcenter.github.io/docs",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/rubickCenter/rubick#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/rubickCenter/rubick/releases/download/v4.2.5/rubick-Setup-4.2.5-x64.exe#/dl.7z",
+            "hash": "sha512:41d0d9f4185cbea9801b1226a4fffc03816fc04dc61ce58cc835160ef936a00d4efe59818a78a2c50aad9ec1f16e586b9fcb17cba18bf1c7f1106b3f2eea05f6",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        },
+        "32bit": {
+            "url": "https://github.com/rubickCenter/rubick/releases/download/v4.2.5/rubick-Setup-4.2.5-ia32.exe#/dl.7z",
+            "hash": "sha512:462a633091f619782f7fac81940d5c7c7c75d34f6099632901aff13c33e6d6160952917ff6f2194d7628751fc1ab6feb0d1f259593e4a012892e7cf5ff7c1751",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\rubick\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\rubick\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "rubick.exe",
+            "rubick"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/rubickCenter/rubick/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/rubickCenter/rubick/releases/download/v$version/rubick-Setup-$version-x64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)$basename.*?sha512:\\s*?$base64"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/rubickCenter/rubick/releases/download/v$version/rubick-Setup-$version-ia32.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)$basename.*?sha512:\\s*?$base64"
+                }
+            }
+        }
+    }
+}
