@@ -1,0 +1,43 @@
+{
+    "version": "10.20.11",
+    "homepage": "https://www.logitech.com/en-ca/software/options.html",
+    "description": "A powerful and easy-to-use application that enhances your Logitech mice, keyboards, and touchpads.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.logitech.com/en-us/tos/software-license-agreement.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download01.logi.com/web/ftp/pub/techsupport/options/options_installer.exe",
+            "hash": "062bb8652108eaa6c77dc5528c18b33d4b9ad73c0687f51d54dafee7223a2019"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$dir\\$fname\" -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -Args @('/quiet', '/norestart')"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$env:ProgramFiles\\Logitech\\LogiOptions\\uninstaller.exe\" -Wait -Verb 'RunAs' -Args '/S'"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "$head = 'label_names=webcontent=productdownload,websoftware=ec86eb2b-8e0b-11e9-a62b-a944e73f7596'",
+            "$url = 'https://support.logi.com/api/v2/help_center/en-ca/articles.json?' + $head",
+            "$json = Invoke-RestMethod $url",
+            "Write-Output ($json.articles.Where({$_.label_names -eq 'webos=windows-Windows-10'}).body)"
+        ],
+        "regex": "Software\\sVersion:\\s</span></b>([\\d.]+)</li>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download01.logi.com/web/ftp/pub/techsupport/options/options_installer.exe"
+            }
+        }
+    }
+}

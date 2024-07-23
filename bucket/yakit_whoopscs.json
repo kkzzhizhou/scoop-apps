@@ -1,0 +1,64 @@
+{
+    "version": "1.3.4-sp3",
+    "description": "交互式应用安全测试平台 - Cyber Security ALL-IN-ONE Platform.(Scoop bucket for Cybersecurity by whoopscs)",
+    "homepage": "https://www.yaklang.io",
+    "license": "AGPL-3.0",
+    "notes": [
+        "请尽量使用 scoop 进行版本更新，更新命令：scoop update yakit",
+        "Scoop bucket for Cybersecurity by whoopscs(https://github.com/whoopscs/scoop-security)."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.3.4-sp3/Yakit-1.3.4-sp3-windows-amd64.exe#/dl.7z",
+            "hash": "0bee5bdc5f262e02db12d152fd363fb662746d36d3f9ed81c0f015cccfafa815",
+            "extract_dir": "$PLUGINSDIR"
+        }
+    },
+    "pre_install": [
+        "taskkill /f /im Yakit.exe",
+        "Remove-Item \"$dir\\*\" -Exclude 'app-64.7z' -Force -Recurse",
+        "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal"
+    ],
+    "post_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "$filesToDelete = Get-ChildItem -Path \"$persist_dir\\yakit-projects\\yak-engine\" -Recurse | Where-Object { $_.Name -match '^yak-v\\d'}",
+        "foreach ($file in $filesToDelete) { Remove-Item $file.FullName -Force;  Write-Host \"已删除旧版本yak.exe文件: $($file.FullName)\"; }",
+        "$wsShell = New-Object -ComObject WScript.Shell",
+        "$shortcut = $wsShell.CreateShortcut([System.IO.Path]::Combine($env:USERPROFILE, 'Desktop', 'Yakit.lnk'))",
+        "$shortcut.TargetPath = \"powershell.exe\"",
+        "$shortcut.Arguments = \"-NoProfile -ExecutionPolicy Bypass -Command pushd `\"$dir`\"; .\\Yakit.exe \\%*; popd\"",
+        "$shortcut.IconLocation  = \"$dir\\Yakit.exe,0\"",
+        "$shortcut.Save()"
+    ],
+    "pre_uninstall": [
+        "$desktopPath = Join-Path $env:USERPROFILE '\\Desktop'",
+        "$shortcutName = 'Yakit.lnk'",
+        "$shortcutPath = Join-Path $desktopPath $shortcutName",
+        "Write-Host ([Environment]::NewLine + 'Checking for desktop shortcut at: ' + $shortcutPath)",
+        "if (Test-Path $shortcutPath) {",
+        "    Write-Host ('Deleting desktop shortcut: ' + $shortcutPath)",
+        "    Remove-Item $shortcutPath -Force",
+        "} else {",
+        "    Write-Host ('Desktop shortcut not found at: ' + $shortcutPath)",
+        "}"
+    ],
+    "bin": "Yakit.exe",
+    "shortcuts": [
+        [
+            "Yakit.exe",
+            "Yakit"
+        ]
+    ],
+    "persist": "yakit-projects",
+    "checkver": {
+        "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/yakit-version.txt",
+        "regex": "(.*)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/$version/Yakit-$version-windows-amd64.exe#/dl.7z"
+            }
+        }
+    }
+}

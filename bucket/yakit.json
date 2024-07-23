@@ -1,0 +1,59 @@
+{
+    "version": "1.3.4-sp3",
+    "description": " Cyber Security ALL-IN-ONE Platform 交互式应用安全测试平台 ",
+    "homepage": "https://github.com/yaklang/yakit",
+    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json，会将yakit自动添加到防火墙允许规则中",
+    "license": "AGPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.3.4-sp3/Yakit-1.3.4-sp3-windows-amd64.exe#/dl.7z",
+            "hash": "0bee5bdc5f262e02db12d152fd363fb662746d36d3f9ed81c0f015cccfafa815",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
+            ]
+        }
+    },
+    "post_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "$existingRule = Get-NetFirewallRule -DisplayName YakitVi -ErrorAction SilentlyContinue",
+        "if ($existingRule) {  sudo Set-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
+        "else { sudo New-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
+        "$filesToDelete = Get-ChildItem -Path \"$persist_dir\\yakit-projects\\yak-engine\" -Recurse | Where-Object { $_.Name -match '^yak-v\\d'}",
+        "foreach ($file in $filesToDelete) {  Remove-Item $file.FullName -Force;  Write-Host \"已删除旧版本yak.exe文件: $($file.FullName)\";  }",
+        "$resp = Invoke-WebRequest 'https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/version.txt';",
+        "$latestVersion=$resp.Content;",
+      "  $versionOutput = Invoke-Expression \"$persist_dir\\yakit-projects\\yak-engine\\yak.exe --version\";",
+"if ($versionOutput -match \"yak.exe version\") {",
+ "   if ($versionOutput -notlike \"*$latestVersion*\") {",
+   "     Write-Host \"需要升级 Yak...\"",
+  "      (new-object System.Net.WebClient).DownloadFile(\"https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/yak_windows_amd64.exe','$persist_dir\\yakit-projects\\yak-engine\\yak.exe\");",
+  "  } else {",
+    "    Write-Host \"Yak 已经是最新版本。\"",
+   " }",
+"} else {",
+  "  Write-Host \"未能检测到 Yak 的版本信息。\"",
+"}"
+    ],
+    "uninstaller": {
+        "script": "Remove-NetFirewallRule -DisplayName 'YakitVi' -ErrorAction SilentlyContinue"
+    },
+    "persist": "yakit-projects",
+    "shortcuts": [
+        [
+            "Yakit.exe",
+            "Yakit"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/yaklang/yakit/releases/latest",
+        "regex": "/releases/tag/(?:v|V)?([\\d.]+(-sp\\d)?)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/$version/Yakit-$version-windows-amd64.exe#/dl.7z"
+            }
+        }
+    }
+}
