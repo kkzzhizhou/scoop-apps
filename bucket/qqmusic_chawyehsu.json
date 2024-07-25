@@ -1,0 +1,45 @@
+{
+    "homepage": "https://y.qq.com/",
+    "description": "The official QQ Music client",
+    "version": "20.35",
+    "license": "Proprietary",
+    "url": "https://dldir1v6.qq.com/music/clntupate/QQMusic_Setup_2035.exe#/dl.7z",
+    "hash": "d6e1f24e3dd97b8ff8ad3fb3eb1251766905fe7ab27e4701a6616eb364843541",
+    "installer": {
+        "script": [
+            "# simulate instok check",
+            "$helperScript = $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/qqmusic/instok)",
+            "Copy-Item -Path $helperScript -Destination $dir",
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "QQMusic.exe",
+            "QQ音乐"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$api = 'https://u6.y.qq.com/cgi-bin/musicu.fcg'",
+            "$body = '{\"comm\":{\"ct\":\"19\",\"cv\":\"2022\",\"tmeAppID\":\"qqmusic\"},\"platform.uniteUpdate.UniteUpdateSvr.QueryUpdate\":{\"method\":\"QueryUpdate\",\"module\":\"platform.uniteUpdate.UniteUpdateSvr\",\"param\":{\"chid\":\"1001\",\"osVer\":1}}}'",
+            "$Response = (Invoke-RestMethod $api -Method POST -Body $body) | ConvertTo-Json -Compress",
+            "return $Response"
+        ],
+        "regex": "QQMusic_Setup_(?<version>(?<major>\\d{2})(?<minor>\\d{2})).exe",
+        "replace": "${major}.${minor}"
+    },
+    "autoupdate": {
+        "url": "https://dldir1v6.qq.com/music/clntupate/QQMusic_Setup_$cleanVersion.exe#/dl.7z"
+    }
+}

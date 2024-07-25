@@ -1,0 +1,46 @@
+{
+    "version": "0.15.1",
+    "description": "📺 Cross-platform IPTV player application with multiple features, such as support of m3u and m3u8 playlists, favorites, TV guide, TV archive/catchup and more.",
+    "homepage": "https://iptvnator.vercel.app/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/4gray/iptvnator#MIT-1-ov-file"
+    },
+    "url": "https://github.com/4gray/iptvnator/releases/download/v0.15.1/iptvnator-Setup-0.15.1.exe#/dl.7z",
+    "hash": "sha512:f74417a575587e864e6dcad462e49e41a7b0de5001859660a523ffaa55ffab7c388fa13120675d648e052550d91be29e9b73b8cdcd9c65afec6a5fe9d513033f",
+    "architecture": {
+        "64bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        },
+        "32bit": {
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+        }
+    },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Unins*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\iptvnator\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\iptvnator\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "iptvnator.exe",
+            "IPTVnator"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/4gray/iptvnator/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/4gray/iptvnator/releases/download/v$version/iptvnator-Setup-$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

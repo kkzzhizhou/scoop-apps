@@ -7,7 +7,7 @@
         "url": "https://www.aliyundrive.com/protocol/service"
     },
     "url": "https://sw.pcmgr.qq.com/11aac7d8deee9f66ce08359998d30a86/668547e2/spcmgr/download/aDrive-4.15.0.exe#/aDrive-4.16.0.7z",
-    "hash": "sha512:7744f810f21b626a3ebcbbdb2303b0ac3f9fb3946a2729354b353c8bce1617f3095c6fb2a56162b5769d577c491655431cbfd34e8f0947f017a46f744e79754c",
+    "hash": "sha512:bd32db5a5309db7521a1d1cb89b0da63edaa4bdfcb8b0cf5a81f00b380ed82d3a906401e7e7c81a073eedc4db1a9b6bf5c7bd37adf4ef44ad1000e32b11d2ca5",
     "post_install": [
         "@('$PLUGINSDIR', '$TEMP') | ForEach-Object {",
         "    Remove-Item \"$dir\\$_\" -Recurse -Force",
@@ -57,5 +57,17 @@
             "aDrive.exe",
             "阿里云盘"
         ]
-    ]
+    ],
+    "checkver": {
+        "script": "return (iwr -useb \"$($(iwr -useb 'https://www.aliyundrive.com/desktop/version/update.json' | ConvertFrom-Json).url)/win32/ia32/latest.yml\")",
+        "regex": "version: ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/ia32/aDrive-$version.exe#/aDrive-$version.7z",
+        "hash": {
+            "url": "https://g.alicdn.com/aliyun-drive-fe/aliyun-drive-desktop-version/$version/win32/ia32/latest.yml",
+            "mode": "extract",
+            "regex": "sha512: $base64"
+        }
+    }
 }
