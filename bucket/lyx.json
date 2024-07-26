@@ -1,17 +1,33 @@
 {
     "version": "2.4.1",
-    "description": "LyX is a document processor that encourages an approach to writing based on the structure of your documents (WYSIWYM) and not simply their appearance (WYSIWYG).",
+    "description": "LyX is a document processor that encourages an approach to writing based on the structure of your documents",
     "homepage": "https://www.lyx.org/",
-    "license": "GPL-2.0-or-later",
+    "license": "GPL-2.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://ftp.icm.edu.pl/packages/lyx/bin/2.4.1/LyX-241-Installer-1-x64.exe#/dl.7z",
+            "url": "https://mirrors.ocf.berkeley.edu/lyx/bin/2.4.1/LyX-241-Installer-1-x64.exe#/lyx.7z",
             "hash": "7d7b6710d382694f967af79cbaa2db6b49b5d44fdd79e1c74015e6be7974e128"
-        },
-        "32bit": {
-            "url": "https://ftp.icm.edu.pl/packages/lyx/bin/2.3.8/LyX-238-Installer-1-x32.exe#/dl.7z",
-            "hash": ""
         }
+    },
+    "installer": {
+        "script": [
+            "# Install detail: https://github.com/cburschka/lyx/blob/bce49b877e/development/Win32/packaging/installer2/src/main.nsh",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse -Force | Out-Null",
+            "# Compile Python resources",
+            "@(\"import os`r`n\",",
+            "    \"import compileall`r`n\"",
+            "    \"dir = os.path.dirname(__file__)`r`n\"",
+            "    \"compileall.compile_dir(dir + '/python/Lib')`r`n\"",
+            "    \"compileall.compile_dir(dir + '/Resources')`r`n\"",
+            ") | ForEach-Object { Write-Output $_ | Out-File -Append \"$dir\\compilepy.py\" }",
+            "Write-Output 'Compiling python resources...'",
+            "& \"$dir\\python\\python.exe\" \"$dir\\compilepy.py\" | Out-Null",
+            "Write-Output 'Generating default configurations...'",
+            "Push-Location \"$dir\\Resources\"",
+            "& \"$dir\\python\\python.exe\" \"./configure.py\"",
+            "Pop-Location",
+            "Remove-Item \"$dir\\compilepy.py\" -Force | Out-Null"
+        ]
     },
     "shortcuts": [
         [
@@ -19,15 +35,14 @@
             "LyX"
         ]
     ],
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
     "checkver": {
         "url": "https://www.lyx.org/Download",
-        "regex": "/bin/([\\d.]+)/LyX-(?<build1>\\d+)-Installer(?<build2>-\\d+)?-x64.exe"
+        "re": "([\\d.]+)/LyX-(?<date>[\\d]+)-Installer-(?<build>[\\d]+)-x64.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://ftp.icm.edu.pl/packages/lyx/bin/$version/LyX-$matchBuild1-Installer$matchBuild2-x64.exe#/dl.7z"
+                "url": "https://mirrors.ocf.berkeley.edu/lyx/bin/$version/LyX-$cleanVersion-Installer-$matchBuild-x64.exe#/lyx.7z"
             }
         }
     }
