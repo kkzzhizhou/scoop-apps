@@ -1,16 +1,15 @@
 {
-    "version": "3.1-fixed2",
+    "version": "3.2",
     "homepage": "https://rectify11.net/",
     "description": "An open-source system tweaker that improves the consistency of Windows 11 by modifying system files safely, and via various programs to improve the experience for the user.",
     "license": "GPL-3.0",
     "notes": "This only downloads the installer, you will have to manually execute the installer file yourself.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Rectify11/Installer/releases/download/v-3.1-fixed2/Rectify11Installer.exe",
-            "hash": "1763729bf0c039415bd77204ad7f62a04a25234f9b07fb62934746945e516f72"
+            "url": "https://nightly.link/Rectify11/Installer/actions/artifacts/1736009577.zip",
+            "hash": "010dbd710c99b6e3906f25ac450d0e2d74f802ad9e53029a200287695a52e7c7"
         }
     },
-    "env_add_path": ".",
     "shortcuts": [
         [
             "Rectify11Installer.exe",
@@ -18,13 +17,25 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/Rectify11/Installer",
-        "re": "tag/v-([\\w.-]+)"
+        "script": [
+            "$github = 'https://github.com/Rectify11/Installer'",
+            "$latest = Invoke-RestMethod \"$github/releases/latest\"",
+            "$latest -match 'tag/v-(?<Ver>[\\w.]+)' | Out-Null; $version = $Matches.Ver",
+            "$buildYml = Invoke-RestMethod \"$github/actions/workflows/build.yml\"",
+            "$buildYml -match '(?<LinkPart>actions/runs/([\\w]+))' | Out-Null",
+            "$nightly = $github.Replace('github.com', 'nightly.link')",
+            "$part = $Matches.LinkPart; $link = Invoke-RestMethod \"$nightly/$part\"",
+            "$link -match \"`\"(?<ArtifactLink>$nightly/$part/.*?)`\"\" | Out-Null",
+            "$artifactLink = Invoke-RestMethod ($Matches.ArtifactLink)",
+            "$artifactLink -match \"$nightly/actions/artifacts/(?<ArtifactNo>[\\d]+)\\.zip\" | Out-Null",
+            "Write-Output \"$version/$($Matches.ArtifactNo)\""
+        ],
+        "re": "([\\w.]+)/(?<ArtifactNo>[\\d]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Rectify11/Installer/releases/download/v-$version/Rectify11Installer.exe"
+                "url": "https://nightly.link/Rectify11/Installer/actions/artifacts/$matchArtifactNo.zip"
             }
         }
     }
