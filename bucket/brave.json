@@ -1,5 +1,5 @@
 {
-    "version": "1.68.134-92",
+    "version": "1.68.137",
     "description": "Secure, Fast & Private Web Browser with Adblocker",
     "homepage": "https://brave.com",
     "license": {
@@ -8,38 +8,54 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/portapps/brave-portable/releases/download/1.68.134-92/brave-portable-win64-1.68.134-92.7z",
-            "hash": "1bb66b4a3b8cbbdb9d133c9b28b2fb05e92ed501f0d2fefba95123d32433e3e3"
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.68.137/brave-v1.68.137-win32-x64.zip",
+            "hash": "7482e61bf2f4cd8cbfbed7cd45718a1458fc24590eb3b5bc2a4e1b864edd8830"
+        },
+        "32bit": {
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.68.137/brave-v1.68.137-win32-ia32.zip",
+            "hash": "5aa8c80c0ea614ef212ec749a5f6763376a063f33cfffa93fd171f5675e84ec5"
         }
     },
     "bin": [
-        "brave-portable.exe",
         [
-            "brave-portable.exe",
-            "brave"
+            "brave.exe",
+            "brave",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
-            "brave-portable.exe",
-            "Brave"
+            "brave.exe",
+            "Brave",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "persist": [
-        "data",
-        "log",
-        "reg"
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$persist_dir\\data\")) {",
+        "    info '[Portable Mode]: Copying user data from portapps data directory . . .'",
+        "    Copy-Item \"$persist_dir\\data\\*\" \"$dir\\User Data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data from local application data directory . . .'",
+        "    Copy-Item \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
     ],
+    "persist": "User Data",
     "checkver": {
-        "url": "https://portapps.io/app/brave-portable/feed.xml",
-        "xpath": "(//title[text()[contains(.,'win64') and contains(.,'.7z')]])[1]",
-        "regex": "win64-([\\d.-]+)\\.7z"
+        "url": "https://brave-browser-downloads.s3.brave.com/latest/release-windows-x64.version",
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/portapps/brave-portable/releases/download/$version/brave-portable-win64-$version.7z"
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-ia32.zip"
             }
+        },
+        "hash": {
+            "url": "$url.sha256"
         }
     }
 }
