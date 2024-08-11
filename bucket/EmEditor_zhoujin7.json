@@ -1,18 +1,21 @@
 {
+    "version": "24.3.0",
+    "description": "A fast, lightweight and extensible text editor for Windows. Useful for opening very large files.",
     "homepage": "https://www.emeditor.com/",
-    "version": "19.0.0",
-    "description": "EmEditor is a fast, lightweight, yet extensible, easy-to-use text editor for Windows.",
-    "license": "https://www.emeditor.com/#toggle-id-4",
+    "license": "Shareware",
     "architecture": {
         "64bit": {
-            "url": "https://emeditor.blob.core.windows.net/emed64_19.0.0_portable.zip",
-            "hash": "76d52bfa3d810222917547ea8d3179747cc19ec5782a2b461705fd54c1881eed"
-        },
-        "32bit": {
-            "url": "https://emeditor.blob.core.windows.net/emed32_19.0.0_portable.zip",
-            "hash": "861137174e050ff6c55b34364e30e4f1d5013f179dd1bc8c7ef6f22029a7fe6c"
+            "url": "https://sourceforge.net/projects/tomato-extra/files/apps/EmEditor-x64-24.3.0.7z",
+            "hash": "f8194d7a9981452958b7ba3d0a54f99708dcb2363349a4d80cef90ff2d8ee18e"
         }
     },
+    "pre_install": [
+        "$manifest.persist | ForEach-Object {",
+        "    if ([io.path]::GetExtension($_)) {",
+        "        if (!(Test-Path \"$persist_dir\\$_\") -and !(Test-Path \"$dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+        "    }",
+        "}"
+    ],
     "bin": "EmEditor.exe",
     "shortcuts": [
         [
@@ -20,19 +23,25 @@
             "EmEditor"
         ]
     ],
-    "post_install": "Remove-Item \"$dir\\eeUseIni.ini\"",
+    "persist": [
+        "eeCommon.ini",
+        "eeConfig.ini",
+        "eeLM.ini",
+        "eePlugins.ini",
+        "eeUseIni.ini"
+    ],
     "checkver": {
-        "url": "https://www.emeditor.com/download/",
-        "regex": "<h3>Download latest version: v([\\d.]+)</h3>"
+        "url": "https://sourceforge.net/projects/tomato-extra/files/apps/",
+        "regex": "EmEditor-x64-([\\d\\.]+)\\.7z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://emeditor.blob.core.windows.net/emed64_$version_portable.zip"
-            },
-            "32bit": {
-                "url": "https://emeditor.blob.core.windows.net/emed32_$version_portable.zip"
+                "url": "https://sourceforge.net/projects/tomato-extra/files/apps/EmEditor-x64-$version.7z"
             }
+        },
+        "hash": {
+            "url": "https://master.dl.sourceforge.net/project/tomato-extra/apps/sha256sum.txt"
         }
     }
 }
