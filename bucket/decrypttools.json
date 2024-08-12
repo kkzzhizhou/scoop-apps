@@ -12,7 +12,7 @@
     },
     "url": "https://github.com/wafinfo/DecryptTools/releases/download/DecryptToolsV2.4/DecryptToolsV2.4.jar",
     "hash": "b05628477814f1f7ac7f9d8608043ef2a603b1349386a03cb54d45968cbebb29",
-    "pre_install": "Set-Content \"$dir\\decrypttools.bat\" '@pushd %~dp0\n@start javaw.exe -jar \"DecryptToolsV2.4.jar\" %*\n@popd' -Encoding Ascii",
+    "pre_install": "\n$batContent = @\"\n@echo off\n@setlocal\n\nset \"jdk_path=\"\n\nif defined JDK_19_HOME (\n    set \"jdk_path=%JDK_19_HOME%\\bin\\\"\n) else if defined JDK_17_HOME (\n    set \"jdk_path=%JDK_17_HOME%\\bin\\\"\n) else if defined JDK_11_HOME (\n    set \"jdk_path=%JDK_11_HOME%\\bin\\\"\n) else if defined JAVA_HOME (\n    set \"jdk_path=%JAVA_HOME%\\bin\\\"\n) \n\nif not exist \"%jdk_path%javaw.exe\" (\n    echo ERROR: Java executable not found in %jdk_path%.\n    exit /b 1\n)\n\nset \"javafx_args=\"\nif defined JAVAFX_HOME (\n    if exist \"%JAVAFX_HOME%\\lib\" (\n        set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"\n    ) else (\n        echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.\n    )\n)\n\n@pushd %~dp0\n@start \"\" \"%jdk_path%javaw.exe\" %javafx_args% -jar \"DecryptToolsV2.4.jar\" %*\n@popd\n\nendlocal\n\"@\n\n$path = \"$dir/decrypttools.bat\"\nSet-Content -Path $path -Value $batContent -Encoding Ascii\n",
     "bin": "decrypttools.bat",
     "shortcuts": [
         [
