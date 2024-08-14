@@ -32,23 +32,52 @@
             "msys2_shell.cmd",
             "mingw64",
             "-mingw64 -defterm -here -full-path -no-start"
-        ]
-    ],
-    "shortcuts": [
-        [
-            "msys2.exe",
-            "MSYS2"
         ],
         [
-            "mingw32.exe",
-            "MinGW32"
+            "msys2_shell.cmd",
+            "clang32",
+            "-clang32 -defterm -here -full-path -no-start"
         ],
         [
-            "mingw64.exe",
-            "MinGW64"
+            "msys2_shell.cmd",
+            "clang64",
+            "-clang64 -defterm -here -full-path -no-start"
+        ],
+        [
+            "msys2_shell.cmd",
+            "clangarm64",
+            "-clangarm64 -defterm -here -full-path -no-start"
+        ],
+        [
+            "msys2_shell.cmd",
+            "ucrt64",
+            "-ucrt64 -defterm -here -full-path -no-start"
         ]
     ],
     "persist": "home",
+    "installer": {
+        "script": [
+            "if (Test-Path 'C:\\msys64') {",
+            "   if ($null -eq (Get-Item 'C:\\msys64').LinkType) {",
+            "       Rename-Item -Path 'C:\\msys64' -NewName 'msys64.old' -Force",
+            "   } else {",
+            "       Remove-Item -Path 'C:\\msys64' -Force",
+            "   }",
+            "}",
+            "New-Item -Path \"$dir\\tmp\" -ItemType Directory | Out-Null",
+            "New-Item -Path 'C:\\msys64' -Target \"$dir\" -ItemType Junction | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ((Test-Path 'C:\\msys64') -and ($null -ne (Get-Item 'C:\\msys64').LinkType)) {",
+            "   Remove-Item -Path 'C:\\msys64' -Force",
+            "}",
+            "if (Test-Path 'C:\\msys64.old') {",
+            "   Rename-Item -Path 'C:\\msys64.old' -NewName 'msys64' -Force",
+            "}"
+        ]
+    },
     "checkver": {
         "url": "https://github.com/msys2/msys2-installer/releases",
         "regex": "/releases/tag/(?<version>(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2}))"
