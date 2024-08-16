@@ -1,11 +1,16 @@
 {
-    "version": "2.1.9",
+    "version": "2.2.0.0",
     "description": "The official client for 123 cloud dirve service",
     "homepage": "https://www.123pan.com/",
     "license": "Proprietary",
-    "url": "https://app.123pan.com/pc-pro/windows/219/123pan_2.1.9.exe#/dl.7z",
-    "hash": "ffe94f2c5de38192eb2c5e28af0542df0677cff8af42eb5311ebcf9ec5c426b4",
-    "shortcuts": [["123pan.exe", "123云盘"]],
+    "url": "https://app.123957.com/pc-pro/windows/220/123pan_2.2.0.exe#/dl.7z",
+    "hash": "bb62a8925938563a68b8375ef064b28dfcbbcf480110383c06db91ba2ae48896",
+    "shortcuts": [
+        [
+            "123pan.exe",
+            "123云盘"
+        ]
+    ],
     "pre_install": [
         "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\"",
         "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\app.7z\" -Force -Recurse"
@@ -16,5 +21,21 @@
             "Write-Host \"`nRemoving RuntimeCacheCache:$runtimeCache\"",
             "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
         ]
+    },
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info '123/123pan'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX64#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/1/123/123pan/$version/123.123pan.installer.yaml",
+            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
     }
 }

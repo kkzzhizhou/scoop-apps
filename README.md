@@ -116,10 +116,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - starise/Scoop-Gaming
 - SayCV/scoop-cvp
-- Darkatse/Scoop-Darkatse
+- starise/Scoop-Confetti
 - seumsc/scoop-seu
 - Weidows-projects/scoop-3rd
-- starise/Scoop-Confetti
+- Darkatse/Scoop-Darkatse
 - TianXiaTech/scoop-txt
 - AkariiinMKII/Scoop4kariiin
 - rivy/scoop-bucket

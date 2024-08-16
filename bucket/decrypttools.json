@@ -26,6 +26,7 @@
         "regex": "/DecryptToolsV([\\d.]+)\\.jar"
     },
     "autoupdate": {
+        "pre_install": "\n$batContent = @\"\n@echo off\n@setlocal\n\nset \"jdk_path=\"\n\nif defined JDK_19_HOME (\n    set \"jdk_path=%JDK_19_HOME%\\bin\\\"\n) else if defined JDK_17_HOME (\n    set \"jdk_path=%JDK_17_HOME%\\bin\\\"\n) else if defined JDK_11_HOME (\n    set \"jdk_path=%JDK_11_HOME%\\bin\\\"\n) else if defined JAVA_HOME (\n    set \"jdk_path=%JAVA_HOME%\\bin\\\"\n) \n\nif not exist \"%jdk_path%javaw.exe\" (\n    echo ERROR: Java executable not found in %jdk_path%.\n    exit /b 1\n)\n\nset \"javafx_args=\"\nif defined JAVAFX_HOME (\n    if exist \"%JAVAFX_HOME%\\lib\" (\n        set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"\n    ) else (\n        echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.\n    )\n)\n\n@pushd %~dp0\n@start \"\" \"%jdk_path%javaw.exe\" %javafx_args% -jar \"DecryptToolsV$version.jar\" %*\n@popd\n\nendlocal\n\"@\n\n$path = \"$dir/decrypttools.bat\"\nSet-Content -Path $path -Value $batContent -Encoding Ascii\n",
         "url": "https://github.com/wafinfo/DecryptTools/releases/download/DecryptToolsV$version/DecryptToolsV$version.jar"
     }
 }
