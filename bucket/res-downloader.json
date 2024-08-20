@@ -1,0 +1,43 @@
+{
+    "version": "2.0.1",
+    "description": "支持视频号、小程序、抖音、快手、小红书、酷狗、QQ音乐等网络资源下载!",
+    "homepage": "https://github.com/putyy/res-downloader",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/putyy/res-downloader#MIT-1-ov-file"
+    },
+    "url": "https://github.com/putyy/res-downloader/releases/download/2.0.1/res-downloader_2.0.1.exe#/dl.7z",
+    "hash": "82ad622c7736570600368f81f99d396c5e8f76d9556f2340684e58de51edc9fb",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\res-downloader\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\res-downloader\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "res-downloader.exe",
+            "res-downloader"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/putyy/res-downloader/releases",
+        "regex": "/releases/tag/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/putyy/res-downloader/releases/download/$version/res-downloader_$version.exe#/dl.7z"
+    }
+}
