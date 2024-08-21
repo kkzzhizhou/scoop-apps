@@ -1,0 +1,56 @@
+{
+    "version": "3.3.2",
+    "description": "A M3U8 download tool with user interface. 一个带用户界面的 M3U8 下载工具，m3u8点播, HLS m3u8直播下载.",
+    "homepage": "https://github.com/youwen21/flybird-downloader",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/youwen21/flybird-downloader/releases/download/v3.3.2/flybird-m3u8downloader-amd64.exe",
+            "hash": "155fbfb609eb5840a45935099ceba3cc096a0f819ed542314ec8287c0f75f2bc"
+        },
+        "arm64": {
+            "url": "https://github.com/youwen21/flybird-downloader/releases/download/v3.3.1/flybird-m3u8downloader-arm64.exe",
+            "hash": "d59a0838227b4c1408e31ea920b0173bdd6e8063ad85ae2a53b040a7485276e5"
+        }
+    },
+    "pre_install": "Get-ChildItem \"$dir\\flybird-m3u8downloader*.exe\" | Rename-Item -NewName 'flybird-m3u8downloader.exe'",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\flybird-m3u8downloader.exe\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\flybird-m3u8downloader.exe\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "flybird-m3u8downloader.exe",
+            "flybird-m3u8downloader"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/youwen21/flybird-downloader/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = '/releases/download/v([\\d.]+)/flybird-m3u8downloader-amd64\\.exe' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = '/releases/download/v([\\d.]+)/flybird-m3u8downloader-arm64\\.exe' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $arm64"
+        ],
+        "regex": "([\\d.]+) (?<arm64>[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/youwen21/flybird-downloader/releases/download/v$version/flybird-m3u8downloader-amd64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/youwen21/flybird-downloader/releases/download/v$matchArm64/flybird-m3u8downloader-arm64.exe"
+            }
+        }
+    }
+}
