@@ -1,15 +1,19 @@
 {
-    "version": "1.1.36",
+    "version": "2.0.0",
     "description": "Glorious CORE is a unified software suite designed to give you full control over your peripherals",
     "homepage": "https://www.gloriousgaming.com/pages/glorious-core",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://downloads.gloriousgamingservices.com/download/GloriousCore.zip",
-            "hash": "31327ec4deadbf672b05b78c48a826270f361216cdac7134f74379a9f5a0190a"
+            "url": "https://muninn.nyc3.digitaloceanspaces.com/Glorious%20Core-2.0.0%20Setup.zip",
+            "hash": "e7912b3936d054cb38957044a5b91566b9c07077abd33f5852f0040837390442"
         }
     },
-    "pre_install": "Get-ChildItem \"$dir/*.exe\" | Expand-InnoArchive -Removal -DestinationPath \"$dir\"",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir/*.exe\" \"$dir\" -Removal",
+        "Remove-Item \"$dir/*\" -Exclude *.nupkg",
+        "Expand-7zipArchive \"$dir/*.nupkg\" \"$dir\" -ExtractDir 'lib/net45' -Removal"
+    ],
     "shortcuts": [
         [
             "Glorious Core.exe",
@@ -17,12 +21,14 @@
         ]
     ],
     "checkver": {
-        "regex": "\\['CurrentVersion'\\] = '([\\d.]+)"
+        "url": "https://muninn.nyc3.digitaloceanspaces.com/",
+        "xpath": "(/ListBucketResult/Contents)[1]/Key",
+        "regex": "\\AGlorious Core-([^ ]+) Setup\\.zip\\Z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://downloads.gloriousgamingservices.com/download/GloriousCore.zip"
+                "url": "https://muninn.nyc3.digitaloceanspaces.com/Glorious%20Core-$version%20Setup.zip"
             }
         }
     }

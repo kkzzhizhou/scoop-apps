@@ -1,0 +1,57 @@
+{
+    "version": "2573",
+    "description": "GameStream client for PCs (Windows, Mac, Linux, and Steam Link)",
+    "homepage": "https://moonlight-stream.org",
+    "license": "GPL-3.0-only",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/getnauxr42ikc0ax/artifacts/MoonlightPortable-x64-r2573.zip",
+            "hash": "898aea331284859aea65a54a73749c6cf7e6da12594bb8ea2dec2946f18b34bd"
+        },
+        "arm64": {
+            "url": "https://ci.appveyor.com/api/buildjobs/getnauxr42ikc0ax/artifacts/MoonlightPortable-arm64-r2573.zip",
+            "hash": "83bde6facc0ff44151ea4e0ee59403da6cdf752f14ffb9c8eba81228353000f2"
+        }
+    },
+    "pre_install": [
+        "if (Test-Path \"$persist_dir$($ini = '/Moonlight Game Streaming Project/Moonlight.ini')\") { return }",
+        "$null = New-Item -ItemType Directory \"$dir/Moonlight Game Streaming Project\"",
+        "$null = New-Item -ItemType File \"$dir$ini\""
+    ],
+    "bin": "Moonlight.exe",
+    "shortcuts": [
+        [
+            "Moonlight.exe",
+            "Moonlight"
+        ]
+    ],
+    "persist": "Moonlight Game Streaming Project/Moonlight.ini",
+    "checkver": {
+        "script": [
+            "$build = (Invoke-RestMethod https://ci.appveyor.com/api/projects/cgutman/moonlight-qt).Build",
+            "$buildNumber = $build.buildNumber",
+            "foreach ($job in $build.Jobs) {",
+            "    if ($job.osType -eq 'Windows') {",
+            "        if ($job.status -ne 'success') { return '' }",
+            "        $jobId = $job.jobId",
+            "        break",
+            "    }",
+            "}",
+            "$buildNumber, $jobId -join ' '"
+        ],
+        "regex": "\\A(\\d+) (?<job>[a-z\\d]+)\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob/artifacts/MoonlightPortable-x64-r$version.zip"
+            },
+            "arm64": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob/artifacts/MoonlightPortable-arm64-r$version.zip"
+            }
+        }
+    }
+}
