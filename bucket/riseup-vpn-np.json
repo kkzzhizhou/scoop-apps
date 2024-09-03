@@ -15,22 +15,16 @@
     "uninstaller": {
         "script": [
             "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/x', \"`\"${env:ProgramFiles(x86)}\\RiseupVPN\\openvpn-installer.msi`\"\", '/qn', '/norestart')",
-            "Start-Process \"${env:ProgramFiles(x86)}\\RiseupVPN\\uninstall.exe\" -Wait -Verb 'RunAs' -Args @('pr', '--confirm-command', '--am', '--al')",
+            "$uninstaller_dir = \"${env:ProgramFiles(x86)}\\RiseupVPN\"",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/x', \"`\"$uninstaller_dir\\openvpn-installer.msi`\"\", '/qn', '/norestart')",
+            "Start-Process \"$uninstaller_dir\\uninstall.exe\" -Wait -Verb 'RunAs' -Args @('pr', '--confirm-command', '--am', '--al')",
             "Start-Sleep -Seconds 2"
         ]
     },
     "checkver": {
-        "script": [
-            "# This checkver script is needed because the files, are not in a newest-to-oldest order",
-            "$content = Invoke-RestMethod 'https://downloads.leap.se/RiseupVPN/windows/'",
-            "$releaseDates = Select-String -InputObject $content -AllMatches '([\\d]+-[\\w]+-[\\d]+\\s[\\d:]+)'",
-            "$releaseDates = ($releaseDates.Matches.Value | Get-Date) | Sort-Object -Unique -Descending",
-            "$newestDate = $releaseDates[1].ToString('dd-MMM-yyyy HH:mm').Replace('.', '')",
-            "$regex = \"RiseupVPN-installer-(?<version>[\\w.-]+)\\.exe.*?\\s+$newestDate\"",
-            "$content -match $regex | Out-Null; $version = $Matches.version; $version | Write-Output"
-        ],
-        "regex": "([\\w.-]+)"
+        "url": "https://downloads.leap.se/RiseupVPN/windows/",
+        "regex": "RiseupVPN-installer-(?<version>[\\w.?-]+)\\.exe",
+        "reverse": true
     },
     "autoupdate": {
         "url": "https://downloads.leap.se/RiseupVPN/windows/RiseupVPN-installer-$version.exe"
