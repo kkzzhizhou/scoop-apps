@@ -113,14 +113,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - jfut/scoop-jfut
 - Velgus/Scoop-Portapps
 - cc713/ownscoop
+- SayCV/scoop-cvp
 - aoisummer/scoop-bucket
 - starise/Scoop-Gaming
-- SayCV/scoop-cvp
+- seumsc/scoop-seu
+- Weidows-projects/scoop-3rd
 - Darkatse/Scoop-Darkatse
 - starise/Scoop-Confetti
 - littleli/Scoop-littleli
-- seumsc/scoop-seu
-- Weidows-projects/scoop-3rd
 - TianXiaTech/scoop-txt
 - AkariiinMKII/Scoop4kariiin
 - rivy/scoop-bucket
@@ -130,8 +130,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Toddli468/Pentest-Scoop-Bucket
 - mo-san/scoop-bucket
 - Small-Ku/turbo-bucket
-- babo4d/scoop-xrtools
 - ShuguangSun/sgs-scoop-bucket
+- babo4d/scoop-xrtools
 - FlawlessCasual17/MyScoop
 - natecohen/scoop-av
 - Deide/deide-bucket

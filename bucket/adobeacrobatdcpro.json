@@ -15,6 +15,7 @@
     "url": "https://github.com/canyuedao/Adobe-Acrobat-Pro-DC-v2021.001.20142/releases/download/x64/Adobe.Acrobat.Pro.DC.v2021.001.20142.7z",
     "hash": "76d0b6a725d8e88eb51b54add46b14fbd9b1ee9cc007ca8440f822f3aacc9ecf",
     "pre_install": [
+        "if (!(is_admin)) { error \"Admin rights required to remove ActivityWatch service\"; break }",
         "$inst = Join-Path $dir 'Programs'",
         "ensure $inst | Out-Null",
         "",
@@ -51,11 +52,18 @@
         "   # Adobe Genuine Software Integrity Service",
         "   \"AGSService\"",
         ")",
-        "Get-Service -ServiceName $services | Stop-Service -Force",
-        "Get-Service -ServiceName $services | Set-Service -StartupType Disabled",
+        "foreach ($service in $services) {",
+        "    if (Get-Service -ServiceName \"$service\" -ErrorAction 'SilentlyContinue') {",
+        "        Write-Host \":: Turn off service $service .\" -ForegroundColor DarkCyan",
+        "        Stop-Service -ServiceName \"$service\" -Force",
+        "        Set-Service -ServiceName \"$service\" -StartupType Disabled",
+        "    }",
+        "}",
         "",
         "Write-Host \":: Disable update tasks...\" -ForegroundColor DarkCyan",
-        "Get-ScheduledTask -TaskName \"Adobe Acrobat Update Task\", AdobeGCInvoker-1.0* | Disable-ScheduledTask",
+        "if (Get-ScheduledTask -TaskName \"Adobe Acrobat Update Task\" -ErrorAction 'SilentlyContinue') {",
+        "    Disable-ScheduledTask -TaskName \"Adobe Acrobat Update Task\" -Force",
+        "}",
         "",
         ""
     ],
@@ -65,7 +73,7 @@
             "#Write-Host \":: Extract AcroPro.msi to the installer folder\" -ForegroundColor DarkCyan",
             "#$arguments = @(\"/a $dir\\setup\\AcroPro.msi\", \"TARGETDIR=$dir\\installer\", '/qb')",
             "#Start-Process \"msiexec\" -ArgumentList $arguments -Wait",
-            "#Get-ChildItem -Path \"$dir\\installer\\program files\\Adobe\\Acrobat DC\" -Recurse -Force | Move-Item -Destination \"$dir\\Programs\" -Force", 
+            "#Get-ChildItem -Path \"$dir\\installer\\program files\\Adobe\\Acrobat DC\" -Recurse -Force | Move-Item -Destination \"$dir\\Programs\" -Force",
             "",
             "Start-Process \"$dir\\setup\\setup.exe\" -ArgumentList @('-sfx_nu', '/sALL', '/msi', 'EULA_ACCEPT=YES', 'ENABLE_CHROMEEXT=0', 'DISABLE_BROWSER_INTEGRATION=1', 'ENABLE_OPTIMIZATION=YES', 'ADD_THUMBNAILPREVIEW=0', 'DISABLEDESKTOPSHORTCUT=1', \"/log $dir\\ScoopInstall.log\", \"INSTALLDIR=$dir\\Programs\\\") -Verb RunAs -Wait",
             "",
@@ -77,13 +85,11 @@
             ""
         ]
     },
-    "uninstaller": {
-        "script": [
-            "sudo Remove-Item \"${env:CommonProgramFiles}\\Adobe\" -Force -Recurse",
-            "Start-Process \"$dir\\Programs\\Setup Files\\{AC76BA86-1033-FFFF-7760-0C0F074E4100}\\setup.exe\" -ArgumentList @('/sAll', '/rs', '/msi', '/qn', '/uninstall', '/norestart') -Verb RunAs -Wait",
-            ""
-        ]
-    },
+    "pre_uninstaller": [
+        "sudo Remove-Item \"${env:CommonProgramFiles}\\Adobe\" -Force -Recurse",
+        "Start-Process \"$dir\\Programs\\Setup Files\\{AC76BA86-1033-FFFF-7760-0C0F074E4100}\\setup.exe\" -ArgumentList @('/sAll', '/rs', '/msi', '/qn', '/uninstall', '/norestart') -Verb RunAs -Wait",
+        ""
+    ],
     "shortcuts0": [
         [
             "Programs\\Acrobat\\Acrobat.exe",

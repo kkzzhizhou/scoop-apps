@@ -6,11 +6,18 @@
     "notes": [
         "Starship helper utils"
     ],
-    "depends": ["clink-cvp", "nushell-cvp", "starship"],
+    "depends": ["sudo", "clink-cvp", "nushell-cvp", "starship"],
     "url": "https://github.com/excitoon/empty/releases/download/empty-1.0.7/empty-1.0.7.zip",
     "hash": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
     "pre_install": [
         "",
+        "$evalDir = \"$(appdir nu $global)\\current\".Replace('/', '\\')",
+        "$PATH = \"$env:PATH;$evalDir\"",
+        "$evalDir = \"$(appdir starship $global)\\current\".Replace('/', '\\')",
+        "$PATH = \"$PATH;$evalDir\"",
+        "#Write-Host \":: var:PATH=$PATH\" -ForegroundColor DarkCyan",
+        "[Environment]::SetEnvironmentVariable('PATH', \"$PATH\", 'Process')",
+        "Write-Host \":: env:PATH=$env:PATH\" -ForegroundColor DarkCyan",
         "$evalDir = \"$(appdir nushell-cvp $global)\\current\".Replace('/', '\\')",
         "$unixEvalDir = \"$evalDir\".Replace('\\', '/')",
         "$unixDir = \"$dir\".Replace('\\', '/')",
@@ -24,7 +31,7 @@
         "Write-Host \":: Linking $(friendly_path $cachedir) => $(friendly_path $dir/.cache)\" -ForegroundColor DarkCyan",
         "",
         "if (Test-Path -LiteralPath $cachedir -PathType 'Container') {",
-        "    Remove-Item \"$cachedir\" -Force -Recurse",
+        "    sudo cmd /c rmdir \"$cachedir\".Replace('/', '\\')",
         "}",
         "New-Item -ItemType Junction -Path \"$cachedir\" -Value $dir/.cache | Out-Null",
         "",
@@ -51,14 +58,11 @@
         "Write-Host \":: Allow called by 'starship_by_nushell'\" -ForegroundColor DarkCyan",
         "",
         "",
-        ""
-    ],
-    "post_install": [
-        "",
         "$evalDir = \"$(appdir nushell-cvp $global)\\current\".Replace('/', '\\')",
         "$unixEvalDir = \"$evalDir\".Replace('\\', '/')",
         "$unixDir = \"$dir\".Replace('\\', '/')",
         "",
+        
         "#$nu.config-path",
         "$ifile = \"$(appdir nushell-cvp $global)/current/AppData/config.nu\"",
         "Write-Host \":: Create script for generate config.nu...\" -ForegroundColor DarkCyan",
@@ -85,7 +89,7 @@
         "$ofile = \"$dir/profile/config.nu\"",
         "$cont_append = \"source $unixDir/.cache/init.nu\"",
         "$cont = (Get-Content \"$ifile\")",
-        "$found = False",
+        "$found = $false",
         "foreach($current_line in $cont)",
         "{",
         "    $det = $current_line.Contains($cont_append)",
@@ -107,7 +111,11 @@
         "}",
         "",
         "Write-Host \":: Allow called by 'starship_by_clink'\" -ForegroundColor DarkCyan",
+        "",
         ""
+    ],
+    "post_install": [
+
     ],
     "bin": [
         "starship_by_clink.cmd",
