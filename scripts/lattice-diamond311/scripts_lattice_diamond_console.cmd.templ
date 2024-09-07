@@ -5,44 +5,28 @@
 @echo,
 @echo,!!! THIS IS NOT GUARANTEED TO WORK !!!
 @echo,
-@echo,Copyright (c) 2018-2021, SayCV
+@echo,Copyright (c) 2018-2024, SayCV
 @echo,=====
 @echo,
 
-@REM @if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
-@cd /d "%~dp0/../"
-@set "TOPDIR=%cd%"
-@title "%~n0"
-
-@REM Enable extensions, the `verify` call is a trick from the setlocal help
-@VERIFY other 2>nul
-@SETLOCAL EnableDelayedExpansion
-@IF %ERRORLEVEL% == 1 @(
-    @ECHO Unable to enable extensions
-    @GOTO failure
-)
-
 :: =====
-@set "LDM_TOPDIR=%TOPDIR:\=/%"
-@set "LDMROOT=%LDM_TOPDIR%/Programs"
+@set "LDM_TOPDIR=."
+@if not exist "%LDM_TOPDIR%/Programs/bin/nt64/pnmainc.exe" @set "LDM_TOPDIR=.."
+@if not exist "%LDM_TOPDIR%/Programs/bin/nt64/pnmainc.exe" @set "LDM_TOPDIR=%SCOOP%/apps/lattice-diamond311/current"
+@if not exist "%LDM_TOPDIR%/Programs/bin/nt64/pnmainc.exe" @set "LDM_TOPDIR=C:/ProgramData/scoop/apps/lattice-diamond311/current"
 
 :: ---------------------------------------------------------------------------------------------------
 :: ===================================================================================================
-@set "PATH=%LDMROOT%/bin/nt64/;%PATH%"
-
-@set "HOME=%LDM_TOPDIR%/home"
+@set "PATH=%LDM_TOPDIR%/Programs/bin/nt64;%PATH%"
 
 @for /f  %%a in  ('hostname') do @set HOSTNAME=%%a
 @set "LM_LICENSE_FILE=%LDM_TOPDIR%/data/LICENSE.dat"
 
-@START @SCRIPT_RUNNER@.exe %SCRIPT_RUNNER_ARG% %*
+@CALL @SCRIPT_RUNNER@.exe %SCRIPT_RUNNER_ARG% %*
 
 :: =====
 :script-done
 :failure
-
-@IF NOT %ERRORLEVEL% == 0  @PAUSE && @EXIT 1
-@EXIT 0
 
 :: =====
 :: ---------------------------------------------------------------------------------------------------
