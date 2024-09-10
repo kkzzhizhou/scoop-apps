@@ -1,5 +1,5 @@
 {
-    "version": "5.0",
+    "version": "2409",
     "description": "Nintendo GameCube and Wii emulator",
     "homepage": "https://dolphin-emu.org/",
     "license": {
@@ -7,23 +7,33 @@
         "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING"
     },
     "suggest": {
-        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
     },
-    "url": "https://dl-mirror.dolphin-emu.org/5.0/dolphin-x64-5.0.exe#/dolphin.lzma",
-    "hash": "e1b3ae8fc890c6588e5656f77ef2747ae7ddfc90b6530b240c0c5b9d0ab3ce8c",
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.dolphin-emu.org/releases/2409/dolphin-2409-x64.7z",
+            "hash": "1135b7a37e53433ea4fb3c6458804a4370f84ac56a332bcbe2a22ab60ac96f2d",
+            "extract_dir": "Dolphin-x64"
+        },
+        "arm64": {
+            "url": "https://dl.dolphin-emu.org/releases/2409/dolphin-2409-ARM64.7z",
+            "hash": "098386eb16ec21379fecd67ea4840c32e85b9769f6184b31ef8e33f4b0dd4dc5",
+            "extract_dir": "Dolphin-ARM64"
+        }
+    },
     "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   New-item \"$persist_dir\\User\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\\*\" -Destination \"$persist_dir\\User\" -Recurse",
-        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\" -Recurse",
-        "   }",
+        "$appdataPath = \"$Env:AppData\\Dolphin Emulator\"",
+        "if ((Test-Path -Path $appdataPath\\*) -and (!(Test-Path -Path $persist_dir\\*))) {",
+        "   Write-Warning \"Migrating AppData...\"",
+        "   New-Item -Type Directory -Path $persist_dir\\User -Force | Out-Null",
+        "   Copy-Item -Recurse -Force $appdataPath\\* -Destination $persist_dir\\User\\",
         "}"
     ],
     "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
-    "bin": "Dolphin.exe",
+    "bin": [
+        "Dolphin.exe",
+        "DolphinTool.exe"
+    ],
     "shortcuts": [
         [
             "Dolphin.exe",
@@ -33,9 +43,16 @@
     "persist": "User",
     "checkver": {
         "url": "https://dolphin-emu.org/download/",
-        "regex": "https://dl-mirror.dolphin-emu.org/([\\d.]+)/dolphin-x64"
+        "regex": "https://dl.dolphin-emu.org/releases/(?<version>[\\d]+)/"
     },
     "autoupdate": {
-        "url": "https://dl-mirror.dolphin-emu.org/$version/dolphin-x64-$version.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.dolphin-emu.org/releases/$version/dolphin-$version-x64.7z"
+            },
+            "arm64": {
+                "url": "https://dl.dolphin-emu.org/releases/$version/dolphin-$version-ARM64.7z"
+            }
+        }
     }
 }
