@@ -1,0 +1,59 @@
+{
+    "version": "6.3.3",
+    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘，由阿里巴巴集团出品",
+    "homepage": "https://www.aliyundrive.com/",
+    "license": "Unknown",
+    "url": "https://scoop-proxy.233366.xyz/https://cdn.aliyundrive.net/downloads/apps/desktop/update/6.3.3/win32/x64/aDrive-6.3.3.exe#/dl.7z",
+    "hash": "066b6e9759b3349879ac07d9ca45a66d8f62d7dfe5c28f7576fc6b378c7ccd15",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "aDrive.exe",
+            "阿里云盘"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
+        "Remove-Item -Force -Recurse \"$dir\\`$TEMP\""
+    ],
+    "checkver": {
+        "url": "https://www.aliyundrive.com/desktop/version/update.json",
+        "regex": "/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://scoop-proxy.233366.xyz/https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/x64/aDrive-$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/a/Alibaba/aDrive/$version/Alibaba.aDrive.installer.yaml",
+            "regex": "$sha256"
+        }
+    }
+}
