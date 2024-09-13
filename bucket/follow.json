@@ -1,0 +1,49 @@
+{
+    "version": "0.0.1-alpha.10",
+    "description": "🧡 Next generation information browser.",
+    "homepage": "https://app.follow.is/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/RSSNext/Follow#GPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/RSSNext/Follow/releases/download/v0.0.1-alpha.10/Follow-0.0.1-alpha.10-windows-x64.exe#/dl.7z",
+    "hash": "sha512:4133f9f474bc97f7aed343287b92b82ced58ec59b4c8f8c8af2296c4389a0c999f497eee47857b9debd6b2344ee296d96a0bb870c8091146a91a86d7d2d48557",
+    "pre_install": [
+        "Get-Item \"$dir\\Follow*.nupkg\" | Rename-Item -NewName 'Follow.nupkg'",
+        "Expand-7zipArchive \"$dir\\Follow.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+        "Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\",  \"$dir\\*.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\Follow\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Follow\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Follow.exe",
+    "shortcuts": [
+        [
+            "Follow.exe",
+            "Follow"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/RSSNext/Follow/releases/latest",
+        "regex": "/releases/tag/v([\\w.-]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/RSSNext/Follow/releases/download/v$version/Follow-$version-windows-x64.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

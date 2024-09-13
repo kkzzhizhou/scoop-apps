@@ -1,0 +1,47 @@
+{
+    "version": "1.0.14",
+    "description": "批量为视频生成字幕，并可将字幕翻译成其它语言。这是一个客户端工具, 跨平台支持 mac 和 windows 系统",
+    "homepage": "https://github.com/buxuku/video-subtitle-master",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/buxuku/video-subtitle-master#MIT-1-ov-file"
+    },
+    "url": "https://github.com/buxuku/video-subtitle-master/releases/download/v1.0.14/Video-Subtitle-Master_Windows_1.0.14_x64.exe#/dl.7z",
+    "hash": "sha512:17683fcfb18b1eafe0af3f21671d8fdd7f6c65535a26261e0246740be8b6d0f31ade6dc30f04ffab9b56a48c8a2d01ea9a34098e9b29fc9ce8abab2a9de11fd3",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\video-subtitle-master\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\video-subtitle-master\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Video Subtitle Master.exe",
+            "Video Subtitle Master"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/buxuku/video-subtitle-master/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/buxuku/video-subtitle-master/releases/download/v$version/Video-Subtitle-Master_Windows_$version_x64.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

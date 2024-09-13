@@ -1,0 +1,31 @@
+{
+    "version": "2.7.0",
+    "description": "The volatile memory extraction framework",
+    "homepage": "https://github.com/volatilityfoundation/volatility3",
+    "license": "https://github.com/volatilityfoundation/volatility3/blob/develop/LICENSE.txt",
+    "checkver": "github",
+    "suggest": {
+        "python": "python"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/volatilityfoundation/volatility3/archive/refs/tags/v2.7.0.zip",
+            "hash": "c5e8ed567e7f792f298501cc2c39edc5e064a6be9fd4c574a75e9c5d3ada3ab9"
+        }
+    },
+    "post_install": "pip3 install -r (Join-Path $dir \"requirements.txt\")",
+    "autoupdate": {
+        "url": "https://github.com/volatilityfoundation/volatility3/archive/refs/tags/v$version.zip"
+    },
+    "pre_install": [
+        "Move-Item -Path $dir\\volatility3-*\\* -Destination $dir -Force -ErrorAction Stop",
+        "Remove-Item -Path $dir\\volatility3-* -Recurse -Force -ErrorAction Stop",
+        "$content = (Get-Content -Path $(Join-Path $(Find-BucketDirectory -Root -Name ctftools) starters/volatility3.cmd)) -replace '%%HOME%%', $dir",
+        "Set-Content -Path $(Join-Path $dir volatility3.cmd) -Value $content -Encoding UTF8",
+        "Set-Content -Path $(Join-Path $dir vol3.cmd) -Value $content -Encoding UTF8"
+    ],
+    "bin": [
+        "volatility3.cmd",
+        "vol3.cmd"
+    ]
+}
