@@ -1,0 +1,49 @@
+{
+    "version": "2.6.0",
+    "description": "CNCNET-enabled mod for Yuri's Revenge that combines and enhances Tiberian Sun and Red Alert 2",
+    "homepage": "https://www.moddb.com/mods/cncreloaded",
+    "license": "Freeware",
+    "url": "https://www.moddb.com/downloads/start/276859#/dl.html",
+    "notes": [
+        "Recommended renderer: CNC-DDRAW",
+        "Recommended in-game resolution: 1280x720",
+        "Required: Copy or link original game files into install directory.",
+        "Set environment variable CNCNET_RA2_ROOT to handle this automatically.",
+        "Alternatively, run the included helper app: SetupCnCReloaded.exe"
+    ],
+    "installer": {
+        "script": [
+            "echo ''",
+            "echo \"Downloading content from moddb...\"",
+            "$dlFile = 'dl.7z'",
+            "(Get-Content \"$dir\\$fname\").foreach{ if ($_ -match \"/downloads/mirror/[\\d]+/[\\w]+/[\\w]+\") {  $dlMatch = $matches[0]  } }",
+            "Invoke-CachedDownload $app $version \"https://www.moddb.com$dlMatch#/$dlFile\" \"$dir\\$dlFile\"",
+            "Expand-7zipArchive \"$dir\\$dlFile\" \"$dir\" -Removal",
+            "Remove-Item -Force \"$dir\\$fname\""
+        ]
+    },
+    "post_install": [
+        "echo ''",
+        "echo \"Checking for CNCNET_RA2_ROOT...\"",
+        "if ($env:CNCNET_RA2_ROOT) {",
+        "  echo \"Copying files from CNCNET_RA2_ROOT: $env:CNCNET_RA2_ROOT\"",
+        "  $linkFiles = @('BINKW32.DLL', 'BLOWFISH.DLL', 'gamemd.exe', 'ra2.mix', 'ra2md.mix', 'language.mix', 'langmd.mix', 'expandmd01.mix', 'thememd.mix', 'movmd03.mix')",
+        "  $linkFiles.foreach({ New-Item -ItemType SymbolicLink -Path \"$dir\\$_\" -Value \"$env:CNCNET_RA2_ROOT\\$_\" })",
+        "} else { echo \"CNCNET_RA2_ROOT not found.\" }"
+    ],
+    "persist": [
+        "RA2MD.INI",
+        "Saved Games",
+        "Screenshots"
+    ],
+    "shortcuts": [
+        [
+            "CnCReloadedClient.exe",
+            "CNCNET - C&C Reloaded"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.moddb.com/mods/cncreloaded/downloads",
+        "regex": "C&#038;C: Reloaded v(?<version>[\\d.]+)"
+    }
+}
