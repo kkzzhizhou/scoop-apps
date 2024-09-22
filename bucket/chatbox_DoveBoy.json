@@ -1,13 +1,13 @@
 {
-    "version": "0.6.8",
+    "version": "0.10.0",
     "description": "A desktop app for ChatGPT API (OpenAI API) that supports Windows, Mac & Linux. 开源的ChatGPT桌面应用，prompt 开发神器，全平台支持",
     "homepage": "https://github.com/Bin-Huang/chatbox",
     "license": {
         "identifier": "GPL-3.0 license",
         "url": "https://github.com/Bin-Huang/chatbox/blob/main/LICENSE"
     },
-    "url": "https://github.com/Bin-Huang/chatbox/releases/download/v0.6.8/Chatbox-0.6.8-Setup.exe#/dl.7z",
-    "hash": "0cb44499345970f29e0e97efd7df8c1812b13840b6cb5f15637d7b6267793a2a",
+    "url": "https://github.com/Bin-Huang/chatbox/releases/download/v0.10.0/Chatbox-CE-0.10.0-Setup.exe#/dl.7z",
+    "hash": "7f63c1196384be444014bae93e6b1b9b5144b950d447f7f9ed4409f31d75e2b2",
     "architecture": {
         "64bit": {
             "pre_install": [
@@ -24,17 +24,23 @@
     },
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
-            "New-Item \"$env:APPDATA\\xyz.chatboxapp.app\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\xyz.chatboxapp.ce\"",
+            "Remove-Module -Name AppsUtils"
         ]
     },
     "uninstaller": {
-        "script": "Remove-Item \"$env:APPDATA\\xyz.chatboxapp.app\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\xyz.chatboxapp.ce\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
     "shortcuts": [
         [
-            "Chatbox.exe",
-            "Chatbox"
+            "Chatbox CE.exe",
+            "Chatbox CE"
         ]
     ],
     "checkver": {
@@ -42,6 +48,6 @@
         "regex": "/releases/tag/v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/Bin-Huang/chatbox/releases/download/v$version/Chatbox-$version-Setup.exe#/dl.7z"
+        "url": "https://github.com/Bin-Huang/chatbox/releases/download/v$version/Chatbox-CE-$version-Setup.exe#/dl.7z"
     }
 }
