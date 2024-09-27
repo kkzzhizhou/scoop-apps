@@ -1,70 +1,69 @@
 {
-    "version": "17.5.1-23298084",
-    "homepage": "https://www.vmware.com/products/workstation-pro.html",
-    "description": "VMware Workstation $version Pro for Windows. This Workstation product installation includes VMware Tools for Windows 64-bit operating systems",
+    "version": "17.6.0-24238078",
+    "homepage": "https://www.vmware.com/products/desktop-hypervisor.html",
+    "description": "Application for creating and running virtual machines on your computer.",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/downloads/eula/universal_eula.pdf"
+        "url": "https://www.broadcom.com/company/legal/terms-of-use"
+    },
+    "suggest": {
+        "vcredist": "extras/vcredist"
     },
     "architecture": {
         "64bit": {
-            "url": "https://download3.vmware.com/software/WKST-1751-WIN/VMware-workstation-full-17.5.1-23298084.exe#/cosi.exe",
-            "hash": "0ed4da2275cb379628717726226a5f60f0c563ad043ae555dedffc503f9795a0",
-            "installer": {
-                "args": [
-                    "/s",
-                    "/v\"",
-                    "/qn",
-                    "EULAS_AGREED=1",
-                    "DATACOLLECTION=0",
-                    "DESKTOP_SHORTCUT=0",
-                    "STARTMENU_SHORTCUT=0",
-                    "AUTOSOFTWAREUPDATE=0",
-                    "INSTALLDIR=\"\"$dir\"\"",
-                    "\""
-                ],
-                "keep": true
-            },
-            "uninstaller": {
-                "file": "cosi.exe",
-                "args": [
-                    "/s",
-                    "/v\"",
-                    "/qn",
-                    "REMOVE=ALL",
-                    "\""
-                ]
-            },
-            "shortcuts": [
-                [
-                    "vmware.exe",
-                    "VMware Workstation Pro"
-                ],
-                [
-                    "vmplayer.exe",
-                    "VMware Workstation Player"
-                ],
-                [
-                    "vmnetcfg.exe",
-                    "Virtual Network Editor"
-                ]
-            ]
+            "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.0/24238078/windows/core/VMware-workstation-17.6.0-24238078.exe.tar",
+            "hash": "8866101cd4d411dc4f75ecba2458b95ad5ca4edd177e2a500a9d3662ea37fc50"
         }
     },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process -Wait ($exe = \"$dir/VMware-workstation-$version.exe\") /x",
+        "$temp = $env:TEMP+'/'+(Select-Xml /component/installerList/installer/productCode \"$dir/descriptor.xml\").Node.'#text'+'~setup'",
+        "Move-Item \"$temp/VMwareWorkstation.msi\" \"$dir\"",
+        "Remove-Item -Recurse $temp,$exe",
+        "Start-Process -Wait \"$dir/VMwareWorkstation.msi\" \"/qn /norestart ADDLOCAL=ALL ADDVKDTOPATH=0 AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 DESKTOP_SHORTCUT=0 EULAS_AGREED=1 INSTALLDIR=\"\"$dir\"\" STARTMENU_SHORTCUT=0\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Set-Service VMAuthdService -StartupType Disabled",
+        "Stop-Service VMAuthdService",
+        "Get-Process vmware-tray -ErrorAction Ignore | Stop-Process",
+        "Start-Process -Wait \"$dir/VMwareWorkstation.msi\" '/qn /norestart /uninstall'"
+    ],
+    "bin": [
+        "vmware.exe",
+        "bin/vctl.exe",
+        "bin/docker-machine-driver-vmware.exe",
+        "x64/vmware-vmx.exe",
+        "x64/vmware-vmx-debug.exe",
+        "x64/vmware-vmx-stats.exe",
+        "x64/mksSandbox.exe",
+        "x64/mksSandbox-debug.exe",
+        "x64/mksSandbox-stats.exe",
+        "x64/tpm2emu.exe"
+    ],
+    "shortcuts": [
+        [
+            "vmware.exe",
+            "VMware Workstation Pro"
+        ]
+    ],
     "checkver": {
-        "url": "https://chocolatey.org/packages/vmwareworkstation",
-        "regex": "(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+).(?<flag>\\d+)",
-        "replace": "${major}.${minor}.${patch}-${flag}"
+        "url": "https://scoop.sh",
+        "script": [
+            "try {",
+            "    ([string]$version = ([Version[]](($_ = (Invoke-RestMethod https://softwareupdate.vmware.com/cds/vmw-desktop/ws/).html.body.ul.li.a.'#text')[1..$_.Length]) | Sort-Object)[-1]),",
+            "    ([UInt32[]](($_ = (Invoke-RestMethod https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$version).html.body.ul.li.a.'#text')[1..$_.Length]) | Sort-Object)[-1] -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A([\\d.]+) (\\d+)\\Z",
+        "replace": "${1}-${2}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://download3.vmware.com/software/WKST-$matchMajor$matchMinor$matchPatch-WIN/VMware-workstation-full-$version.exe#/cosi.exe",
-                "hash": {
-                    "url": "https://customerconnect.vmware.com/channel/public/api/v1.0/dlg/details?locale=cn_CN&downloadGroup=WKST-$matchMajor$matchMinor$matchPatch-WIN&productId=1038",
-                    "mode": "json",
-                    "jsonpath": "$.downloadFiles[0].sha256checksum"
-                }
+                "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$match1/$match2/windows/core/VMware-workstation-$version.exe.tar"
             }
         }
     }
