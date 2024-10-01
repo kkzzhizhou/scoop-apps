@@ -79,6 +79,21 @@ _Unmount external runtime data._
 
 ----
 
+### `Import-PersistFile`
+
+_Import files persisted by other app._
+
+|Parameters|Type|Mandatory|Descriptions|
+|----|:----:|:----:|----|
+|`Path`|String|&check;|Path of destination to Import into.|
+|`SourceApp`|String|&check;|Name of source app to import from.|
+|`Force`|Switch|&cross;|Force overwrite if target exists.|
+|`Sync`|Switch|&cross;|Create junction instead of copying files.|
+
+- See [Snipaste2 manifest](../bucket/Snipaste2.json) for example.
+
+----
+
 ## Use in manifests
 
 ```PowerShell

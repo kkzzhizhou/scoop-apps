@@ -196,10 +196,69 @@ function Dismount-ExternalRuntimeData {
     }
 }
 
+function Import-PersistFile {
+    <#
+    .SYNOPSIS
+        Import files persisted by other app.
+
+    .PARAMETER Path
+        Path of destination to Import into.
+
+    .PARAMETER SourceApp
+        Name of source app to import from.
+
+    .PARAMETER Force
+        Force overwrite if target exists.
+
+    .PARAMETER Sync
+        Create junction instead of copying files.
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $Path,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string] $SourceApp,
+        [Parameter(Mandatory = $false, Position = 2)]
+        [switch] $Force,
+        [Parameter(Mandatory = $false, Position = 3)]
+        [switch] $Sync
+    )
+
+    $ScoopPersistDir = Split-Path $Path -Parent
+    $SourcePath = Join-Path -Path $ScoopPersistDir -ChildPath $SourceApp
+    $TargetPath = $Path
+
+    if (-not(Test-Path $SourcePath)) {
+        Return
+    }
+
+    if (Test-Path $TargetPath) {
+        if ($Force) {
+            Write-Host "`nPersist directory exists, start force importing..." -ForegroundColor Yellow
+            Remove-Item $TargetPath -Force -Recurse
+        } else {
+            Return
+        }
+    }
+
+    if ($Sync) {
+        Write-Host "`nImporting profiles from `'$SourceApp`' in synced mode..." -ForegroundColor Yellow
+        New-Item -Path $TargetPath -ItemType Junction -Target $SourcePath | Out-Null
+        Write-Host "Succeeded! DO NOT permanently uninstall `'$SourceApp`'." -ForegroundColor Green
+    } else {
+        Write-Host "`nImporting profiles from `'$SourceApp`'..." -ForegroundColor Yellow
+        New-Item -Path $TargetPath -ItemType Directory | Out-Null
+        Get-ChildItem $SourcePath | Copy-Item -Destination $TargetPath -Force -Recurse
+        Write-Host "Succeeded! You can uninstall `'$SourceApp`' now." -ForegroundColor Green
+    }
+}
+
 Export-ModuleMember `
     -Function `
     New-ProfileModifier, `
     Add-ProfileContent, `
     Remove-ProfileContent, `
     Mount-ExternalRuntimeData, `
-    Dismount-ExternalRuntimeData
+    Dismount-ExternalRuntimeData, `
+    Import-PersistFile
