@@ -1,19 +1,22 @@
 {
-    "version": "9.9.12",
+    "version": "9.9.15.240927",
     "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family, Build with Electron",
     "homepage": "https://im.qq.com",
     "license": {
         "identifier": "Proprietary",
         "url": "https://ti.qq.com/agreement/index.html"
     },
+    "suggest": {
+        "LiteLoaderQQNT": "LiteLoaderQQNT"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.12_240708_x64_01.exe#/dl.7z",
-            "hash": "75e666fa154939bd459d5e2bf2548504a791f3d7a58765ff9ee73e881bd0da10"
+            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.15_240927_x64_01.exe#/dl.7z",
+            "hash": "99c9c0da086a0695a8290a8b2c84a0b6b2694b4eedd3d6c026a37d7f18b0ed0e"
         },
         "32bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.12_240708_x86_01.exe#/dl.7z",
-            "hash": "4d82d77be5049296c44950c67f07e1c42b63c8982c2e53346ca8214a58f39d97"
+            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.15_240927_x86_01.exe#/dl.7z",
+            "hash": "76c11a9fb259e2f4a24be428735b4dd90545ea5d61e54f5563f5449eb1de4aa0"
         }
     },
     "installer": {
@@ -36,16 +39,24 @@
         "script": "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null"
     },
     "checkver": {
-        "url": "https://qq-web.cdn-go.cn/im.qq.com_new/f2ff7664/rainbow/windowsDownloadUrl.js",
-        "regex": "QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x86_([\\d.]+).exe.*QQNT/Windows/QQ_([\\d.]+)_([\\d.]+)_x64_([\\d.]+).exe"
+        "script": [
+            "$html = Invoke-WebRequest -Uri \"https://im.qq.com/pcqq/index.shtml\" -UseBasicParsing",
+            "$regex1 = '//.*/im.qq.com_new/.*/windowsDownloadUrl\\.js(\\?t=[0-9]+)?'",
+            "$links = ([regex]::Matches($html.Content, $regex1)).value",
+            "$allContent = $links | ForEach-Object { (Invoke-WebRequest -Uri ('https:' + $_) -UseBasicParsing).Content } | Out-String",
+            "$regex2 = 'QQNT/Windows/QQ_([0-9.]+)_([0-9]+)_x64_01.exe'",
+            "(([regex]::Matches($allContent, $regex2)).value | Sort-Object -Descending -CaseSensitive)[0] | Out-String"
+        ],
+        "regex": "QQNT/Windows/QQ_([\\d\\.]+)_([\\d]+)_x64_01.exe",
+        "replace": "${1}.${2}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x64_$match3.exe#/dl.7z"
+                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x64_01.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_$match3.exe#/dl.7z"
+                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_01.exe#/dl.7z"
             }
         }
     }
