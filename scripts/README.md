@@ -79,7 +79,7 @@ _Unmount external runtime data._
 
 ----
 
-### `Import-PersistFile`
+### `Import-PersistItem`
 
 _Import files persisted by other app._
 

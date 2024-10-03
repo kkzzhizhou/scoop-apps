@@ -1,0 +1,57 @@
+{
+    "version": "7.36",
+    "description": "Yet another typical ZIP archiver",
+    "homepage": "http://www.bandisoft.com/bandizip/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://en.bandisoft.com/bandizip/eula/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-X64.EXE",
+            "hash": "bd4e722bf8f4389bab67198ff66c26175c54e77e0be1034b17457fad7de8f2ac",
+            "pre_install": "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'"
+        },
+        "32bit": {
+            "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE",
+            "hash": "1bfce0d1a01b011645e226091a19fd3c34b0a9c444ffce687b4eb8a23777aa7a",
+            "pre_install": "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'"
+        }
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem \"$dir\\Bandizip.x*.exe\" | Remove-Item",
+            "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
+        ]
+    },
+    "post_install": [
+        "if ((Get-CimInstance Win32_OperatingSystem).Version -ge '10.0.22000'){",
+        "    Start-Process -FilePath \"$dir\\data\\RegPackage.x86.exe\" -ArgumentList '/reg \"$dir\\data\\bzshell.x64.msix\"' -Wait",
+        "}"
+    ],
+    "bin": "Bandizip.exe",
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ]
+    ],
+    "persist": "Bandizip.ini",
+    "checkver": {
+        "url": "https://en.bandisoft.com/bandizip/history/",
+        "regex": "v([\\d.]+)</font"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-X64.EXE"
+            },
+            "32bit": {
+                "url": "https://dl.bandisoft.com/bandizip.std/BANDIZIP-SETUP-STD-ALL.EXE"
+            }
+        },
+        "hash": {
+            "mode": "download"
+        }
+    }
+}

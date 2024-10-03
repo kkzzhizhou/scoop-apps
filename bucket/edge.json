@@ -1,17 +1,49 @@
 {
-    "version": "118.0.5993.69",
-    "description": "Microsoft Edge is a cross-platform web browser created and developed by Microsoft",
-    "homepage": "https://www.microsoft.com/zh-cn/edge",
-    "license": "BSD-3-Clause",
-    "url": "https://xmod-my.sharepoint.cn/:u:/g/personal/admin_xmod_partner_onmschina_cn/EUiGIWozGZRBugXCEZcim7MBxtryziAyq-KTBkpTYiNNuQ?download=1#/dl.7z",
-    "persist": [
-        "Portable",
-        "Cache"
-    ],
-    "shortcuts": [
-        [
-            "msedge.exe",
-            "Edge"
+    "##": "Checkver URL https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+    "version": "128.0.2739.79",
+    "description": "Microsoft Edge. The chromium based Microsoft Edge browser.",
+    "homepage": "https://www.microsoft.com/en-us/edge/business",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.microsoft.com/en-us/servicesagreement/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/59faf0e8-a816-4a82-ba48-790322d0fcd7/MicrosoftEdgeEnterpriseX64.msi",
+            "hash": "FD1458CE62EA7A3E057F51DDCB2D409AD85A3BB8EED14372474FF3ABE5830324"
+        },
+        "32bit": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/55a1bf43-a2d6-4920-92c8-27746f25a876/MicrosoftEdgeEnterpriseX86.msi",
+            "hash": "D74E8BEBDB54056CB8B73C1845B6BE87D02D196035D9ADB39206BB99AD196EF4"
+        },
+        "arm64": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/a90c47e2-7696-4c41-acfc-be0012aae210/MicrosoftEdgeEnterpriseARM64.msi",
+            "hash": "B94A2F9F33DC8550FE7741DB1F6BFBA2E70E75CA140065C9D89B0F520E3B5D7B"
+        }
+    },
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft Edge*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Microsoft\\Edge\\Application\\$version\\msedge.dll\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
         ]
-    ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Microsoft Edge.lnk\") {Remove-Item \"$CommonDesktopPath\\Microsoft Edge.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+        "regex": ">Version ([\\d.]+)"
+    }
 }

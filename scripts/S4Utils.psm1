@@ -196,7 +196,7 @@ function Dismount-ExternalRuntimeData {
     }
 }
 
-function Import-PersistFile {
+function Import-PersistItem {
     <#
     .SYNOPSIS
         Import files persisted by other app.
@@ -261,4 +261,4 @@ Export-ModuleMember `
     Remove-ProfileContent, `
     Mount-ExternalRuntimeData, `
     Dismount-ExternalRuntimeData, `
-    Import-PersistFile
+    Import-PersistItem
