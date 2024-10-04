@@ -9,6 +9,9 @@ _A PowerShell Script Module for this bucket, which contains several functions to
 - [Remove-ProfileContent](#remove-profilecontent)
 - [Mount-ExternalRuntimeData](#mount-externalruntimedata)
 - [Dismount-ExternalRuntimeData](#dismount-externalruntimedata)
+- [Import-PersistItem](#import-persistitem)
+- [New-PersistItem](#new-persistitem)
+- [Backup-PersistItem](#backup-persistitem)
 
 ----
 
@@ -85,10 +88,41 @@ _Import files persisted by other app._
 
 |Parameters|Type|Mandatory|Descriptions|
 |----|:----:|:----:|----|
-|`Path`|String|&check;|Path of destination to Import into.|
+|`PersistDir`|String|&check;|Path of persist directory. Use `$persist_dir` here.|
 |`SourceApp`|String|&check;|Name of source app to import from.|
 |`Force`|Switch|&cross;|Force overwrite if target exists.|
 |`Sync`|Switch|&cross;|Create junction instead of copying files.|
+
+- See [Snipaste2 manifest](../bucket/Snipaste2.json) for example.
+
+----
+
+### `New-PersistItem`
+
+_Create items in persist directory._
+
+|Parameters|Type|Mandatory|Descriptions|
+|----|:----:|:----:|----|
+|`PersistDir`|String|&check;|Path of persist directory. Use `$persist_dir` here.|
+|`Name`|String|&check;|Name of item to create. Use `,` to separate multiple values.|
+|`Type`|String|&check;|Type of item to create.|
+|`Content`|String|&cross;|Initial content of file, use with parameter `-Type File`.|
+|`Force`|Switch|&cross;|Force overwrite if target exists.|
+|`Backup`|Switch|&cross;|Rename original item instead of removing it, use with parameter `-Force`.|
+
+- See [Snipaste2 manifest](../bucket/Snipaste2.json) for example.
+
+----
+
+### `Backup-PersistItem`
+
+_Backup items to persist directory._
+
+|Parameters|Type|Mandatory|Descriptions|
+|----|:----:|:----:|----|
+|`AppDir`|String|&check;|Path of app directory. Use `$dir` here.|
+|`PersistDir`|String|&check;|Path of persist directory. Use `$persist_dir` here.|
+|`Name`|String|&check;|Name of item to backup. Use `,` to separate multiple values.|
 
 - See [Snipaste2 manifest](../bucket/Snipaste2.json) for example.
 

@@ -34,7 +34,7 @@ function New-ProfileModifier {
 
     if ($SupportedBehavior -notcontains $Behavior) {
         Write-Host "[ERROR] Unsupported behavior." -ForegroundColor Red
-        Return
+        return
     }
 
     $S4UtilsPath = $BucketDir | Join-Path -ChildPath "\scripts\S4Utils.psm1"
@@ -93,13 +93,13 @@ function Remove-ProfileContent {
     )
 
     if (-not(Test-Path $PROFILE)) {
-        Return
+        return
     }
 
     $RawProfile = Get-Content -Path $PROFILE -raw
 
     if ($null -eq $RawProfile) {
-        Return
+        return
     }
 
     ($RawProfile -replace "[\r\n]*$Content", '').trim() | Set-Content $PROFILE -NoNewLine
@@ -133,7 +133,7 @@ function Mount-ExternalRuntimeData {
 
     if (-not($Target -or $AppData)) {
         Write-Host "[ERROR] Specify a mount point." -ForegroundColor Red
-        Return
+        return
     }
 
     if ($AppData) {
@@ -201,8 +201,8 @@ function Import-PersistItem {
     .SYNOPSIS
         Import files persisted by other app.
 
-    .PARAMETER Path
-        Path of destination to Import into.
+    .PARAMETER PersistDir
+        Path of persist directory.
 
     .PARAMETER SourceApp
         Name of source app to import from.
@@ -216,7 +216,7 @@ function Import-PersistItem {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
-        [string] $Path,
+        [string] $PersistDir,
         [Parameter(Mandatory = $true, Position = 1)]
         [string] $SourceApp,
         [Parameter(Mandatory = $false, Position = 2)]
@@ -225,12 +225,12 @@ function Import-PersistItem {
         [switch] $Sync
     )
 
-    $ScoopPersistDir = Split-Path $Path -Parent
+    $ScoopPersistDir = Split-Path $PersistDir -Parent
     $SourcePath = Join-Path -Path $ScoopPersistDir -ChildPath $SourceApp
-    $TargetPath = $Path
+    $TargetPath = $PersistDir
 
     if (-not(Test-Path $SourcePath)) {
-        Return
+        return
     }
 
     if (Test-Path $TargetPath) {
@@ -238,7 +238,7 @@ function Import-PersistItem {
             Write-Host "`nPersist directory exists, start force importing..." -ForegroundColor Yellow
             Remove-Item $TargetPath -Force -Recurse
         } else {
-            Return
+            return
         }
     }
 
@@ -254,6 +254,129 @@ function Import-PersistItem {
     }
 }
 
+function New-PersistItem {
+    <#
+    .SYNOPSIS
+        Create items in persist directory.
+
+    .PARAMETER PersistDir
+        Path of persist directory.
+
+    .PARAMETER Name
+        Name of item to create.
+
+    .PARAMETER Type
+        Type of item to create.
+
+    .PARAMETER Content
+        Initial content of file, use with parameter "-Type File".
+
+    .PARAMETER Force
+        Force overwrite if item exists.
+
+    .PARAMETER Backup
+        Rename original item instead of removing it, use with parameter "-Force".
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $PersistDir,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string] $Name,
+        [Parameter(Mandatory = $true, Position = 2)]
+        [string] $Type,
+        [Parameter(Mandatory = $false, Position = 3)]
+        [string] $Content,
+        [Parameter(Mandatory = $false, Position = 4)]
+        [switch] $Force,
+        [Parameter(Mandatory = $false, Position = 5)]
+        [switch] $Backup
+    )
+
+    $SupportedType = @("Directory", "File")
+
+    if ($SupportedType -notcontains $Type) {
+        Write-Host "[ERROR] Unsupported type." -ForegroundColor Red
+        return
+    }
+
+    if (-not($Content)) {
+        $Content = $null
+    }
+
+    $ItemArray = $Name.Split(",").Trim()
+
+    foreach ($Item in $ItemArray) {
+        $PersistItemPath = Join-Path -Path $PersistDir -ChildPath $Item
+
+        if (Test-Path $PersistItemPath) {
+            if ($Force) {
+                if ($Backup) {
+                    $BackupItem = ($Item, "backup") -Join(".")
+                    $BackupItemPath = Join-Path -Path $PersistDir -ChildPath $BackupItem
+
+                    if (Test-Path $BackupItemPath) {
+                        Remove-Item -Path $BackupItemPath -Force -Recurse
+                    }
+
+                    Rename-Item -Path $PersistItemPath -NewName $BackupItem -Force
+                } else {
+                    Remove-Item -Path $PersistItemPath -Force -Recurse
+                }
+            } else {
+                continue
+            }
+        }
+
+        switch ($Type) {
+            { 'Directory' -eq $Type } { New-Item -Path $PersistItemPath -ItemType $Type | Out-Null }
+            { 'File' -eq $Type } { New-Item -Path $PersistItemPath -ItemType $Type -Value $Content | Out-Null }
+        }
+    }
+}
+
+function Backup-PersistItem {
+    <#
+    .SYNOPSIS
+        Backup items to persist directory.
+
+    .PARAMETER AppDir
+        Path of app directory.
+
+    .PARAMETER PersistDir
+        Path of persist directory.
+
+    .PARAMETER Name
+        Name of item to backup.
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $AppDir,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string] $PersistDir,
+        [Parameter(Mandatory = $true, Position = 2)]
+        [string] $Name
+    )
+
+    $ItemArray = $Name.Split(",").Trim()
+
+    foreach ($Item in $ItemArray) {
+        $ItemPath = Join-Path -Path $AppDir -ChildPath $Item
+        $PersistItemPath = Join-Path -Path $PersistDir -ChildPath $Item
+
+        if (-not(Test-Path $ItemPath)) {
+            continue
+        }
+
+        if (Test-Path $PersistItemPath) {
+            Remove-Item -Path $PersistItemPath -Force -Recurse
+        }
+
+        Copy-Item -Path $ItemPath -Destination $PersistDir -Force -Recurse -ErrorAction SilentlyContinue
+    }
+}
+
 Export-ModuleMember `
     -Function `
     New-ProfileModifier, `
@@ -261,4 +384,6 @@ Export-ModuleMember `
     Remove-ProfileContent, `
     Mount-ExternalRuntimeData, `
     Dismount-ExternalRuntimeData, `
-    Import-PersistItem
+    Import-PersistItem, `
+    New-PersistItem, `
+    Backup-PersistItem
