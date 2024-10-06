@@ -1,5 +1,5 @@
 {
-    "version": "0.156.0+85eceb7194-1.2.1",
+    "version": "0.156.0-dev.85eceb7194+1.2.1",
     "description": "A high-performance, multiplayer code editor. (Non-official build by shenjackyuanjie)",
     "homepage": "https://github.com/zed-industries/zed",
     "license": {
@@ -16,14 +16,14 @@
         "script": [
             "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/shenjackyuanjie/zed-win-build/releases'",
             "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "Write-Output $latest.tag_name"
+            "Write-Output $latest.tag_name | %{$_ -replace '-', '_'} | %{$_ -replace '\\+', '-dev.'} | %{$_ -replace '_', '+'}"
         ],
-        "regex": "(?<version>(?<zedver>[\\d\\.]+)\\+(?<commit>[\\w\\d]+)-[\\d\\.]+)"
+        "regex": "(?<version>(?<ZedVer>[\\d\\.]+)-dev\\.(?<Commit>[\\w\\d]+)\\+(?<ScriptVer>[\\d\\.]+))"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/shenjackyuanjie/zed-win-build/releases/download/$version/zed-$matchZedver-$matchCommit.zip"
+                "url": "https://github.com/shenjackyuanjie/zed-win-build/releases/download/$matchZedver+$matchCommit-$matchScriptver/zed-$matchZedver-$matchCommit.zip"
             }
         }
     },
