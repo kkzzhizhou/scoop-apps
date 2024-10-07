@@ -1,0 +1,52 @@
+{
+    "version": "1.11.0",
+    "description": "开发人员屏幕共享。Screen sharing for developers.",
+    "homepage": "https://github.com/screego/server",
+    "license": {
+        "identifier": "GNU General Public License v3.0",
+        "url": "https://github.com/screego/server/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/screego/server/releases/download/v1.11.0/screego_1.11.0_windows_amd64.zip",
+            "hash": "f29185dceaa64dd38466d175a355fbce018579634ebdc8e1076c121a8c4ec2ee"
+        },
+        "32bit": {
+            "url": "https://github.com/screego/server/releases/download/v1.11.0/screego_1.11.0_windows_i386.zip",
+            "hash": "0490fa4da2e2b0514ffa3a67e76fadf50eec330eb209cc680074ed4ae7c3c075"
+        },
+        "arm64": {
+            "url": "https://github.com/screego/server/releases/download/v1.11.0/screego_1.11.0_windows_arm64.zip",
+            "hash": "5235c4471ef7cec9ead6bcb13045ee121af50955ca38897f81dbadbfa6a5c8dc"
+        }
+    },
+    "bin": "screego.exe",
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -file @(\"$dir\\screego.config\") @(\"$persist_dir\\screego.config\")",
+        "$config = Get-Content \"$dir\\screego.config\" -Raw",
+        "$config_example = Get-Content \"$dir\\screego.config.example\" -Raw",
+        "if(!$config){ $config_example | Out-File \"$dir\\screego.config\" -Append}",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/screego/server/releases/download/v$version/screego_$version_windows_amd64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/screego/server/releases/download/v$version/screego_$version_windows_i386.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/screego/server/releases/download/v$version/screego_$version_windows_arm64.zip"
+            }
+        }
+    }
+}

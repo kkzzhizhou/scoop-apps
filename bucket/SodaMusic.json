@@ -1,0 +1,71 @@
+{
+    "version": "1.7.6",
+    "description": "抖音官方出品音乐 App。DouYin's official music App.",
+    "homepage": "https://music.douyin.com/",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://lf-luna-release.qishui.com/obj/luna-release/1.7.6/12161857/SodaMusic-v1.7.6-official-win32_x64.exe#/dl.zip",
+            "hash": "0c23dacab3d0dd7c1f9061d7261bf15774383634f13919b68c453c14c231f217"
+        },
+        "32bit": {
+            "url": "https://lf-luna-release.qishui.com/obj/luna-release/1.7.6/12161857/SodaMusic-v1.7.6-official-win32_ia32.exe#/dl.zip",
+            "hash": "c3421ca20173d23280168bbadaec51df6f27fe3b0b3ec201137a5ef4463b3340"
+        }
+    },
+    "shortcuts": [
+        [
+            "1.7.6\\SodaMusic.exe",
+            "汽水音乐"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Move-Item \"$dir\\`$_31_\\`$_31_\\app.7z\" \"$dir\\app.7z\"",
+        "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\" -Removal",
+        "persist_file -dir @(\"$user_AppData\\SodaMusic\") @(\"$persist_dir\\SodaMusic\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\SodaMusic\")"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'ByteDance/SodaMusic'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\"",
+            "\"x86:$($dl_info.x86_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?); x86:(?<x86>.+?);"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchX64#/dl.zip",
+                "hash": {
+                    "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/SodaMusic/$version/ByteDance.SodaMusic.installer.yaml",
+                    "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+                }
+            },
+            "32bit": {
+                "url": "$matchX86#/dl.zip",
+                "hash": {
+                    "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/SodaMusic/$version/ByteDance.SodaMusic.installer.yaml",
+                    "regex": "Architecture: x86[\\s\\S]+?InstallerSha256:\\s?(.+)"
+                }
+            }
+        },
+        "shortcuts": [
+            [
+                "$version\\SodaMusic.exe",
+                "汽水音乐"
+            ]
+        ]
+    }
+}

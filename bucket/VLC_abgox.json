@@ -1,0 +1,55 @@
+{
+    "version": "3.0.21",
+    "description": "一款自由、开源的跨平台多媒体播放器及框架，可播放大多数多媒体文件，以及 DVD、音频 CD、VCD 及各类流媒体协议。A free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.",
+    "homepage": "https://www.videolan.org/vlc",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.videolan.org/pub/vlc/3.0.21/win64/vlc-3.0.21-win64.7z",
+            "hash": "c660b8d38354ee04e6256fe9509559688efae1ba064947bde8137d2adf24ebb7"
+        },
+        "32bit": {
+            "url": "https://download.videolan.org/pub/vlc/3.0.21/win32/vlc-3.0.21-win32.7z",
+            "hash": "d8492810b49eef91601fa62ea1e05bf69ec33f70d4400ec902efe2494da4080b"
+        }
+    },
+    "extract_dir": "vlc-3.0.21",
+    "bin": "vlc.exe",
+    "shortcuts": [
+        [
+            "vlc.exe",
+            "VLC media player"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_AppData\\vlc\") @(\"$persist_dir\\vlc\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_AppData\\vlc\")"
+    ],
+    "checkver": {
+        "url": "https://www.videolan.org/vlc/download-windows.html",
+        "regex": "\\s+([\\d.]+)</span>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.videolan.org/pub/vlc/$version/win64/vlc-$version-win64.7z"
+            },
+            "32bit": {
+                "url": "https://download.videolan.org/pub/vlc/$version/win32/vlc-$version-win32.7z"
+            }
+        },
+        "extract_dir": "vlc-$version",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

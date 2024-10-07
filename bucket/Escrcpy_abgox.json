@@ -1,0 +1,46 @@
+{
+    "version": "1.24.2",
+    "description": "使用图形化的 Scrcpy 显示和控制您的 Android 设备，由 Electron 驱动。Graphical Scrcpy to display and control Android, devices powered by Electron.",
+    "homepage": "https://github.com/viarotel-org/escrcpy",
+    "license": {
+        "identifier": "Apache License 2.0",
+        "url": "https://github.com/viarotel-org/escrcpy/blob/main/LICENSE"
+    },
+    "url": "https://github.com/viarotel-org/escrcpy/releases/download/v1.24.2/Escrcpy-1.24.2-win-setup.exe#/abgo_bucket_installer.exe",
+    "hash": "sha512:2aaa8355dbb312b285e99dfac06a121d0a21f41f79aa3d84566aab27314a1593415dd7d012ee71871ae92748fdae90a80a1561bc4357e13ca69fadd917948bd4",
+    "shortcuts": [
+        [
+            "Escrcpy.exe",
+            "Escrcpy"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\Escrcpy.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\escrcpy\") @(\"$persist_dir\\escrcpy\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\escrcpy\")",
+        "$ui_exe=\"$dir\\Uninstall Escrcpy.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\escrcpy-updater\")"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/viarotel-org/escrcpy/releases/download/v$version/Escrcpy-$version-win-setup.exe#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

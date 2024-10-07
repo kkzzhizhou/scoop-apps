@@ -1,0 +1,43 @@
+{
+    "version": "7.8",
+    "description": "FastStone Image Viewer 是一款快速、稳定、用户友好的图像浏览器、转换器和编辑器。FastStone Image Viewer is a fast, stable, user-friendly image browser, converter and editor.",
+    "homepage": "https://www.faststone.org/FSViewerDetail.htm",
+    "license": "Unknown",
+    "url": "https://www.faststonesoft.net/DN/FSViewerSetup78.exe#/abgo_bucket_installer.exe",
+    "hash": "b88559b0f572a7aa25170c3813f250e10a6cba0dd3bbb3c243ec25c46017b353",
+    "bin": "FSViewer.exe",
+    "shortcuts": [
+        [
+            "FSViewer.exe",
+            "FastStone Image Viewer"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\FSViewer.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -file @(\"$user_LocalAppData\\FastStone\\FSIV\\FSSettings.db\") @(\"$persist_dir\\FSSettings.db\")",
+        "persist_file -file @(\"$user_LocalAppData\\FastStone\\FSIV\\HisFolderList.db\") @(\"$persist_dir\\HisFolderList.db\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "$ui_exe=\"$dir\\uninst.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\FastStone\\FSIV\")"
+    ],
+    "checkver": {
+        "url": "https://www.faststone.org/FSIVDownload.htm",
+        "regex": "FastStone Image Viewer ([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.faststonesoft.net/DN/FSViewerSetup$cleanVersion.exe#/abgo_bucket_installer.exe"
+    }
+}

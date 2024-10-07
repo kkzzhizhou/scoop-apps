@@ -1,17 +1,31 @@
 {
-    "version": "0.0.33-16999",
-    "description": "Open-source Sony PlayStation 3 emulator and debugger",
+    "version": "0.0.33-17018",
+    "description": "Open-source Sony PlayStation 3 emulator",
     "homepage": "https://rpcs3.net/",
-    "license": "GPL-2.0-or-later",
+    "license": {
+        "identifier": "GPL-2.0",
+        "url": "https://github.com/RPCS3/rpcs3/blob/master/LICENSE"
+    },
+    "notes": [
+        "ATTENTION: RPCS3 requires a copy of the official PS3 firmware to function.",
+        "Install the ps3-system-software package.  You must still manually load PS3UPDAT.PUP",
+        "See the official quickstart guide for further instructions: https://rpcs3.net/quickstart"
+    ],
+    "depends": "ps3-system-software",
     "suggest": {
-        "vcredist2019": "extras/vcredist2019"
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/RPCS3/rpcs3-binaries-win/releases/download/build-938306a7bc86edd0dfdd995d28e818f36240bf8f/rpcs3-v0.0.33-16999-938306a7_win64.7z",
-            "hash": "cfb67cca6e89c87d1a71db1e263ce34a74a0ecd8b83b24dfa327df0435e44fad"
-        }
-    },
+    "url": "https://github.com/rpcs3/rpcs3-binaries-win/releases/download/build-0a57c459b6fcadc553effb16902974bed72bd9ff/rpcs3-v0.0.33-17018-0a57c459_win64.7z",
+    "hash": "40a4c0d37b360ae1d13d10300fc0857306cff0bf85d8e25e0daaa04c44e496f0",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-Item \"$persist_dir\\config.yml\" -ItemType File | Out-Null",
+        "   New-Item \"$persist_dir\\games.yml\" -ItemType File | Out-Null",
+        "   '[Meta]', 'checkUpdateStart=false' | Set-Content \"$dir\\GuiConfigs\\CurrentSettings.ini\"",
+        "}"
+    ],
+    "bin": "rpcs3.exe",
     "shortcuts": [
         [
             "rpcs3.exe",
@@ -19,21 +33,32 @@
         ]
     ],
     "persist": [
+        "dev_flash",
+        "dev_flash2",
+        "dev_flash3",
+        "dev_hdd0",
+        "dev_hdd1",
+        "dev_usb000",
+        "cache",
+        "captures",
+        "config.yml",
+        "config",
+        "firmware",
+        "games.yml",
         "GuiConfigs",
-        "dev_hdd0"
+        "Icons",
+        "patches"
     ],
     "checkver": {
-        "url": "https://rpcs3.net/download",
-        "regex": "/build-(?<originalhash>.*)/rpcs3-v(?<version>[\\d.]+-[\\d]{5})-(?<shorthash>.*)_win64.7z"
+        "url": "https://rpcs3.net/compatibility?b",
+        "regex": "/rpcs3-binaries-win/releases/download/build-(?<fullhash>[0-9a-f]+)/rpcs3-v(?<build>[0-9]+\\.[0-9]+\\.[0-9]+\\-[0-9]+)-(?<shorthash>[0-9a-f]{8})",
+        "replace": "${build}"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/RPCS3/rpcs3-binaries-win/releases/download/build-$matchOriginalhash/rpcs3-v$version-$matchShorthash_win64.7z",
-                "hash": {
-                    "url": "$url.sha256"
-                }
-            }
+        "url": "https://github.com/rpcs3/rpcs3-binaries-win/releases/download/build-$matchFullhash/rpcs3-v$matchBuild-$matchShorthash_win64.7z",
+        "hash": {
+            "url": "https://rpcs3.net/compatibility?b",
+            "regex": "Windows SHA-256: ($sha256)"
         }
     }
 }

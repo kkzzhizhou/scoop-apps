@@ -1,0 +1,43 @@
+{
+    "version": "3.9.10.19",
+    "description": "一款跨平台的通讯工具。支持单人、多人参与。通过手机网络发送语音、图片、视频和文字。A free messaging and calling app.  Enjoy group chats that support voice and video calls, photos, videos, and stickers.",
+    "homepage": "https://pc.weixin.qq.com/",
+    "license": "Unknown",
+    "url": "https://dldir1v6.qq.com/weixin/Windows/WeChat3.9.10.19.exe#/dl.7z",
+    "hash": "9602acb85408ee48ee689468f63565496dfb12f1fe21ad674aa423029e38856c",
+    "shortcuts": [
+        [
+            "WeChat.exe",
+            "微信"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_Documents\\WeChat Files\",\"$user_AppData\\Tencent\\WeChat\\All Users\") @(\"$persist_dir\\WeChat Files\",\"$persist_dir\\Tencent\\WeChat\\All Users\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_Documents\\WeChat Files\",\"$user_AppData\\Tencent\\WeChat\")"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Tencent/WeChat'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX64#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/WeChat/$version/Tencent.WeChat.installer.yaml",
+            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}

@@ -1,28 +1,50 @@
 {
+    "version": "2.10.13.202675",
+    "description": "网易旗下的音乐平台，同时也是业内领先的音乐社区。It's NetEase's music platform, and it's also the industry's leading music community.",
     "homepage": "https://music.163.com/",
-    "description": "NetEase Cloud Music client.",
-    "version": "2.5.4.197709",
-    "license": {
-        "identifier": "EULA",
-        "url": "https://music.163.com/html/web2/service.html"
-    },
-    "url": "https://list.nb.gl/OD_scoop/apt-cdn/CloudMusic/2.5.4.197709/CloudMusic.zip",
-    "hash": "27128af6055acb1673d08d106b83fe2a293f01d558e27875e9c136c5b1011586",
-    "uninstaller": {
-        "script" : [
-            "Remove-Item \"$env:LOCALAPPDATA\\Netease\" -Force -Recurse",
-            "Remove-Item \"$env:ProgramData\\NetEaseWinDA\" -Force -Recurse"
-        ]
-    },
+    "license": "Unknown",
+    "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_2.10.13.202675_32.exe#/abgo_bucket_installer.exe",
+    "hash": "45f8aa74a4bae7b253fe370a129f3fe22cedb8b24e3c06d04c772dd41486ffb2",
     "shortcuts": [
         [
-            "cloudmusic.exe",
+            "cloudMusic.exe",
             "网易云音乐"
         ]
     ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\cloudMusic.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_LocalAppData\\Netease\\CloudMusic\") @(\"$persist_dir\\Netease\\CloudMusic\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_LocalAppData\\Netease\\CloudMusic\")",
+        "$ui_exe=\"$dir\\Uninstall.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
     "checkver": {
-        "url": "http://www.ypojie.com/5150.html",
-        "regex": "v([\\d.]+)"
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'NetEase/CloudMusic'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x86:$($dl_info.x86_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x86:(?<x86>.+?);"
     },
-    "notes": "We don't persist your CloudMusic data."
+    "autoupdate": {
+        "url": "$matchX86#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/n/NetEase/CloudMusic/$version/NetEase.CloudMusic.installer.yaml",
+            "regex": "Architecture: x86[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
 }

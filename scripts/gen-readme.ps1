@@ -17,7 +17,8 @@ foreach ($file in $files) {
     $homepage = $json.homepage
     $descr = $json.description
     $unofficial = ''
-    if ($homepage -match "github.com/iquiw/.*-(binary|dll)") {
+    if ($homepage -match "github.com/iquiw/.*-(binary|dll)" -and
+        $name -ne 'rireq') {
         $unofficial = 'O'
     }
     $result += "| [$name]($homepage) | $descr | $unofficial |`r`n"

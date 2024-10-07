@@ -1,0 +1,58 @@
+{
+    "version": "2024.2.2",
+    "description": "由 JetBrains 开发的适用于 C 和 C++ 的跨平台集成开发环境。Cross-Platform IDE for C and C++ by JetBrains.",
+    "homepage": "https://www.jetbrains.com/clion/",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.jetbrains.com/store/license.html"
+    },
+    "url": "https://download.jetbrains.com/cpp/CLion-2024.2.2.exe#/abgo_bucket_installer.exe",
+    "hash": "b2950e40cc949d3bdb36a879a98ac0aadfc1ec73749e1b745786a6d7cfa939ca",
+    "bin": [
+        [
+            "IDE\\bin\\clion64.exe",
+            "CLion"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "IDE\\bin\\clion64.exe",
+            "CLion"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$verPart = $version -split '\\.'",
+        "$verRes = \"$($verPart[0]).$($verPart[1])\"",
+        "persist_file -dir @(\"$user_AppData\\JetBrains\\CLion$($verRes)\",\"$user_LocalAppData\\JetBrains\\CLion$($verRes)\") @(\"$persist_dir\\CLion\",\"$persist_dir\\CLion_LocalAppData\")",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=\"$dir\\IDE\"",
+        "sleep_install \"$dir\\IDE\\bin\\idea.properties\"",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "$preName = \"CLion\"",
+        "$remove_list = @(\"$user_AppData\\JetBrains\", \"$user_LocalAppData\\JetBrains\") | ForEach-Object {",
+        "   Get-ChildItem $_ | Where-Object { $_.Name -match \"$preName[\\d\\.]+\" } | ForEach-Object { $_.FullName }",
+        "}",
+        "remove_files $remove_list",
+        "$ui_exe=\"$dir\\IDE\\bin\\Uninstall.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "url": "https://data.services.jetbrains.com/products/releases?code=cl&latest=true",
+        "jsonpath": "$.CL[0].version"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/cpp/CLion-$version.exe#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}
