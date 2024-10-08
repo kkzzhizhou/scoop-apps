@@ -1,5 +1,4 @@
 {
-    "##": "manual un/installation with run un/install_*.bat as administrator. | TODO: un/installer script.",
     "version": "0.79.2",
     "description": "Open-Source DirectShow Media Splitter and Decoders",
     "homepage": "https://github.com/Nevcairiel/LAVFilters",
@@ -14,6 +13,49 @@
             "hash": "489fa876fd160f7ebaf7f0f3d776bac37e510ca8db1a051ce604eea08b2cebae"
         }
     },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "'LAVAudio', 'LAVVideo', 'LAVSplitter' | %{",
+            "    $codec = \"$dir\\$_.ax\"",
+            "    regsvr32 /s $codec",
+            "    $WshShell = New-Object -comObject WScript.Shell",
+            "    $Shortcut = $WshShell.CreateShortcut(\"$dir\\$_.lnk\")",
+            "    $Shortcut.TargetPath = 'rundll32.exe'",
+            "    $Shortcut.Arguments = \"$codec,OpenConfiguration\"",
+            "    $Shortcut.IconLocation = $codec",
+            "    $Shortcut.Save()",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "'LAVAudio', 'LAVVideo', 'LAVSplitter' | %{",
+            "    regsvr32 /u /s \"$dir\\$_.ax\"",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "LAVAudio.lnk",
+            "LAV Audio Configuration"
+        ],
+        [
+            "LAVSplitter.lnk",
+            "LAV Splitter Configuration"
+        ],
+        [
+            "LAVVideo.lnk",
+            "LAV Video Configuration"
+        ]
+    ],
     "checkver": "github",
     "autoupdate": {
         "architecture": {
