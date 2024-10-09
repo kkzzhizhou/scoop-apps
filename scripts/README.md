@@ -90,8 +90,10 @@ _Import files persisted by other app._
 |----|:----:|:----:|----|
 |`PersistDir`|String|&check;|Path of persist directory. Use `$persist_dir` here.|
 |`SourceApp`|String|&check;|Name of source app to import from.|
-|`Force`|Switch|&cross;|Force overwrite if target exists.|
+|`ConflictAction`|String|&cross;|Actions when item conflicts.<br/>Use `Skip` to skip entire importing process.<br/>Use `Mix` to skip conflict items in target directory and import non-conflict ones from source directory.<br/>Use `Overwrite` to force import items from source directory and keep non-conflict ones in target directory.<br/>Use `ReplaceDir` to totally replace entire directory.|
+|`Select`|String|&cross;|Specific items to import. Use `,` to separate multiple values.|
 |`Sync`|Switch|&cross;|Create junction instead of copying files.|
+|`Backup`|Switch|&cross;|Rename original item instead of removing it.|
 
 - See [Snipaste2 manifest](../bucket/Snipaste2.json) for example.
 

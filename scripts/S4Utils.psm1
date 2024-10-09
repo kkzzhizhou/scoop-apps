@@ -46,11 +46,11 @@ function New-ProfileModifier {
     $RemoveModuleCommand = ("Remove-ProfileContent 'Import-Module ", $PSModuleName, "'") -Join ("")
 
     switch ($Behavior) {
-        { 'ImportModule' -eq $_ } {
+        "ImportModule" {
             $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $ImportModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\add-profile-content.ps1"
         }
-        { 'RemoveModule' -eq $_ } {
+        "RemoveModule" {
             $GenerateContent = ($ImportUtilsCommand, $RemoveModuleCommand, $RemoveUtilsCommand) -Join ("`r`n")
             $GenerateContent | Set-Content -Path "$AppDir\remove-profile-content.ps1"
         }
@@ -68,11 +68,12 @@ function Add-ProfileContent {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, Position = 0)]
+        [Alias("Value")]
         [string] $Content
     )
 
     if (-not(Test-Path $PROFILE)) {
-        New-Item -Path $PROFILE -Value "$Content" -ItemType File -Force | Out-Null
+        New-Item -Path $PROFILE -ItemType File -Value "$Content" -Force | Out-Null
     } else {
         Add-Content -Path $PROFILE -Value "`r`n$Content" -NoNewLine
     }
@@ -146,10 +147,10 @@ function Mount-ExternalRuntimeData {
 
     if (-not(Test-Path $Source)) {
         Write-Host "Initializing persist folder..."
-        New-Item -ItemType Directory $Source -Force | Out-Null
+        New-Item -Path $Source -ItemType Directory -Force | Out-Null
         if (Test-Path $Target) {
             Write-Host "Found existing runtime cache, moving to persist folder..."
-            Get-ChildItem $Target | Copy-Item -Destination $Source -Force -Recurse
+            Get-ChildItem $Target | Copy-Item -Destination $Source -Force -Recurse -ErrorAction SilentlyContinue
         }
     }
 
@@ -159,7 +160,7 @@ function Mount-ExternalRuntimeData {
 
     Write-Host "Mounting runtime cache..."
 
-    New-Item -ItemType Junction -Path $Target -Target $Source -Force | Out-Null
+    New-Item -Path $Target -ItemType Junction -Target $Source -Force | Out-Null
 }
 
 function Dismount-ExternalRuntimeData {
@@ -207,11 +208,17 @@ function Import-PersistItem {
     .PARAMETER SourceApp
         Name of source app to import from.
 
-    .PARAMETER Force
-        Force overwrite if target exists.
+    .PARAMETER ConflictAction
+        Actions when item conflicts.
+
+    .PARAMETER Select
+        Specific items to import.
 
     .PARAMETER Sync
         Create junction instead of copying files.
+
+    .PARAMETER Backup
+        Rename original item instead of removing it.
     #>
     [CmdletBinding()]
     param (
@@ -220,12 +227,23 @@ function Import-PersistItem {
         [Parameter(Mandatory = $true, Position = 1)]
         [string] $SourceApp,
         [Parameter(Mandatory = $false, Position = 2)]
-        [switch] $Force,
+        [string] $ConflictAction = "Skip",
         [Parameter(Mandatory = $false, Position = 3)]
-        [switch] $Sync
+        [string] $Select,
+        [Parameter(Mandatory = $false, Position = 4)]
+        [switch] $Sync,
+        [Parameter(Mandatory = $false, Position = 5)]
+        [switch] $Backup
     )
 
-    $ScoopPersistDir = Split-Path $PersistDir -Parent
+    $SupportedConfAct = @("ReplaceDir", "Overwrite", "Mix", "Skip")
+
+    if ($SupportedConfAct -notcontains $ConflictAction) {
+        Write-Host "`n[ERROR] Unsupported conflict action." -ForegroundColor Red
+        return
+    }
+
+    $ScoopPersistDir = Split-Path -Path $PersistDir -Parent
     $SourcePath = Join-Path -Path $ScoopPersistDir -ChildPath $SourceApp
     $TargetPath = $PersistDir
 
@@ -234,24 +252,70 @@ function Import-PersistItem {
     }
 
     if (Test-Path $TargetPath) {
-        if ($Force) {
-            Write-Host "`nPersist directory exists, start force importing..." -ForegroundColor Yellow
-            Remove-Item $TargetPath -Force -Recurse
-        } else {
-            return
+        switch ($ConflictAction) {
+            "ReplaceDir" {
+                if ($Backup) {
+                    Backup-SelectItem -Path $TargetPath
+                } else {
+                    Remove-Item -Path $TargetPath -Force -Recurse
+                }
+            }
+            "Skip" { return }
+            default {
+                if ($Sync) {
+                    return
+                }
+            }
         }
     }
 
     if ($Sync) {
         Write-Host "`nImporting profiles from `'$SourceApp`' in synced mode..." -ForegroundColor Yellow
-        New-Item -Path $TargetPath -ItemType Junction -Target $SourcePath | Out-Null
-        Write-Host "Succeeded! DO NOT permanently uninstall `'$SourceApp`'." -ForegroundColor Green
-    } else {
-        Write-Host "`nImporting profiles from `'$SourceApp`'..." -ForegroundColor Yellow
-        New-Item -Path $TargetPath -ItemType Directory | Out-Null
-        Get-ChildItem $SourcePath | Copy-Item -Destination $TargetPath -Force -Recurse
-        Write-Host "Succeeded! You can uninstall `'$SourceApp`' now." -ForegroundColor Green
+        New-Item -Path $TargetPath -ItemType Junction -Target $SourcePath -Force | Out-Null
+        if ($?) {
+            Write-Host "Succeeded! DO NOT permanently uninstall `'$SourceApp`'." -ForegroundColor Green
+        }
+        return
     }
+
+    Write-Host "`nImporting profiles from `'$SourceApp`'..." -ForegroundColor Yellow
+
+    if (-not(Test-Path $TargetPath)) {
+        New-Item -Path $TargetPath -ItemType Directory -Force | Out-Null
+    }
+
+    if ($Select) {
+        $SelectArray = $Select.Split(",").Trim()
+    } else {
+        $SelectArray = Get-ChildItem -Path $SourcePath | Select-Object -ExpandProperty Name
+    }
+
+    switch ($ConflictAction) {
+        "Overwrite" {
+            if ($Backup) {
+                foreach ($SelectItem in $SelectArray) {
+                    Import-SelectItem -SourceLocation $SourcePath -TargetLocation $TargetPath -Name $SelectItem -Overwrite -Backup
+                }
+            } else {
+                foreach ($SelectItem in $SelectArray) {
+                    Import-SelectItem -SourceLocation $SourcePath -TargetLocation $TargetPath -Name $SelectItem -Overwrite
+                }
+            }
+        }
+        default {
+            if ($Backup) {
+                foreach ($SelectItem in $SelectArray) {
+                    Import-SelectItem -SourceLocation $SourcePath -TargetLocation $TargetPath -Name $SelectItem -Backup
+                }
+            } else {
+                foreach ($SelectItem in $SelectArray) {
+                    Import-SelectItem -SourceLocation $SourcePath -TargetLocation $TargetPath -Name $SelectItem
+                }
+            }
+        }
+    }
+
+    Write-Host "Succeeded! You can uninstall `'$SourceApp`' now." -ForegroundColor Green
 }
 
 function New-PersistItem {
@@ -286,7 +350,8 @@ function New-PersistItem {
         [Parameter(Mandatory = $true, Position = 2)]
         [string] $Type,
         [Parameter(Mandatory = $false, Position = 3)]
-        [string] $Content,
+        [Alias("Value")]
+        [string] $Content = $null,
         [Parameter(Mandatory = $false, Position = 4)]
         [switch] $Force,
         [Parameter(Mandatory = $false, Position = 5)]
@@ -300,10 +365,6 @@ function New-PersistItem {
         return
     }
 
-    if (-not($Content)) {
-        $Content = $null
-    }
-
     $ItemArray = $Name.Split(",").Trim()
 
     foreach ($Item in $ItemArray) {
@@ -312,14 +373,7 @@ function New-PersistItem {
         if (Test-Path $PersistItemPath) {
             if ($Force) {
                 if ($Backup) {
-                    $BackupItem = ($Item, "backup") -Join(".")
-                    $BackupItemPath = Join-Path -Path $PersistDir -ChildPath $BackupItem
-
-                    if (Test-Path $BackupItemPath) {
-                        Remove-Item -Path $BackupItemPath -Force -Recurse
-                    }
-
-                    Rename-Item -Path $PersistItemPath -NewName $BackupItem -Force
+                    Backup-SelectItem -Path $PersistItemPath
                 } else {
                     Remove-Item -Path $PersistItemPath -Force -Recurse
                 }
@@ -329,8 +383,8 @@ function New-PersistItem {
         }
 
         switch ($Type) {
-            { 'Directory' -eq $Type } { New-Item -Path $PersistItemPath -ItemType $Type | Out-Null }
-            { 'File' -eq $Type } { New-Item -Path $PersistItemPath -ItemType $Type -Value $Content | Out-Null }
+            "Directory" { New-Item -Path $PersistItemPath -ItemType $Type -Force | Out-Null }
+            "File" { New-Item -Path $PersistItemPath -ItemType $Type -Value $Content -Force | Out-Null }
         }
     }
 }
@@ -375,6 +429,92 @@ function Backup-PersistItem {
 
         Copy-Item -Path $ItemPath -Destination $PersistDir -Force -Recurse -ErrorAction SilentlyContinue
     }
+}
+
+function Import-SelectItem {
+    <#
+    .SYNOPSIS
+        Import item to specific location.
+
+    .PARAMETER SourceLocation
+        Location of source item.
+
+    .PARAMETER TargetLocation
+        Location of target.
+
+    .PARAMETER Name
+        Name of selected item.
+
+    .PARAMETER Overwrite
+        Overwrite target item when conflict.
+
+    .PARAMETER Backup
+        Backup file before overwriting.
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $SourceLocation,
+        [Parameter(Mandatory = $true, Position = 1)]
+        [string] $TargetLocation,
+        [Parameter(Mandatory = $true, Position = 2)]
+        [string] $Name,
+        [Parameter(Mandatory = $false, Position = 3)]
+        [switch] $Overwrite,
+        [Parameter(Mandatory = $false, Position = 4)]
+        [switch] $Backup
+    )
+
+    $SourceItem = Join-Path -Path $SourceLocation -ChildPath $Name
+    $TargetItem = Join-Path -Path $TargetLocation -ChildPath $Name
+
+    if (-not(Test-Path $SourceItem)) {
+        return
+    }
+
+    if (Test-Path $TargetItem) {
+        if ($Overwrite) {
+            if ($Backup) {
+                Backup-SelectItem -Path $TargetItem
+            } else {
+                Remove-Item $TargetItem -Force -Recurse
+            }
+        } else {
+            return
+        }
+    }
+
+    Copy-Item -Path $SourceItem -Destination $TargetLocation -Force -Recurse -ErrorAction SilentlyContinue
+}
+
+function Backup-SelectItem {
+    <#
+    .SYNOPSIS
+        Backup specific item by renaming with suffix '.backup'.
+
+    .PARAMETER Path
+        Path of item to backup.
+    #>
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, Position = 0)]
+        [string] $Path
+    )
+
+    if (-not(Test-Path $Path)) {
+        return
+    }
+
+    $ItemName = Split-Path -Path $Path -Leaf
+    $ItemLocation = Split-Path -Path $Path -Parent
+    $BackupItemName = ($ItemName, "backup") -Join (".")
+    $BackupItemPath = Join-Path -Path $ItemLocation -ChildPath $BackupItemName
+
+    if (Test-Path $BackupItemPath) {
+        Remove-Item -Path $BackupItemPath -Force -Recurse
+    }
+
+    Rename-Item -Path $Path -NewName $BackupItemName -Force
 }
 
 Export-ModuleMember `
