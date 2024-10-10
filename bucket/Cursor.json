@@ -1,37 +1,42 @@
 {
-    "version": "0.41.3",
-    "description": "An AI code editor",
-    "homepage": "https://www.cursor.com/",
-    "license": "freeware",
-    "architecture": {
-        "64bit": {
-            "url": "https://downloader.cursor.sh/windows/nsis/x64",
-            "hash": "2786f80344085ca6657c9f283f97b98c61a933e27ccb7d34b682cc3ea5f9a9fe"
-        }
-    },
-    "installer": {
-        "script": [
-            "$file = (Get-ChildItem \"$dir\" 'x64' | Select-Object -First 1).FullName",
-            "Expand-7ZipArchive \"$file\" \"$dir\\\" -Removal",
-            "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\`$R0\",\"$dir\\`$LOCALAPPDATA\"  -Force -Recurse"
-        ]
-    },
+    "version": "0.42",
+    "description": "人工智能优先的代码编辑器。The AI-first Code Editor.",
+    "homepage": "https://cursor.sh/",
+    "license": "Unknown",
+    "url": "https://downloader.cursor.sh/windows/nsis/x64#/abgo_bucket_installer.exe",
+    "hash": "2786f80344085ca6657c9f283f97b98c61a933e27ccb7d34b682cc3ea5f9a9fe",
     "shortcuts": [
         [
             "Cursor.exe",
             "Cursor"
         ]
     ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\Cursor.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\Cursor\") @(\"$persist_dir\\Cursor\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\Cursor\")",
+        "$ui_exe=\"$dir\\Uninstall Cursor.exe\"",
+        "& $ui_exe /S",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\cursor-updater\")"
+    ],
     "checkver": {
-        "url": "https://changelog.cursor.com/",
-        "regex": "UPDATE \\(.*?([\\d.]+)\\)"
+        "url": "https://changelog.cursor.sh/?",
+        "regex": "h2.+?>([\\d\\.]+) -"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://downloader.cursor.sh/windows/nsis/x64"
-            }
-        }
+        "url": "https://downloader.cursor.sh/windows/nsis/x64#/abgo_bucket_installer.exe"
     }
 }
