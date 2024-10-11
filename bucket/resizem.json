@@ -1,0 +1,55 @@
+{
+    "version": "1.0.0",
+    "description": "Resizem is an app designed for bulk image process. It is particularly useful for users who need to resize, convert, and manage large numbers of image files at once.",
+    "homepage": "https://github.com/barats/resizem",
+    "license": {
+        "identifier": "MulanPSL2",
+        "url": "https://github.com/barats/resizem#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/barats/resizem/releases/download/v1.0.0/Resizem-1.0.0-amd64-installer.exe#/dl.7z",
+            "hash": "3f677ee1b757c8a1be569d0a24dcb4607fb4f0860f8f4d29ba79c811bb6edfa5"
+        },
+        "arm64": {
+            "url": "https://github.com/barats/resizem/releases/download/v1.0.0/Resizem-1.0.0-arm64-installer.exe#/dl.7z",
+            "hash": "dbac56fa85b593607315780962a437c860b6129178330fea4fb515b0806b71d6"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\Resizem.exe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Resizem.exe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Resizem.exe",
+            "Resizem"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/barats/resizem/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/barats/resizem/releases/download/v$version/Resizem-$version-amd64-installer.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/barats/resizem/releases/download/v$version/Resizem-$version-arm64-installer.exe#/dl.7z"
+            }
+        }
+    }
+}

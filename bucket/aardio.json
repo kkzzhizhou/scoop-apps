@@ -1,21 +1,32 @@
 {
+    "version": "37.3.37",
+    "description": "灵活而强大的动态语言。A flexible and powerful dynamic language.",
     "homepage": "https://www.aardio.com/",
-    "description": "A Windows desktop rapid programming platform",
-    "version": "37.3.35",
-    "license": "freeware",
+    "license": "Freeware",
     "url": "https://www.aardio.com/download/ide/aardio.7z",
-    "hash": "4897d83decf127a3d9cda4e162cee8659d501169385d0a54b627a0b4aafacb8d",
-    "bin": "aardio.exe",
+    "hash": "28fef6a40942a00664104c5f0c35d0f8cd92ba7b91e6044af4c3d16c5219c0b8",
     "shortcuts": [
         [
             "aardio.exe",
             "aardio"
         ]
     ],
-    "persist": "config\\USR.CFG",
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$dir\\config\",\"$dir\\project\") @(\"$persist_dir\\config\",\"$persist_dir\\project\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_LocalAppData\\aardio\")"
+    ],
     "checkver": {
-        "url": "http://ide.update.aardio.com/check/",
-        "regex": "\"version\":\"([\\d.]+)\""
+        "url": "https://ide.update.aardio.com/log/",
+        "regex": "aardio v([\\d\\.]+)"
     },
     "autoupdate": {
         "url": "https://www.aardio.com/download/ide/aardio.7z"
