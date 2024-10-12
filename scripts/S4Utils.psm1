@@ -133,23 +133,23 @@ function Mount-ExternalRuntimeData {
     )
 
     if (-not($Target -or $AppData)) {
-        Write-Host "[ERROR] Specify a mount point." -ForegroundColor Red
+        Write-Host "`n[ERROR] Specify a mount point." -ForegroundColor Red
         return
     }
 
     if ($AppData) {
         $FolderName = Split-Path -Path $Source -Leaf
         if ($Target) {
-            Write-Host "[WARN] Overwriting `$Target value..." -ForegroundColor DarkYellow
+            Write-Host "`n[WARN] Overwriting `$Target value..." -ForegroundColor DarkYellow
         }
         $Target = Join-Path -Path $env:APPDATA -ChildPath $FolderName
     }
 
     if (-not(Test-Path $Source)) {
-        Write-Host "Initializing persist folder..."
+        Write-Host "`nInitializing persist folder..." -ForegroundColor Yellow
         New-Item -Path $Source -ItemType Directory -Force | Out-Null
         if (Test-Path $Target) {
-            Write-Host "Found existing runtime cache, moving to persist folder..."
+            Write-Host "Found existing runtime cache, moving to persist folder..." -ForegroundColor Yellow
             Get-ChildItem $Target | Copy-Item -Destination $Source -Force -Recurse -ErrorAction SilentlyContinue
         }
     }
@@ -158,7 +158,7 @@ function Mount-ExternalRuntimeData {
         Remove-Item $Target -Force -Recurse
     }
 
-    Write-Host "Mounting runtime cache..."
+    Write-Host "`nMounting runtime cache..." -ForegroundColor Yellow
 
     New-Item -Path $Target -ItemType Junction -Target $Source -Force | Out-Null
 }
@@ -188,7 +188,7 @@ function Dismount-ExternalRuntimeData {
         $Target = Join-Path -Path $env:APPDATA -ChildPath $FolderName
     }
 
-    Write-Host "Dismounting runtime cache..."
+    Write-Host "`nDismounting runtime cache..." -ForegroundColor Yellow
 
     if (Test-Path $Target) {
         Remove-Item $Target -Force -Recurse
