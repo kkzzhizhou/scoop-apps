@@ -1,0 +1,94 @@
+{
+    "version": "1.2.2",
+    "license": "MIT",
+    "description": "QQNT 插件加载器：LiteLoaderQQNT —— 轻量 · 简洁 · 开源 · 福瑞",
+    "homepage": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT",
+    "checkver": "github",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.2.2/LiteLoaderQQNT.zip",
+                "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x64.dll"
+            ],
+            "hash": [
+                "a325c592ec53b7469c44f7eea5d27a0984e14d54ccd8d596446d0938bc91d561",
+                "4bb8cd08d7e96bd085fa2afa46d7b36e3f312a6c4d633363411ef763449d700f"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.2.2/LiteLoaderQQNT.zip",
+                "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x86.dll"
+            ],
+            "hash": [
+                "a325c592ec53b7469c44f7eea5d27a0984e14d54ccd8d596446d0938bc91d561",
+                "dfd0fbf2b0a985eccfead1278227f62dde3f2c4eaa2c34277cd50b6d2f1f767a"
+            ]
+        }
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": [
+                    "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$version/LiteLoaderQQNT.zip",
+                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x64.dll"
+                ]
+            },
+            "32bit": {
+                "url": [
+                    "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$versionLiteLoaderQQNT.zip",
+                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x86.dll"
+                ]
+            }
+        }
+    },
+    "persist": [
+        "data",
+        "plugins"
+    ],
+    "post_install": [
+        "$qqpath = Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\WOW6432Node\\Tencent\\QQNT' -Name 'Install'",
+        "if (-not (Test-Path $qqpath)) {",
+        "    Write-Host '未找到 QQNT 安装目录，无法自动安装 LiteLoaderQQNT 插件加载器'",
+        "    return",
+        "}",
+        "Copy-Item (Join-Path $dir 'dbghelp*.dll') (Join-Path $qqpath 'dbghelp.dll') -Force",
+        "$apppath = Join-Path $qqpath 'resources/app'",
+        "$versionpath = Join-Path $qqpath 'versions'",
+        "if (Test-Path $versionpath) {",
+        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1",
+        "    $apppath = Join-Path $version '/resources/app'",
+        "}",
+        "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
+        "$loader = \"require(String.raw``{0}``)\" -f $dir",
+        "if (-not (Test-Path $loaderpath)) {",
+        "    Write-Host '未找到 LiteLoaderQQNT 插件加载器，正在创建...'",
+        "    New-Item -Path $loaderpath -ItemType File -Force",
+        "}",
+        "Set-Content -Path $loaderpath -Value $loader -Force",
+        "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
+        "$package.main = './app_launcher/llqqnt.js'",
+        "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force"
+    ],
+    "post_uninstall":[
+        "$qqpath = Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\WOW6432Node\\Tencent\\QQNT' -Name 'Install'",
+        "if (-not (Test-Path $qqpath)) {",
+        "    Write-Host '未找到 QQNT 安装目录，无法自动安装 LiteLoaderQQNT 插件加载器'",
+        "    return",
+        "}",
+        "Remove-Item (Join-Path $qqpath 'dbghelp.dll') -Force",
+        "$apppath = Join-Path $qqpath 'resources/app'",
+        "$versionpath = Join-Path $qqpath 'versions'",
+        "if (Test-Path $versionpath) {",
+        "    # get the subfolder with the highest version number",
+        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1",
+        "    $apppath = Join-Path $version '/resources/app'",
+        "}",
+        "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
+        "Remove-Item $loaderpath -Force",
+        "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
+        "$package.main = './application/app_launcher/index.js'",
+        "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force",
+        "Write-Host 'LiteLoaderQQNT 插件加载器已安装/卸载完成'"
+    ]
+}
