@@ -103,8 +103,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - ygguorun/scoop-bucket
 - noql-net/scoop
-- aliesbelik/poldi
 - iquiw/scoop-bucket
+- aliesbelik/poldi
 - Velgus/Scoop-Portapps
 - AStupidBear/scoop-bear
 - batkiz/backit
@@ -117,10 +117,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - SayCV/scoop-cvp
 - starise/Scoop-Gaming
-- Darkatse/Scoop-Darkatse
-- TianXiaTech/scoop-txt
 - seumsc/scoop-seu
 - Weidows-projects/scoop-3rd
+- Darkatse/Scoop-Darkatse
+- TianXiaTech/scoop-txt
 - kengwang/scoop-ctftools-bucket
 - starise/Scoop-Confetti
 - AkariiinMKII/Scoop4kariiin
@@ -135,8 +135,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - abgox/abgo_bucket
 - ShuguangSun/sgs-scoop-bucket
 - WinApps-share/WinApps-bucket
-- The-Simples/scoop-minecraft
 - FlawlessCasual17/MyScoop
+- The-Simples/scoop-minecraft
 - natecohen/scoop-av
 - KnotUntied/scoop-fonts
 - babo4d/scoop-xrtools
