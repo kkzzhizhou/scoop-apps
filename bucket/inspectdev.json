@@ -1,0 +1,42 @@
+{
+    "homepage": "https://inspect.dev/",
+    "description": "Inspect helps you debug the mobile web on iOS and Android by giving you an all-in-one developer tool for macOS, Windows, and Linux.",
+    "license": "Shareware",
+    "version": "1.0.9",
+    "shortcuts": [
+        [
+            "Inspect.exe",
+            "Inspect Dev"
+        ]
+    ],
+    "url": "https://download.inspect.dev/windows/nsis/x64#/dl.7z",
+    "hash": "66207b2f9fac1c13f759372e77eb46cbbe622e161f75f23bb9cf1939b778c740",
+    "extract_dir": "$PLUGINSDIR",
+    "installer": {
+        "script": [
+          "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\"",
+          "cd \"$dir\\resources\";echo 'import re;f=open(\"app.asar\", \"r+b\");a=f.read();m=re.search(b\"subscriptionStatus = (.*?);\", a);s,e=m.span(1);a = a[:s] + b\"{id:\\\"a\\\",status:\\\"active\\\",trial_days_left:12345}\".ljust(e-s,b\" \") + a[e:];f.seek(0);f.write(a); exit(0)' | python3"
+        ]
+        
+    },
+    "checkver": {
+        "url": "https://download.inspect.dev/windows/nsis/x64",
+        "script": [
+            "Add-Type -AssemblyName 'System.Net.Http'",
+            "$httpClient = [System.Net.Http.HttpClient]::new()",
+            "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'",
+            "$httpClient.DefaultRequestHeaders.UserAgent.ParseAdd($userAgent)",
+            "$uri = 'https://download.inspect.dev/windows/nsis/x64'",
+            "$request = [System.Net.Http.HttpRequestMessage]::new([System.Net.Http.HttpMethod]::Get, $uri)",
+            "$response = $httpClient.SendAsync($request, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result",
+            "$fileName = $response.Content.Headers.ContentDisposition.FileName",
+            "$match = [regex]::Match($fileName, 'Inspect Setup (.*?) - ')",
+            "$capturedGroup = $match.Groups[1].Value",
+            "$capturedGroup"
+        ],
+        "regex": "(\\S+)"
+    },
+    "autoupdate": {
+        "url": "https://download.inspect.dev/windows/nsis/x64#/dl.7z"
+    }
+}
