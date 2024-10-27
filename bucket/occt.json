@@ -21,15 +21,22 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.ocbase.com/_next/data/Ek0YdNtyFoF6iJb1yB8ho/download.json",
-        "jsonpath": "$.pageProps.occtReleases[0].stable.release.version.versionStr"
+        "script": [
+            "try {",
+            "    $null = (Invoke-WebRequest $url).Content -cmatch '/_next/static/([^/]+)/_buildManifest\\.js'",
+            "    $Matches[1],",
+            "    (Invoke-RestMethod \"https://www.ocbase.com/_next/data/$($Matches[1])/download.json\").pageProps.occtReleases[0].stable.release.version.versionStr -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(?<buildid>[^/ ]+) ([\\d.]+)\\Z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://dl.ocbase.com/per/stable/OCCT.exe",
                 "hash": {
-                    "url": "https://www.ocbase.com/_next/data/Ek0YdNtyFoF6iJb1yB8ho/download.json",
+                    "url": "https://www.ocbase.com/_next/data/$matchBuildid/download.json",
                     "jsonpath": "$.pageProps.occtReleases[0].stable.release.checksum"
                 }
             }

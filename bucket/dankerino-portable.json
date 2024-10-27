@@ -30,10 +30,14 @@
     "bin": "dankerino-portable.exe",
     "checkver": {
         "script": [
-            "(Invoke-RestMethod 'https://api.github.com/repositories/202738310/actions/workflows/build.yml/runs?branch=dankerino&status=success').workflow_runs[0].id,",
-            "(Invoke-RestMethod https://raw.githubusercontent.com/Mm2PL/dankerino/dankerino/.github/workflows/build.yml | Select-String 'os: windows-latest\\s+qt-version: ([\\d.]+)').Matches.Groups[1].Value -join ' '"
+            "try {",
+            "    $null = (Invoke-WebRequest https://raw.githubusercontent.com/dankerino/dankerino/master/.github/workflows/build.yml).Content -cmatch 'os: windows-latest\\s+qt-version: ([\\d.]+)'",
+            "    $Matches[1],",
+            "    (Invoke-RestMethod 'https://api.github.com/repositories/202738310/actions/workflows/build.yml/runs?branch=dankerino&status=success').workflow_runs[0].id -join ' '",
+            "}",
+            "catch { '' }"
         ],
-        "regex": "(\\d+) (?<qt>[\\d.]+)"
+        "regex": "\\A(?<qt>[\\d.]+) (\\d+)\\Z"
     },
     "autoupdate": {
         "architecture": {

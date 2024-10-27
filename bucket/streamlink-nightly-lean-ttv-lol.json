@@ -1,5 +1,5 @@
 {
-    "version": "6.11.0-57-gaa2b494",
+    "version": "6.11.0-59-g4dd6834",
     "description": "A command-line utility that pipes video streams from various services into a video player.",
     "homepage": "https://streamlink.github.io/",
     "license": "BSD-2-Clause",
@@ -17,18 +17,18 @@
     "architecture": {
         "64bit": {
             "url": [
-                "https://nightly.link/streamlink/windows-builds/workflows/nightly/master/streamlink-6.11.0-57-gaa2b494-py312-x86_64.zip.zip",
+                "https://nightly.link/streamlink/windows-builds/workflows/nightly/master/streamlink-6.11.0-59-g4dd6834-py312-x86_64.zip.zip",
                 "https://raw.githubusercontent.com/2bc4/streamlink-ttvlol/master/twitch.py"
             ],
             "hash": [
-                "784b79bc9318dd569b781e99a7595743182932294d37b4f211e1319e48b3eb95",
+                "c772fb3b980fd784538490fe8d3e44cfd77cbd445a377d11c1f00fc28cfd90fa",
                 "de0be202fd58991e47ac1d0663c981669a0f4c95dbaf817b8e42d6edfcde550d"
             ]
         }
     },
     "pre_install": [
         "Expand-7zipArchive \"$dir/streamlink-$version-py312-x86*.zip\" \"$dir\" -Removal",
-        "$python = try { (py.exe -0p | Select-Object -First 1 | Select-String \\S+\\Z).Matches.Value } catch {}",
+        "$python = try { $null = (py.exe -0p | Select-Object -First 1) -cmatch '\\S+\\Z'; $Matches[1] } catch {}",
         "$paths = 'bin', 'pkgs'",
         "if ($python -and ($ver = try { [System.Version]((py.exe -V) -Replace '[^\\d.]') } catch {}) -lt [System.Version]'3.13.0' -and $ver -ge [System.Version]'3.12.0') {",
         "    $null = New-Item -ItemType SymbolicLink -Path \"$dir/Python\" -Target ($python | Split-Path)",
@@ -58,7 +58,7 @@
     "checkver": {
         "script": [
             "try {",
-            "    $null = (Invoke-RestMethod https://api.github.com/repositories/472790314/actions/artifacts).artifacts[0].name -Match 'streamlink-([\\w.-]+)-py'",
+            "    $null = (Invoke-RestMethod https://api.github.com/repositories/472790314/actions/artifacts).artifacts[0].name -cmatch 'streamlink-([\\w.-]+)-py'",
             "    $verSplit = $matches[1].split('-')",
             "    if ($verSplit.Length -eq 3 -and $verSplit[2][0] -eq 'g') { $build = 'nightly' }",
             "    else { $build = 'main' }",
