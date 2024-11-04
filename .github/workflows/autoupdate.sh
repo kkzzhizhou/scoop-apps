@@ -66,7 +66,7 @@ add_to_bucket(){
     local file="$1"
     local file_name="$2"
     local bucket="$3"
-    cat $file | jq > /dev/null 2&>1
+    cat $file | jq '(has("url") or has("architecture")) and has("version")' > /dev/null 2&>1
     if [ $? -eq 0 ];then
         cp -f $file ./bucket/$file_name
     else
@@ -160,7 +160,8 @@ merge_buckets(){
                 continue
             fi
             file_md5=$(md5sum $file | awk '{print $1}') # json文件md5
-            jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
+            #jq -e . >/dev/null 2>&1 <<< $(cat ${file}) # 检验json文件格式
+	    cat ${file} | jq '(has("url") or has("architecture")) and has("version")' >/dev/null 2>&1 # 检验json文件格式
             if [ "$?" -eq 0 ]
             then
                 app_version=$([ -f "${file}" ] && cat "${file}" | jq -r '.version' || echo "0")
