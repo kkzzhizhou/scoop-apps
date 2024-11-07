@@ -1,0 +1,51 @@
+{
+    "version": "1.4.7.2535",
+    "description": "Cross-platform Apple Music client (alpha version)",
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://cider.sh",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ciderapp/cider-releases/releases/download/v1.4.7.2535/Cider-Setup-winget-1.4.7-alpha.exe#/dl.7z",
+            "hash": "sha512:6dd48ec36e92b1fcdda12e27d770116a8e00ef8ceb8c0415618ffa1ae94a14dfb23d5d527c33d3a7a511ce0525d3f316f4ed2970bb543c6f502419216964308d",
+            "installer": {
+                "script": "Expand-7zipArchive -Path \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+            }
+        }
+    },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Recurse -Force",
+    "shortcuts": [
+        [
+            "Cider.exe",
+            "Cider (Nightly)"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/ciderapp/cider-releases/releases'",
+            "$content = (Invoke-WebRequest $url).Content",
+            "if (!($content -match 'Cider Version (?<stem>[\\d.]+) - Build (?<build>\\d+) \\((?<type>[a-z]+)\\)')) {",
+            "   break",
+            "}",
+            "$vermatches = $matches",
+            "if ($vermatches.type -match 'main') {",
+            "   break",
+            "}",
+            "if ($vermatches.type -match 'develop') {",
+            "   $vermatches.type = 'alpha'",
+            "}",
+            "Write-Output \"Version: $($vermatches.stem).$($vermatches.build) | Type: $($vermatches.type)\""
+        ],
+        "regex": "Version: ((?<stem>[\\d\\.]{5})\\.(?<build>\\d+)) \\| Type: (?<type>.+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ciderapp/cider-releases/releases/download/v$version/Cider-Setup-winget-$matchStem-$matchType.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

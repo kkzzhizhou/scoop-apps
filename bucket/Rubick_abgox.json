@@ -1,0 +1,42 @@
+{
+    "version": "4.2.9",
+    "description": "基于 electron 的开源工具箱，自由集成丰富插件。Electron based open source toolbox, free integration of rich plug-ins.",
+    "homepage": "https://github.com/rubickCenter/rubick",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/rubickCenter/rubick/blob/master/LICENSE"
+    },
+    "url": "https://github.com/rubickCenter/rubick/releases/download/v4.2.9/rubick-Setup-4.2.9-x64.exe",
+    "hash": "21ec53830a20c1bb700f18578e0e5904551c2c45fa9a36689a19c2f7ef811da6",
+    "shortcuts": [
+        [
+            "rubick.exe",
+            "Rubick"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\rubick-Setup-$($version)-x64.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\rubick.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\rubick\") @(\"$persist_dir\\rubick\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\rubick\")",
+        "$ui_exe=\"$dir\\Uninstall rubick.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\Programs\\rubick\",\"$user_LocalAppData\\rubick-updater\")"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/rubickCenter/rubick/releases/download/v$version/rubick-Setup-$version-x64.exe"
+    }
+}

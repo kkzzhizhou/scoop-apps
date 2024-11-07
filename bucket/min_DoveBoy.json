@@ -1,0 +1,53 @@
+{
+    "version": "1.33.1",
+    "description": "A fast, minimal browser that protects your privacy",
+    "homepage": "https://minbrowser.org/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/minbrowser/min/blob/master/LICENSE.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/minbrowser/min/releases/download/v1.33.1/min-1.33.1-setup.exe#/dl.7z",
+            "hash": "3b263faf2180059981023dfdb61d176f4ccff3b54c0626d6f9a48c045dc93d7b",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\min-1.33.1-full.nupkg\" \"$dir\"",
+                "    Copy-Item \"$dir\\lib\\net45\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "    Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\*.ico\", \"$dir\\Update.*\", \"$dir\\lib\", \"$dir\\package\", \"$dir\\_rels\", \"$dir\\*.nuspec\", \"$dir\\*.xml\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\Min\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\Min\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "bin": "min.exe",
+    "shortcuts": [
+        [
+            "min.exe",
+            "Min"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/minbrowser/min/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)/min-([\\w.-]+)-setup\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/minbrowser/min/releases/download/v$version/min-$version-setup.exe#/dl.7z",
+                "pre_install": [
+                    "Expand-7zipArchive \"$dir\\min-$version-full.nupkg\" \"$dir\"",
+                    "    Copy-Item \"$dir\\lib\\net45\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                    "    Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\*.ico\", \"$dir\\Update.*\", \"$dir\\lib\", \"$dir\\package\", \"$dir\\_rels\", \"$dir\\*.nuspec\", \"$dir\\*.xml\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+                ]
+            }
+        }
+    }
+}

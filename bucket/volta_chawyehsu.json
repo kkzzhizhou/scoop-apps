@@ -1,0 +1,52 @@
+{
+    "homepage": "https://volta.sh/",
+    "description": "Volta is a hassle-free way to manage your JavaScript command-line tools",
+    "license": "BSD-2-Clause",
+    "version": "2.0.1",
+    "url": "https://github.com/volta-cli/volta/releases/download/v2.0.1/volta-2.0.1-windows.zip",
+    "hash": "29f6946be54e0717ed2e64f1e6dc15b01c66d8c67660cbd91fe674f4d91441df",
+    "installer": {
+        "script": [
+            "function UpdateExeFile([String] $original, [String] $file, [Switch] $Removal) {",
+            "    if (Test-Path \"$persist_dir\\appdata\\bin\\$file\") { # persist new volta shims",
+            "        Remove-Item \"$persist_dir\\appdata\\bin\\$file\" -Force",
+            "        Copy-Item \"$dir\\$original\" \"$persist_dir\\appdata\\bin\\$file\"",
+            "    } else { # or create new shims",
+            "        if (!(Test-Path \"$persist_dir\\appdata\\bin\")) {",
+            "            New-Item -Path \"$persist_dir\\appdata\\bin\" -ItemType Directory | Out-Null",
+            "        }",
+            "        Copy-Item \"$dir\\$original\" \"$persist_dir\\appdata\\bin\\$file\"",
+            "    }",
+            "    if ($Removal) {",
+            "        Remove-Item \"$dir\\$original\" -Force",
+            "    }",
+            "}",
+            "@('node', 'npm', 'npx', 'pnpm', 'yarn') | ForEach-Object {",
+            "    UpdateExeFile 'volta-shim.exe' \"$_.exe\"",
+            "}",
+            "@('volta', 'volta-migrate', 'volta-shim') | ForEach-Object {",
+            "    UpdateExeFile \"$_.exe\" \"$_.exe\" -Removal",
+            "}",
+            "@('node', 'npm', 'npx', 'pnpm', 'yarn') | ForEach-Object {",
+            "    $cmd = \"@echo off`n`\"%~dpn0.exe`\" %*\"",
+            "    Set-Content \"$persist_dir\\appdata\\bin\\$_.cmd\" $cmd -Encoding utf8",
+            "}"
+        ]
+    },
+    "env_set": {
+        "VOLTA_HOME": "$dir\\appdata"
+    },
+    "env_add_path": "appdata\\bin",
+    "persist": "appdata",
+    "checkver": {
+        "github": "https://github.com/volta-cli/volta"
+    },
+    "autoupdate": {
+        "url": "https://github.com/volta-cli/volta/releases/download/v$version/volta-$version-windows.zip"
+    },
+    "notes": [
+        "To use volta tab-completions, add following code to your PowerShell PROFILE:",
+        "",
+        "(& volta completions powershell) | Out-String | Invoke-Expression"
+    ]
+}

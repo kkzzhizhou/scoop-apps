@@ -1,0 +1,48 @@
+{
+    "version": "12.8",
+    "description": "All-in-one Disk Partition Manager. It helps create/resize/format partition flexibly, convert disk between MBR and GPT disks, convert partition between NTFS and FAT32, and convert dynamic disk to basic without data loss in a few clicks.",
+    "homepage": "https://www.partitionwizard.com",
+    "license": "Proprietary",
+    "depends": "innounp",
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn2.minitool.com/?p=pw&e=pw-free-offline#/dl.exe",
+            "hash": "0c98cb6b2351f023f08b5b6633da0fc7c8a2588396e0d2c54e4b17509f8ba22e"
+        }
+    },
+    "installer": {
+        "script": [
+            "innounp -x \"-d$dir\" (Join-Path $dir dl.exe) | Out-Null",
+            "",
+            "$regex64 = '^Source:(?!.*not Is64BitInstallMode).+'",
+            "$regex32 = '^Source:(?!.*\"Is64BitInstallMode).+'",
+            "$pattern = if ($architecture -eq '64bit') { $regex64 } else { $regex32 }",
+            "$regex = '^Source: .(.+?).; DestDir: ..app.(.*?).; (?:DestName: .(.+?).; )?.*'",
+            "",
+            "Get-Content (Join-Path $dir install_script.iss) | Select-String -Pattern $pattern | ForEach-Object {",
+            "    $pair = $_ -replace $regex, '$1:$2\\\\$3' -replace '([^\\\\]+):(.*\\\\)$', '$1:$2$1' -split ':'",
+            "    New-Item (Join-Path $dir (Split-Path $pair[1])) -Type Directory -Force | Out-Null",
+            "    Copy-Item (Join-Path $dir $pair[0]) (Join-Path $dir $pair[1])",
+            "}",
+            "'{app}', 'dl.exe', 'install_script.iss' | ForEach-Object { Remove-Item (Join-Path $dir $_) -Recurse }"
+        ]
+    },
+    "bin": "partitionwizard.exe",
+    "shortcuts": [
+        [
+            "partitionwizard.exe",
+            "Minitool Partition Wizard Free"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.partitionwizard.com/upgrade-history.html",
+        "regex": "<h2>V([0-9.]+)\\s*<span class=\"upgrade-history-date\">"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn2.minitool.com/?p=pw&e=pw-free-offline#/dl.exe"
+            }
+        }
+    }
+}

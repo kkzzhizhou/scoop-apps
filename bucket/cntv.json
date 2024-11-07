@@ -1,0 +1,55 @@
+{
+    "##": "央视影音",
+    "version": "6.0.3.0",
+    "description": "[央视影音] - 央视影音客户端创新融合央视内容和互联网科技，在内容创新、用户体验、模式创优等各方面不断深耕细作，引领中国电视观众内容消费方式的转型升级，树立了主流媒体融合的行业标杆，实现\"大屏带小屏、小屏回大屏、多屏联受众\"",
+    "license": "Freeware",
+    "homepage": "https://tv.cctv.com/live",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.cntv.cn/cbox/v6/ysyy_v6.0.3.0_1001_setup_x64.exe#/dl.7z",
+            "hash": "79eab73d8a3117cbfc37a5cc2f95a595e70ee6ef5be802107e95a89097b6565b"
+        },
+        "32bit": {
+            "url": "https://download.cntv.cn/cbox/v6/ysyy_v6.0.3.0_1001_setup_x86.exe#/dl.7z",
+            "hash": "448988a6a2b10ac171b271d3fccbf341c8efdfe21fe5b1338e47b7040e209be0"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\CBox.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\CBox.7z\", \"$dir\\uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\\CNTV\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\CNTV\" -ItemType Junction -Target \"$persist_dir\\CNTV\" | Out-Null",
+            "ensure \"$persist_dir\\cbox\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\cbox\" -ItemType Junction -Target \"$persist_dir\\cbox\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item \"$env:LOCALAPPDATA\\CNTV\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+            "Remove-Item \"$env:LOCALAPPDATA\\cbox\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        ]
+    },
+    "shortcuts": [
+        [
+            "cbox.exe",
+            "央视影音"
+        ]
+    ],
+    "checkver": {
+        "url": "https://app.cctv.com/",
+        "regex": "/ysyy_v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.cntv.cn/cbox/v$majorVersion/ysyy_v$version_1001_setup_x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download.cntv.cn/cbox/v$majorVersion/ysyy_v$version_1001_setup_x86.exe#/dl.7z"
+            }
+        }
+    }
+}

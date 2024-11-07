@@ -1,0 +1,48 @@
+{
+    "version": "2.0.2",
+    "description": "Free cross platform Desktop Player for YouTube Music",
+    "homepage": "https://ytmdesktop.app/",
+    "license": "",
+    "url": "https://github.com/ytmdesktop/ytmdesktop/releases/download/v2.0.2/YouTube-Music-Desktop-App-2.0.2-Setup.exe#/setup.exe",
+    "hash": "c02574a5f50d4dc79570885bbb9a2470ca5096373e50d3f421a7a737a60b322e",
+    "pre_install": [
+        "$processname = \"YouTube Music Desktop App\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"YouTube Music Desktop App*\"",
+            "$AppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$filepath = \"$AppData\\youtube-music-desktop-app\\youtube-music-desktop-app.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   Start-Sleep -Seconds 10",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"YouTube Music Desktop App\"",
+        "$DesktopPath = [Environment]::GetFolderPath(\"DesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\$programname.lnk\") {Remove-Item \"$DesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "github": "https://github.com/ytmdesktop/ytmdesktop"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ytmdesktop/ytmdesktop/releases/download/v$version/YouTube-Music-Desktop-App-$version-Setup.exe#/setup.exe"
+    }
+}

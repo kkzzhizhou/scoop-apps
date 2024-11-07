@@ -1,0 +1,74 @@
+{
+    "version": "1.28.0-rc.3",
+    "description": "Open Source Continuous File Synchronization.",
+    "homepage": "https://syncthing.net/",
+    "license": {
+        "identifier": "MPL-2.0 license",
+        "url": "https://github.com/syncthing/syncthing#MPL-2.0-1-ov-file"
+    },
+    "notes": "To start syncthing automatically, use a method described at https://docs.syncthing.net/users/autostart.html#windows",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.28.0-rc.3/syncthing-windows-amd64-v1.28.0-rc.3.zip",
+            "hash": "d880ebac2ddb932010aaada761a648373d3e03afa21043eaf24050a77be69bea",
+            "extract_dir": "syncthing-windows-amd64-v1.28.0-rc.3"
+        },
+        "32bit": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.28.0-rc.3/syncthing-windows-386-v1.28.0-rc.3.zip",
+            "hash": "9e35c7526d1ff2c9e5bc8eedb7350aa56faa1e746657dfd3f7f0699284989f63",
+            "extract_dir": "syncthing-windows-386-v1.28.0-rc.3"
+        },
+        "arm64": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.28.0-rc.3/syncthing-windows-arm64-v1.28.0-rc.3.zip",
+            "hash": "c51aa86c2dbbd503459c20d5580c291674cafb668a95c7d93c5ee636095a9c5b",
+            "extract_dir": "syncthing-windows-arm64-v1.28.0-rc.3"
+        },
+        "arm32": {
+            "url": "https://github.com/syncthing/syncthing/releases/download/v1.28.0-rc.3/syncthing-windows-arm-v1.28.0-rc.3.zip",
+            "hash": "7fef23f549457900d46e7c0cf2ba35a38d2a99c53a2d22fde5dc156389f37d0c",
+            "extract_dir": "syncthing-windows-arm-v1.28.0-rc.3"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config\") -and (Test-Path \"$env:LOCALAPPDATA\\Syncthing\")) {",
+        "    info \"Copying old '$env:LOCALAPPDATA\\Syncthing' to '$persist_dir\\config'\"",
+        "    ensure \"$dir\\config\" | Out-Null",
+        "    Copy-Item \"$env:LOCALAPPDATA\\Syncthing\\*\" \"$dir\\config\" -Exclude 'LOCK' -Recurse -Force",
+        "}"
+    ],
+    "bin": [
+        [
+            "syncthing.exe",
+            "syncthing",
+            "-home \"$dir\\config\""
+        ]
+    ],
+    "persist": "config",
+    "checkver": {
+        "url": "https://api.github.com/repos/syncthing/syncthing/releases",
+        "regex": "/releases/tag/v(([\\d.]+)-([\\w.]+))"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-amd64-v$version.zip",
+                "extract_dir": "syncthing-windows-amd64-v$version"
+            },
+            "32bit": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-386-v$version.zip",
+                "extract_dir": "syncthing-windows-386-v$version"
+            },
+            "arm64": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-arm64-v$version.zip",
+                "extract_dir": "syncthing-windows-arm64-v$version"
+            },
+            "arm32": {
+                "url": "https://github.com/syncthing/syncthing/releases/download/v$version/syncthing-windows-arm-v$version.zip",
+                "extract_dir": "syncthing-windows-arm-v$version"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/sha256sum.txt.asc"
+        }
+    }
+}

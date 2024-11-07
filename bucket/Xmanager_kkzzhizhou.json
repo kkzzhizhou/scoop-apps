@@ -1,0 +1,55 @@
+{
+    "homepage": "https://www.netsarang.com/zh/Xmanager/",
+    "description": "业界最强大的SSH客户机",
+    "version": "6.0.0199",
+    "depends": [
+        "sudo",
+        "vcredist2008",
+        "vcredist2012"
+    ],
+    "url": "https://scoop-zapps.ziiyc.com/d/Xmanager/Xmanager-6.0.0199r.exe#/setup.exe",
+    "hash": "828fb45fc6cfb8b60a3504c16582bd679576072003bffa4332c9b640157be43b",
+    "pre_install": [
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "(gc \"$bucketdir\\..\\scripts\\netsarang\\add-hosts.ps1\") |  out-file -enc oem \"$dir\\add-hosts.ps1\"",
+        "sudo \"$dir\\add-hosts.ps1\""
+    ],
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" \"/b$dir /S /v/qn\" -Verb RunAs",
+            "Start-Process -Wait msiexec \"/i `\"$dir\\Xmanager` 6.msi`\" INSTALLDIR=`\"$dir`\" /qb\" -Verb RunAs"
+        ],
+        "keep": true
+    },
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "$userdir = $env:USERPROFILE.Replace('\\', '\\\\')",
+        "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+        "(gc \"$bucketdir\\..\\scripts\\xmanager\\register.reg.templ\") | % { $_ -replace 'USERPROFILE', \"$userdir\" } | out-file -enc oem \"$dir\\register.reg\"",
+        "sudo regedit /s $dir\\register.reg",
+        "Remove-Item \"$env:PUBLIC\\Desktop\\Xmanager` Power` Suite` 6\" -Recurse -ErrorAction SilentlyContinue",
+        "sudo Remove-Item \"$env:ProgramData\\Microsoft\\Windows\\Start` Menu\\Programs\\SHELL_OBJECT_FOLDER\" -Recurse -ErrorAction SilentlyContinue",
+        "ie4uinit.exe -show"
+    ],
+    "uninstaller": {
+        "script": "Start-Process -Wait msiexec \"/x `\"$dir\\Xmanager` 6.msi`\" /qb\" -Verb RunAs"
+    },
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/versions/Xmanager.latest",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://scoop-zapps.ziiyc.com/d/Xmanager/Xmanager-$versionr.exe#/setup.exe",
+        "hash": {
+            "url": "$url.sha256",
+            "regex": "$sha256"
+        }
+    },
+    "shortcuts": [
+        [
+            "Xmanager.exe",
+            "Xmanager"
+        ]
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "version": "1.19.1",
+    "description": "Stardock Curtains. Easily create and add additional style modes to Windows 10",
+    "homepage": "https://www.stardock.com/products/curtains/",
+    "license": "Proprietary",
+    "changelog": "https://www.stardock.com/products/curtains/history",
+    "notes": "Stardock Curtains is currently incompatible with Windows 11",
+    "url": "https://cdn.stardock.us/downloads/public/software/curtains/Curtains_setup_sd.exe#/setup.exe",
+    "hash": "59677fa82bed189067847066978971457be072250d47b56683a30b3c11971447",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"Stardock Curtains*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Stardock\\Curtains\\Curtains64.dll\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /s /noreboot | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ([System.Diagnostics.FileVersionInfo]::GetVersionInfo($filepath).FileVersionRaw -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.stardock.com/products/curtains/update",
+        "regex": "<h2>Update to Version ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://cdn.stardock.us/downloads/public/software/curtains/Curtains_setup_sd.exe#/setup.exe"
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "version": "3.3.1",
+    "description": "A notes app",
+    "homepage": "https://shimo.im/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "hash": "c1d646958033975e74fb5bbb21746cb63cf08474ddd331bafc8bfb2ba2de7f31",
+            "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/%E7%9F%B3%E5%A2%A8%E6%96%87%E6%A1%A3_v3.3.1-release.ea23524.shimo_win32-x64.exe#/dl.7z",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\data\")) {",
+            "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\shimo\"",
+            "$runtimeCachePersist = \"$persist_dir\\shimo\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\shimo\"",
+            "$runtimeCachePersist = \"$persist_dir\\shimo\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "石墨文档.exe",
+            "石墨文档"
+        ]
+    ],
+    "checkver": {
+        "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/shimo.yml",
+        "regex": "_v(?<version>[\\d\\.]+)-release\\.(?<release>\\w+)\\."
+    },
+    "autoupdate": {
+        "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/%E7%9F%B3%E5%A2%A8%E6%96%87%E6%A1%A3_v$matchVersion-release.$matchRelease.shimo_win32-x64.exe#/dl.7z"
+    }
+}

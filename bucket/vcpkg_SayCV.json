@@ -1,0 +1,55 @@
+{
+    "version": "0.2023.02.24",
+    "description": "C/C++ dependency manager from Microsoft For all platforms, buildsystems, and workflows",
+    "homepage": "https://vcpkg.io/",
+    "license": "MIT",
+    "#url": "https://github.com/microsoft/vcpkg/archive/76b55aaf7c45d05fa516a1f6a69f46fb08b1e720.zip",
+    "#hash": "0bda5233e3df521de628c4c40ebf014d3e7711ad65a44049723ed1d90f4bd0e2",
+    "url": [
+        "https://github.com/excitoon/empty/releases/download/empty-1.0.7/empty-1.0.7.zip"
+    ],
+    "hash": [
+        "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85"
+    ],
+    "#extract_dir": "vcpkg-76b55aaf7c45d05fa516a1f6a69f46fb08b1e720",
+    "installer": {
+        "file": "bootstrap-vcpkg.bat",
+        "keep": true
+    },
+    "bin": "vcpkg.exe",
+    "pre_install": [
+        "",
+        "#mkdir $dir/engine > $null",
+        "",
+        "$bucketdir = Find-BucketDirectory -Name $bucket",
+        "",
+        "git clone 'https://github.com/microsoft/vcpkg.git' \"$dir\\vcpkg\"",
+        "Write-Host \" :: git clone done\" -ForegroundColor DarkCyan",
+        "",
+        "Get-ChildItem -Path \"$dir\\vcpkg\\*\" -Recurse -Force | Move-Item -Destination \"$dir\" -Force",
+        "if(Test-Path \"$dir\\vcpkg\"){",
+        "    Remove-Item \"$dir\\vcpkg\" -Recurse -Force",
+        "}",
+        ""
+    ],
+    "post_install": "vcpkg integrate install",
+    "uninstaller": {
+        "script": "vcpkg integrate remove"
+    },
+    "persist": [
+        "buildtrees",
+        "downloads",
+        "installed",
+        "packages"
+    ],
+    "checkver": {
+        "url": "https://github.com/microsoft/vcpkg/commits/master.atom",
+        "regex": "(?s)>(\\d+)-(\\d+)-(\\d+)T.*?/(?<sha>[0-9a-f]{40})",
+        "replace": "0.${1}.${2}.${3}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/microsoft/vcpkg/archive/$matchSha.zip",
+        "extract_dir": "vcpkg-$matchSha",
+        "extract_to": ""
+    }
+}

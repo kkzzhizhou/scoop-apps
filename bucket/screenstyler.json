@@ -1,0 +1,38 @@
+{
+    "version": "0.2.3",
+    "homepage": "https://screenstyler.com/",
+    "description": "Style your Desktop easily. ScreenStyler is a new tool that lets you make amazing Windows styles. It's simple, free and without ads.",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://download2439.mediafire.com/z2zfbjqx328g8xWlPEpn8lbZfuEWvi4PVr0YO8U2ZN1sdLUBoPIvJGwTTzaEhfsoA3lGyL3fEdDKwLxMiqUp5D2BXJvNCVMKJSWihaBevM5ZO60NjgDrxj1PboHbh3-8SQKj6ECRTDbNkhXkACmkcDqrp1fXP1R0KHTyeDDJZw/1gx6d8zx016hjyt/ScreenStyler-Setup-0.2.3-preview+win+(2).exe",
+            "hash": "6b8785d7d3dc581d1cfa19fbcd2b9fd11a914be94a85692f5c78b3984a1ce027"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\*\" -Exclude '$PLUGINSDIR', 'Uninstall ScreenStyler.exe' -Recurse",
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir; Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse"
+    ],
+    "shortcuts": [
+        [
+            "ScreenStyler.exe",
+            "ScreenStyler"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "(Invoke-RestMethod 'https://screenstyler.com/') -match '(?<Url>https\\://*.*/file/[\\w]+/ScreenStyler-Setup-(?<Ver>[\\d.]+)-preview\\+win\\+\\((?<Random>[\\d]+)\\)\\.exe/file)' | Out-Null",
+            "$version = $Matches.Ver; $random = $Matches.Random; $ua = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome",
+            "(Invoke-RestMethod $Matches.Url -UserAgent $ua) -match \"https\\://(?<Query>download[\\d]+\\.mediafire\\.com)/(?<Uuid>[\\w_-]+)/(?<Id>[\\w]+)/ScreenStyler-Setup-$version-preview%2Bwin\\+%28$random%29\\.exe\" | Out-Null",
+            "$query = $Matches.Query; $uuid = $Matches.Uuid; $id = $Matches.Id; Write-Output \"$query $uuid $id $version $random\""
+        ],
+        "regex": "(?<Part>download[\\d]+)\\.mediafire\\.com\\s(?<Uuid>[\\w_-]+)\\s(?<Id>[\\w]+)\\s([\\d.]+)\\s(?<Random>[\\d]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://$matchPart.mediafire.com/$matchUuid/$matchId/ScreenStyler-Setup-$version-preview+win+($matchRandom).exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "version": "9960851628",
+    "description": "Chat client for twitch.tv. See releases for download. Only nightlies are supported (fork of Chatterino 2).",
+    "homepage": "https://github.com/Mm2PL/dankerino",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Mm2PL/dankerino/releases/download/nightly-build/chatterino-windows-x86-64-Qt-6.7.1.zip",
+            "hash": "a94921faf2bae2922e7bc5f76464b93c2f464b1f7e3a7d35466eae2ccee6ca00",
+            "extract_dir": "Chatterino2",
+            "pre_install": [
+                "Get-ChildItem \"$dir/chatterino.exe\" | Rename-Item -NewName { $_.name.Replace('chatterino', 'dankerino-portable') }",
+                "$modes = \"$dir/modes\"",
+                "$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'",
+                "Invoke-Expression \"'portable' >$(if (Test-Path $modes) { '>' }) `$modes\""
+            ]
+        }
+    },
+    "persist": [
+        "Logs",
+        "Misc",
+        "Settings"
+    ],
+    "shortcuts": [
+        [
+            "dankerino-portable.exe",
+            "Dankerino-portable"
+        ]
+    ],
+    "bin": "dankerino-portable.exe",
+    "checkver": {
+        "script": [
+            "try {",
+            "    $null = (Invoke-WebRequest https://raw.githubusercontent.com/dankerino/dankerino/master/.github/workflows/build.yml).Content -cmatch 'os: windows-latest\\s+qt-version: ([\\d.]+)'",
+            "    $Matches[1],",
+            "    (Invoke-RestMethod 'https://api.github.com/repositories/202738310/actions/workflows/build.yml/runs?branch=dankerino&status=success').workflow_runs[0].id -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(?<qt>[\\d.]+) (\\d+)\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Mm2PL/dankerino/releases/download/nightly-build/chatterino-windows-x86-64-Qt-$matchQt.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "version": "202307012209",
+    "description": "Enhanced ruleset for V2Ray (unofficial)",
+    "homepage": "https://github.com/Loyalsoldier/v2ray-rules-dat",
+    "license": "GPL-3.0-only",
+    "depends": "v2ray",
+    "url": "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/202307012209/rules.zip",
+    "hash": "cb0d0ffa9180d35f3b76b2fcad7952b523beebd75bc51724c07e3dc10c511675",
+    "installer": {
+        "script": [
+            "if (-not (Test-Path \"$persist_dir\\v2ray-rules-dat\")) {",
+            "    Copy-Item \"$(appdir v2ray $global)\\current\\geoip.dat\" -Destination \"$dir\\geoip.dat.bak\"",
+            "    Copy-Item \"$(appdir v2ray $global)\\current\\geosite.dat\" -Destination \"$dir\\geosite.dat.bak\"",
+            "}",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path \"$(appdir v2ray $global)\\current\" -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "LinkFile 'geoip.dat'",
+            "LinkFile 'geosite.dat'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Copy-Item \"$dir\\geoip.dat.bak\" -Destination \"$(appdir v2ray $global)\\current\\geoip.dat\" -Force",
+            "Copy-Item \"$dir\\geosite.dat.bak\" -Destination \"$(appdir v2ray $global)\\current\\geosite.dat\" -Force"
+        ]
+    },
+    "persist": [
+        "geoip.dat.bak",
+        "geosite.dat.bak"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/$version/rules.zip",
+        "hash": {
+            "url": "$url.sha256sum"
+        }
+    }
+}

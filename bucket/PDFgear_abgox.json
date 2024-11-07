@@ -1,0 +1,42 @@
+{
+    "version": "2.1.8",
+    "description": "一款功能齐全的 PDF 管理软件。A piece of full-featured PDF management software.",
+    "homepage": "https://www.pdfgear.com/",
+    "license": "Freeware",
+    "url": "https://www.pdfgear.com/download/pdfgear_setup_v2.1.8.exe#/abgo_bucket_installer.exe",
+    "hash": "088c276fe54f8641f98af34cc9ff67e514efa1f4895bbbc0c3508d04c83c3e04",
+    "shortcuts": [
+        [
+            "PDFLauncher.exe",
+            "PDFgear"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /VerySilent /Dir=\"$dir\"",
+        "$core_exe=\"$dir\\PDFLauncher.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_LocalAppData\\PDFgear\") @(\"$persist_dir\\PDFgear\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_LocalAppData\\PDFgear\")",
+        "$ui_exe=\"$dir\\unins000.exe\"",
+        "try{ & $ui_exe /VerySilent }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$desktop\\PDFgear.lnk\")"
+    ],
+    "checkver": {
+        "url": "https://www.pdfgear.com/pdfgear-for-windows/",
+        "regex": "pdfgear_setup_v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://www.pdfgear.com/download/pdfgear_setup_v$version.exe#/abgo_bucket_installer.exe"
+    }
+}

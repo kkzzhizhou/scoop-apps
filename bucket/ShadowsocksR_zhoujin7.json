@@ -1,0 +1,56 @@
+{
+    "version": "5.1.9",
+    "description": "An Internet censorship circumventing tunnel tool, forked from shadowsocksR, maintained now by HMBSbige.",
+    "homepage": "https://github.com/HMBSbige/ShadowsocksR-Windows",
+    "license": "GPL-3.0-only",
+    "url": "https://github.com/HMBSbige/ShadowsocksR-Windows/releases/download/5.1.9/ShadowsocksR-net48-5.1.9.zip",
+    "hash": "4260189395ee3dac6431c372981d8774794c832b220bb79d9b02dcc0a672e385",
+    "bin": "ShadowsocksR.exe",
+    "shortcuts": [
+        [
+            "ShadowsocksR.exe",
+            "ShadowsocksR"
+        ]
+    ],
+    "pre_install": [
+        "#Create placeholder files",
+        "function CreateFile([String] $file, [String] $content = $null) {",
+        "    if(!(Test-Path \"$persist_dir\\$file\")) {",
+        "        Write-Host \"Create placeholder for shadowsocksR: $file\"",
+        "        if($file -eq 'chn_ip.txt'){",
+        "            Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/HMBSbige/ShadowsocksR-Windows/master/shadowsocks-csharp/Data/chn_ip.txt\" -OutFile $original_dir\\chn_ip.txt",
+        "        }elseif($file -eq 'pac.txt'){",
+        "            Invoke-WebRequest -Uri \"https://raw.githubusercontent.com/HMBSbige/ShadowsocksR-Windows/master/shadowsocks-csharp/Data/proxy.pac.txt\" -OutFile $original_dir\\pac.txt",
+        "        }else{",
+        "            New-Item -Force -Path \"$persist_dir\\$file\" -ItemType file -Value $content | Out-Null",
+        "        }",
+        "    }",
+        "}",
+        "CreateFile 'chn_ip.txt'",
+        "CreateFile 'pac.txt'",
+        "CreateFile 'gui-config.json' '{}'",
+        "CreateFile 'transfer_log.json' '{}'",
+        "CreateFile 'user.rule'",
+        "CreateFile 'user-rule.txt' \"! Put user rules line by line in this file.`r`n! See https://adblockplus.org/en/filter-cheatsheet`r`n\""
+    ],
+    "persist": [
+        "chn_ip.txt",
+        "pac.txt",
+        "gui-config.json",
+        "transfer_log.json",
+        "user.rule",
+        "user-rule.txt"
+    ],
+    "checkver": {
+        "url": "https://github.com/HMBSbige/ShadowsocksR-Windows/releases",
+        "regex": "(?<filename>ShadowsocksR-net48-(?<version>[\\d.]+)\\.(zip|7z))",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/HMBSbige/ShadowsocksR-Windows/releases/download/$matchVersion/$matchFilename",
+        "hash": {
+            "url": "https://github.com/HMBSbige/ShadowsocksR-Windows/releases",
+            "find": "(?s)$basename.*?$sha256"
+        }
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "version": "8.9",
+    "homepage": "https://www.poweriso.com/index.htm",
+    "description": "A powerful CD / DVD / BD image file processing tool, which allows you to open, extract, burn, create, edit, compress, encrypt, split and convert ISO files, and mount ISO files with internal virtual drive.",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.poweriso.com/tutorials/eula.htm"
+    },
+    "architecture": {
+        "32bit": {
+            "url": "https://www.poweriso.net/PowerISO8.exe#/setup.exe",
+            "hash": "6b2a8f5d26e2ef7bc71aebfee4519ada06a4bd9a982a99208430625c426d9f11",
+            "installer": {
+                "script": [
+                    "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+                    "Start-Process \"$dir\\setup.exe\" -Verb 'RunAs' -Args '/S'; if (!(Test-Path \"${env:ProgramFiles(x86)}\\PowerISO\")) { Start-Sleep -Seconds 4 }",
+                    "Start-Sleep -Seconds 2; Stop-Process -Name 'PWRISOVM', 'explorer' -ErrorAction 'SilentlyContinue' -Force; Remove-Item \"$dir\\setup.exe\"",
+                    "[System.IO.File]::WriteAllLines(\"$dir\\piso.cmd\", '@\"%ProgramFiles(x86)%\\PowerISO\\piso.exe\"  %*', [System.text.UTF8Encoding]($false))"
+                ]
+            },
+            "uninstaller": {
+                "script": [
+                    "if ($cmd -eq 'uninstall') {",
+                    "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+                    "    Stop-Process -Name 'PWRISOVM', 'explorer' -ErrorAction 'SilentlyContinue' -Force",
+                    "    Start-Process \"${env:ProgramFiles(x86)}\\PowerISO\\uninstall.exe\" -Wait -Verb 'RunAs' -Args '/S'",
+                    "    Remove-Item 'HKCU:\\SOFTWARE\\PowerISO1' -Recurse",
+                    "}"
+                ]
+            }
+        },
+        "64bit": {
+            "url": "https://www.poweriso.net/PowerISO8-x64.exe#/setup.exe",
+            "hash": "cac86780dd560b81feab752a38f05a186477de300d25eeaa7526e7812aec5cd3",
+            "installer": {
+                "script": [
+                    "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+                    "Start-Process \"$dir\\setup.exe\" -Verb 'RunAs' -Args '/S'; if (!(Test-Path \"$env:ProgramFiles\\PowerISO\")) { Start-Sleep -Seconds 4 }",
+                    "Start-Sleep -Seconds 2; Stop-Process -Name 'PWRISOVM', 'explorer' -ErrorAction 'SilentlyContinue' -Force; Remove-Item \"$dir\\setup.exe\"",
+                    "[System.IO.File]::WriteAllLines(\"$dir\\piso.cmd\", '@\"%ProgramFiles%\\PowerISO\\piso.exe\"  %*', [System.text.UTF8Encoding]($false))"
+                ]
+            },
+            "uninstaller": {
+                "script": [
+                    "if ($cmd -eq 'uninstall') {",
+                    "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+                    "    Stop-Process -Name 'PWRISOVM', 'explorer' -ErrorAction 'SilentlyContinue' -Force",
+                    "    Start-Process \"$env:ProgramFiles\\PowerISO\\uninstall.exe\" -Wait -Verb 'RunAs' -Args '/S'",
+                    "    Remove-Item 'HKCU:\\SOFTWARE\\PowerISO1' -Recurse",
+                    "}"
+                ]
+            }
+        }
+    },
+    "bin": "piso.cmd",
+    "checkver": "PowerISO\\sv([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://www.poweriso.net/PowerISO$majorVersion.exe#/setup.exe"
+            },
+            "64bit": {
+                "url": "https://www.poweriso.net/PowerISO$majorVersion-x64.exe#/setup.exe"
+            }
+        }
+    }
+}

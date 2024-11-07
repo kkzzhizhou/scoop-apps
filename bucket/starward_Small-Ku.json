@@ -1,0 +1,50 @@
+{
+    "version": "0.13.4",
+    "description": "Game Launcher for miHoYo/hoyoverse.",
+    "homepage": "https://github.com/Scighost/Starward",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/Scighost/Starward/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Scighost/Starward/releases/download/0.13.4/Starward_Portable_0.13.4_x64.7z",
+            "hash": "91e0a8224c162a391d973d0747354861d214e49b7fcaa86b0c92697f7787ee8d"
+        },
+        "arm64": {
+            "url": "https://github.com/Scighost/Starward/releases/download/0.13.4/Starward_Portable_0.13.4_arm64.7z",
+            "hash": "77b399e69e4faa9c85cbca1b7be1d27e96f4dd1e63121b104a672763045e151b"
+        }
+    },
+    "checkver": {
+        "script": [
+            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/Scighost/Starward/releases'",
+            "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "Write-Output $latest.tag_name"
+        ],
+        "regex": "(?<version>[\\d.]+(?:-[\\w\\-\\d\\.]+)?)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Scighost/Starward/releases/download/$version/Starward_Portable_$version_x64.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/Scighost/Starward/releases/download/$version/Starward_Portable_$version_arm64.7z"
+            }
+        }
+    },
+    "extract_dir": "Starward",
+    "shortcuts": [
+        [
+            "Starward.exe",
+            "Starward"
+        ]
+    ],
+    "pre_install": "If (-not (Test-Path $dir\\config.ini)) {\"UserDataFolder=$dir\\data\" | Out-File $dir\\config.ini}",
+    "persist": [
+        "data",
+        "config.ini"
+    ],
+    "notes": "Setup wizard would be skipped because of preset value of user data by pre-install scripts."
+}

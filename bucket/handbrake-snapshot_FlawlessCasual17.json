@@ -1,0 +1,53 @@
+{
+    "version": "20221021-e00309688",
+    "description": "Snapshot releases of the tool for converting video from nearly any format to a selection of modern, widely supported codecs.",
+    "homepage": "https://handbrake.fr",
+    "license": "GPL-2.0-only",
+    "suggest": {
+        ".NET Desktop Runtime": "extras/windowsdesktop-runtime-lts"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/HandBrake/HandBrake-snapshots/releases/download/win/HandBrake-20221021-e00309688-x86_64-Win_GUI.zip",
+            "hash": "128738d7f3f8866d8f6240056f49adbc3036f839631035d9249b67a068cb053c"
+        }
+    },
+    "extract_dir": "HandBrake",
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\portable.ini\")) {",
+            "    if (!(Test-Path \"$persist_dir\\storage\") -And (Test-Path \"$env:APPDATA\\HandBrake\")) {",
+            "        New-Item \"$persist_dir\" -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "        Move-Item -Path \"$env:APPDATA\\HandBrake\" -Destination \"$persist_dir\\storage\" -Force",
+            "    }",
+            "    Copy-Item \"$dir\\portable.ini.template\" \"$dir\\portable.ini\" -Force",
+            "}"
+        ]
+    },
+    "persist": [
+        "portable.ini",
+        "storage",
+        "tmp"
+    ],
+    "shortcuts": [
+        [
+            "HandBrake.exe",
+            "HandBrake Snapshot"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/HandBrake/handbrake-snapshots/releases/tag/win",
+        "regex": "<td>HandBrake-([\\d]+-[\\w]+)-x86_64-Win_GUI.zip</td>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/HandBrake/HandBrake-snapshots/releases/download/win/HandBrake-$version-x86_64-Win_GUI.zip",
+                "hash": {
+                    "url": "https://github.com/HandBrake/handbrake-snapshots/releases/tag/win",
+                    "regex": "<td>$sha256</td>"
+                }
+            }
+        }
+    }
+}

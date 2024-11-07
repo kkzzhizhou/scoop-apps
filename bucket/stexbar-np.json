@@ -1,0 +1,43 @@
+{
+    "version": "1.11.2",
+    "homepage": "https://tools.stefankueng.com/StExBar.html",
+    "description": "A utility that provides many useful commands for your everyday use of Windows explorer. And you can add as many custom commands on your own as you like.",
+    "license": "GPL-2.0",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/stefankueng/tools/releases/download/StExBar_1.11.2/StExBar-1.11.2.msi#/setup.msi_",
+            "hash": "104b763b4bb7af4807caba932a621f207ff32f18ecfd1a936c4944f1410fb5be"
+        },
+        "64bit": {
+            "url": "https://github.com/stefankueng/tools/releases/download/StExBar_1.11.2/StExBar64-1.11.2.msi#/setup.msi_",
+            "hash": "3505069a4430a4193ffbaec2d75ebcb6a4105eb1ace8bc46ae8bc8df56aca437"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn')",
+        "Stop-Process -Name 'explorer' -Force"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn')",
+        "Start-Process 'taskkill' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList ('/F', '/IM', 'explorer.exe')",
+        "while (Test-Path \"$env:ProgramFiles\\StExBar\") { Start-Sleep -Seconds 2 }",
+        "while (Test-Path \"${env:ProgramFiles(x86)}\\StExBar\") { Start-Sleep -Seconds 2 }",
+        "Start-Sleep -Seconds 3; Start-Process 'explorer.exe' -Wait -Verb 'RunAs' -WindowStyle 'Hidden'"
+    ],
+    "checkver": {
+        "url": "https://github.com/stefankueng/tools/releases",
+        "regex": "tag/StExBar_([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/stefankueng/tools/releases/download/StExBar_$version/StExBar-$version.msi#/setup.msi_"
+            },
+            "64bit": {
+                "url": "https://github.com/stefankueng/tools/releases/download/StExBar_$version/StExBar64-$version.msi#/setup.msi_"
+            }
+        }
+    }
+}

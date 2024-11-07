@@ -1,0 +1,31 @@
+{
+    "version": "0.7.0",
+    "description": "The R installation manager: Install, remove, configure R versions.",
+    "homepage": "https://github.com/r-lib/rig",
+    "license": "MIT",
+    "url": "https://github.com/r-lib/rig/releases/download/v0.7.0/rig-windows-0.7.0.exe",
+    "hash": "9e4d8bae8ce820d25b9a1f49a54ce9c2fa732bcccd47920f49d714f21beb1e02",
+    "bin": "rig.exe",
+    "innosetup": true,
+    "post_install": [
+        "$binDir=\"C:\\Program Files\\R\\bin\"",
+        "$curPath = [System.Environment]::GetEnvironmentVariable(\"Path\",\"User\")",
+        "$curPathArray=($oldPath) -split ';'",
+        "if(-Not($curPathArray -Contains \"$binDir\")) {",
+        "    Write-Host -ForegroundColor Yellow \"Adding $binDir to User Path\"",
+        "    $newPath = \"$curPath;$binDir\" -replace ';+', ';'",
+        "    [System.Environment]::SetEnvironmentVariable(\"Path\",$newPath,\"User\")",
+        "}"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/r-lib/rig/releases/download/v$version/rig-windows-$version.exe"
+    },
+    "notes": [
+        "Usage: Add the following to the end of your PowerShell $profile to get autocompletion:",
+        "",
+        "# Scoop  - rig autocompletion",
+        "$rig_ac=$(try { Join-Path -Path $(scoop prefix rig) -ChildPath _rig.ps1 } catch { '' })",
+        "if (Test-Path -Path $rig_ac)  { & $rig_ac }"
+    ]
+}

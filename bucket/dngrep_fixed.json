@@ -1,0 +1,52 @@
+{
+    "version": "3.2.330.0",
+    "description": "Graphical GREP tool to search across text files, Word and Excel documents, PDFs and archives",
+    "homepage": "http://dngrep.github.io/",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/dnGrep/dnGrep/releases/download/v3.2.330.0/dnGREP.3.2.330.x64.msi",
+            "hash": "46c7359cd48f15d77487812bdac224253e52934a08fb7efdaa85f43696b58214"
+        },
+        "32bit": {
+            "url": "https://github.com/dnGrep/dnGrep/releases/download/v3.2.330.0/dnGREP.3.2.330.x86.msi",
+            "hash": "fc8fe1ffde4d6f4a6dcd9985efb8b153593d036bc45e6551ee295dfc05df41be"
+        }
+    },
+    "pre_install": [
+        "$cont = '<?xml version=\"1.0\" encoding=\"utf-8\"?><dictionary version=\"2\"></dictionary>'",
+        "if (!(Test-Path \"$persist_dir\\dnGREP.Settings.dat\")) { Set-Content \"$dir\\dnGREP.Settings.dat\" $cont -Encoding 'ascii' }",
+        "Copy-Item \"$persist_dir\\Themes\\*\" \"$dir\\Themes\" -ErrorAction 'SilentlyContinue' -Recurse"
+    ],
+    "extract_dir": "dnGREP",
+    "bin": "dnGREP.exe",
+    "shortcuts": [
+        [
+            "dnGREP.exe",
+            "dnGREP"
+        ]
+    ],
+    "persist": "dnGREP.Settings.dat",
+    "pre_uninstall": "Copy-Item \"$dir\\Themes\\*\" \"$persist_dir\\Themes\" -ErrorAction 'SilentlyContinue' -Recurse",
+    "checkver": {
+        "github": "https://github.com/dnGrep/dnGrep"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/dnGrep/dnGrep/releases/download/v$version/dnGREP.$matchHead.x64.msi",
+                "hash": {
+                    "url": "https://github.com/dnGrep/dnGrep/releases/v$version",
+                    "regex": "x64.msi[<>/\\w\\n: \\(\\)]+SHA256: ($sha256)"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/dnGrep/dnGrep/releases/download/v$version/dnGREP.$matchHead.x86.msi",
+                "hash": {
+                    "url": "https://github.com/dnGrep/dnGrep/releases/v$version",
+                    "find": "x86.msi[<>/\\w\\n: \\(\\)]+SHA256: ($sha256)"
+                }
+            }
+        }
+    }
+}

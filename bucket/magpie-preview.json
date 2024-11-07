@@ -1,0 +1,68 @@
+{
+    "autoupdate": {
+        "extract_dir": "Dorion_$version_win64_portable",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-ARM64.zip"
+            }
+        }
+    },
+    "checkver": {
+        "script": [
+            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/Blinue/Magpie/releases'",
+            "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "Write-Output $latest.tag_name"
+        ],
+        "regex": "(?<version>.+)"
+    },
+    "description": "Magpie magnifies any window to fullscreen with a handful of algorithms/filter. The main goal is to tackle the situations where the games either do not natively support fullscreen or display blurry images under fullscreen modes(Preview Edition).",
+    "homepage": "https://github.com/Blinue/Magpie",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/Blinue/Magpie/raw/main/LICENSE"
+    },
+    "notes": "Hints: <https://github.com/Blinue/Magpie/blob/main/README_EN.md#hints>",
+    "pre_install": [
+        "info '[Portable Mode]: Copying user data...'",
+        "if (Test-Path \"$persist_dir\\ScaleModels.json\") {",
+        "    Copy-Item \"$persist_dir\\ScaleModels.json\" \"$dir\\\" | Out-Null",
+        "}",
+        "if (Test-Path \"$persist_dir\\User Data\\*\") {",
+        "    ensure \"$env:AppData\\Magpie\" | Out-Null",
+        "    Copy-Item \"$persist_dir\\User Data\\*\" \"$env:AppData\\Magpie\\\" -Recurse -Force | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "Magpie.exe",
+            "Magpie"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "info '[Portable Mode]: Backing up user data...'",
+            "if (Test-Path \"$dir\\ScaleModels.json\") {",
+            "    ensure \"$persist_dir\" | Out-Null",
+            "    Copy-Item \"$dir\\ScaleModels.json\" \"$persist_dir\\\" | Out-Null",
+            "}",
+            "if (Test-Path \"$env:AppData\\Magpie\\*\") {",
+            "    ensure \"$persist_dir\\User Data\" | Out-Null",
+            "    Copy-Item \"$env:AppData\\Magpie\\*\" \"$persist_dir\\User Data\\\" -Recurse -Force | Out-Null",
+            "}"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Blinue/Magpie/releases/download/v0.11.1/Magpie-v0.11.1-x64.zip",
+            "hash": "a4ad3b930df5589ea334f90ce0f2a54976dee91184c6a2cb612b28a9f743c3e7"
+        },
+        "arm64": {
+            "url": "https://github.com/Blinue/Magpie/releases/download/v0.11.1/Magpie-v0.11.1-ARM64.zip",
+            "hash": "6123067ff5cf963a214264a975cbe6ec299d6e93d8a345a4e83115c72a06dc87"
+        }
+    },
+    "version": "v0.11.1"
+}

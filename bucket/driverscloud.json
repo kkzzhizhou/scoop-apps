@@ -1,0 +1,55 @@
+{
+    "version": "12.0.21",
+    "homepage": "https://www.driverscloud.com/",
+    "description": "The essential specialist for detecting and downloading drivers for internal components and external devices of your Windows PC.",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://dcdrivers.driverscloud.com/applis/DriversCloudx64_12_0_21.msi",
+            "hash": "c6f9a8265596ae19363803696584fa305f90204ed8cfa242838c841cb728a63b"
+        },
+        "32bit": {
+            "url": "https://dcdrivers.driverscloud.com/applis/DriversCloud_12_0_21.msi",
+            "hash": "ec34929c1cebff5213eb73bb4105527ae8193f85dfa06594e59797af1f7f74c7"
+        }
+    },
+    "extract_dir": "DriversCloud",
+    "pre_install": [
+        "'Logs', 'config.xml' | ForEach-Object {",
+        "   Copy-Item \"$persist_dir\\$_\" \"$dir\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\backup.xml\")) { New-Item \"$dir\\backup.xml\" | Out-Null }"
+    ],
+    "bin": "driverscloud.exe",
+    "shortcuts": [
+        [
+            "driverscloud.exe",
+            "DriversCloud"
+        ]
+    ],
+    "persist": [
+        "backup.xml",
+        "DriversBackup"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "'Logs', 'config.xml' | ForEach-Object {",
+        "   Copy-Item \"$dir\\$_\" \"$persist_dir\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}",
+        "Remove-item 'HKLM:\\SOFTWARE\\Classes\\driverscloud' -Recurse -Force"
+    ],
+    "checkver": {
+        "url": "https://www.driverscloud.com/en/my-drivers",
+        "regex": "\\>Current\\sagent\\sversion:\\s([\\d.]+)\\<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://mcdrivers.driverscloud.com/applis/DriversCloudx64_$underscoreVersion.zip"
+            },
+            "32bit": {
+                "url": "https://mcdrivers.driverscloud.com/applis/DriversCloud_$underscoreVersion.zip"
+            }
+        }
+    }
+}

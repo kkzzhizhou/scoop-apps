@@ -1,0 +1,105 @@
+{
+    "##": "DO NOT USE THIS APP, THE MANIFEST IS CURRENTLY UNSTABLE. YOU HAVE BEEN WARNED, DON'T USE THIS!!!",
+    "version": "0.7.1",
+    "description": "An easy to use GUI for dnscrypt-proxy",
+    "homepage": "https://simplednscrypt.org/",
+    "license": "MIT",
+    "notes": "Service Management: 'dnscrypt-proxy --help' (with sudo)",
+    "suggest": {
+        "vcredist2015-2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/0.7.1/SimpleDNSCrypt64.msi",
+            "hash": "5BA0C94774ACD7ADE18446B4351E7D28A948C490AEFC50DC6C08C13551F19F7F"
+        },
+        "32bit": {
+            "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/0.7.1/SimpleDNSCrypt.msi",
+            "hash": "CAC6B8119AF3DA70A5977A2E73EE5214303990FEDD7ABBC5F247A1E2CF19A663"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$env:LOCALAPPDATA\\SimpleDnsCrypt\")) { New-Item \"$env:LOCALAPPDATA\\SimpleDnsCrypt\" -ItemType Directory -Force | Out-Null }",
+        "'blacklist.txt', 'blocked.log', 'query.log', 'domain-blacklist.txt', 'domain-whitelist.txt' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\dnscrypt-proxy\\$_\")) { New-Item \"$dir\\dnscrypt-proxy\\$_\" -ItemType 'File' | Out-Null }",
+        "}",
+        "# Credit to @Rasa for this powershell script",
+        "$configFile = \"$dir\\SimpleDnsCrypt.exe.config\" ",
+        "[xml]$configFileContent = Get-Content \"$configFile\" ",
+        "foreach ($item in $configFileContent.configuration.userSettings.'SimpleDnsCrypt.Properties.Settings'.setting) {",
+        "    if ($item.name -eq 'AutoUpdate') { $item.value = 'False' }",
+        "}",
+        "Copy-Item \"$configFile\" \"$configFile.backup\" ",
+        "$configFileContent.Save(\"$configFile\")"
+    ],
+    "shortcuts": [
+        [
+            "SimpleDnsCrypt.exe",
+            "Simple DnsCrypt"
+        ]
+    ],
+    "bin": [
+        "SimpleDnsCrypt.exe",
+        "dnscrypt-proxy\\dnscrypt-proxy.exe"
+    ],
+    "persist": [
+        "dnscrypt-proxy\\dnscrypt-proxy.toml",
+        "dnscrypt-proxy\\blacklist.txt",
+        "dnscrypt-proxy\\blocked.log",
+        "dnscrypt-proxy\\query.log",
+        "dnscrypt-proxy\\domain-blacklist.txt",
+        "dnscrypt-proxy\\domain-whitelist.txt"
+    ],
+    "pre_uninstall": [
+        "$process = Get-Process -Name 'SimpleDnsCrypt' -ErrorAction SilentlyContinue",
+        "$service = Get-Service -Name 'dnscrypt-proxy' -ErrorAction SilentlyContinue",
+        "if ($process) { error \"Please close 'Simple DnsCrypt' GUI before Updating/uninstalling\"; break }",
+        "if ($service) {",
+        "    if (!(is_admin)) {",
+        "        if (($service.Status -ne 'Stopped') -or ($cmd -eq 'uninstall')) { error \"Admin rights are required to stop service: 'dnscrypt-proxy'\"; break }",
+        "    }",
+        "    else {",
+        "        sc.exe stop dnscrypt-proxy",
+        "        if ($cmd -eq 'uninstall') {",
+        "            sc.exe delete dnscrypt-proxy",
+        "            $re = \"[\\']([^']*):\\d+[\\']\"",
+        "            (Get-Content \"$dir\\dnscrypt-proxy\\dnscrypt-proxy.toml\" | Select-String -Pattern 'listen_addresses') -match $re | Out-Null",
+        "            $blacklist = @('Microsoft Virtual', 'Hamachi Network', 'VMware', 'VirtualBox', 'Software Loopback', 'Microsoft ISATAP', 'Microsoft-ISATAP', 'Teredo Tunneling Pseudo-Interface', 'Microsoft Wi-Fi Direct Virtual', 'Microsoft Teredo Tunneling Adapter', 'Von Microsoft gehosteter', 'Microsoft hosted', 'Virtueller Microsoft-Adapter', 'TAP')",
+        "            $interfaces = New-Object Collections.Generic.HashSet[Object]",
+        "            Write-Host $interfaces -F 'Red'",
+        "            foreach ($adapter in Get-NetAdapter) {",
+        "                if ($adapter.Status -ne 'Up') { continue }",
+        "                foreach ($entry in $blacklist) {",
+        "                    if ($adapter.InterfaceDescription.Contains($entry) -or $adapter.Name.Contains($entry)) { continue }",
+        "                    if ($adapter.Name -in $interfaces) { continue }",
+        "                    foreach ($addresses in Get-DnsClientServerAddress -InterfaceAlias $adapter.Name) {",
+        "                        $addresses | ForEach-Object {",
+        "                            if ($_.Address -in $Matches.Values) { $interfaces.Add($adapter.Name) | Out-Null  }",
+        "                        }",
+        "                    }",
+        "                }",
+        "            }",
+        "            if ($interfaces) {",
+        "                $interfaces | ForEach-Object {",
+        "                    netsh.exe interface ipv4 delete dns \"$_\" all",
+        "                    netsh.exe interface ipv6 delete dns \"$_\" all",
+        "                }",
+        "            }",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/bitbeans/SimpleDnsCrypt"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/$version/SimpleDNSCrypt64.msi"
+            },
+            "32bit": {
+                "url": "https://github.com/bitbeans/SimpleDnsCrypt/releases/download/$version/SimpleDNSCrypt.msi"
+            }
+        }
+    }
+}

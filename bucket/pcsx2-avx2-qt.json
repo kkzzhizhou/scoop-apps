@@ -1,0 +1,73 @@
+{
+    "version": "1.7.4287",
+    "description": "Sony PlayStation 2 emulator",
+    "homepage": "https://pcsx2.net/",
+    "license": {
+        "url": "https://github.com/PCSX2/pcsx2/blob/master/COPYING.GPLv3",
+        "identifier": "GPL-3.0"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PCSX2/pcsx2/releases/download/v1.7.4287/pcsx2-v1.7.4287-windows-64bit-AVX2-Qt.7z",
+            "hash": "26df67fc53b69cd3aef54abaf200c2d2ac97cc681b917a80d19153943fe8f687",
+            "bin": [
+                [
+                    "pcsx2-qtx64-avx2.exe",
+                    "pcsx2"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "pcsx2-qtx64-avx2.exe",
+                    "PCSX2 (AVX2 Qt)"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "persist": [
+        "bios",
+        "cheats_ws",
+        "cheats",
+        "inis",
+        "logs",
+        "memcards",
+        "portable.ini",
+        "shaders\\GSdx_FX_Settings.ini",
+        "snaps",
+        "sstates"
+    ],
+    "checkver": {
+        "url": "https://github.com/PCSX2/pcsx2/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$title = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$title\""
+        ],
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PCSX2/pcsx2/releases/download/v$version/pcsx2-v$version-windows-64bit-AVX2-Qt.7z"
+            }
+        }
+    },
+    "notes": [
+        "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
+        "Place the BIOS file in $persist_dir\\bios",
+        "Learn more at https://wiki.pcsx2.net/Setting_up_Windows_version#BIOS"
+    ]
+}

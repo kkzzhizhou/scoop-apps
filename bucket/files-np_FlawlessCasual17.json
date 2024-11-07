@@ -1,0 +1,24 @@
+{
+    "version": "2.4.21",
+    "homepage": "https://files.community/",
+    "description": "A modern file explorer that pushes the boundaries of the Windows platform.",
+    "license": "MIT",
+    "url": "https://github.com/files-community/Files/releases/download/v2.4.21/Files.Package_2.4.21.0_x64_arm64_Sideload.msixbundle#/setup.msixbundle",
+    "hash": "47e56d739bdf502a6aee537f8a268180e3f0f069c1c6fb06391dc498e309a9f5",
+    "pre_install": [
+        "Start-Process 'powershell' -Wait -WindowStyle 'Hidden' -ArgumentList @('-C', \"Add-AppxPackage \"\"$dir\\setup.msixbundle\"\"\")",
+        "Remove-Item \"$dir\\setup.msixbundle\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'powershell' -Wait -WindowStyle 'Hidden' -ArgumentList @('-C', 'Get-AppxPackage ''Files'' | Remove-AppxPackage')",
+        "Remove-Item \"$env:ProgramFiles\\WindowsApps\\Files_*\" -Force -Recurse -ErrorAction 'SilentlyContinue'",
+        "Start-Sleep -Seconds 2"
+    ],
+    "checkver": {
+        "github": "https://github.com/files-community/Files"
+    },
+    "autoupdate": {
+        "url": "https://github.com/files-community/Files/releases/download/v$version/Files.Package_$version.0_x64_arm64_Sideload.msixbundle#/setup.msixbundle"
+    }
+}

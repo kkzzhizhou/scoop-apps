@@ -1,0 +1,43 @@
+{
+    "homepage": "https://github.com/Loyalsoldier/v2ray-rules-dat",
+    "description": "V2Ray 路由规则文件加强版",
+    "version": "202106112209",
+    "depends": "v2rayn",
+    "checkver": "github",
+    "url": [
+        "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/202105252213/geoip.dat",
+        "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/202105252213/geosite.dat"
+    ],
+    "hash": [
+        "59f21af39997fbf46572d8d4df97165539ccdc6634d33c619453ff29f3e276e5",
+        "f9bc4502c6ba23b71e87f78a5816f60ef6911623557f7b166a8dc740711931f7"
+    ],
+    "post_install": [
+        "foreach ($file in @('geoip.dat', 'geosite.dat')) {",
+        "   if (-not(Test-Path -PathType Leaf -Path \"$(appdir v2rayn)\\current\\$file.bak\")) {",
+        "       if (Test-Path -PathType Leaf -Path \"$(appdir v2rayn)\\current\\$file\") {",
+        "           Move-Item \"$(appdir v2rayn)\\current\\$file\" \"$(appdir v2rayn)\\current\\$file.bak\"",
+        "       }",
+        "       New-Item -Path \"$(appdir v2rayn)\\current\" -Name $file -ItemType HardLink -Value \"$dir\\$file\"",
+        "   }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "foreach ($file in @('geoip.dat', 'geosite.dat')) {",
+            "   if (Test-Path -PathType Leaf -Path \"$(appdir v2rayn)\\current\\$file.bak\") {",
+            "       if (Test-Path -PathType Leaf -Path \"$(appdir v2rayn)\\current\\$file\") {",
+            "           Remove-Item \"$(appdir v2rayn)\\current\\$file\"",
+            "       }",
+            "       Move-Item \"$(appdir v2rayn)\\current\\$file.bak\" \"$(appdir v2rayn)\\current\\$file\"",
+            "   }",
+            "}"
+        ]
+    },
+    "autoupdate": {
+        "url": [
+            "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/$version/geoip.dat",
+            "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/download/$version/geosite.dat"
+        ]
+    }
+}

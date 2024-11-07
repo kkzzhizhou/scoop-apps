@@ -1,0 +1,51 @@
+﻿{
+    "version": "7.0.0071",
+    "description": "NetSarang Xftp",
+    "homepage": "https://www.jb51.net/softs/732920.html",
+    "depends": "vcredist-aio",
+    "url": "https://dqunying2.jb51.net/202006/tools/Xftp7_jb51.rar",
+    "hash": "8c76a908cd5c5ebad20a1f9df4b57ac7806959887ba08b1fb8c676c0bb54569e",
+    "extract_dir": "Xftp-7.0.0071",
+    "extract_to": "installer",
+    "pre_install": [
+        "",
+        "'crack' | ForEach-Object { ensure \"$dir\\$_\" | Out-Null }",
+        "$bucketdir = Find-BucketDirectory -Name $bucket",
+        "",
+        "$file = (Get-Item \"$dir\\installer\\Xftp-7.0.0071.exe\").FullName",
+        "Rename-Item \"$file\" \"$dir\\installer\\setup.exe\"",
+        "",
+        "cp \"$bucketdir\\..\\bin\\extract-issetup.cmd\" \"$dir\\installer\"",
+        "",
+        "Start-Process 'silentcmd' -ArgumentList @(\"$dir\\installer\\extract-issetup.cmd\") -Verb RunAs -Wait | Out-Null",
+        "",
+        "$file = (Get-Item \"$dir\\installer\\*.msi\").FullName",
+        "#Expand-MsiArchive \"$file\" \"$dir\\Programs\" -ExtractDir 'program files\\NetSarang\\Xftp 7'",
+        "Expand-MsiArchive \"$file\" \"$dir\"",
+        "Move-Item \"$dir\\program files\\NetSarang\\Xftp 7\" \"$dir\\Programs\" -Force",
+        "#Remove-Item \"$file\"",
+        "",
+        "Start-Process 'silentcmd' -ArgumentList @('7z.exe', 'x',\"$dir\\installer\\NetSarang.7.x.Patch.rar\", '-pwww.jb51.net', \"-o$dir\\crack\") -Wait | Out-Null",
+        "#Expand-7zipArchive \"$dir\\installer\\NetSarang.7.x.Patch.rar\" -DestinationPath \"$dir\\crack\"",
+        "#Move-Item \"$dir\\installer\\NetSarang.7.x.Patch\" \"$dir\\crack\" -Force",
+        "",
+        "Remove-Item \"$dir\\installer\" -Force -Recurse",
+        "Remove-Item \"$dir\\program files\" -Force -Recurse",
+        "",
+        "cp \"$bucketdir\\..\\scripts\\xftp\\*.bat\" \"$dir\\Programs\"",
+        "",
+        ""
+    ],
+    "installer": {
+        "script": "Start-Process 'cmd' -ArgumentList @('/c', \"$dir\\Programs\\01-install.bat\") -Verb RunAs -Wait | Out-Null"
+    },
+    "uninstaller": {
+        "script": "Start-Process 'cmd' -ArgumentList @('/c', \"$dir\\Programs\\02-uninstall.bat\") -Verb RunAs -Wait | Out-Null"
+    },
+    "shortcuts": [
+        [
+            "Programs\\Xftp.exe",
+            "NetSarang Xftp 2021"
+        ]
+    ]
+}

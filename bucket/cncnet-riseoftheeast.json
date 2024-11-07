@@ -1,0 +1,64 @@
+{
+    "version": "3.0.0c",
+    "description": "CNCNET-enabled mod for Yuri's Revenge featuring factions from Generals and remastered campaigns",
+    "homepage": "https://www.moddb.com/mods/riseoftheeast",
+    "license": "Freeware",
+    "url": "https://www.moddb.com/downloads/start/198294#/dl.html",
+    "notes": [
+        "Recommended renderer: CNC-DDRAW",
+        "Recommended in-game resolution: 1280x720",
+        "Required: Copy or link original game files into install directory.",
+        "Set environment variable CNCNET_RA2_ROOT to handle this automatically.",
+        "Warning: The in-game updater can cause problems by overwriting the patched version of Syringe.",
+        "   In case of problems: manually patch Syringe.exe again: https://launchpad.net/ares",
+        "   In case of further problems: switch to CNC-DDRAW renderer, disable ReShade, and delete ddraw.ini"
+    ],
+    "installer": {
+        "script": [
+            "echo ''",
+            "echo \"Downloading content from moddb...\"",
+            "$dlExtractDir = 'Rise of the East'",
+            "$dlFile = 'dl.7z'",
+            "(Get-Content \"$dir\\$fname\").foreach{ if ($_ -match \"/downloads/mirror/[\\d]+/[\\w]+/[\\w]+\") {  $dlMatch = $matches[0]  } }",
+            "Invoke-CachedDownload $app $version \"https://www.moddb.com$dlMatch#/$dlFile\" \"$dir\\$dlFile\"",
+            "Expand-7zipArchive \"$dir\\$dlFile\" \"$dir\" -Removal -ExtractDir \"$dlExtractDir\"",
+            "Remove-Item -Force \"$dir\\$fname\"",
+            "$dlFile = 'dlSyringe.7z'",
+            "Invoke-CachedDownload $app $version \"https://launchpad.net/ares/3.0/3.0p1/+download/syringe_0.7.3.0_yr.rar\" \"$dir\\$dlFile\"",
+            "Expand-7zipArchive \"$dir\\$dlFile\" \"$dir\" -Removal"
+        ]
+    },
+    "post_install": [
+        "echo ''",
+        "echo \"Checking for CNCNET_RA2_ROOT...\"",
+        "if ($env:CNCNET_RA2_ROOT) {",
+        "  echo \"Copying files from CNCNET_RA2_ROOT: $env:CNCNET_RA2_ROOT\"",
+        "  $linkFiles = @('BINKW32.DLL', 'BLOWFISH.DLL', 'gamemd.exe', 'ra2.mix', 'ra2md.mix', 'language.mix', 'langmd.mix')",
+        "  $linkFiles.foreach({ New-Item -ItemType SymbolicLink -Path \"$dir\\$_\" -Value \"$env:CNCNET_RA2_ROOT\\$_\" })",
+        "} else { echo \"CNCNET_RA2_ROOT not found.\" }"
+    ],
+    "uninstaller": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "Copy-Item -Force -ErrorAction SilentlyContinue -Destination \"$persist_dir\\\" -Path \"$dir\\RA2MD.ini\""
+        ]
+    },
+    "pre_install": [
+        "Copy-Item -ErrorAction SilentlyContinue -Destination \"$dir\" -Path \"$persist_dir\\RA2MD.ini\""
+
+    ],
+    "persist": [
+        "Saved Games",
+        "Screenshots"
+    ],
+    "shortcuts": [
+        [
+            "REClient.exe",
+            "CNCNET - Rise of the East"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.moddb.com/mods/riseoftheeast/downloads",
+        "regex": "Rise of the East v(?<version>[\\w.]+)"
+    }
+}

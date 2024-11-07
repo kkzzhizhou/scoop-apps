@@ -1,0 +1,45 @@
+{
+    "##": "THIS IS NON-PORTABLE BECAUSE THE INSTALLER TYPE IS NOT SUPPORTED IN SCOOP",
+    "version": "64.0",
+    "homepage": "https://www.google.com/drive/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://support.google.com/drive/answer/2450387?hl=en"
+    },
+    "url": "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe",
+    "hash": "7A8B1BDBF3F1E05F97A5CE077803D9C41A18345B49F4E44863079EE206E9B3B8",
+    "pre_install": [
+        "if (!(is_admin)) {error \"$app requires admin rights to $cmd\"; break}",
+        "Remove-Item \"$env:ProgramFiles\\Google\" -Force; Remove-Item \"${env:ProgramFiles(x86)}\\Google\" -Force | Out-Null",
+        "Remove-Service -Name 'googledrivefs3758' | Out-Null"
+    ],
+    "installer": {
+        "script": [
+            "Start-Process \"$dir\\GoogleDriveSetup.exe\" -Wait -ArgumentList @('-silent') | Out-Null",
+            "Stop-Process -Name 'GoogleDriveFS' -Force; Stop-Process -Name 'GoogleDrive' -Force",
+            "Stop-Service -Name 'gupdate'; Stop-Service -Name 'gupdatem' | Out-Null",
+            "Remove-Item \"$Env:Public\\Desktop\\Google Drive.lnk\" -Force | Out-Null",
+            "Remove-Item \"$dir\\GoogleDriveSetup.exe\" | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "if (!(is_admin)) {error \"$app requires admin rights to $cmd\"; break}",
+        "Stop-Process -Name 'GoogleDriveFS' -Force; Stop-Process -Name 'GoogleDrive' -Force | Out-Null",
+        "Stop-Service -Name 'gupdate'; Stop-Service -Name 'gupdatem' | Out-Null",
+        "Remove-Service -Name 'gupdate'; Remove -Service -Name 'gupdatem' | Out-Null"
+    ],
+    "uninstaller": {
+        "script": [
+            "Start-Process \"$env:ProgramFiles\\Google\\Drive File Stream\\63.0.6.0\\uninstall.exe\" -Wait -ArgumentList @('-silent') | Out-Null",
+            "Remove-Item \"$env:ProgramFiles\\Google\" -Force; Remove-Item \"${env:ProgramFiles(x86)}\\Google\" -Force | Out-Null",
+            "Remove-Item \"$env:LOCALAPPDATA\\Google\" -Force | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://support.google.com/a/answer/7577057?hl=en",
+        "regex": "Version\\s([\\d.]+)</em></p>"
+    },
+    "autoupdate": {
+        "url": "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe"
+    }
+}

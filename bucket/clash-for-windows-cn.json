@@ -1,0 +1,56 @@
+{
+    "##": "Clash for Windows (Chinese)",
+    "version": "0.20.39",
+    "description": "A helper util for Clash for Windows.",
+    "license": "ender-zhao/Clash-for-Windows_Chinese",
+    "homepage": "https://github.com/ender-zhao/Clash-for-Windows_Chinese",
+    "url": "https://github.com/ender-zhao/Clash-for-Windows_Chinese/releases/download/CFW-V0.20.39_CN/app.asar",
+    "hash": "8d5f96d5fd95c0641f0ecb395c6190bf97529a52aaf0b1f6d8b0afa2f108a70b",
+    "pre_install": [
+        "Write-Host \"检查是否安装 Clash for Windows\" -ForegroundColor Yellow",
+        "$loc = ''",
+        "$ver = ''",
+        "$withScoop = \"$(appdir clash-for-windows)\\current\"",
+        "$withWinget = \"$env:LOCALAPPDATA\\Programs\\Clash for Windows\"",
+        "if (Test-Path \"$withScoop\\Clash for Windows.exe\") {",
+        "  $loc = $withScoop -replace \"current\", $version",
+        "  try { $ver = $(scoop info clash-for-windows).version } catch { }",
+        "}",
+        "elseif (Test-Path \"$withWinget\\Clash for Windows.exe\") {",
+        "  $loc = $withWinget",
+        "  try {",
+        "    $output = $(winget show \"Clash for Windows\") | Out-String",
+        "    $ver = if ($output -match \"\\d+\\.\\d+\\.\\d+\") { $matches[0] }",
+        "  } catch { }",
+        "}",
+        "if (!$loc) {",
+        "  Write-Host \"未检测到 Clash for Windows, 推荐使用以下方式进行安装:\" -ForegroundColor Yellow",
+        "  Write-Host \"1. winget install Fndroid.ClashForWindows\" -ForegroundColor Yellow",
+        "  Write-Host \"2. scoop install clash-for-windows\" -ForegroundColor Yellow",
+        "}",
+        "elseif (!$ver) {",
+        "  Write-Host \"获取版本失败\" -ForegroundColor Yellow",
+        "  Write-Host \"请检查是否安装 Clash for Windows\" -ForegroundColor Yellow",
+        "}",
+        "elseif ($ver -and ($ver -ne $version)) {",
+        "  Write-Host \"检测到 Clash for Windows($ver) 与汉化版本($version) 不一致\" -ForegroundColor Yellow",
+        "}",
+        "elseif ($loc -and $ver) {",
+        "  Write-Host \"检测到 Clash for Windows($ver) 已安装在 $loc\" -ForegroundColor Yellow",
+        "  Move-Item \"$loc\\resources\\app.asar\" \"$loc\\resources\\app($($version)).asar\" -Force",
+        "  Copy-Item \"$dir\\app.asar\" \"$loc\\resources\\app.asar\" -Force",
+        "}",
+        "Write-Host \"如果遇到错误信息，请先卸载 clash-for-windows-cn 再重试\" -ForegroundColor Yellow",
+        "Write-Host \"> scoop uninstall clash-for-windows-cn\" -ForegroundColor Yellow"
+    ],
+    "checkver": {
+        "github": "https://github.com/ender-zhao/Clash-for-Windows_Chinese",
+        "regex": "CFW-V([\\d.]+)_CN"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ender-zhao/Clash-for-Windows_Chinese/releases/download/CFW-V$version_CN/app.asar",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}

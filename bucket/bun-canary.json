@@ -1,0 +1,51 @@
+{
+    "version": "1.1.22-canary.1+dbd320ccf",
+    "description": "Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.",
+    "homepage": "https://bun.sh/",
+    "license": "MIT",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://nightly.link/oven-sh/bun/suites/10149528008/artifacts/1752223277#/dl.zip",
+            "hash": "dc444df8d0fb88572dc742f4faefcc52de0d6be84b769ad12576cd2ee4a0e617",
+            "pre_install": "Expand-7zipArchive \"$dir\\bun-windows-x64.zip\" -ExtractDir 'bun-windows-x64' -Removal"
+        }
+    },
+    "bin": [
+        "bun.exe",
+        [
+            "bun.exe",
+            "bunx",
+            "x"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$runs = (irm 'https://api.github.com/repos/oven-sh/bun/actions/workflows/ci.yml/runs?status=success&per_page=1')",
+            "$buildId = $runs.workflow_runs[0].id",
+            "$artifacts = (irm \"https://api.github.com/repos/oven-sh/bun/actions/runs/$buildId/artifacts\")",
+            "$artifactId = $artifacts.artifacts | Where-Object { $_.name -eq 'bun-windows-x64' } | Select-Object -ExpandProperty 'id'",
+            "$dl_url = \"https://nightly.link/oven-sh/bun/suites/$buildId/artifacts/$artifactId\"",
+            "$dl = cache_path 'bun-canary' 'unknown' \"$dl_url#/dl.zip\"",
+            "$dl_dir = strip_ext $dl",
+            "Invoke-RestMethod $dl_url -OutFile $dl",
+            "Expand-Archive $dl $dl_dir -Force",
+            "Expand-Archive \"$dl_dir\\bun-windows-x64.zip\" $dl_dir -Force",
+            "$ver = & \"$dl_dir\\bun-windows-x64\\bun.exe\" --revision",
+            "Rename-Item $dl $($dl -replace 'unknown', $ver) -Force",
+            "Remove-Item $dl_dir -Recurse -Force",
+            "$ret = \"$ver#$buildId#$artifactId\"",
+            "$ret"
+        ],
+        "regex": "(?<version>\\S+)#(?<buildid>\\d+)#(?<artifactid>\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://nightly.link/oven-sh/bun/suites/$matchBuildid/artifacts/$matchArtifactid#/dl.zip"
+            }
+        }
+    }
+}

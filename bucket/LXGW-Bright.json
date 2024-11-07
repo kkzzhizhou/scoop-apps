@@ -1,0 +1,113 @@
+{
+    "version": "5.321",
+    "description": "An open-source Simplified Chinese font. Combination of LXGW WenKai Lite (霞鹜文楷 Lite) and Ysabeau Office",
+    "homepage": "https://github.com/lxgw/LxgwBright",
+    "license": "OFL-1.1",
+    "url": [
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-Italic.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-Medium.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-MediumItalic.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-Regular.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-SemiLight.otf",
+        "https://raw.githubusercontent.com/lxgw/LxgwBright/v5.321/LXGWBright/LXGWBright-SemiLightItalic.otf"
+    ],
+    "hash": [
+        "02781f15fbd5fdd81bdd6cc55726f41bfab6097b6b0f58d1c785bb7c62905928",
+        "91436cdc6e4b144c0e771f2428c7fe69a170f85beb17577ff784cd92bdccfd8d",
+        "163fd14ecb170475d5e7642458018407c1e33fbf898f6cfc1fad782a059c71d4",
+        "2112a3ce5bf32b94676519e7e946884134f4be8424488a4292d45addd12cf6a4",
+        "442e74dc52ad31e77cef262d5c9caa6660b0b80acde9f308e8f6b2a9aaf2e0df",
+        "44f559571ff6f09dfc6eb09793a3ee04249edda56e11c137f69761bcb278e223"
+    ],
+    "installer": {
+        "script": [
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\").CurrentBuildNumber",
+            "$windows10Version1809BuildNumber = 17763",
+            "$isPerUserFontInstallationSupported = $currentBuildNumber -ge $windows10Version1809BuildNumber",
+            "if (!$isPerUserFontInstallationSupported -and !$global) {",
+            "    scoop uninstall $app",
+            "    Write-Host \"\"",
+            "    Write-Host \"For Windows version before Windows 10 Version 1809 (OS Build 17763),\" -Foreground DarkRed",
+            "    Write-Host \"Font can only be installed for all users.\" -Foreground DarkRed",
+            "    Write-Host \"\"",
+            "    Write-Host \"Please use following commands to install '$app' Font for all users.\" -Foreground DarkRed",
+            "    Write-Host \"\"",
+            "    Write-Host \"        scoop install sudo\"",
+            "    Write-Host \"        sudo scoop install -g $app\"",
+            "    Write-Host \"\"",
+            "    exit 1",
+            "}",
+            "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "if (-not $global) {",
+            "    # Ensure user font install directory exists and has correct permission settings",
+            "    # See https://github.com/matthewjberger/scoop-nerd-fonts/issues/198#issuecomment-1488996737",
+            "    New-Item $fontInstallDir -ItemType Directory -ErrorAction SilentlyContinue | Out-Null",
+            "    $accessControlList = Get-Acl $fontInstallDir",
+            "    $allApplicationPackagesAccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule([System.Security.Principal.SecurityIdentifier]::new(\"S-1-15-2-1\"), \"ReadAndExecute\", \"ContainerInherit,ObjectInherit\", \"None\", \"Allow\")",
+            "    $allRestrictedApplicationPackagesAccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule([System.Security.Principal.SecurityIdentifier]::new(\"S-1-15-2-2\"), \"ReadAndExecute\", \"ContainerInherit,ObjectInherit\", \"None\", \"Allow\")",
+            "    $accessControlList.SetAccessRule($allApplicationPackagesAccessRule)",
+            "    $accessControlList.SetAccessRule($allRestrictedApplicationPackagesAccessRule)",
+            "    Set-Acl -AclObject $accessControlList $fontInstallDir",
+            "}",
+            "$registryRoot = if ($global) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+            "    $value = if ($global) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
+            "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
+            "    Copy-Item -LiteralPath $_.FullName -Destination $fontInstallDir",
+            "}"
+        ]
+    },
+    "pre_uninstall": [
+        "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+        "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+        "    Get-ChildItem $fontInstallDir -Filter $_.Name | ForEach-Object {",
+        "        try {",
+        "            Rename-Item $_.FullName $_.FullName -ErrorVariable LockError -ErrorAction Stop",
+        "        } catch {",
+        "            Write-Host \"\"",
+        "            Write-Host \" Error \" -Background DarkRed -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Cannot uninstall '$app' font.\" -Foreground DarkRed",
+        "            Write-Host \"\"",
+        "            Write-Host \" Reason \" -Background DarkCyan -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" The '$app' font is currently being used by another application,\" -Foreground DarkCyan",
+        "            Write-Host \" so it cannot be deleted.\" -Foreground DarkCyan",
+        "            Write-Host \"\"",
+        "            Write-Host \" Suggestion \" -Background Magenta -Foreground White -NoNewline",
+        "            Write-Host \"\"",
+        "            Write-Host \" Close all applications that are using '$app' font (e.g. vscode),\" -Foreground Magenta",
+        "            Write-Host \" and then try again.\" -Foreground Magenta",
+        "            Write-Host \"\"",
+        "            exit 1",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "$fontInstallDir = if ($global) { \"$env:windir\\Fonts\" } else { \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\" }",
+            "$registryRoot = if ($global) { \"HKLM\" } else { \"HKCU\" }",
+            "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+            "Get-ChildItem $dir -Filter '*.otf' | ForEach-Object {",
+            "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}",
+            "if ($cmd -eq \"uninstall\") {",
+            "    Write-Host \"Font family 'LXGW Bright' has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-Italic.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-Medium.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-MediumItalic.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-Regular.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-SemiLight.otf",
+            "https://raw.githubusercontent.com/lxgw/LxgwBright/v$version/LXGWBright/LXGWBright-SemiLightItalic.otf"
+        ]
+    }
+}

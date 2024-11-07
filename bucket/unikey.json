@@ -1,0 +1,43 @@
+{
+    "version": "4.6rc2",
+    "description": "Vietnamese keyboard",
+    "homepage": "https://unikey.org",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.unikey.org/assets/release/unikey46RC2-230919-win64.zip",
+            "hash": "667b8d31b0d85fdc2ca17d54c4eab870ba7269063c1dd53acec7897a97af04e3"
+        },
+        "32bit": {
+            "url": "https://www.unikey.org/assets/release/unikey46RC2-230919-win32.zip",
+            "hash": "178e3530efdbe37c10c418aef5e8df20740c61bb3548f18e1d8478e333e1be65"
+        }
+    },
+    "checkver": {
+        "script": [
+            "$wc = New-Object Net.Webclient",
+            "$wc.Headers.Add('User-Agent', (Get-UserAgent))",
+            "$unikey_xml = [xml]([regex]::replace($wc.DownloadString('https://www.unikey.org/download.html'), '<(meta|link).*?>|<!--.*?-->', '', [Text.RegularExpressions.RegexOptions]::Singleline) -replace 'doctype', 'DOCTYPE' -replace '(async|itemscope|&copy;)', '')",
+            "$unikey_nsList = $unikey_xml.SelectNodes('//namespace::*[not(. = ../../namespace::*)]')",
+            "$unikey_nsmgr = New-Object System.Xml.XmlNamespaceManager($unikey_xml.NameTable)",
+            "$unikey_nsList | ForEach-Object { $unikey_nsmgr.AddNamespace($_.LocalName, $_.Value) }",
+            "$unikey_version = ($unikey_xml.SelectSingleNode('//section/h3[1]', $unikey_nsmgr).'#text' -replace '(UniKey| )', '').ToLower()",
+            "if (-not ($unikey_xml.SelectSingleNode('//section[1]/ul[1]/li[2]/a[@title=\"UniKey 64 bit\"]/@href', $nsmgr).'#text' -match '\\d+RC\\d+-\\d+')) {",
+            "   break",
+            "}",
+            "$unikey_dlVersion = $Matches[0]",
+            "Write-Output \"$unikey_version, $unikey_dlVersion\""
+        ],
+        "regex": "([\\drc.]+), (?<dl>[\\dRC\\-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.unikey.org/assets/release/unikey$matchDl-win64.zip"
+            },
+            "32bit": {
+                "url": "https://www.unikey.org/assets/release/unikey$matchDl-win32.zip"
+            }
+        }
+    }
+}
