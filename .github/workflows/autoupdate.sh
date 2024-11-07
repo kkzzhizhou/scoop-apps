@@ -66,7 +66,7 @@ add_to_bucket(){
     local file="$1"
     local file_name="$2"
     local bucket="$3"
-    cat $file | jq '(has("url") or has("architecture")) and has("version")' > /dev/null 2&>1
+    cat $file | jq '(has("url") or has("architecture")) and has("version")' > /dev/null 2>&1
     if [ $? -eq 0 ];then
         cp -f $file ./bucket/$file_name
     else
