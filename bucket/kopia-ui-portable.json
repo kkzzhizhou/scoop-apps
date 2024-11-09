@@ -1,0 +1,47 @@
+{
+    "version": "0.17.0",
+    "description": "Cross-platform backup tool for Windows, macOS & Linux with fast, incremental backups, client-side end-to-end encryption, compression and data deduplication. CLI and GUI included.",
+    "homepage": "https://kopia.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/kopia/kopia#Apache-2.0-1-ov-file"
+    },
+    "url": "https://github.com/kopia/kopia/releases/download/v0.17.0/KopiaUI-0.17.0-win.zip",
+    "hash": "e8393ce14b538ffa42e92560cc44d5bc4c85d3b10ae7993eb3b95dea3deb84d6",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\kopia-ui\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\kopia\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kopia-ui\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kopia\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "KopiaUI.exe",
+    "shortcuts": [
+        [
+            "KopiaUI.exe",
+            "KopiaUI"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/kopia/kopia/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/kopia/kopia/releases/download/v$version/KopiaUI-$version-win.zip",
+        "hash": {
+            "url": "$baseurl/checksums.txt"
+        }
+    }
+}

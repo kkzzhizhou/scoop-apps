@@ -1,0 +1,51 @@
+{
+    "version": "0.17.0",
+    "description": "Cross-platform backup tool for Windows, macOS & Linux with fast, incremental backups, client-side end-to-end encryption, compression and data deduplication. CLI and GUI included.",
+    "homepage": "https://kopia.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/kopia/kopia#Apache-2.0-1-ov-file"
+    },
+    "url": "https://github.com/kopia/kopia/releases/download/v0.17.0/KopiaUI-Setup-0.17.0.exe#/dl.7z",
+    "hash": "6d592de6be4a9c887a26477ccfbfe34c8633edc28d28fa16f9834f6d2219d10f",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\kopia-ui\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\kopia\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kopia-ui\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kopia\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "KopiaUI.exe",
+    "shortcuts": [
+        [
+            "KopiaUI.exe",
+            "KopiaUI"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/kopia/kopia/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/kopia/kopia/releases/download/v$version/KopiaUI-Setup-$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/checksums.txt"
+        }
+    }
+}
