@@ -1,0 +1,44 @@
+{
+    "version": "2024.1009.1",
+    "description": "A free-to-win rhythm game. Rhythm is just a click away!",
+    "homepage": "https://osu.ppy.sh/",
+    "license": "MIT",
+    "url": "https://github.com/ppy/osu/releases/download/2024.1009.1/osulazer-2024.1009.1-full.nupkg#/dl.7z",
+    "hash": "sha1:87a3efab79c8c9fa651e78e8a0e693ced9c96e9e",
+    "extract_dir": "lib\\net45",
+    "pre_install": [
+        "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+        "  if (-not (Test-Path $runtimeCache)) { return }",
+        "  if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  } else {",
+        "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+        "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+        "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+        "  }",
+        "}",
+        "foreach ($folder in @('osu')) {",
+        "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+        "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+        "}"
+    ],
+    "bin": "osu!.exe",
+    "shortcuts": [
+        [
+            "osu!.exe",
+            "osu! Lazer"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/ppy/osu"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ppy/osu/releases/download/$version/osulazer-$version-full.nupkg#/dl.7z",
+        "hash": {
+            "url": "https://github.com/ppy/osu/releases/download/$version/RELEASES",
+            "regex": "$sha1 .*full.nupkg"
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+	"##": "Maintainers: when updating this manifest to a new version, you might like to also update git-with-openssh.json and mingit.json",
+	"homepage": "https://git-for-windows.github.io/",
+	"license": "GPL-2.0",
+	"version": "2.18.0.windows.1",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/PortableGit-2.18.0-64-bit.7z.exe#/dl.7z",
+			"hash": "cd84a13b6c7aac0e924cb4db2476e2f4379aab4b8e60246992a6c5eebeac360c"
+		},
+		"32bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.18.0.windows.1/PortableGit-2.18.0-32-bit.7z.exe#/dl.7z",
+			"hash": "28e68a781a78009913fef3d6c1074a6c91b05e4010bfd9efaff7b8398c87e017"
+		}
+	},
+	"bin": ["cmd\\git.exe", "cmd\\gitk.exe", "cmd\\git-gui.exe", "usr\\bin\\tig.exe", "git-bash.exe"],
+	"shortcuts": [
+		["git-bash.exe", "Git Bash", "--cd-to-home", "usr\\share\\git\\git-for-windows.ico"]
+	],
+	"post_install": ["git config --global credential.helper manager"],
+	"#notes": "To get Git to recognise OpenSSH, you will need to run\n\nscoop install openssh\n[environment]::setenvironmentvariable('GIT_SSH', (resolve-path (scoop which ssh)), 'USER')\n\nand then restart powershell.",
+	"checkver": {
+		"url": "https://github.com/git-for-windows/git/releases/latest",
+		"re": "v(?<version>[\\d\\w.]+)/PortableGit-(?<short>[\\d.]+).*\\.exe"
+	},
+	"env_set": { "GIT_INSTALL_ROOT": "$dir" },
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$matchVersion/PortableGit-$matchShort-64-bit.7z.exe#/dl.7z"
+			},
+			"32bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$matchVersion/PortableGit-$matchShort-32-bit.7z.exe#/dl.7z"
+			}
+		},
+		"hash": {
+			"url": "https://github.com/git-for-windows/git/releases/latest",
+			"find": "<td>$basename<\\/td>\\s*<td>([0-9a-fA-F]+)<\\/td>"
+		}
+	}
+}

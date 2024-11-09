@@ -1,0 +1,46 @@
+{
+	"homepage": "https://gitforwindows.org",
+	"license": "GPL-2.0-only",
+	"version": "2.39.0.windows.2",
+	"description": "Distributed version control system",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/PortableGit-2.39.0.2-64-bit.7z.exe#/dl.7z",
+			"hash": "sha256:0a58c7b062a29bc44fb573c9afc5323011d01237dd94c74e6c833929cfe25436"
+		},
+		"32bit": {
+			"url": "https://github.com/git-for-windows/git/releases/download/v2.39.0.windows.2/PortableGit-2.39.0.2-32-bit.7z.exe#/dl.7z",
+			"hash": "sha256:042de3e9f87e529ee53ed31385bc76b39a9794c32c18ea7c62e3e6445dd8484d"
+		}
+	},
+	"bin": ["cmd\\git.exe", "cmd\\gitk.exe", "cmd\\git-gui.exe", "cmd\\scalar.exe", "usr\\bin\\tig.exe", "git-bash.exe"],
+	"env_set": { "GIT_INSTALL_ROOT": "$dir" },
+	"shortcuts": [
+		["git-bash.exe", "Git Bash", "--cd-to-home", "usr\\share\\git\\git-for-windows.ico"],
+		["cmd\\git-gui.exe", "Git GUI"]
+	],
+	"post_install": [
+		"# ref: [PortableGit post-install]<https://github.com/git-for-windows/build-extra/tree/33ce2964376587bbe7fcf97789470701178087af/portable/root>[`@`](https://archive.is/BSBYG)",
+		"#  ... from CMD: `start \"\" /min \"%COMSPEC%\" /d/c \"DIR\\post-install.bat\"`",
+		"if (test-path \"$dir\\post-install.bat\") { start-process \"$dir\\post-install.bat\" -WindowStyle hidden }",
+		"git config --global credential.helper manager"
+	],
+	"checkver": {
+		"github": "https://github.com/git-for-windows/git",
+		"regex": "v([\\w.]+)/PortableGit-(?<full>[\\w.]+)-64-bit"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchFull-64-bit.7z.exe#/dl.7z"
+			},
+			"32bit": {
+				"url": "https://github.com/git-for-windows/git/releases/download/v$version/PortableGit-$matchFull-32-bit.7z.exe#/dl.7z"
+			}
+		},
+		"hash": {
+			"url": "https://github.com/git-for-windows/git/releases/tag/v$version",
+			"regex": "<td>$basename</td>\\s*<td>$sha256</td>"
+		}
+	}
+}

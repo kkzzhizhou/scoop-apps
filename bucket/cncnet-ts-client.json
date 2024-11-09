@@ -1,0 +1,48 @@
+{
+    "version": "6.0",
+    "description": "CNCNET-enabled standalone client for Tiberian Sun",
+    "homepage": "https://www.moddb.com/mods/tiberian-sun-client",
+    "license": "Freeware",
+    "url": "https://www.moddb.com/downloads/start/224622#/dl.html",
+    "notes": [
+        "Recommended renderer: CNC-DDRAW",
+        "Recommended in-game resolution: 1280x720",
+        "Optional: Download additional media files from Options menu under Components."
+    ],
+    "installer": {
+        "script": [
+            "echo ''",
+            "echo \"Downloading content from moddb...\"",
+            "$dlFile = 'dl.7z'",
+            "(Get-Content \"$dir\\$fname\").foreach{ if ($_ -match \"/downloads/mirror/[\\d]+/[\\w]+/[\\w]+\") {  $dlMatch = $matches[0]  } }",
+            "Invoke-CachedDownload $app $version \"https://www.moddb.com$dlMatch#/$dlFile\" \"$dir\\$dlFile\"",
+            "Expand-7zipArchive \"$dir\\$dlFile\" \"$dir\" -Removal",
+            "Remove-Item -Force \"$dir\\$fname\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "Copy-Item -Force -ErrorAction SilentlyContinue -Destination \"$persist_dir\\\" -Path \"$dir\\SUN.ini\"",
+            "Copy-Item -Force -ErrorAction SilentlyContinue -Destination \"$persist_dir\\\" -Path \"$dir\\HALLFAME.DAT\""
+        ]
+    },
+    "pre_install": [
+        "Copy-Item -ErrorAction SilentlyContinue -Destination \"$dir\" -Path \"$persist_dir\\SUN.ini\"",
+        "Copy-Item -ErrorAction SilentlyContinue -Destination \"$dir\" -Path \"$persist_dir\\HALLFAME.DAT\""
+    ],
+    "persist": [
+        "Saved Games",
+        "Screenshots"
+    ],
+    "shortcuts": [
+        [
+            "TiberianSun.exe",
+            "CNCNET - Tiberian Sun"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.moddb.com/mods/tiberian-sun-client/downloads",
+        "regex": "Tiberian Sun \\+ Client (?<version>[\\d.]+)"
+    }
+}

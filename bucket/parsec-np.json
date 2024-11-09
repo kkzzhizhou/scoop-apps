@@ -1,0 +1,50 @@
+{
+    "version": "150-95-0",
+    "description": "Remote desktop software",
+    "homepage": "https://parsec.app",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://unity.com/legal/parsec-additional-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://builds.parsecgaming.com/package/parsec-windows.exe#/setup.exe",
+            "hash": "ae5b66322e5a7c26ad21ccc556bdc1618796166565d2939142c5aa3d76c38ace"
+        },
+        "32bit": {
+            "url": "https://builds.parsecgaming.com/package/parsec-windows32.exe#/setup.exe",
+            "hash": "f6250ee5d02cbc50ee0128b9b0eecfdfb3b13cabf176777958b6971b6ed988d1"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "# Using Start-Process as a workaround because arguments with quotes does not work",
+        "Start-Process \"$dir\\setup.exe\" -ArgumentList @('/norun', '/nocleanuser', '/silent', '/vdd') -Wait -Verb RunAs | Out-Null",
+        "Remove-Item \"$dir\\setup.exe\""
+    ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'parsecd' -Force -ErrorAction SilentlyContinue",
+        "Stop-Process -Name 'pservice' -Force -ErrorAction SilentlyContinue"
+    ],
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$Env:ProgramFiles\\Parsec\\uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
+            "while (Get-Process -Name 'Un_A' -ErrorAction SilentlyContinue) { Start-Sleep -Second 2 }"
+        ]
+    },
+    "checkver": {
+        "url": "https://parsec.app/changelog.xml",
+        "regex": "<parsec:build>([\\w-]+)</parsec:build>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://builds.parsecgaming.com/package/parsec-windows.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://builds.parsecgaming.com/package/parsec-windows32.exe#/setup.exe"
+            }
+        }
+    }
+}

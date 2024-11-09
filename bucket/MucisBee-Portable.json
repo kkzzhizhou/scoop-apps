@@ -1,0 +1,41 @@
+{
+    "version": "3.5.8698",
+    "description": "MusicBee. The ultimate music player to easily manage, find, and play music, podcasts, web radio stations, etc",
+    "homepage": "https://getmusicbee.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://musicbee.fandom.com/wiki/FAQ#Are_there_any_limitations_on_using_MusicBee.3F"
+    },
+    "changelog": "https://getmusicbee.com/help/release-note/",
+    "notes": "Currently it's not possible to make Plugins and Skins persistent",
+    "url": "https://files1.majorgeeks.com/10afebdbffcd4742c81a3cb0f6ce4092156b4375/multimedia/MusicBeePortable_3_5.zip",
+    "hash": "a1da2ff921922fe4323f062a0032b6182b5dd000d6b5df34998614377aa3977a",
+    "pre_install": [
+        "(Get-ChildItem \"$dir\" 'MusicBee*.exe').FullName | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse"
+    ],
+    "bin": "MusicBee.exe",
+    "shortcuts": [
+        [
+            "MusicBee.exe",
+            "MusicBee"
+        ]
+    ],
+    "persist": [
+        "Library",
+        "AppData"
+    ],
+    "checkver": {
+        "script": [
+            "(Invoke-WebRequest 'https://www.majorgeeks.com/files/details/musicbee_portable.html') -match 'MusicBee Portable (?<version>[\\d.]+)' | Out-Null",
+            "$resp = $Matches['version']",
+            "(Invoke-WebRequest 'https://www.majorgeeks.com/mg/getmirror/musicbee_portable,1.html') -match '(?<url>https:.*.zip)' | Out-Null",
+            "$resp += \",\" + $Matches['url']",
+            "Write-Output $resp"
+        ],
+        "regex": "(?<version>[\\d.]+),(?<dlurl>.*\\.zip)"
+    },
+    "autoupdate": {
+        "url": "$matchDlurl"
+    }
+}

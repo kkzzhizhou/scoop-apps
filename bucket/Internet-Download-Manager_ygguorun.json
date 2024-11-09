@@ -1,0 +1,44 @@
+{
+    "version": "6.40.11",
+    "description": "Internet Download Manager (IDM) is a tool to increase download speeds by up to 5 times, resume and schedule downloads.",
+    "homepage": "http://internetdownloadmanager.com/index.html",
+    "license": {
+        "identifier": "Freeware"
+    },
+    "depends": "sudo",
+    "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/internet_download_manager_6.40.11.zip",
+    "hash": "60002f734711f57b05ef6ba1402149e59dcbd1e94fca999f1fbaab474986998b",
+    "pre_install": [
+        "Get-Process IDM* | Stop-Process -Force",
+        "Get-Process IEMon* | Stop-Process -Force",
+        "Get-ChildItem \"$dir\\Internet Download Manager*.exe\" | Rename-Item  -newname 'Installer.exe'",
+        "Get-ChildItem $dir -Exclude Installer.exe, install.json, manifest.json | ForEach-Object {  Remove-Item \"$dir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue }"
+    ],
+    "installer": {
+        "script": [
+            "Start-Process -filepath \"$dir\\Installer.exe\" -ArgumentList \"/DIR=$dir /NoIcons=1 /SILENT\"",
+            "Start-Sleep -s 60"
+        ]
+    },
+    "post_install": "Remove-Item $dir\\Installer.exe -Force",
+    "uninstaller": {
+        "script": [
+            "Stop-Process -Name explorer, IDM*, IEMonitor*, IDMMsgHost*, MediumILStart*, IDMIntegrator64* -Force | Out-Null",
+            "Remove-Item IDMShellExt*.dll -Force -ErrorAction SilentlyContinue",
+            "Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList /SILENT -WorkingDirectory \"$dir\" -Wait | Out-Null",
+            "Write-Host \"The '$app' has been uninstalled.\" -Foreground Magenta"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/idm",
+        "regex": "(?<filename>internet_download_manager_(?<version>[\\d.]+)\\.zip)"
+    },
+    "autoupdate": {
+        "url": "https://pan.jiemi.workers.dev/?file=/scoop/IDM/$matchFilename",
+        "hash": {
+            "url": "https://github.com/Ryanjiena/scoop-apps/raw/version/idm",
+            "mode": "extract",
+            "regex": "^$sha256([\\s]+)$basename"
+        }
+    }
+}

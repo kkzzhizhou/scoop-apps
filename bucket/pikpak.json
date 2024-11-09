@@ -1,0 +1,39 @@
+{
+    "version": "1.1.1",
+    "description": "PikPak is a private cloud drive that can save your favorite files at high speed.",
+    "homepage": "https://mypikpak.com/",
+    "license": "Proprietary",
+    "url": "https://static.mypikpak.com/desktop/official_PikPak.exe#/dl.7z",
+    "hash": "5031b388f6ab0b19773d57feeb596a2f844411e6d2f1ca55950fd6bdd864eed0",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\PikPak\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\PikPak\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [["PikPak.exe", "PikPak"]]
+}

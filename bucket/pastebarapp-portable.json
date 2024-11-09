@@ -1,0 +1,39 @@
+{
+    "version": "0.6.2",
+    "description": "PasteBar - Limitless, Free Clipboard Manager for Mac and Windows",
+    "homepage": "https://github.com/PasteBar/PasteBarApp",
+    "license": "Unknown",
+    "url": "https://github.com/PasteBar/PasteBarApp/releases/download/v0.6.2/PasteBar_0.6.2_Win_portable.zip",
+    "hash": "759304fc75c202c343d6d0804771392efd6bda3751a3364a673a734bfb356868",
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\app.anothervision.pasteBar\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\app.anothervision.pasteBar\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\app.anothervision.pasteBar\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\app.anothervision.pasteBar\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "PasteBar.exe",
+            "PasteBar"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/PasteBar/PasteBarApp/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/PasteBar/PasteBarApp/releases/download/v$version/PasteBar_$version_Win_portable.zip"
+    }
+}

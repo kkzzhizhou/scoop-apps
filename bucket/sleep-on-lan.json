@@ -1,0 +1,74 @@
+{
+    "version": "1.1.1",
+    "description": "Multi-platform process allowing to sleep on LAN a linux or windows computer, through wake-on-lan (reversed) magic packets or through HTTP REST requests.",
+    "homepage": "https://github.com/SR-G/sleep-on-lan",
+    "license": "Apache-2.0",
+    "notes": [
+        "This manifest uses a script, which needs admin privilege, to install sleep-on-lan as system service.",
+        "If it failed in installation, you can manually run:",
+        "sudo \"$dir\\install-service.ps1\"",
+        "",
+        "You can edit \"$dir\\sol.json\" for more configurations, and then force update this app to apply it.",
+        "Please read the documentations first: https://github.com/SR-G/sleep-on-lan#configuration"
+    ],
+    "depends": [
+        "main/gsudo",
+        "main/nssm"
+    ],
+    "url": "https://github.com/SR-G/sleep-on-lan/releases/download/1.1.1-RELEASE/SleepOnLAN-1.1.1-RELEASE.zip",
+    "hash": "6a3c5ec48a85663233ea641c4b1a90283b2fe9b46487c31c3b9338de75e2b6da",
+    "architecture": {
+        "64bit": {
+            "extract_dir": "windows_amd64"
+        },
+        "32bit": {
+            "extract_dir": "windows_386"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\*.bat\" -Force",
+        "if (-not(Test-Path \"$persist_dir\\sol.log\")) {",
+        "    New-Item \"$dir\\sol.log\" -ItemType File | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "$ScriptsDir = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\sleep-on-lan\"",
+        "$SOLBinPath = \"$dir\\sol.exe\"",
+        "$SOLLogPath = \"$dir\\sol.log\"",
+        "\"$(Get-Content \"$dir\\sol.json\")\" -match \"Listeners.*HTTP:(\\d+)\" | Out-Null",
+        "$SOLPort = $Matches[1]",
+        "if ((Test-Path \"$ScriptsDir\\install-service.ps1\") -and (Test-Path \"$ScriptsDir\\remove-service.ps1\")) {",
+        "    Copy-Item \"$ScriptsDir\\remove-service.ps1\" -Destination \"$dir\\remove-service.ps1\"",
+        "    $Content = Get-Content \"$ScriptsDir\\install-service.ps1\"",
+        "    $Content = $Content.Replace('$SOLBinPath', \"$SOLBinPath\")",
+        "    $Content = $Content.Replace('$SOLLogPath', \"$SOLLogPath\")",
+        "    $Content = $Content.Replace('$SOLPort', \"$SOLPort\")",
+        "    $Content | Set-Content -Path \"$dir\\install-service.ps1\"",
+        "    Write-Host \"Installing system service ...\" -ForegroundColor Yellow",
+        "    Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
+        "    Start-Sleep -Seconds 1",
+        "    sudo \"$dir\\install-service.ps1\"",
+        "    if ($?) {",
+        "        Write-Host \"Successfully installed system service!\" -ForegroundColor Green",
+        "    } else {",
+        "        Write-Host \"[ERROR] Failed installing system service!\" -ForegroundColor Red",
+        "    }",
+        "} else {",
+        "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
+        "}"
+    ],
+    "persist": [
+        "sol.json",
+        "sol.log"
+    ],
+    "pre_uninstall": [
+        "Write-Host \"Uninstalling system service ...\" -ForegroundColor Yellow",
+        "Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
+        "Start-Sleep -Seconds 1",
+        "sudo \"$dir\\remove-service.ps1\""
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/SR-G/sleep-on-lan/releases/download/$version-RELEASE/SleepOnLAN-$version-RELEASE.zip"
+    }
+}

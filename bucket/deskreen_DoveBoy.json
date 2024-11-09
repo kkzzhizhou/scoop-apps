@@ -1,0 +1,41 @@
+{
+    "version": "2.0.4",
+    "description": "Deskreen turns any device with a web browser into a secondary screen for your computer. ⭐️ Star to support our work!",
+    "homepage": "https://deskreen.com/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/pavlobu/deskreen#AGPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/pavlobu/deskreen/releases/download/v2.0.4/Deskreen.Setup.2.0.4.exe#/dl.7z",
+    "hash": "sha512:77ad6b05fa8dc5c08645793e2728783060829218d4b32fbdf4bc9aa41cb440723726de08d548803a86c56ed87aebb9a8a4f27e11e9378239a29eaea882ea5680",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\Deskreen\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\Deskreen\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "Deskreen.exe",
+            "Deskreen"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/pavlobu/deskreen/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/pavlobu/deskreen/releases/download/v$version/Deskreen.Setup.$version.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

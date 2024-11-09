@@ -1,0 +1,77 @@
+{
+    "homepage": "https://www.swift.org/",
+    "description": "The Swift Programming Language",
+    "license": "Apache-2.0",
+    "version": "6.0.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.swift.org/swift-6.0.2-release/windows10/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE-windows10.exe",
+            "hash": "516fe8e64713bd92f03c01e5198011b74a27f8c1c88627607a2f421718636126"
+        },
+        "arm64": {
+            "url": "https://download.swift.org/swift-6.0.2-release/windows10-arm64/swift-6.0.2-RELEASE/swift-6.0.2-RELEASE-windows10-arm64.exe",
+            "hash": "8936b544041a9608e016a60a4885921868ddfcd530bb4080c579137363cec328"
+        }
+    },
+    "depends": "main/wixtoolset",
+    "suggest": {
+        "python39": "versions/python39",
+        "vcredist": "extras/vcredist2022"
+    },
+    "installer": {
+        "script": [
+            "wix.exe burn extract \"$dir\\$fname\" -o \"$dir\\extracted\" -oba \"$dir\\extracted\"",
+            "$productVersion = ([xml](Get-Content -Raw \"$dir\\extracted\\manifest.xml\" -Encoding utf8)).BurnManifest.Registration.Version",
+            "Get-ChildItem \"$dir\\extracted\\WixAttachedContainer\\*.msi\" | ForEach-Object {",
+            "    if ($_.Name -match 'rtl.msi') {",
+            "        Expand-MsiArchive $_ \"$dir\\Runtimes\\usr\\bin\"",
+            "    } else {",
+            "        Expand-MsiArchive $_ \"$dir\"",
+            "    }",
+            "}",
+            "if (Test-Path \"$dir\\LocalApp\\Programs\\Swift\\Tools\") {",
+            "    Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\\Tools\\$productVersion\" | ForEach-Object {",
+            "        Move-Item -Path $_ -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\\bin\" -Force",
+            "    }",
+            "    Remove-Item \"$dir\\LocalApp\\Programs\\Swift\\Tools\" -Recurse | Out-Null",
+            "}",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Platforms\\$productVersion\\Windows.platform\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Platforms\"",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\"",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\\$productVersion\\*\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\"",
+            "Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\" | ForEach-Object {",
+            "    Move-Item -Path $_ -Destination \"$dir\\\" -Force",
+            "}",
+            "Remove-Item \"$dir\\Platforms\\$productVersion\" | Out-Null",
+            "Remove-Item \"$dir\\Toolchains\\$($productVersion)+Asserts\" | Out-Null",
+            "Remove-Item \"$dir\\Redistributables\\$productVersion\" | Out-Null",
+            "@(\"$fname\", 'extracted', 'LocalApp', 'SourceDir') | ForEach-Object {",
+            "    Remove-Item \"$dir\\$_\" -Recurse -ErrorAction SilentlyContinue | Out-Null",
+            "}"
+        ]
+    },
+    "env_add_path": [
+        "Toolchains\\usr\\bin",
+        "Runtimes\\usr\\bin"
+    ],
+    "env_set": {
+        "SDKROOT": "$dir\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk"
+    },
+    "checkver": {
+        "url": "https://dorado-api.deno.dev/swift-tmp",
+        "regex": "swift-(6([\\d.]+)?)-RELEASE-windows10.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.swift.org/swift-$version-release/windows10/swift-$version-RELEASE/swift-$version-RELEASE-windows10.exe"
+            },
+            "arm64": {
+                "url": "https://download.swift.org/swift-$version-release/windows10-arm64/swift-$version-RELEASE/swift-$version-RELEASE-windows10-arm64.exe"
+            }
+        }
+    },
+    "notes": [
+        "Swift Toolchain does not bundle Python39 which is a requirement for LLDB to work.",
+        "Please install Python39 from versions/python39 if you want to use the LLDB debugger."
+    ]
+}

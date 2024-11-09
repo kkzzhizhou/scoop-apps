@@ -1,0 +1,58 @@
+{
+	"version": "Nightly_2024.04.12_00-05",
+	"homepage": "https://github.com/couleur-tweak-tips/smoothie-rs",
+	"license": "GPL-3.0",
+	"description": "Add motion blur to your videos by doing frame blending (and/or interpolation) using Smoothie: an user friendly VapourSynth wrapper ",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/couleur-tweak-tips/smoothie-rs/releases/download/Nightly_2024.04.12_00-05/smoothie-rs-nightly.zip",
+			"hash": "13C426920A246F185ABB02C610B8324B424BD95170E643FB2DC2625226D87840"
+		}
+	},
+	"extract_dir": "smoothie-rs",
+	"depends": "ffmpeg",
+	"post_install": [
+		"iex(irm tl.ctt.cx);",
+		"Invoke-SmoothieRsPost -DIR $DIR -Scoop",
+		"(Get-ChildItem $DIR).FullName | ? { $_.EndsWith(\".ini\", [System.StringComparison]::OrdinalIgnoreCase) } | % { [System.IO.File]::WriteAllText($_, [System.IO.File]::ReadAllText($_).Replace([char]0xFEFF, [char]::MinValue)) }"
+	],
+	"bin": "bin\\smoothie-rs.exe",
+	"shortcuts": [
+		[
+			"bin\\smoothie-rs.exe",
+			"Smoothie",
+			"--tui"
+		],
+		[
+			"recipe.ini",
+			"Smoothie Recipe"
+		]
+	],
+	"persist": [
+		"rife models",
+		"recipe.ini"
+	],
+	"uninstaller": {
+		"script": [
+			"$SendTo = [System.Environment]::GetFolderPath('SendTo')",
+			"$Scoop = Get-Command Scoop | Split-Path | Split-Path",
+			"$SA = [System.IO.Path]::Combine([Environment]::GetFolderPath('StartMenu'), 'Programs', 'Scoop Apps')",
+			"@(",
+			"  \"$Scoop\\shims\\rc.lnk\"",
+			"  \"$SA\\Smoothie.lnk\"",
+			"  \"$SA\\Smoothie Recipe.lnk\"",
+			"  \"$SendTo\\Smoothie.lnk\"",
+			") | ForEach-Object {if (Test-Path $PSItem) {Remove-Item $PSItem}}"
+		]
+	},
+	"checkver": {
+		"github": "https://github.com/couleur-tweak-tips/smoothie-rs"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/couleur-tweak-tips/smoothie-rs/releases/download/$version/smoothie-rs-nightly.zip"
+			}
+		}
+	}
+}

@@ -1,0 +1,42 @@
+{
+    "version": "1.02",
+    "description": "Z-Library——世界上最大的电子书图书馆。Z-Library – the world’s largest e-book library.",
+    "homepage": "https://z-library.se/",
+    "license": "Unknown",
+    "url": "https://z-library.se/soft/zlibrary-setup-latest.exe#/abgo_bucket_installer.exe",
+    "hash": "01d7dfb7b97ffd8f691f94c3258bfa6e7e8075940d694a33f24a426d3cde931d",
+    "shortcuts": [
+        [
+            "Z-Library.exe",
+            "Z-Library"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\Z-Library.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\Z-Library\") @(\"$persist_dir\\Z-Library\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\Z-Library\")",
+        "$ui_exe=\"$dir\\Uninstall Z-Library.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\z-library-updater\")"
+    ],
+    "checkver": {
+        "url": "https://z-library.se/z-access#desktop_app_tab",
+        "regex": "Latest version ([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "url": "https://z-library.se/soft/zlibrary-setup-latest.exe#/abgo_bucket_installer.exe"
+    }
+}

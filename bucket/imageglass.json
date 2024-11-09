@@ -1,0 +1,64 @@
+{
+    "version": "9.1.8.1104",
+    "description": "A lightweight, versatile image viewer",
+    "homepage": "https://imageglass.org",
+    "license": "GPL-3.0-only",
+    "notes": "If this app doesn't work maybe you need to clean '$dir\\igconfig.json' and reinstall '$dir\\Themes'.",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.1.8.1104/ImageGlass_9.1.8.1104_x64.zip",
+            "hash": "72515549686a9a31e49aa75173f8e7b46e975c8e3704eef1639953280cd2bfe0",
+            "extract_dir": "ImageGlass_9.1.8.1104_x64"
+        },
+        "arm64": {
+            "url": "https://github.com/d2phap/ImageGlass/releases/download/9.1.8.723/ImageGlass_9.1.8.723_arm64.zip",
+            "hash": "ce4b2fc1cc7469f671aaba8e2cf23e6458bcc4eca1944992e0de1f5d49dc1db4",
+            "extract_dir": "ImageGlass_9.1.8.723_arm64"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\igconfig.json\")) {",
+        "    Add-Content \"$dir\\igconfig.json\" '{\"AutoUpdate\": \"0\"}' -Encoding utf8",
+        "}"
+    ],
+    "bin": [
+        "ImageGlass.exe",
+        "igcmd.exe"
+    ],
+    "shortcuts": [
+        [
+            "ImageGlass.exe",
+            "ImageGlass"
+        ]
+    ],
+    "persist": [
+        "Themes",
+        "igconfig.json"
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/d2phap/ImageGlass/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'ImageGlass_([\\d.]+)_x64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'ImageGlass_([\\d.]+)_arm64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $arm64"
+        ],
+        "regex": "([\\d.]+) (?<arm64>[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/d2phap/ImageGlass/releases/download/$version/ImageGlass_$version_x64.zip",
+                "extract_dir": "ImageGlass_$version_x64"
+            },
+            "arm64": {
+                "url": "https://github.com/d2phap/ImageGlass/releases/download/$matchArm64/ImageGlass_$matchArm64_arm64.zip",
+                "extract_dir": "ImageGlass_$matchArm64_arm64"
+            }
+        }
+    }
+}

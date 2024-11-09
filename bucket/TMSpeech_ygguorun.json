@@ -1,0 +1,52 @@
+{
+    "version": "0.0.1-rc3",
+    "description": "腾讯会议摸鱼工具。语音转文字，实时字幕，会议语音识别，歌词字幕展示，识别历史记录查看",
+    "homepage": "https://github.com/jxlpzqc/TMSpeech",
+    "license": "MIT License",
+    "url": "https://github.com/jxlpzqc/TMSpeech/releases/download/v0.0.1-rc3/TMSpeech-win-x64-bilingual.zip",
+    "hash": "69d6ea599752d6c8f9e1e2d910d46b570c8f040185dc02ffbc6394f28de6fcc1",
+    "extract_dir": "TMSpeech-win-x64-bilingual",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:HOMEPATH\\Documents\\TMSpeechLogs\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:HOMEPATH\\Documents\\TMSpeechLogs\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "TMSpeech.GUI.exe",
+            "TMSpeech"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/jxlpzqc/TMSpeech/releases",
+        "regex": "v([\\d\\w-.]+)</h2>"
+    },
+    "autoupdate": {
+        "url": "https://github.com/jxlpzqc/TMSpeech/releases/download/v$version/TMSpeech-win-x64-2023-02-20-bilingual.zip"
+    }
+}

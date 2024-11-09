@@ -1,0 +1,45 @@
+{
+    "description": "The Microsoft Build of OpenJDK is a no-cost long-term supported distribution and Microsoft's way to collaborate and contribute to the Java ecosystem.",
+    "homepage": "https://www.microsoft.com/openjdk/",
+    "version": "21.0.5",
+    "license": "GPL-2.0-only WITH Classpath-exception-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://aka.ms/download-jdk/microsoft-jdk-21.0.5-windows-x64.zip",
+            "hash": "12e42c2c572a111f38e2a9e044afc50dbdac850349a4d4bb26808ed33119a9cd"
+        },
+        "arm64": {
+            "url": "https://aka.ms/download-jdk/microsoft-jdk-21.0.5-windows-aarch64.zip",
+            "hash": "5eaa375659c543a5d3310d51004e3bdc290ff9e48e9bcd29187dfafeca97c2a4"
+        }
+    },
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "(Get-ChildItem -Directory \"$dir\\tmp\").FullName | % { Move-Item \"$_\\*\" \"$dir\" }",
+            "Remove-Item -Recurse \"$dir\\tmp\""
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir"
+    },
+    "checkver": {
+        "url": "https://docs.microsoft.com/java/openjdk/download",
+        "regex": "(?<ms>microsoft-jdk-((?<ver>21[\\d.]*?).(?<build>[\\d]+).[\\d]+)-windows-x64).zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://aka.ms/download-jdk/microsoft-jdk-$version-windows-x64.zip"
+            },
+            "arm64": {
+                "url": "https://aka.ms/download-jdk/microsoft-jdk-$version-windows-aarch64.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256sum.txt"
+        },
+        "extract_dir": "jdk-$matchVer+$matchBuild"
+    }
+}

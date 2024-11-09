@@ -1,0 +1,48 @@
+{
+    "version": "4.0.3",
+    "license": "MIT",
+    "description": "“中国蚁剑是一款跨平台的开源网站管理工具。AntSword is a cross-platform website management toolkit.",
+    "homepage": "https://github.com/AntSwordProject/antSword",
+    "depends": "AntSwordCore",
+    "notes": "已自动安装 AntSword 核心, 为 AntSwordCore, 加载器将会直接加载 AntSwordCore 省去单独下载的步骤",
+    "checkver": {
+        "url": "https://github.com/AntSwordProject/AntSword-Loader/releases/latest",
+        "regex": "/releases/tag/(?:v|V)?([\\d.]+)"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AntSwordProject/AntSword-Loader/releases/download/4.0.3/AntSword-Loader-v4.0.3-win32-x64.zip",
+            "hash": "c471a712a5331325eb86048bc0a2da67aba257544c7c847a6087eb34012a100c"
+        },
+        "32bit": {
+            "url": "https://github.com/AntSwordProject/AntSword-Loader/releases/download/4.0.3/AntSword-Loader-v4.0.3-win32-ia32.zip",
+            "hash": "a8693376e8380849c0e8cafc50028c565960923a8f7c8326a20fe57cf8fd8801"
+        }
+    },
+    "pre_install": [
+        "Move-Item -Path (Join-Path $dir \"AntSword-Loader-*/*\") -Destination $dir -Force -ErrorAction SilentlyContinue",
+        "Remove-Item -Path (Join-Path $dir \"AntSword-Loader-*\") -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "$coredir = (Resolve-Path (Join-Path $dir \"../../AntSwordCore/current\")).Path",
+        "$json = @{ workdir = $coredir } | ConvertTo-Json",
+        "Set-Content -Path (Join-Path $dir \"resources/.antSword.json\") -Value $json -Force -ErrorAction Stop"
+    ],
+    "bin": "AntSword.exe",
+    "shortcuts": [
+        [
+            "AntSword.exe",
+            "AntSword"
+        ]
+    ],
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/AntSwordProject/AntSword-Loader/releases/download/$version/AntSword-Loader-v$version-win32-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/AntSwordProject/AntSword-Loader/releases/download/$version/AntSword-Loader-v$version-win32-ia32.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+{
+    "version": "0.17.0",
+    "description": "Cross-platform backup tool for Windows, macOS & Linux with fast, incremental backups, client-side end-to-end encryption, compression and data deduplication. CLI and GUI included.",
+    "homepage": "https://kopia.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/kopia/kopia#Apache-2.0-1-ov-file"
+    },
+    "url": "https://github.com/kopia/kopia/releases/download/v0.17.0/kopia-0.17.0-windows-x64.zip",
+    "hash": "0bcfc616e52fe3847e7d0484fb6612512e926990277a37c8ced446dcce2dc6cb",
+    "extract_dir": "kopia-0.17.0-windows-x64",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\kopia\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "kopia.exe",
+    "checkver": {
+        "url": "https://api.github.com/repos/kopia/kopia/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/kopia/kopia/releases/download/v$version/kopia-$version-windows-x64.zip",
+        "extract_dir": "kopia-$version-windows-x64",
+        "hash": {
+            "url": "$baseurl/checksums.txt"
+        }
+    }
+}

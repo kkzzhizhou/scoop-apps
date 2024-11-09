@@ -1,0 +1,43 @@
+{
+    "version": "1.10.12",
+    "description": "cargo binstall provides a low-complexity mechanism for installing rust binaries as an alternative to building from source (via cargo install) or manually downloading packages.",
+    "homepage": "https://github.com/ryankurte/cargo-binstall",
+    "license": "GPL-3.0",
+    "url": "https://github.com/ryankurte/cargo-binstall/releases/download/v1.10.12/cargo-binstall-x86_64-pc-windows-msvc.zip",
+    "hash": "e503db82ee7e7f24082bc254406fe1ce72841ed46a58623f3e10790bb37a347b",
+    "bin": "cargo-binstall.exe",
+    "notes": [
+        "The installer will try to find create a hard link in the cargo's bin directory",
+        "and the uninstaller will try to remove it."
+    ],
+    "installer": {
+        "script": [
+            "if (![string]::IsNullOrEmpty($env:CARGO_HOME)) {",
+            "    $Bin = \"$env:CARGO_HOME\\bin\"",
+            "} elseif (![string]::IsNullOrEmpty($CARGO_HOME)) {",
+            "    $Bin = \"$CARGO_HOME\\bin\"",
+            "} else {",
+            "    $Bin = \"$HOME\\.cargo\\bin\"",
+            "}",
+            "New-Item -Path \"$Bin\\cargo-binstall.exe\" -ItemType HardLink -Value \"$dir\\cargo-binstall.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (![string]::IsNullOrEmpty($env:CARGO_HOME)) {",
+            "    $Bin = \"$env:CARGO_HOME\\bin\"",
+            "} elseif (![string]::IsNullOrEmpty($CARGO_HOME)) {",
+            "    $Bin = \"$CARGO_HOME\\bin\"",
+            "} else {",
+            "    $Bin = \"$HOME\\.cargo\\bin\"",
+            "}",
+            "if (Test-Path \"$Bin\\cargo-binstall.exe\") {",
+            "    Remove-Item \"$Bin\\cargo-binstall.exe\"",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/ryankurte/cargo-binstall/releases/download/v$version/cargo-binstall-x86_64-pc-windows-msvc.zip"
+    }
+}

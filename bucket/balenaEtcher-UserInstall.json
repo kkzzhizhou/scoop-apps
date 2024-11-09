@@ -1,0 +1,47 @@
+{
+    "version": "1.19.25",
+    "description": "balenaEtcher. Flash OS images to SD cards & USB drives, safely and easily.",
+    "homepage": "https://www.balena.io/etcher/",
+    "license": "Apache-2.0",
+    "changelog": "https://github.com/balena-io/etcher/blob/master/CHANGELOG.md",
+    "url": "https://github.com/balena-io/etcher/releases/download/v1.19.25/balenaEtcher-1.19.25.Setup.exe#/setup.exe",
+    "hash": "5684b1f0db8dcfa7d19b1aef810639d7753e48b487a20cf63f0dc524ded5d4cf",
+    "pre_install": [
+        "$processname = \"balenaEtcher\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"balenaEtcher*\"",
+            "$AppData = [Environment]::GetFolderPath(\"LocalApplicationData\")",
+            "$filepath = \"$AppData\\Programs\\balena-etcher\\balenaEtcher.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}"
+        ]
+    },
+    "post_install": [
+        "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }",
+        "$DesktopPath = [Environment]::GetFolderPath(\"Desktop\")",
+        "if (Test-Path \"$DesktopPath\\balenaEtcher.lnk\") {Remove-Item \"$DesktopPath\\balenaEtcher.lnk\" -Force}"
+    ],
+    "checkver": {
+        "github": "https://github.com/balena-io/etcher"
+    },
+    "autoupdate": {
+        "url": "https://github.com/balena-io/etcher/releases/download/v$version/balenaEtcher-$version.Setup.exe#/setup.exe"
+    }
+}

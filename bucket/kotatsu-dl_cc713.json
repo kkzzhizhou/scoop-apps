@@ -1,0 +1,35 @@
+{
+    "version": "1.0",
+    "description": "Cross-plaform desktop manga downloader",
+    "homepage": "https://github.com/KotatsuApp/kotatsu-dl",
+    "license": "GPL-3.0 license",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/KotatsuApp/kotatsu-dl/releases/download/v1.0/kotatsu-dl-1.0.0.msi#/dl.msi_",
+            "hash": "8c0cccc7e7dc6a243c8f4848faf34c5bef1985472ddb940c87713a52578bbefa"
+        }
+    },
+    "pre_install": [
+        "Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\" | Out-Null",
+        "Copy-Item \"$dir\\kotatsu-dl\\*\" \"$dir\" -Force -Recurse -ErrorAction 'SilentlyContinue'",
+        "Remove-Item \"$dir\\dl.msi_\", \"$dir\\kotatsu-dl\" -Force -Recurse"
+    ],
+    "shortcuts": [
+        [
+            "kotatsu-dl.exe",
+            "kotatsu-dl"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/KotatsuApp/kotatsu-dl/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/(?<file>kotatsu-dl-([\\d.]+)\\.msi)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/KotatsuApp/kotatsu-dl/releases/download/v$version/$matchFile#/dl.msi_"
+            }
+        }
+    }
+}

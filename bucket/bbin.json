@@ -1,0 +1,41 @@
+{
+    "version": "0.2.4",
+    "description": "Babashka script or project installer",
+    "homepage": "https://github.com/babashka/bbin",
+    "license": "MIT",
+    "notes": "Folder ~\\.local\\bin was added to your PATH environment variable.",
+    "depends": "scoop-clojure/babashka",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/babashka/bbin/archive/refs/tags/v0.2.4.zip",
+            "hash": "f30b8a1ee1dbd3b91720dd6e13cd108f1864583da61bf41583722dcb620cbbed",
+            "extract_dir": "bbin-0.2.4"
+        }
+    },
+    "installer": {
+        "script": "add_first_in_path \"$env:USERPROFILE\\.local\\bin\" $global"
+    },
+    "uninstaller": {
+        "script": "remove_from_path \"$env:USERPROFILE\\.local\\bin\" $global"
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\*\" -Recurse -Exclude 'bbin'",
+        "Set-Content \"$dir\\bbin.bat\" \"@bb.exe \"\"%~dp0bbin\"\" %*\"",
+        "If(!(Test-Path \"$env:USERPROFILE\\.local\\bin\")) {",
+        "  New-Item -ItemType \"directory\" \"$env:USERPROFILE\\.local\\bin\"",
+        "}"
+    ],
+    "bin": "bbin.bat",
+    "checkver": {
+        "url": "https://api.github.com/repos/babashka/bbin/tags",
+        "regex": "\"v([\\d.]+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/babashka/bbin/archive/refs/tags/v$version.zip",
+                "extract_dir": "bbin-$version"
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "version": "3.16.009",
+    "homepage": "https://www.3u.com/",
+    "description": "An All-in-One Tool for iOS Devices.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.3u.com/statement"
+    },
+    "url": "https://dl.3u.com/update/v300/dl/3uTools_v3.16.009_Setup_x86.exe#/dl.7z",
+    "hash": "a665e457eebf33f29d481f8e4ff31570ca7074c272fdedef9aae7f7ca0956ec6",
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "ensure $persist_dir | Out-Null; foreach ($f in @('record.db', 'setting.cfg', 'cache', 'Download')) {",
+        "    Copy-Item \"$persist_dir\\$f\" \"$dir\\$f\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "3uTools.exe",
+            "3uTools"
+        ]
+    ],
+    "pre_uninstall": [
+        "foreach ($f in @('record.db', 'setting.cfg', 'cache', 'Download')) {",
+        "    Copy-Item \"$dir\\$f\" \"$persist_dir\\$f\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}",
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }; Write-Host 'A GUI UN-INSTALLATION PROMPT WILL POP UP IN A FEW SECONDS!' -B 'Red'",
+        "Start-Process \"$dir\\uninstall.exe\" -Wait -Verb 'RunAs'; Start-Sleep -Seconds 2; Stop-Process -Name 'explorer' -Force",
+        "$rkeys = @(",
+        "    'HKLM:\\SOFTWARE\\Classes\\PC3uTools', 'HKCU:\\SOFTWARE\\Classes\\iTunes.ipa\\shell',",
+        "    'HKCU:\\SOFTWARE\\Classes\\PlistEditor.plist\\shell', 'HKCU:\\SOFTWARE\\Classes\\i4ap\\shell',",
+        "    'HKCU:\\SOFTWARE\\Classes\\3uViewer.heic', 'HKCU:\\SOFTWARE\\Classes\\3uViewer.svg'",
+        ")",
+        "foreach ($rkey in $rkeys) {",
+        "    Remove-Item $rkey -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "script": [
+            "$ua = [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome",
+            "Out-Null ((Invoke-RestMethod 'https://www.3u.com/' -UserAgent $ua) -match '\"(?<URL>https://url.*/[\\w]+)\"')",
+            "$url = $Matches.URL; (Invoke-WebRequest $url -UserAgent $ua -Method 'Head').BaseResponse.RequestMessage.RequestUri.AbsoluteUri"
+        ],
+        "regex": "3uTools_v([\\d.]+)_Setup_x86\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://dl.3u.com/update/v$majorVersion00/dl/3uTools_v$version_Setup_x86.exe#/dl.7z"
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "version": ".",
+    "description": "Calculate and display hash values from over two dozen popular hashing algorithms like MD5, SHA1, SHA2, RipeMD, HAVAL and Whirlpool.",
+    "homepage": "http://implbits.com/products/hashtab/",
+    "url": "http://implbits.com/products/hashtab/HashTab_v._Setup.exe#/cosi.7z",
+    "hash": "d95ce83104a348cff39e72486f7bd927778c032fad7ed59dc8e6cb57c0cf7121",
+    "installer": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"installer require UAC. Please try again.\"",
+            "}",
+            "",
+            "if([System.Environment]::Is64BitOperatingSystem)",
+            "{",
+            "    $regsvr = [System.Environment]::ExpandEnvironmentVariables('%windir%\\SysWOW64\\regsvr32.exe')",
+            "    Rename-Item -Path \"$dir\\`$R0\" -NewName \"HashTab64.dll\" -Force",
+            "    $FilePath = \"$dir\\HashTab64.dll\"",
+            "    Get-ChildItem \"$dir\\HashTab32*.dll\" | Remove-Item -Force",
+            "    # Remove-Item -Path \"$dir\\HashTab32-6.0.0.34.dll\" -Force",
+            "}",
+            "else",
+            "{",
+            "    $regsvr = [System.Environment]::ExpandEnvironmentVariables('%windir%\\System32\\regsvr32.exe')",
+            "    $FilePath = \"$dir\\HashTab32.dll\"",
+            "}",
+            "# 重命名中所有",
+            "Get-ChildItem \"$dir\\HashTab*.dll\" | Rename-Item -NewName {$_.name -replace \"(-[\\d.]+)\",\".\"}",
+            "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+            "Remove-Item \"$dir\\uninst.exe.nsis\" -Force -Recurse",
+            "$Result = Start-Process -FilePath $regsvr -Args \"/s $FilePath\" -Wait -NoNewWindow -PassThru",
+            "if ($Result.ExitCode -ne 0) {",
+            "    abort \"regsvr32 exited with error $($Result.ExitCode)\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"installer require UAC. Please try again.\"",
+            "}",
+            "if([System.Environment]::Is64BitOperatingSystem)",
+            "{",
+            "    $regsvr = [System.Environment]::ExpandEnvironmentVariables('%windir%\\SysWOW64\\regsvr32.exe')",
+            "    $FilePath = \"$dir\\HashTab64.dll\"",
+            "}",
+            "else",
+            "{",
+            "    $regsvr = [System.Environment]::ExpandEnvironmentVariables('%windir%\\System32\\regsvr32.exe')",
+            "    $FilePath = \"$dir\\HashTab32.dll\"",
+            "}",
+            "$Result = Start-Process -FilePath $regsvr -Args \"/u /s $FilePath\" -Wait -NoNewWindow -PassThru",
+            "Remove-Item HKCU:\\Software\\HashTab -Force -Recurse",
+            "if ($Result.ExitCode -ne 0) {",
+            "    error \"regsvr32 exited with error $($Result.ExitCode)\"",
+            "}"
+        ]
+    },
+    "notes": "Purposely designed to feel like a native feature of Windows: Simply select any file, go to properties, and use the new “File Hashes” tab.",
+    "checkver": "v([\\d.]+)",
+    "autoupdate": {
+        "url": "http://implbits.com/products/hashtab/HashTab_v$version_Setup.exe#/cosi.7z"
+    }
+}

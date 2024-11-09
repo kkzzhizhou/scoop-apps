@@ -1,0 +1,49 @@
+{
+    "version": "1.1.2",
+    "description": "A full-featured download manager.",
+    "homepage": "https://imfile.io/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/imfile-io/imfile-desktop#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/imfile-io/imfile-desktop/releases/download/v1.1.2/imFile-Setup-1.1.2.exe#/dl.7z",
+            "hash": "sha512:4d2ee60ac85db22cb8ca054c0a6ec91640aa2de62ece1cb6d47c6de163f2b9376d1aa1e50f4e1fef6264cc394f9a584ff4c789ca6561082938f0dc53ab0f0a9c",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\imFile\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\imFile\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "imFile.exe",
+            "imFile"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/imfile-io/imfile-desktop/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/imfile-io/imfile-desktop/releases/download/v$version/imFile-Setup-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

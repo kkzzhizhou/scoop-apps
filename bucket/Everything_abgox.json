@@ -1,0 +1,88 @@
+{
+    "version": "1.4.1.1026",
+    "description": "文件搜索工具，基于名称快速定位文件和文件夹。Locate files and folders by name instantly.",
+    "homepage": "https://www.voidtools.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.voidtools.com/zh-cn/License.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1026.x64.zip",
+            "hash": "8efd75d62eaf73d616ffc1de7ba1e88abe1742dce800aa6b4ddb81e11e5fed79"
+        },
+        "32bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1026.x86.zip",
+            "hash": "297196b7a8eff8c31e2644e258d7f62bdc33c0270c214dd7f6635df9c84f9dbe"
+        },
+        "arm64": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1026.ARM64.zip",
+            "hash": "3c4d26339da186ecd71d9a9775211fed24cb726e960838fe486191bf39ff28ea",
+            "bin": [
+                [
+                    "EverythingARM64.exe",
+                    "Everything"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "EverythingARM64.exe",
+                    "Everything"
+                ]
+            ]
+        }
+    },
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$data_file=\"$dir\\Everything.ini\"",
+        "$persist_file=\"$persist_dir\\Everything.ini\"",
+        "Write-Host \"--------------------- $($json.persist_data[0])\" -f Yellow",
+        "Write-Host \"$($json.persist_data[3]) --- $data_file\" -f Green",
+        "Write-Host \"$($json.persist_data[4]) --- $persist_file\" -f Green",
+        "Write-Host \"---------------------`n\" -f Yellow",
+        "if (Test-Path $persist_file) { ",
+        "   Copy-Item $persist_file $data_file",
+        "}else{",
+        "   New-Item $persist_file > $null",
+        "   if(!(Test-Path $data_file)){New-Item $data_file > $null}",
+        "}",
+        "handle_app_lnk",
+        "$path_schedule=\"$scoopdir\\shims\\Everything_abgo_bucket_schedule_persist.cmd\"",
+        "\"@echo off`necho $data_file`necho $persist_file\" | Out-File $path_schedule",
+        "& \"$bucketsdir\\$bucket\\bin\\sudo.ps1\" \"$bucketsdir\\$bucket\\bin\\schedule.exe\" \"Everything_abgo_bucket_schedule_persist\" \"$bucketsdir\\$bucket\\schedule\\Everything.ps1\""
+    ],
+    "pre_uninstall": [
+        "Copy-Item \"$dir\\Everything.ini\" \"$persist_dir\\Everything.ini\" -Force",
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_file \"$scoopdir\\shims\\Everything_abgo_bucket_schedule_persist.cmd\"",
+        "remove_files",
+        "& \"$bucketsdir\\$bucket\\bin\\schedule.exe\" \"Everything_abgo_bucket_schedule_persist\""
+    ],
+    "checkver": "Download Everything ([\\d\\.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x86.zip"
+            },
+            "arm64": {
+                "url": "https://www.voidtools.com/Everything-$version.ARM64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Everything-$version.sha256"
+        }
+    }
+}
