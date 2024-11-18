@@ -72,8 +72,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kkzzhizhou/scoop-zapps
 - rasa/scoops
 - kidonng/sushi
-- Paxxs/Cluttered-bucket
 - ScoopInstaller/Nonportable
+- Paxxs/Cluttered-bucket
 - KNOXDEV/wsl
 - ACooper81/scoop-apps
 - echoiron/echo-scoop
@@ -105,8 +105,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - noql-net/scoop
 - aliesbelik/poldi
 - Velgus/Scoop-Portapps
-- iquiw/scoop-bucket
 - cmontage/scoopbucket-third
+- iquiw/scoop-bucket
 - liaoya/scoop-bucket
 - AStupidBear/scoop-bear
 - batkiz/backit
@@ -119,12 +119,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cc713/ownscoop
 - aoisummer/scoop-bucket
 - starise/Scoop-Gaming
-- starise/Scoop-Confetti
+- Darkatse/Scoop-Darkatse
+- TianXiaTech/scoop-txt
 - seumsc/scoop-seu
 - Weidows-projects/scoop-3rd
-- Darkatse/Scoop-Darkatse
+- starise/Scoop-Confetti
 - kengwang/scoop-ctftools-bucket
-- TianXiaTech/scoop-txt
 - rivy/scoop-bucket
 - AkariiinMKII/Scoop4kariiin
 - alextwothousand/scoop-bucket
