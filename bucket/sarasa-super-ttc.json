@@ -38,6 +38,7 @@
             "$registryRoot = if ($global) { \"HKLM\" } else { \"HKCU\" }",
             "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
             "Get-ChildItem $dir -Filter '*.ttc' | ForEach-Object {",
+            "    Remove-Item -LiteralPath \"$fontInstallDir\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
             "    $value = if ($global) { $_.Name } else { \"$fontInstallDir\\$($_.Name)\" }",
             "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $value -Force | Out-Null",
             "    Copy-Item -LiteralPath $_.FullName -Destination $fontInstallDir",
