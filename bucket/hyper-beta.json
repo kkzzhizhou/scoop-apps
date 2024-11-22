@@ -1,46 +1,33 @@
 {
     "homepage": "https://hyper.is",
     "description": "A terminal built on web technologies",
-    "version": "4.0.0-canary.5",
+    "version": "3.0.1-canary.4",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/vercel/hyper/releases/download/v4.0.0-canary.5/Hyper-4.0.0-canary.5.exe#/dl.7z",
-            "hash": "e532d5a91fad89d14a2807fbacc36de4b9fade8b9b4840b3663a2de50fa6835b",
-            "pre_install": [
-                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
-            ]
+            "url": "https://github.com/zeit/hyper/releases/download/3.0.1-canary.4/hyper-3.0.1-canary4-full.nupkg",
+            "hash": "sha1:921e7106ba4c521c55adafc89eb41dc8c704f45e"
         }
     },
-    "installer": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\Hyper\" -Target \"$env:APPDATA\\Hyper\"",
-            "Remove-Module -Name AppsUtils"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
-            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Hyper\"",
-            "Remove-Module -Name AppsUtils"
-        ]
-    },
+    "extract_dir": "lib\\net45",
+    "bin": "resources\\bin\\hyper.cmd",
     "shortcuts": [
         [
-            "Hyper.exe",
+            "hyper.exe",
             "Hyper"
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/vercel/hyper/releases",
-        "regex": "(?sm)browser_download_url.*?releases/download/v(([\\d.])+-([\\w.])+)/Hyper(?<extra>-Setup)?-(([\\d.])+-([\\w.])+)\\.exe"
+        "url": "https://github.com/zeit/hyper/releases",
+        "regex": "Pre-release[\\S\\s]+?tree/([\\d.]+-canary\\.(?<pre>\\d+))"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/vercel/hyper/releases/download/v$version/Hyper$matchExtra-$version.exe#/dl.7z"
+                "url": "https://github.com/zeit/hyper/releases/download/$version/hyper-$matchHead-canary$matchPre-full.nupkg",
+                "hash": {
+                    "url": "$baseurl/RELEASES"
+                }
             }
         }
     }
