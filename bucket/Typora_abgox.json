@@ -1,0 +1,63 @@
+{
+    "version": "1.9.5",
+    "description": "一个 Markdown 编辑器和阅读器，所见即所得。A minimal Markdown editor and reader.",
+    "homepage": "https://typora.io",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://support.typora.io/License-Agreement/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download.typora.io/windows/typora-setup-x64-1.9.5.exe",
+            "hash": "047deab87662bcb6222f7900164cddb08e0247feac179039067db9eeb9d79447"
+        },
+        "32bit": {
+            "url": "https://download.typora.io/windows/typora-setup-ia32-1.9.5.exe",
+            "hash": "786247db5c9c5f18870fb7683573e0d5c55ba507cb0ee52618935f9ebab222a8"
+        }
+    },
+    "innosetup": true,
+    "bin": "Typora.exe",
+    "shortcuts": [
+        [
+            "Typora.exe",
+            "Typora"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_AppData\\Typora\") @(\"$persist_dir\\Typora\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "post_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "handle_lang -CN {",
+        "   write_with_color \"`n<@Yellow>如果需要旧的 beta 免费版本，请安装 <@Magenta>TyporaFree`n\"",
+        "} -EN {",
+        "   write_with_color \"`n<@Yellow>For old beta free version, please install <@Magenta>TyporaFree<@Yellow>.`n\"",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_AppData\\Typora\")"
+    ],
+    "checkver": {
+        "url": "https://typora.io/releases/stable",
+        "regex": "<h2>([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.typora.io/windows/typora-setup-x64-$version.exe"
+            },
+            "32bit": {
+                "url": "https://download.typora.io/windows/typora-setup-ia32-$version.exe"
+            }
+        }
+    }
+}

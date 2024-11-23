@@ -1,0 +1,50 @@
+{
+    "version": "24.11.20",
+    "description": "FX Draw Tools. High-productivity drawing environment designed specifically for mathematics teachers",
+    "homepage": "https://www.efofex.com/fxdraw.php",
+    "license": "Proprietary",
+    "changelog": "https://www.efofex.com/downloads.php#versions",
+    "url": "https://www.efofex.com/downloadexe.php?&file=FXDrawTools.exe#/setup.exe",
+    "hash": "e2099ecb5767177d13e02ec2ee5a14f8e9c77f33ca770af35f66c68bb6bac694",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"FXDraw\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"FX Draw Tools*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Efofex\\bin\\FXDraw.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /verysilent /noreboot | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"FX Draw Tools\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.efofex.com/downloads.php#versions",
+        "regex": "V([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.efofex.com/downloadexe.php?&file=FXDrawTools.exe#/setup.exe"
+    }
+}

@@ -1,0 +1,64 @@
+{
+    "version": "5.0.2",
+    "description": "qBittorrent. Free and reliable P2P Bittorent client",
+    "homepage": "https://www.qbittorrent.org",
+    "license": {
+        "identifier": "GPL-2.0-only",
+        "url": "https://github.com/qbittorrent/qBittorrent/blob/master/COPYING"
+    },
+    "notes": "Web UI Theme https://github.com/WDaan/VueTorrent",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.0.2/qbittorrent_5.0.2_x64_setup.exe#/setup.exe",
+            "hash": "6c3278d5529badfe853bcc7630497cf43a1d24ab563f852a270335237fb8311a"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"qbittorrent\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"qbittorrent*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\qBittorrent\\qbittorrent.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\qbittorrent.lnk\") {Remove-Item \"$CommonDesktopPath\\qbittorrent.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://github.com/qbittorrent/qBittorrent/tags",
+        "regex": "/qbittorrent/qBittorrent/releases/tag/release-([\\d.]+)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-$version/qbittorrent_$version_x64_setup.exe#/setup.exe",
+                "hash": {
+                    "url": "https://www.qbittorrent.org/download.php",
+                    "regex": "(?sm)td>64-bit Installer.*?<code>$sha256</code>"
+                }
+            }
+        }
+    }
+}

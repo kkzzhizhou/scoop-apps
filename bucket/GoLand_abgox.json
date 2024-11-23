@@ -1,0 +1,58 @@
+{
+    "version": "2024.3",
+    "description": "由 JetBrains 开发的 Go 语言的跨平台集成开发环境。Cross-Platform IDE for Golang by JetBrains.",
+    "homepage": "https://www.jetbrains.com/goland/",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.jetbrains.com/store/license.html"
+    },
+    "url": "https://download.jetbrains.com/go/goland-2024.3.exe#/abgo_bucket_installer.exe",
+    "hash": "bd476af39325875daf66877f2994b4b7ce469bb6313dadf14af09ba9f36f27d0",
+    "bin": [
+        [
+            "IDE\\bin\\goland64.exe",
+            "GoLand"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "IDE\\bin\\goland64.exe",
+            "GoLand"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$verPart = $version -split '\\.'",
+        "$verRes = \"$($verPart[0]).$($verPart[1])\"",
+        "persist_file -dir @(\"$user_AppData\\JetBrains\\GoLand$($verRes)\",\"$user_LocalAppData\\JetBrains\\GoLand$($verRes)\") @(\"$persist_dir\\GoLand\",\"$persist_dir\\GoLand_LocalAppData\")",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=\"$dir\\IDE\"",
+        "sleep_install \"$dir\\IDE\\bin\\idea.properties\"",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "$preName = \"GoLand\"",
+        "$remove_list = @(\"$user_AppData\\JetBrains\", \"$user_LocalAppData\\JetBrains\") | ForEach-Object {",
+        "   Get-ChildItem $_ | Where-Object { $_.Name -match \"$preName[\\d\\.]+\" } | ForEach-Object { $_.FullName }",
+        "}",
+        "remove_files $remove_list",
+        "$ui_exe=\"$dir\\IDE\\bin\\Uninstall.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "url": "https://data.services.jetbrains.com/products/releases?code=go&latest=true",
+        "jsonpath": "$.GO[0].version"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/go/goland-$version.exe#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

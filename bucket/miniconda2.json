@@ -1,45 +1,62 @@
 {
     "version": "4.8.3",
-    "description": "A cross-platform, Python-agnostic binary package manager (for Python 2 only)",
     "homepage": "https://conda.io/miniconda.html",
+    "description": "Miniconda is a free minimal installer for conda.",
     "license": "BSD-3-Clause",
-    "notes": [
-        "Currently conda envs activate and deactivate doesn't work on PowerShell,",
-        "for more information, see: https://github.com/conda/conda/issues/626",
-        "or just execute: 'conda install -n root -c pscondaenvs pscondaenvs'"
-    ],
     "architecture": {
         "64bit": {
-            "url": "https://repo.anaconda.com/miniconda/Miniconda2-py27_4.8.3-Windows-x86_64.exe#/setup.exe",
-            "hash": "6973025404832944e074bf02bda8c4594980eeed4707bb51baa8fbdba4bf326c"
+            "url": "https://repo.anaconda.com/miniconda/Miniconda2-py27_4.8.3-Windows-x86_64.exe",
+            "hash": "md5:93a92dc93eb306210a5076b32baea74f"
         },
         "32bit": {
-            "url": "https://repo.anaconda.com/miniconda/Miniconda2-py27_4.8.3-Windows-x86.exe#/setup.exe",
-            "hash": "c8049d26f8b6b954b57bcd4e99ad72d1ffa13f4a6b218e64e641504437b2617b"
+            "url": "https://repo.anaconda.com/miniconda/Miniconda2-py27_4.8.3-Windows-x86.exe",
+            "hash": "md5:54863d2fae6d348b2a91bd1f80c0f4b2"
         }
     },
     "installer": {
-        "script": [
-            "# Using Start-Process as a workaround because the installer will not work properly when args are quoted",
-            "Start-Process \"$dir\\setup.exe\" -ArgumentList @('/S', '/InstallationType=JustMe', '/AddToPath=0', \"/D=$dir\") -Wait | Out-Null",
-            "Remove-Item \"$dir\\setup.exe\""
+        "args": [
+            "/S",
+            "/InstallationType=JustMe",
+            "/RegisterPython=0",
+            "/AddToPath=0",
+            "/NoRegistry=1",
+            "/D=$dir"
         ]
     },
     "uninstaller": {
-        "script": [
-            "Start-Process \"$dir\\Uninstall-Miniconda2.exe\" -ArgumentList '/S' -Wait | Out-Null",
-            "# Create a 'dummy' to avoid error because the uninstaller removes the symlink. The does not affect persist.",
-            "if (!(Test-Path \"$dir\\envs\")) { New-Item \"$dir\\envs\" -ItemType Directory | Out-Null }"
-        ]
+        "file": "Uninstall-Miniconda2.exe",
+        "args": "/S"
     },
-    "bin": [
-        "python.exe",
-        "pythonw.exe",
-        [
-            "python.exe",
-            "python2"
-        ]
+    "bin": "scripts\\conda.exe",
+    "post_install": [
+        "# PREVENT CREATING SHORTCUTS",
+        "Invoke-ExternalCommand -Path \"$dir\\_conda.exe\" -ArgumentList \"constructor --prefix $dir --rm-menus\" | Out-Null",
+        "conda config --system --set auto_activate_base false"
     ],
-    "persist": "envs",
-    "env_add_path": "Scripts"
+    "checkver": {
+        "url": "https://repo.anaconda.com/miniconda",
+        "re": "Miniconda2-py(?<pyversion>[\\d]+)_([\\d.]+)-Windows",
+        "reverse": true
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://repo.anaconda.com/miniconda/Miniconda2-py$matchPyversion_$version-Windows-x86_64.exe"
+            },
+            "32bit": {
+                "url": "https://repo.anaconda.com/miniconda/Miniconda2-py$matchPyversion_$version-Windows-x86.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl",
+            "find": "$basename<.*\\s+<.*\\s+<.*\\s+<td>([a-fA-F0-9]{32})</td>"
+        }
+    },
+    "notes": [
+        "Conda envs and pkgs are not persisted by Scoop, we advice to setup `envs_dirs` to use '~/.conda/envs'.",
+        "  https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs",
+        "",
+        "To enable conda tab-completion autoload, run code below to add the shell hook:",
+        "Add-Content -Path $PROFILE -Value \"`n(& conda 'shell.powershell' 'hook') | Out-String | Invoke-Expression\""
+    ]
 }

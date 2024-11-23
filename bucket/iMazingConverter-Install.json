@@ -1,0 +1,51 @@
+{
+    "version": "2.0.9",
+    "description": "iMazing Converter. A tiny and free app for Mac and PC that converts photos from HEIC to JPEG, and videos from HEVC/H.265 to MP4/H.264. Enjoy!",
+    "homepage": "https://imazing.com/converter",
+    "license": "Proprietary",
+    "changelog": "",
+    "url": "https://downloads.imazing.com/windows/iMazing-Converter/iMazingConverterWindows.exe#/setup.exe",
+    "hash": "9af7354a339dac8ff318a7702faa7abd77cb659b61127c84824e39d81c7ba301",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"iMazing Converter\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"iMazing Converter*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\DigiDNA\\iMazing Converter.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VerySilent | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"iMazing Converter\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://imazing.com/converter/download/windows",
+        "regex": "softwareVersion\":\"([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://downloads.imazing.com/windows/iMazing-Converter/iMazingConverterWindows.exe#/setup.exe",
+        "changelog": "https://downloads.imazing.com/windows/iMazing-Converter/$version/release-notes.html"
+    }
+}

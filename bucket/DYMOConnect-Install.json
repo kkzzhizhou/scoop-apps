@@ -1,0 +1,49 @@
+{
+    "version": "1.4.6.37",
+    "description": "DYMO Connect. Label printer software and drivers that supports all with all 450 series/4XL, 550 series/5XL and LabelManagers",
+    "homepage": "https://www.dymo.com/",
+    "license": "Proprietary",
+    "url": "https://pub-6a3684b0039c42c2bd525090b24b64d7.r2.dev/dymo/Software/Win/DCDSetup1.4.6.37.exe#/setup.exe",
+    "hash": "82272f159dbc2318989681056db5a0a3e502a4d780807a50ecd849f30845e644",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"processname\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"programname*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\DYMO\\DYMO Connect\\DYMOConnect.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /s /v\"/qn\" /v\"REBOOT=ReallySuppress\" /sms | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"DYMO Connect\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.dymo.com/support?cfid=user-guide",
+        "regex": "https://download.dymo.com/dymo/Software/Win/DCDSetup([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://download.dymo.com/dymo/Software/Win/DCDSetup$version.exe#/setup.exe"
+    }
+}

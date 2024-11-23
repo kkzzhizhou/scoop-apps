@@ -1,0 +1,54 @@
+{
+    "description": "A lightweight, cross-platform, portable, and easy-to-maintain LaTeX distribution based on TeX Live. This versions is infra-only and contains no packages.",
+    "homepage": "https://yihui.org/tinytex/",
+    "url": "https://github.com/yihui/tinytex-releases/releases/download/v2024.11/TinyTeX-0-v2024.11.zip",
+    "extract_dir": "TinyTeX",
+    "license": "https://tug.org/texlive/LICENSE.TL",
+    "hash": "e923812480c341c8ada22d930de6e009dc220be5f55195b2c2e73edb29170f7a",
+    "version": "2024.11",
+    "notes": "For full documentation, see https://yihui.org/tinytex/",
+    "pre_install": [
+        "try{if (Test-Path $(appdir tinytex)) { throw \"You already have tinytex installed. Run scoop uninstall tinytex if you want to use tinytex-min.\"}}",
+        "catch{",
+        "Write-Host \"--> Another tinytex installation has been found. Cancelling current installation...\" -f red",
+        "scoop uninstall $app",
+        "throw $_",
+        "}",
+        "try{if (Test-Path $(appdir tinytex-extraa)) { throw \"You already havetinytex-extrara installed. Run scoop uninstaltinytex-extratra if you want to use tinytex-min.\"}}",
+        "catch{",
+        "Write-Host \"--> Another tinytex installation has been found. Cancelling current installation...\" -f red",
+        "scoop uninstall $app",
+        "throw $_",
+        "}"
+    ],
+    "post_install": [
+        "echo \"--> Running tlmgr path add\"",
+        "Start-Process \"cmd.exe\" \"/c `\"$dir\\bin\\windows\\tlmgr.bat path add`\"\" -Wait -NoNewWindow",
+        "echo \"--> Updating tlmgr itself\"",
+        "Invoke-Expression \"$dir\\bin\\windows\\tlmgr.bat update --self\"",
+        "if (Test-Path $env:TMP\\tinytex-pkg-installed-$(Get-Date -Format ddMMyyHH).txt) {",
+        "$tinytex_tmp_file=\"$env:TMP\\tinytex-pkg-installed-$(Get-Date -Format ddMMyyHH).txt\"",
+        "$tinytex_pkg_installed = (Invoke-Expression \"$dir\\bin\\windows\\tlmgr.bat info --list --only-installed --data name\")",
+        "$tinytex_reinstall=\"$env:TMP\\installed_old_packages.ps1\"",
+        "((Get-Content $tinytex_tmp_file) | Where { $tinytex_pkg_installed -NotContains $_}) | % {\"Invoke-Expression '$dir\\bin\\windows\\tlmgr.bat install {0}'\" -f $_} > $tinytex_reinstall",
+        "if ((Get-Content $tinytex_reinstall) -ne $null) {",
+        "echo \"--> Reinstalling previous user packages\"",
+        "Invoke-Expression \"$tinytex_reinstall\"",
+        "}",
+        "Remove-Item $env:TMP/installed_old_packages.ps1, $tinytex_tmp_file",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "tlmgr info --list --only-installed --data name > $env:TMP/tinytex-pkg-installed-$(Get-Date -Format ddMMyyHH).txt",
+            "echo \"--> Running tlmgr path remove\"",
+            "Start-Process \"cmd.exe\" \"/c `\"$dir\\bin\\windows\\tlmgr.bat path remove`\"\" -Wait -NoNewWindow"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/yihui/tinytex-releases"
+    },
+    "autoupdate": {
+        "url": "https://github.com/yihui/tinytex-releases/releases/download/v$version/TinyTeX-0-v$version.zip"
+    }
+}

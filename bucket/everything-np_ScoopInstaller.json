@@ -1,0 +1,51 @@
+{
+    "version": "1.4.1.1026",
+    "description": "Locate files and folders by name instantly.",
+    "homepage": "https://www.voidtools.com",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "http://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe",
+            "hash": "dae32a49b6052f0ec70895dd4e35b2b26222f7f4c19c36d9d309033e2fb622bc"
+        },
+        "32bit": {
+            "url": "http://www.voidtools.com/Everything-1.4.1.1026.x86-Setup.exe",
+            "hash": "bbf249ab7d4ea4b17a56d2effcd0df563bf4d5cd4f6e00ebf5e74a74ca0034e2"
+        }
+    },
+    "installer": {
+        "script": [
+            "Start-Process \"$dir\\$fname\" -ArgumentList @('/S', \"/D=$dir\") -Wait -Verb RunAs | Out-Null",
+            "Remove-Item \"$dir\\$fname\""
+        ]
+    },
+    "post_install": [
+        "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Everything.lnk\"",
+        "Remove-Item -Recurse \"$Env:Public\\Desktop\\Everything.lnk\""
+    ],
+    "uninstaller": {
+        "script": "Start-Process \"$dir\\Uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null"
+    },
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "pre_uninstall": "Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
+    "checkver": "Download Everything ([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://www.voidtools.com/Everything-$version.x64-Setup.exe"
+            },
+            "32bit": {
+                "url": "http://www.voidtools.com/Everything-$version.x86-Setup.exe"
+            }
+        },
+        "hash": {
+            "url": "https://www.voidtools.com/Everything-$version.sha256"
+        }
+    }
+}

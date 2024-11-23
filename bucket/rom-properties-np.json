@@ -1,0 +1,56 @@
+{
+    "version": "2.4.1",
+    "description": "This shell extension adds a few nice features to file browsers for managing video game ROM and disc images.",
+    "homepage": "https://github.com/GerbilSoft/rom-properties",
+    "license": "GPL-2.0",
+    "url": "https://github.com/GerbilSoft/rom-properties/releases/download/v2.4.1/rom-properties_2.4.1-windows.zip",
+    "hash": "395585a4e0418e6df823cbfd28d525fdab2f06a90bfae3b473ef0a5c45f035b1",
+    "pre_install": "if (!(is_admin)) { error \"Administrator rights are required to install $app\"; break }",
+    "installer": {
+        "script": [
+            "if ($architecture -eq '64bit') {",
+            "    regsvr32 /s \"$dir\\amd64\\rom-properties.dll\"",
+            "}",
+            "regsvr32 /s \"$dir\\i386\\rom-properties.dll\"",
+            "taskkill /f /im explorer.exe | Out-Null",
+            "Start-Sleep -Seconds 1.5",
+            "explorer"
+        ]
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                "rpcli.exe",
+                "amd64/rp-download.exe"
+            ]
+        },
+        "32bit": {
+            "bin": [
+                "rpcli.exe",
+                "i386/rp-download.exe"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "rp-config.exe",
+            "ROM Properties Page Configuration"
+        ]
+    ],
+    "pre_uninstall": "if (!(is_admin)) { error \"Administrator rights are required to uninstall $app\"; break }",
+    "uninstaller": {
+        "script": [
+            "if ($architecture -eq '64bit') {",
+            "   regsvr32 /u /s \"$dir\\amd64\\rom-properties.dll\"",
+            "}",
+            "regsvr32 /u /s \"$dir\\i386\\rom-properties.dll\"",
+            "taskkill /f /im explorer.exe | Out-Null",
+            "Start-Sleep -Seconds 1.5",
+            "explorer"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/GerbilSoft/rom-properties/releases/download/v$version/rom-properties_$version-windows.zip"
+    }
+}

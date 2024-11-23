@@ -1,0 +1,48 @@
+{
+    "version": "2.6.32",
+    "description": "API 设计、开发、测试一体化协作平台。All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
+    "homepage": "https://apifox.com",
+    "license": "Freeware",
+    "url": "https://file-assets.apifox.com/download/Apifox-windows-latest.zip",
+    "hash": "sha512:f9fb395ff673a45baf937998ed39cdbe042dfc1dd7ebe71e062537fcb90733b56d372cbe5935b189c8ac71828da8d3a141a972c3f0cf61a950eb435e7907e1c8",
+    "shortcuts": [
+        [
+            "Apifox.exe",
+            "Apifox"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\Apifox-$version.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\Apifox.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\apifox\") @(\"$persist_dir\\apifox\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "Stop-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue",
+        "Wait-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue -Timeout 30",
+        "remove_files @(\"$user_AppData\\apifox\")",
+        "$ui_exe=\"$dir\\Uninstall Apifox.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\apifox-updater\")"
+    ],
+    "checkver": {
+        "url": "https://apifox.com/help/app/changelog",
+        "regex": ">([\\d.]+)<"
+    },
+    "autoupdate": {
+        "url": "https://file-assets.apifox.com/download/Apifox-windows-latest.zip",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512: $base64"
+        }
+    }
+}

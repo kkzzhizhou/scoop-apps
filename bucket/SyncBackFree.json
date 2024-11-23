@@ -1,0 +1,51 @@
+{
+    "version": "11.3.62.0",
+    "description": "可免费用于个人、教育、慈善、政府和商业用途的 Windows 备份软件。Windows Backup Software that is free for personal, educational, charity, government, and commercial use.",
+    "homepage": "https://www.2brightsparks.com/",
+    "license": "Freeware",
+    "url": "https://www.2brightsparks.com/assets/software/SyncBack/SyncBack_Setup.11.3.62.0.exe#/abgo_bucket_installer.exe",
+    "hash": "0bc3607483520545966693f3ee429183d26a19358edc542fbf9e3168883bf038",
+    "shortcuts": [
+        [
+            "SyncBackFree.exe",
+            "SyncBackFree"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /VerySilent /Dir=\"$dir\"",
+        "$core_exe=\"$dir\\SyncBackFree.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\2BrightSparks\\SyncBackFree\",\"$user_LocalAppData\\2BrightSparks\\SyncBackFree\") @(\"$persist_dir\\SyncBackFree\",\"$persist_dir\\SyncBackFree_LocalAppData\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\2BrightSparks\\SyncBackFree\",\"$user_LocalAppData\\2BrightSparks\\SyncBackFree\")",
+        "$ui_exe=\"$dir\\unins000.exe\"",
+        "try{ & $ui_exe /VerySilent }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$desktop\\SyncBackFree.lnk\")"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info '2BrightSparks/SyncBackFree'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x86:$($dl_info.x86_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x86:(?<x86>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX86#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/2/2BrightSparks/SyncBackFree/$version/2BrightSparks.SyncBackFree.installer.yaml",
+            "regex": "Architecture: x86[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}

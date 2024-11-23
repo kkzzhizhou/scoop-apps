@@ -1,0 +1,59 @@
+{
+    "version": "6.90.66",
+    "description": "Logitech SetPoint. Lets you customize your mouse, keyboard, touchpad and number pad settings in Windows",
+    "homepage": "http://support.logitech.com/en_gb/software/setpoint",
+    "license": "",
+    "architecture": {
+        "64bit": {
+            "url": "https://download01.logi.com/web/ftp/pub/techsupport/mouse/SetPoint6.90.66_64.exe#/setup.exe",
+            "hash": "a28a337c430c5795b10246212fc9e5d5058dbf2a30d4f6bce7bd2f4062286194"
+        },
+        "32bit": {
+            "url": "https://download01.logi.com/web/ftp/pub/techsupport/mouse/SetPoint6.90.66_32.exe#/setup.exe",
+            "hash": "06b3c8bedec10a246fdfe5e316b86fce5bd88ea1be72eb1260f1e7d2c15641ca"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"SetPoint\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Logitech SetPoint*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Logitech\\SetPointP\\SetPoint.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /S | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://m.majorgeeks.com/files/details/logitech_setpoint.html",
+        "regex": "Logitech Setpoint 32-Bit ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download01.logi.com/web/ftp/pub/techsupport/mouse/SetPoint$version_64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://download01.logi.com/web/ftp/pub/techsupport/mouse/SetPoint$version_32.exe#/setup.exe"
+            }
+        }
+    }
+}

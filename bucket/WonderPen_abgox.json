@@ -1,0 +1,58 @@
+{
+    "version": "2.4.5",
+    "description": "一款专业的写作软件，致力于为作者提供专注且流畅的写作体验。A professional writing software dedicated to providing writers with a focused and smooth writing experience.",
+    "homepage": "https://www.tominlab.com/wonderpen",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.tominlab.com/to/get-file/wonderpen?key=win-x64#/abgo_bucket_installer.exe",
+            "hash": "7655d854a5878711fa8b858e43a1e0e4bd63eef5f6c990c716701747f63ce3ed"
+        },
+        "32bit": {
+            "url": "https://www.tominlab.com/to/get-file/wonderpen?key=win-ia32#/abgo_bucket_installer.exe",
+            "hash": "3ac1466805ab3ca31677f859face7ed0226c1a9728eb4d929580bf0574948e8f"
+        }
+    },
+    "shortcuts": [
+        [
+            "WonderPen.exe",
+            "WonderPen"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\WonderPen.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\WonderPen\") @(\"$persist_dir\\WonderPen\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\WonderPen\")",
+        "$ui_exe=\"$dir\\Uninstall WonderPen.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\wonderpen-updater\")"
+    ],
+    "checkver": {
+        "url": "https://www.tominlab.com/blog",
+        "regex": "/wonderpen-v-(\\d)-(\\d)-(\\d)",
+        "replace": "${1}.${2}.${3}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.tominlab.com/to/get-file/wonderpen?key=win-x64#/abgo_bucket_installer.exe"
+            },
+            "32bit": {
+                "url": "https://www.tominlab.com/to/get-file/wonderpen?key=win-ia32#/abgo_bucket_installer.exe"
+            }
+        }
+    }
+}

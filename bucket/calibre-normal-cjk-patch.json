@@ -1,0 +1,47 @@
+{
+    "version": "6.28.0",
+    "description": "Switch calibre library from ascii path to plain Unicode path (For CJK users)",
+    "homepage": "https://github.com/Cirn09/calibre-do-not-translate-my-path",
+    "license": "GPL-3.0-only",
+    "depends": "muggle/calibre-normal-cjk",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Cirn09/calibre-do-not-translate-my-path/releases/download/v6.28.0/patch-win-6.28.0.zip",
+            "hash": "20610be4aab8180bdf09e37c40adf41dcc4295b2f6fb97f18000a6d7d2490895",
+            "extract_dir": "Calibre2\\app\\bin",
+            "pre_install": "Remove-Item \"$dir\\Calibre2\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "$CalibreDIR = $(appdir calibre-normal-cjk $global)",
+            "if (Test-Path \"$CalibreDIR\") {",
+            "   if (Test-Path \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen\") {",
+            "       Rename-Item \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen\" \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen.orig\" | Out-Null",
+            "   }",
+            "   New-Item -ItemType SymbolicLink -Path \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen\" -Target \"$dir\\python-lib.bypy.frozen\" | Out-Null",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$CalibreDIR = $(appdir calibre-normal-cjk $global)",
+            "if (Test-Path \"$CalibreDIR\") {",
+            "   Remove-Item \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen\" -Force -Recurse | Out-Null",
+            "   if (Test-Path \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen.orig\") {",
+            "       Rename-Item \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen.orig\" \"$CalibreDIR\\current\\app\\bin\\python-lib.bypy.frozen\" | Out-Null",
+            "   }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/Cirn09/calibre-do-not-translate-my-path"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Cirn09/calibre-do-not-translate-my-path/releases/download/v$version/patch-win-$version.zip"
+            }
+        }
+    }
+}

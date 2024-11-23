@@ -1,0 +1,66 @@
+{
+    "version": "9.9.16.241118",
+    "description": "A new version of Tencent QQ based on Electron.",
+    "homepage": "https://im.qq.com/pcqq/index.shtml",
+    "license": "Unknown",
+    "notes": [
+        "The app runtime is persisted by scoop, while user date are storaged in",
+        "\"$env:USERPROFILE\\Documents\\Tencent Files\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.16_241118_x64_01.exe#/dl.7z",
+            "hash": "c41665c2fd9bfe29de697f3f1afcfa97c918584f1f69cf0174f87cb619ff904c"
+        },
+        "32bit": {
+            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.16_241118_x86_01.exe#/dl.7z",
+            "hash": "8605f20bf84652d25d47aebc5889ac1a19e4add96daad0970833739fbe8e3890"
+        }
+    },
+    "extract_dir": "Files",
+    "installer": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Mount-ExternalRuntimeData -Source \"$persist_dir\\QQ\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "QQ.exe",
+            "QQ"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Dismount-ExternalRuntimeData -Target \"QQ\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://qq-web.cdn-go.cn/im.qq.com_new/f0ba2273/202411191946/windowsDownloadUrl.js",
+        "regex": "QQNT\\/Windows\\/QQ_([\\d\\.]+)_([\\d]+)_x64_01\\.exe",
+        "replace": "${1}.${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x64_01.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_01.exe#/dl.7z"
+            }
+        }
+    }
+}

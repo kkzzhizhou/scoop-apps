@@ -1,0 +1,72 @@
+{
+    "version": "5.70.2",
+    "description": "Sandboxie is a sandbox-based isolation software for 32-bit and 64-bit Windows NT-based operating systems.",
+    "homepage": "https://sandboxie-plus.com/",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/sandboxie-plus/Sandboxie/raw/master/LICENSE"
+    },
+    "notes": "Get Sandboxie Plus if you are a first-time user or want the latest features.",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.15.2/Sandboxie-Classic-x64-v5.70.2.exe",
+            "hash": "1b2b1cc0a495771c99e0b116c3c80160277d2f38e6ecdc3773e2bd2bafefdff5"
+        },
+        "32bit": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.15.2/Sandboxie-Classic-x86-v5.70.2.exe",
+            "hash": "5afef3627df0daa119fc36330415a4269af2250badb1879ca91240b4f1ad6f4a"
+        }
+    },
+    "pre_install": "if (Test-Path \"$persist_dir\\sandboxie.ini\") { Copy-Item \"$persist_dir\\sandboxie.ini\" \"$dir\\\" -Force -ErrorAction 'SilentlyContinue' | Out-Null }",
+    "installer": {
+        "script": "Invoke-ExternalCommand \"$dir\\$fname\" -ArgumentList @('/S', \"/D=$dir\") -RunAs | Out-Null"
+    },
+    "uninstaller": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "Copy-Item \"$env:windir\\sandboxie.ini\" \"$persist_dir\\\" -Force -ErrorAction 'SilentlyContinue' | Out-Null",
+            "Invoke-ExternalCommand \"$env:windir\\Installer\\SandboxieInstall64.exe\" -ArgumentList @('/remove', '/S', \"/D=$dir\") -RunAs | Out-Null"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Start.exe",
+            "Sandboxie//Run any program sandboxed",
+            "/box:__ask__ run_dialog"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie//Run Web browser sandboxed",
+            "/default_browser"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie//Run Windows Explorer sandboxed",
+            "."
+        ],
+        [
+            "SbieCtrl.exe",
+            "Sandboxie//Sandboxie Control",
+            "/open"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie//Sandboxie Start Menu",
+            "/box:__ask__ start_menu"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/sandboxie-plus/Sandboxie/releases",
+        "regex": "releases/download/(?<tag>[vV]?[\\d.]+)/Sandboxie-Classic-x64-v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchTag/Sandboxie-Classic-x64-v$version.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchTag/Sandboxie-Classic-x86-v$version.exe"
+            }
+        }
+    }
+}

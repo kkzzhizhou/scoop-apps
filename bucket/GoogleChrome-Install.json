@@ -1,0 +1,58 @@
+{
+    "version": "131.0.6778.86",
+    "description": "Google Chrome. Fast, secure, and free web browser, built for the modern web.",
+    "homepage": "https://www.google.com/chrome/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.google.com/chrome/privacy/eula_text.html"
+    },
+    "changelog": "https://chromereleases.googleblog.com/",
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise64.msi#/setup.msi_",
+            "hash": "053c5f399959dcbe210658dd6fdd62cc28559b95d729d4a5c1e6342853e91a34"
+        },
+        "32bit": {
+            "url": "https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise.msi#/setup.msi_",
+            "hash": "a8388c58babb0ce5261cec3074d4a2a4010494ebdb946106c603049c612e2cb9"
+        }
+    },
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"Google Chrome*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$exepath = \"$ProgramFiles\\Google\\Chrome\\Application\\chrome.exe\"",
+            "$filepath = \"$ProgramFiles\\Google\\Chrome\\Application\\$version\\chrome.dll\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -and ((Get-Command $exepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   Start-Sleep -Seconds 30",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -and ((Get-Command $exepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Google Chrome.lnk\") {Remove-Item \"$CommonDesktopPath\\Google Chrome.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.majorgeeks.com/files/details/google_chrome_26_1410_64_stable.html",
+        "regex": ">Google Chrome ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise.msi#/setup.msi_"
+            }
+        }
+    }
+}

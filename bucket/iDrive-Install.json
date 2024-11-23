@@ -1,0 +1,45 @@
+{
+    "version": "7.0.0.16",
+    "description": "iDrive. Online cloud backup for your PC's, Macs and Mobile devices",
+    "homepage": "https://idriveonlinebackup.com/",
+    "license": "Proprietary",
+    "changelog": "https://idriveonlinebackup.com/release-info#win",
+    "url": "https://static.idriveonlinebackup.com/downloads/IDriveWinSetup.exe#/setup.exe",
+    "hash": "7af15310b7c270df8624634b74f52c163a0a7fbb082bffd554c5e2590ea09ad8",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"id_win\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"id_win*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\IDriveWindows\\id_win.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.majorgeeks.com/files/details/idrive.html",
+        "regex": "files/details/idrive.html\">iDrive ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://static.idriveonlinebackup.com/downloads/IDriveWinSetup.exe#/setup.exe"
+    }
+}

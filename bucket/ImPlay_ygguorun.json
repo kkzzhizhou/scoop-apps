@@ -1,0 +1,51 @@
+{
+    "version": "1.5.1",
+    "description": "A Cross-Platform Desktop Media Player",
+    "homepage": "https://github.com/tsl0922/ImPlay",
+    "license": "GNU General Public License v2.0",
+    "url": "https://github.com/tsl0922/ImPlay/releases/download/1.5.1/ImPlay-1.5.1-win64.zip",
+    "hash": "1dfa44aacb64dc9b0c2f439d9e8ea4758d613056f0ec91ea638bdb88cd66ea8b",
+    "extract_dir": "ImPlay-1.5.1-win64",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\implay\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\implay\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "bin": "ImPlay.exe",
+    "shortcuts": [
+        [
+            "ImPlay.exe",
+            "ImPlay"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/tsl0922/ImPlay/releases/download/$version/ImPlay-$version-win64.zip",
+        "extract_dir": "ImPlay-$version-win64"
+    }
+}

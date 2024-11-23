@@ -1,0 +1,50 @@
+{
+    "version": "11.1.5155.400",
+    "description": "腾讯官方出品，基于 Chromium 内核开发，启动速度、打开网页速度更快的浏览器。Tencent's official Chromium-based browser with faster startup and web page opening speed.",
+    "homepage": "https://browser.qq.com/",
+    "license": "Unknown",
+    "url": "https://dldir1.qq.com/invc/tt/QQBrowser_Setup_11.1.5155.400.exe#/abgo_bucket_installer.exe",
+    "hash": "18ca900795b4f78c51f979c6417f1c05197ee9921e10c7b3ed78f5a54c5e58ec",
+    "shortcuts": [
+        [
+            "QQBrowser.exe",
+            "QQ浏览器"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "sleep_install \"$user_LocalAppData\\Tencent\\QQBrowser\\User Data\"",
+        "Start-Sleep -s 3",
+        "persist_file -dir @(\"$user_AppData\\Tencent\\QQBrowser\",\"$user_LocalAppData\\Tencent\\QQBrowser\") @(\"$persist_dir\\QQBrowser\",\"$persist_dir\\QQBrowser_LocalAppData\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\Tencent\\QQBrowser\",\"$user_LocalAppData\\Tencent\\QQBrowser\")",
+        "$ui_exe=\"$dir\\uninst.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Tencent/QQBrowser'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x86:$($dl_info.x86_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x86:(?<x86>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX86#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/QQBrowser/$version/Tencent.QQBrowser.installer.yaml",
+            "regex": "Architecture: x86[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "version": "0.4.8-2",
+    "description": "Cloud music player based on NetEase Player, featuring more elegant UI",
+    "homepage": "https://music.qier222.com/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/qier222/YesPlayMusic/releases/download/v0.4.8-2/YesPlayMusic.0.4.8.exe#/dl.7z",
+            "hash": "6e617b8b0e17bb1c7e8dd9bb18c73e2f8f7ea98e96f9ef62d41fcc49ae9319ab"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" | Out-Null",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\yesplaymusic\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\yesplaymusic\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "YesPlayMusic.exe",
+            "YesPlayMusic"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/qier222/YesPlayMusic/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.-]+)/(?<file>YesPlayMusic(?:.|-)([\\d.]+)\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/qier222/YesPlayMusic/releases/download/v$version/$matchFile#/dl.7z"
+            }
+        }
+    }
+}

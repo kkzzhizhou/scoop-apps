@@ -1,0 +1,42 @@
+{
+    "version": "11.20.0",
+    "description": "一个完整的API开发环境。Complete API development environment.",
+    "homepage": "https://www.getpostman.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.getpostman.com/licenses/postman_eula"
+    },
+    "url": "https://dl.pstmn.io/download/11.20.0/Postman-win64-11.20.0-Setup.exe#/dl.7z",
+    "hash": "sha1:8e573348ee4bb1ac126dff72f3a10f55f72b2364",
+    "shortcuts": [
+        [
+            "Postman.exe",
+            "Postman"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Expand-7zipArchive \"$dir\\Postman-$($version)-full.nupkg\" \"$dir\" -ExtractDir 'lib\\net45' -Removal",
+        "persist_file -dir @(\"$user_AppData\\Postman\",\"$env:UserProfile\\Postman\") @(\"$persist_dir\\Postman\",\"$persist_dir\\Postman_User\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_AppData\\Postman\",\"$env:UserProfile\\Postman\")"
+    ],
+    "checkver": {
+        "url": "https://dl.pstmn.io/changelog?channel=stable&platform=win64",
+        "jsonpath": "$.changelog[0].name"
+    },
+    "autoupdate": {
+        "url": "https://dl.pstmn.io/download/$version/Postman-win64-$version-Setup.exe#/dl.7z",
+        "hash": {
+            "url": "https://dl.pstmn.io/RELEASES?platform=win64&from=$version",
+            "regex": "(?sm)$basename.*?$sha1"
+        }
+    }
+}

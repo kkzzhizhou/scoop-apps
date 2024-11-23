@@ -1,0 +1,52 @@
+{
+    "version": "0.86.0",
+    "description": "Microsoft PowerToys is a set of utilities for power users to tune and streamline their Windows experience for greater productivity. Inspired by the Windows 95 era PowerToys project, this reboot provides power users with ways to squeeze more efficiency out of the Windows 10 shell and customize it for individual workflows.",
+    "homepage": "https://github.com/microsoft/PowerToys",
+    "license": {
+        "identifier": "MIT"
+    },
+    "notes": "",
+    "depends": "dotnet-desktop-runtime",
+    "url": "https://github.com/microsoft/PowerToys/releases/download/v0.86.0/PowerToysSetup-0.86.0-x64.exe#/install.exe",
+    "hash": "857de9dc5938d9602f82dfd6183db5e6823b875a412aec59b4be93617e27e9cd",
+    "installer": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"ERROR: install require UAC. Please try again.\"",
+            "}",
+            "Start-Process $dir\\install.exe -ArgumentList '--silent' -Wait",
+            "Remove-Item $dir\\install.exe"
+        ]
+    },
+    "post_install": [
+        "Get-ChildItem 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\' | ForEach-Object {",
+        "    $value = Get-ItemProperty $_.PSPath; ",
+        "    if ($value.DisplayName -ne $null) {",
+        "        if ($value.DisplayName.Contains(\"PowerToys\")) { ",
+        "            [System.IO.Path]::GetFileName($_.name) | Out-File $dir\\id",
+        "            $yes = $true",
+        "        }",
+        "    }",
+        "}",
+        "if (!$yes) {",
+        "    abort 'Unable to find product Code.'",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+            "    abort \"ERROR: uninstall require UAC. Please try again.\"",
+            "}",
+            "$idFile = \"$dir\\id\"",
+            "if (!(Test-Path $idFile)) {",
+            "    abort 'Unable to find product Code.'",
+            "}",
+            "$id = Get-Content $idFile",
+            "Start-Process msiexec.exe -ArgumentList '/q',\"/x $id\" -Wait"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/microsoft/PowerToys/releases/download/v$version/PowerToysSetup-$version-x64.exe#/install.exe"
+    }
+}

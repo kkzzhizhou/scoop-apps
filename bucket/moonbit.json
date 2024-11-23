@@ -1,0 +1,61 @@
+{
+    "version": "0.1.20241115+351cfb074",
+    "description": "MoonBit is an end-to-end programming language toolchain for cloud and edge computing using WebAssembly.",
+    "homepage": "https://www.moonbitlang.com/",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/chawyehsu/moonbit-binaries/releases/download/v0.1.20241115+351cfb074/moonbit-core-v0.1.20241115+351cfb074.zip",
+                "https://github.com/chawyehsu/moonbit-binaries/releases/download/v0.1.20241115+351cfb074/moonbit-v0.1.20241115+351cfb074-win-x64.zip"
+            ],
+            "hash": [
+                "260261d28bfb6049ebf23b9b60b75bf12ad34a4b1efb6333356a65f63f2eb848",
+                "174e92729878a4015ae88f3d39f8d6eaab8bdd49757aa5626a937e8bb3250640"
+            ]
+        }
+    },
+    "pre_install": [
+        "New-Item -ItemType Directory -Force -Path \"$dir\\bin\" | Out-Null",
+        "New-Item -ItemType Directory -Force -Path \"$dir\\lib\" | Out-Null"
+    ],
+    "post_install": [
+        "function CreateFile([String] $file, [String] $content = $null) {",
+        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+        "        New-Item -Force -Path \"$persist_dir\\$file\" -ItemType file -Value $content | Out-Null",
+        "    }",
+        "}",
+        "CreateFile 'credentials.json'",
+        "Move-Item -Path \"$dir\\*.exe\" -Destination \"$dir\\bin\"",
+        "Move-Item -Path \"$dir\\core\" -Destination \"$dir\\lib\"",
+        "Push-Location \"$dir\\lib\\core\"",
+        "& moon bundle --all",
+        "Pop-Location"
+    ],
+    "env_add_path": "bin",
+    "env_set": {
+        "MOON_HOME": "$dir"
+    },
+    "persist": [
+        "registry",
+        "credentials.json"
+    ],
+    "checkver": {
+        "github": "https://github.com/chawyehsu/moonbit-binaries",
+        "regex": "v([\\d.]+\\+[a-z0-9]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": [
+                    "https://github.com/chawyehsu/moonbit-binaries/releases/download/v$version/moonbit-core-v$version.zip",
+                    "https://github.com/chawyehsu/moonbit-binaries/releases/download/v$version/moonbit-v$version-win-x64.zip"
+                ]
+            }
+        },
+        "hash": {
+            "url": "$url.sha256",
+            "regex": "([a-f0-9]{64})"
+        }
+    }
+}

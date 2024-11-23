@@ -1,0 +1,28 @@
+{
+    "##": "This manifest is not backwards version compatible.",
+    "version": ".",
+    "homepage": "https://www.freeoffice.com/",
+    "description": "A complete, reliable, lightning-fast and Microsoft Office-compatible office suite with a word processor, spreadsheet, and presentation graphics software.",
+    "license": "Freeware",
+    "url": "https://www.softmaker.net/down/freeoffice2024.msi#/setup.msi_",
+    "hash": "10f6bd62d49cfbab19cdd0b39a2b658102781d0818c0716d527044a9adc3cc19",
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/i', \"$dir\\setup.msi_\", '/qn')"
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/x', \"$dir\\setup.msi_\", '/qn')"
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://www.freeoffice.com/en/download'; (Invoke-RestMethod \"$url/applications\") -match '/freeoffice(?<Year>[\\d]+)\\.msi' | Out-Null",
+            "$year = $Matches.Year; (Invoke-RestMethod \"$url/servicepacks\") -match '(?<Date>[\\d-]+)\\:\\sRevision\\s(?<Revision>[\\d]+)?\\s\\(Windows\\)' | Out-Null",
+            "$date = $Matches.Date; $revision = $Matches.Revision; Write-Output \"$year $date.$revision\""
+        ],
+        "regex": "(?<Year>[\\d]+)\\s([\\w-.]+)"
+    },
+    "autoupdate": {
+        "url": "https://www.softmaker.net/down/freeoffice$matchYear.msi#/setup.msi_"
+    }
+}

@@ -1,0 +1,70 @@
+{
+    "homepage": "https://www.duckstation.org/",
+    "version": "0.1-7836",
+    "description": "Sony Playstation emulator",
+    "license": {
+        "identifier": "GPL-3.0-only",
+        "url": "https://github.com/stenzek/duckstation/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/stenzek/duckstation/releases/download/v0.1-7836/duckstation-windows-x64-release.zip",
+            "hash": "96f1510c6e95ed75bd750a6dc28274f034a02aae2b82051e72db3feb6773dcbb",
+            "bin": [
+                [
+                    "duckstation-qt-x64-ReleaseLTCG.exe",
+                    "duckstation"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "duckstation-qt-x64-ReleaseLTCG.exe",
+                    "Playstation"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "$settings = \"$dir\\settings.ini\"",
+        "$portable = \"$dir\\portable.txt\"",
+        "create $settings File",
+        "create $portable File"
+    ],
+    "persist": [
+        "portable.txt",
+        "settings.ini",
+        "bios",
+        "cache",
+        "cheats",
+        "covers",
+        "dump",
+        "gamesettings",
+        "inputprofiles",
+        "memcards",
+        "savestates",
+        "screenshots",
+        "shaders",
+        "textures"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/stenzek/duckstation/releases",
+        "jsonpath": {
+            "version": "$.[2].name",
+            "download": "$.[2].assets[?(@.name == 'duckstation-windows-x64-release.zip')].browser_download_url"
+        },
+        "regex": "v([\\d\\.]+\\-\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload"
+            }
+        }
+    }
+}

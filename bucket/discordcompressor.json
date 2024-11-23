@@ -1,0 +1,46 @@
+{
+    "version": "1.0",
+    "homepage": "https://github.com/vladaad/discordcompressor",
+    "description": "A small program in Go that efficiently compresses videos using ffmpeg.",
+    "pre_install": "if (-Not(Get-Command ffmpeg -ErrorAction Ignore)){scoop.cmd install main/ffmpeg}",
+    "depends": "ffmpeg",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/vladaad/discordcompressor/releases/download/1.0/discordcompressor-windows.zip",
+            "hash": "7492eb3546662063bfd8cacb1184adfab33e134d9480490ea7c23d880b27b830",
+            "bin": [
+                "discordcompressor.exe",
+                [
+                    "discordcompressor.exe",
+                    "discordcompressor"
+                ],
+                [
+                    "discordcompressor.exe",
+                    "dc"
+                ]
+            ]
+        }
+    },
+    "persist": "settings",
+    "post_install": [
+        "if (-Not(Get-Command ffmpeg.exe -ErrorAction Ignore)){",
+        "Write-Output \"Installing FFmpeg..\"",
+        "scoop.cmd install main/ffmpeg",
+        "}",
+        "$SendTo = [System.Environment]::GetFolderPath('SendTo')",
+        "$Lnk = \"$SendTo\\DiscordCompressor.lnk\"",
+        "if (Test-Path $Lnk){Remove-Item $Lnk}",
+        "$WshShell = New-Object -comObject WScript.Shell",
+        "$Shortcut = $WshShell.CreateShortcut(\"$SendTo\\DiscordCompressor.lnk\")",
+        "$Shortcut.TargetPath = \"discordcompressor.exe\"",
+        "$Shortcut.Save()"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/vladaad/discordcompressor/releases/download/$version/discordcompressor-windows.zip"
+            }
+        }
+    }
+}

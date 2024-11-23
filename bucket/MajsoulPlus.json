@@ -1,0 +1,63 @@
+{
+    "version": "2.0.1",
+    "description": "雀魂Plus——雀魂麻将Majsoul专用浏览器，提供了一些专有特性",
+    "homepage": "https://github.com/MajsoulPlus/majsoul-plus",
+    "license": "GNU Affero General Public License v3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/MajsoulPlus/majsoul-plus/releases/download/v2.0.1/Majsoul_Plus-2.0.1-win32-x64.zip",
+            "hash": "5a1b8c3454deca69c19fdbf378961f605786682c065f41ab1cfee7d08bba139c"
+        },
+        "32bit": {
+            "url": "https://github.com/MajsoulPlus/majsoul-plus/releases/download/v2.0.1/Majsoul_Plus-2.0.1-win32-ia32.zip",
+            "hash": "4d56e0d1250f262b2367567b9d9dcc1d3527dff025aa4dd6e20fd7cde1932532"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\Majsoul Plus\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\Majsoul Plus\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Majsoul Plus.exe",
+            "Majsoul Plus"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/MajsoulPlus/majsoul-plus/releases/download/v$version/Majsoul_Plus-$version-win32-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/MajsoulPlus/majsoul-plus/releases/download/v$version/Majsoul_Plus-$version-win32-ia32.zip"
+            }
+        }
+    }
+}

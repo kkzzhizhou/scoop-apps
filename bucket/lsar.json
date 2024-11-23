@@ -1,0 +1,39 @@
+{
+    "version": "0.2.6",
+    "description": "直播解析图形化程序",
+    "homepage": "https://github.com/alley-rs/lsar",
+    "license": "Unknown",
+    "url": "https://github.com/alley-rs/lsar/releases/download/v0.2.6/lsar_0.2.6_x64-setup.exe#/dl.7z",
+    "hash": "d7487bb1e8d290700c06e14a50431deb90709658b7a0f34bd021ae15809077db",
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.alley.lsar\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\lsar\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.alley.lsar\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\lsar\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "lsar.exe",
+            "lsar"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/alley-rs/lsar/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/alley-rs/lsar/releases/download/v$version/lsar_$version_x64-setup.exe#/dl.7z"
+    }
+}

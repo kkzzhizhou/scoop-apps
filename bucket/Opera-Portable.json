@@ -1,0 +1,51 @@
+{
+    "version": "114.0.5282.222",
+    "description": "Opera. Fast, secure, easy-to-use browser.",
+    "homepage": "https://www.opera.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.opera.com/eula/computers"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download1.operacdn.com/pub/opera/desktop/114.0.5282.222/win/Opera_114.0.5282.222_Autoupdate_x64.exe#/dl.7z",
+            "hash": "d1117eefc67f8801d7c573b69a5258e54becf0924f6555bcb112c49eae7267c8"
+        },
+        "32bit": {
+            "url": "https://download1.operacdn.com/pub/opera/desktop/114.0.5282.222/win/Opera_114.0.5282.222_Autoupdate.exe#/dl.7z",
+            "hash": "4db9e64c1c4aba565d4a7abc001a917415627c9b3a496f5d122c103c702dede0"
+        }
+    },
+    "installer": {
+        "script": [
+            "Remove-Item -Path \"$dir\\*_list\" -Force",
+            "Move-Item -Path \"$dir\\*\" -Destination \"$dir\\$version\" -Exclude 'Assets', 'launcher*', 'Resources.pri' -ErrorAction Ignore",
+            "if (!(Test-Path \"$dir\\$version\\localization\")) {",
+            "   New-Item -Path \"$dir\\$version\\localization\" -ItemType Directory | Out-Null",
+            "   Move-Item -Path \"$dir\\$version\\*.pak\" -Destination \"$dir\\$version\\localization\" -Exclude 'opera*' -ErrorAction Ignore",
+            "}",
+            "Set-Content -Path \"$dir\\installer_prefs.json\" -Value (@{ 'autoupdate'= $false; 'enable_stats' = $false; 'single_profile' = $true } | ConvertTo-Json) -Encoding ASCII"
+        ]
+    },
+    "shortcuts": [
+        [
+            "launcher.exe",
+            "Opera"
+        ]
+    ],
+    "persist": "profile",
+    "checkver": {
+        "url": "https://community.chocolatey.org/packages/opera",
+        "regex": "Opera ([\\d.]+)<"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download1.operacdn.com/pub/opera/desktop/$version/win/Opera_$version_Autoupdate_x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download1.operacdn.com/pub/opera/desktop/$version/win/Opera_$version_Autoupdate.exe#/dl.7z"
+            }
+        }
+    }
+}

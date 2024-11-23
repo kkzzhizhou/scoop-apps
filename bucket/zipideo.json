@@ -1,0 +1,38 @@
+{
+    "version": "1.0.10",
+    "description": "⚡zipideo: 视频压缩电脑桌面端软件",
+    "homepage": "https://github.com/aaaaa-pi/zipideo",
+    "license": "Unknown",
+    "url": "https://github.com/aaaaa-pi/zipideo/releases/download/v1.0.10/zipideo-1.0.10-setup.exe#/dl.7z",
+    "hash": "sha512:6dc2a3c9e8bebc85edfc911efc9f358b226cccfed47a1fc602d3eb8e7a00b11995abcb0579893309ae4a0e736b2b477ed9be8c690f172ed7515f30ba32af5e1c",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\zipideo\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\zipideo\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "zipideo.exe",
+            "zipideo"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/aaaaa-pi/zipideo/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/aaaaa-pi/zipideo/releases/download/v$version/zipideo-$version-setup.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

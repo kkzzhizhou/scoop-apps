@@ -1,0 +1,79 @@
+{
+    "version": "3.28",
+    "description": "Powerful and easy-to-use tool to edit metadata of audio files.",
+    "homepage": "https://www.mp3tag.de/en/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://docs.mp3tag.de/license/"
+    },
+    "notes": [
+        "If you want 'mp3tag' as a context menu option run the following commands:",
+        "To Install:",
+        "$dir\\install-mp3tag-context.cmd",
+        "To Uninstall:",
+        "$dir\\uninstall-mp3tag-context.cmd"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.mp3tag.de/mp3tagv328-x64-setup.exe#/dl.7z",
+            "hash": "2187f3e971e270a932f3db2ca4a3a93cd35ea5f59f2430e8409538323d579554"
+        },
+        "32bit": {
+            "url": "https://download.mp3tag.de/mp3tagv328setup.exe#/dl.7z",
+            "hash": "54605ca46fc2d510e93fe8bb7af71b81a5e53c019ac92f478937d25654c762af"
+        }
+    },
+    "pre_install": [
+        "foreach ($i in @('mp3tag.cfg', 'data\\columns.ini')) {",
+        "    if (!(Test-Path \"$persist_dir\\$i\")) { New-Item $(Join-Path $dir $i) | Out-Null }",
+        "}",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Mp3tagUninst*\" -Recurse",
+        "if (!(Test-Path \"$persist_dir\\data\\usrfields.ini\")) {",
+        "    Start-Process \"$dir\\mp3tag.exe\" -Verb Open -WindowStyle Minimized; Start-Sleep -Seconds 3; Stop-Process -Name 'mp3tag'",
+        "}",
+        "Copy-Item \"$persist_dir\\export\\*\" \"$dir\\export\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "bin": "Mp3tag.exe",
+    "shortcuts": [
+        [
+            "Mp3tag.exe",
+            "Mp3tag"
+        ]
+    ],
+    "persist": [
+        "data\\panels",
+        "data\\columns",
+        "data\\columns.ini",
+        "data\\usrfields.ini",
+        "mp3tag.cfg"
+    ],
+    "post_install": [
+        "$scriptsdir = Resolve-Path \"$bucketsdir\\*MyScoop*\\scripts\\mp3tag\"",
+        "$content = Get-Content \"$scriptsdir\\install-mp3tag-context.cmd\"",
+        "$content = $content.Replace('REPLACE_HERE', $dir)",
+        "[System.IO.File]::WriteAllLines(\"$dir\\install-mp3tag-context.cmd\", $content, [System.text.UTF8Encoding]($false))",
+        "Copy-Item \"$scriptsdir\\uninstall-mp3tag-context.cmd\" \"$dir\\uninstall-mp3tag-context.cmd\""
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    reg delete 'HKCU\\SOFTWARE\\Classes\\*\\shell\\&Mp3tag' /f",
+        "    reg delete 'HKCU\\SOFTWARE\\Classes\\*\\shell\\Mp3tag' /f",
+        "    reg delete 'HKCU\\SOFTWARE\\Classes\\Directory\\shell\\&Mp3tag' /f",
+        "    reg delete 'HKCU\\SOFTWARE\\Classes\\Directory\\shell\\Mp3tag' /f",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://www.mp3tag.de/en/download.html",
+        "regex": "(?i)\\<h\\d\\>Mp3tag\\s+v(?<version>[\\d.]+[a-z]{0,1})\\</h\\d\\>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.mp3tag.de/mp3tagv$cleanVersion-x64-setup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://download.mp3tag.de/mp3tagv$cleanVersionsetup.exe#/dl.7z"
+            }
+        }
+    }
+}

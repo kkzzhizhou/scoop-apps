@@ -1,0 +1,47 @@
+{
+    "version": "2.2.2",
+    "description": "「类脑式」知识管理笔记与写作。\"Brain-like\" Knowledge Management Notes.",
+    "homepage": "https://lattics.zineapi.com/",
+    "license": "Unknown",
+    "url": "https://media.zine.la/Lattics/2.2/Lattics_win_installer_x64_2.2.2.exe.zip",
+    "hash": "e08dae693541e304e724fe79ded01699cc4cd212623aa78b42ec7b4e1291a766",
+    "shortcuts": [
+        [
+            "Lattics.exe",
+            "Lattics"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$filter=Get-ChildItem $dir | Where-Object {$_.Name -like \"*.exe\" }",
+        "Rename-Item $filter[0].FullName \"_installer_.7z\"",
+        "Expand-7zipArchive \"$dir\\_installer_.7z\" \"$dir\" -ExtractDir '$PLUGINSDIR' -Removal",
+        "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal",
+        "persist_file -dir @(\"$user_AppData\\Lattics\") @(\"$persist_dir\\Lattics\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_AppData\\Lattics\",\"$user_LocalAppData\\lattics-updater\")"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'AuraMarker/Lattics'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_zip.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX64",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/a/AuraMarker/Lattics/$version/AuraMarker.Lattics.installer.yaml",
+            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "version": "3.27.1.510",
+    "homepage": "https://voovmeeting.com",
+    "description": "Backed by Tencent's years of experience in audiovisual communications",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://voovmeeting.com/df/en/service-agreement.html"
+    },
+    "url": "https://updatecdn.meeting.qq.com/cos/f0a0b582ed322bcef97f94c9ff149500/VooVMeeting_1410000197_3.27.1.510.publish.exe#/dl.7z",
+    "hash": "md5:f0a0b582ed322bcef97f94c9ff149500",
+    "installer": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name ox) scripts/DoradoUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\Tencent\\VooVMeeting\"",
+            "Remove-Module -Name DoradoUtils",
+            "Rename-Item -Path \"$dir\\`$_*\" -NewName \"$version\" -Force",
+            "Remove-Item \"$dir\\`$*\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Remove-Item \"$dir\\voovmeetingapp_new.exe\" -Force -ErrorAction SilentlyContinue",
+            "create_startmenu_shortcuts $manifest $original_dir $global $architecture",
+            "$manifest.shortcuts = @()"
+        ]
+    },
+    "bin": "voovmeetingapp.exe",
+    "shortcuts": [
+        [
+            "voovmeetingapp.exe",
+            "VooV Meeting"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name ox) scripts/DoradoUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\VooVMeeting\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "$script:ver = json_path $page '$.info-list[0].version' -single $true",
+            "$script:matchesHashtable = @{'url' = json_path $page '$.info-list[0].url' -single $true}",
+            "$script:regexp = $null"
+        ],
+        "url": "https://voovmeeting.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%221410000197%22,%22platform%22:%22windows%22,%22decorators%22:%5B%22intl%22%5D%7D%5D&nonce=AAAAAAAAAAAAAAAA"
+    },
+    "autoupdate": {
+        "url": "$matchUrl#/dl.7z",
+        "hash": {
+            "jsonpath": "$.info-list[0].md5",
+            "mode": "json",
+            "url": "https://voovmeeting.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%221410000197%22,%22platform%22:%22windows%22,%22decorators%22:%5B%22intl%22%5D%7D%5D&nonce=AAAAAAAAAAAAAAAA"
+        }
+    }
+}

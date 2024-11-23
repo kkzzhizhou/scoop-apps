@@ -1,0 +1,75 @@
+{
+    "version": "1.2.0",
+    "description": "方格音乐，一款音乐播放器",
+    "homepage": "http://morin.vin/",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://bucket-apps.netlify.app/方格音乐_64bit.exe#/abgo_bucket_installer.exe",
+            "hash": "4ba4beedb701978c2d4bd6edeb1635cd2c7a2d248a8163cd47d2939512fe0db5"
+        },
+        "32bit": {
+            "url": "https://bucket-apps.netlify.app/方格音乐_32bit.exe#/abgo_bucket_installer.exe",
+            "hash": "415549c856e755fd5d7076cf9edfe47ad178aa80d48f34bbd7e2c4b10cb42bf5"
+        },
+        "arm64": {
+            "url": "https://bucket-apps.netlify.app/方格音乐_arm64.exe#/abgo_bucket_installer.exe",
+            "hash": "ca3a0c28b80c40f4d2075ca17ffd03bf6a03bb5fde357960c73697c945b86dcc"
+        }
+    },
+    "shortcuts": [
+        [
+            "方格音乐.exe",
+            "方格音乐"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=\"$dir\"",
+        "$core_exe=\"$dir\\方格音乐.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\fonger\") @(\"$persist_dir\\fonger\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\fonger\")",
+        "$ui_exe=\"$dir\\Uninstall 方格音乐.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "url": "https://bucket-apps.netlify.app/方格音乐.json",
+        "jsonpath": "$.version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://bucket-apps.netlify.app/方格音乐_64bit.exe#/abgo_bucket_installer.exe",
+                "hash": {
+                    "url": "https://bucket-apps.netlify.app/方格音乐.json",
+                    "jsonpath": "$.64bit.hash"
+                }
+            },
+            "32bit": {
+                "url": "https://bucket-apps.netlify.app/方格音乐_32bit.exe#/abgo_bucket_installer.exe",
+                "hash": {
+                    "url": "https://bucket-apps.netlify.app/方格音乐.json",
+                    "jsonpath": "$.32bit.hash"
+                }
+            },
+            "arm64": {
+                "url": "https://bucket-apps.netlify.app/方格音乐_arm64.exe#/abgo_bucket_installer.exe",
+                "hash": {
+                    "url": "https://bucket-apps.netlify.app/方格音乐.json",
+                    "jsonpath": "$.arm64.hash"
+                }
+            }
+        }
+    }
+}

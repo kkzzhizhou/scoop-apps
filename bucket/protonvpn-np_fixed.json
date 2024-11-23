@@ -1,0 +1,44 @@
+{
+    "##": "This package is non-portable because the app requires installing drivers/services to work.",
+    "version": "3.0.5",
+    "description": "Open source VPN app packed with useful security features.",
+    "homepage": "https://protonvpn.com/",
+    "license": "GPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.protonvpn.net/download/ProtonVPN_v3.0.5.exe#/setup.exe",
+            "hash": "04d3b827e5a2c3899d797d2c5a19433fda43c3abc4e3e8b3fa5548c525973e4f"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList @('/VERYSILENT', '/SP-', '/SUPPRESSMSGBOXES', '/NORESTART') -RunAs | Out-Null",
+            "Stop-Process -Name 'ProtonVPN' -ErrorAction 'SilentlyContinue' -Force # This closes the login screen appeared after installing the app",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($cmd -eq 'uninstall') {",
+            "    if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "    Invoke-ExternalCommand \"$env:ProgramFiles\\Proton\\VPN\\unins000.exe\" -ArgumentList @('/VERYSILENT', '/FORCECLOSEAPPLICATIONS', '/SUPPRESSMSGBOXES') -RunAs | Out-Null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://protonvpn.com/download/windows-releases.json",
+        "jsonpath": "$.Categories[?(@.Name == 'Stable')].Releases[0].Version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.protonvpn.net/download/ProtonVPN_v$version.exe#/setup.exe",
+                "hash": {
+                    "url": "https://protonvpn.com/download/windows-releases.json",
+                    "jsonpath": "$.Categories[?(@.Name == 'Stable')].Releases[?(@.Version == '$version')].File.SHA256CheckSum"
+                }
+            }
+        }
+    }
+}

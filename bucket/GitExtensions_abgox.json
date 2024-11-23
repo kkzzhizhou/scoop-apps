@@ -1,0 +1,45 @@
+{
+    "version": "4.2.1.17611",
+    "description": "一个独立的 Git UI 工具去管理 Git 仓库。A standalone UI tool for managing git repositories.",
+    "homepage": "https://gitextensions.github.io/",
+    "license": {
+        "identifier": "GNU GENERAL PUBLIC LICENSE",
+        "url": "https://github.com/gitextensions/gitextensions/blob/master/LICENSE.md"
+    },
+    "url": "https://github.com/gitextensions/gitextensions/releases/download/v4.2.1/GitExtensions-Portable-4.2.1.17611-b0c0b2848.zip",
+    "hash": "372c9cef9b2b19c8bba9ea9424b9262f68edfbe61e4711d6d5f0f904462f871b",
+    "bin": [
+        "GitExtensions.exe",
+        [
+            "GitExtensions.exe",
+            "gite"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "GitExtensions.exe",
+            "GitExtensions"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -file @(\"$dir\\GitExtensions.settings\") @(\"$persist_dir\\GitExtensions.settings\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repositories/85953/releases",
+        "jsonpath": "$..browser_download_url",
+        "regex": "/v(?<tag>[\\d\\.]+)/GitExtensions-Portable-([\\d\\.]+)-(?<commit>[\\w]+)\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://github.com/gitextensions/gitextensions/releases/download/v$matchTag/GitExtensions-Portable-$version-$matchCommit.zip"
+    }
+}

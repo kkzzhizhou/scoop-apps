@@ -1,0 +1,51 @@
+{
+    "version": "0.3.0",
+    "description": "文涌编辑器（Effidit）是一款带有AI辅助写作功能的文本编辑工具，由腾讯AI Lab开发。",
+    "homepage": "https://effidit.qq.com",
+    "license": "Unknown",
+    "url": "https://effidit.qq.com/effidit-v0.3.0-zh-setup.msi",
+    "hash": "08e12a9945c115dd77fcc8ab4f497464e84ad20c7fd4775bb5fc966928764b27",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\Tencent\\Effidit\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\Tencent\\Effidit\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Effidit.exe",
+            "Effidit"
+        ]
+    ],
+    "checkver": {
+        "url": "https://scoop_checkver.233366.xyz/effidit",
+        "jsonpath": "$.version"
+    },
+    "autoupdate": {
+        "url": "https://effidit.qq.com/effidit-v$version-zh-setup.msi"
+    }
+}

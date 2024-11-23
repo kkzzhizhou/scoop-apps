@@ -1,0 +1,58 @@
+{
+    "version": "2024.3",
+    "description": "由 JetBrains 提供的一款工具，轻松地将数据转化为见解。A tool to turn data into insights with ease by JetBrains.",
+    "homepage": "https://www.jetbrains.com/dataspell/",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.jetbrains.com/store/license.html"
+    },
+    "url": "https://download.jetbrains.com/python/dataspell-2024.3.exe#/abgo_bucket_installer.exe",
+    "hash": "4a4e53268d5f7732f1429f10572dca92981a956351f8ec843cccc65a6db56db8",
+    "bin": [
+        [
+            "IDE\\bin\\dataspell64.exe",
+            "DataSpell"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "IDE\\bin\\dataspell64.exe",
+            "DataSpell"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$verPart = $version -split '\\.'",
+        "$verRes = \"$($verPart[0]).$($verPart[1])\"",
+        "persist_file -dir @(\"$user_AppData\\JetBrains\\DataSpell$($verRes)\",\"$user_LocalAppData\\JetBrains\\DataSpell$($verRes)\") @(\"$persist_dir\\DataSpell\",\"$persist_dir\\DataSpell_LocalAppData\")",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=\"$dir\\IDE\"",
+        "sleep_install \"$dir\\IDE\\bin\\idea.properties\"",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "$preName = \"DataSpell\"",
+        "$remove_list = @(\"$user_AppData\\JetBrains\", \"$user_LocalAppData\\JetBrains\") | ForEach-Object {",
+        "   Get-ChildItem $_ | Where-Object { $_.Name -match \"$preName[\\d\\.]+\" } | ForEach-Object { $_.FullName }",
+        "}",
+        "remove_files $remove_list",
+        "$ui_exe=\"$dir\\IDE\\bin\\Uninstall.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "url": "https://data.services.jetbrains.com/products/releases?code=DS&latest=true",
+        "jsonpath": "$.DS[0].version"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/python/dataspell-$version.exe#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

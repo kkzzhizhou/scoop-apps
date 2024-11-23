@@ -1,0 +1,52 @@
+{
+    "version": "3.5.1.3946",
+    "description": "The official OpenVPN Connect client software developed and maintained by OpenVPN Inc.",
+    "homepage": "https://openvpn.net",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://swupdate.openvpn.net/downloads/connect/openvpn-connect-3.5.1.3946_signed.msi#/setup.msi_",
+            "hash": "ffd922b8afbcaf62079131d663e3eefb63ef173ad6cee6877b9d4945db43a7cf"
+        },
+        "32bit": {
+            "url": "https://swupdate.openvpn.net/downloads/connect/openvpn-connect-3.5.1.3946_signed_x86.msi#/setup.msi_",
+            "hash": "a3ec4ae45d960b9188174cc6184f192927419469e9f828d5669ccc66bc4bb724"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -Args @('/i', \"$dir\\setup.msi_\", '/qn')",
+            "Stop-Process -Name 'OpenVPNConnect'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process 'msiexec' -Wait -Verb 'RunAs' -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn')"
+        ]
+    },
+    "checkver": {
+        "url": "https://openvpn.net/connect-docs/windows-release-notes.html",
+        "regex": "<h2 class=\"title\" style=\"clear: both\">([\\d.]+) \\(([\\d]+)\\)</h2>",
+        "replace": "$1.$2"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://swupdate.openvpn.net/downloads/connect/openvpn-connect-$version_signed.msi#/setup.msi_",
+                "hash": {
+                    "url": "https://openvpn.net/client-connect-vpn-for-windows/",
+                    "regex": "(?sm)v3-windows\\.msi.*?$sha256"
+                }
+            },
+            "32bit": {
+                "url": "https://swupdate.openvpn.net/downloads/connect/openvpn-connect-$version_signed_x86.msi#/setup.msi_",
+                "hash": {
+                    "url": "https://openvpn.net/client-connect-vpn-for-windows/",
+                    "regex": "(?sm)v3-windows-x86\\.msi.*?$sha256"
+                }
+            }
+        }
+    }
+}

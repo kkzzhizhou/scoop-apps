@@ -1,0 +1,33 @@
+{
+    "version": "5.0.16",
+    "description": "PowerShell Universal. Universal is a cross-platform solution for developing web-based tools with PowerShell. It currently provides three main features which include APIs, Automation and Dashboards",
+    "homepage": "https://docs.powershelluniversal.com/",
+    "license": "Proprietary",
+    "changelog": "https://docs.powershelluniversal.com/changelog",
+    "url": "https://imsreleases.blob.core.windows.net/universal/production/5.0.16/PowerShellUniversal.5.0.16.msi#/setup.msi_",
+    "hash": "7d06dee1e32a62ac1c5f17f00d53a562e5b1365672a132991d9b56d67e77333c",
+    "pre_download": "Assert-Administrator",
+    "installer": {
+        "script": [
+            "$programname = \"PowerShell Universal*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$regPath = \"HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{B14BA50D-778F-4D99-A348-4B45909F0069}\"",
+            "if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', '/norestart') -RunAs | Out-Null",
+            "   if((Get-ItemProperty -LiteralPath \"$regPath\").DisplayVersion -lt [Version]\"$version\")",
+            "   {",
+            "       scoop hold PowerShellUniversal-Install -g",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.msi_\" -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.powershellgallery.com/packages/Universal/",
+        "regex": " Universal ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://imsreleases.blob.core.windows.net/universal/production/$version/PowerShellUniversal.$version.msi#/setup.msi_"
+    }
+}

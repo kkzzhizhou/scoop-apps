@@ -1,0 +1,89 @@
+{
+    "version": "1.95.3.24321",
+    "description": "A community-driven, freely-licensed binary distribution of Microsoft’s editor VS Code.",
+    "homepage": "https://vscodium.com/",
+    "license": "MIT",
+    "notes": [
+        "Add VSCodium as a context menu option by running 'reg import \"$dir\\install-context.reg\"'",
+        "For file associations, run 'reg import \"$dir\\install-associations.reg\"'"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/VSCodium/vscodium/LatestRelease//VSCodium-win32-x64-1.95.3.24321.zip",
+            "hash": "ac1dac2996b9079f6d53fce56953159ae86447d0cffc74faaa30d8a867811388"
+        },
+        "arm64": {
+            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/VSCodium/vscodium/LatestRelease//VSCodium-win32-arm64-1.95.3.24321.zip",
+            "hash": "f38558cadbbddc90cf189e09eb0a07e3f6b1b143712f9c68ca9d50e3694920d0"
+        }
+    },
+    "pre_install": [
+        "$product_path = \"$dir\\resources\\app\\product.json\"",
+        "if (Test-Path -Path $product_path) {",
+        "    $product = Get-Content -Path $product_path -Raw -Encoding UTF8 | ConvertFrom-Json",
+        "    if (![string]::IsNullOrEmpty($product.updateUrl)) {",
+        "        Get-Content -Path $product_path | Where-Object {$_ -notmatch \"updateurl\"} | Set-Content temp.json",
+        "        Move-Item -Path temp.json -Destination $product_path -Force",
+        "    }",
+        "}"
+    ],
+    "post_install": [
+        "$dirpath = \"$dir\".Replace('\\', '\\\\')",
+        "$exepath = \"$dir\\VSCodium.exe\".Replace('\\', '\\\\')",
+        "'install-associations', 'uninstall-associations', 'install-context', 'uninstall-context' | ForEach-Object {",
+        "  if (Test-Path \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\") {",
+        "    $content = Get-Content \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\"",
+        "    $content = $content.Replace('$codedir', $dirpath)",
+        "    $content = $content.Replace('$code', $exepath)",
+        "    $content = $content.Replace('&Code', '&VSCodium')",
+        "    if ($global) {",
+        "      $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_.reg\"",
+        "  }",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.vscode-oss\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.vscode-oss\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\VSCodium\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\VSCodium\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=vscodium(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "env_add_path": "bin",
+    "bin": [
+        [
+            "bin/codium.cmd",
+            "vscodium"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "VSCodium.exe",
+            "VSCodium"
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "github": "https://github.com/VSCodium/vscodium"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/VSCodium/vscodium/LatestRelease//VSCodium-win32-x64-$version.zip"
+            },
+            "arm64": {
+                "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/VSCodium/vscodium/LatestRelease//VSCodium-win32-arm64-$version.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

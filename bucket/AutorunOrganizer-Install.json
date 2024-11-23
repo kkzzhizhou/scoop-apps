@@ -1,0 +1,53 @@
+{
+    "version": "5.46",
+    "description": "Autorun Organizer. Free Startup Manager for Windows",
+    "homepage": "https://www.chemtable.com/autorun-organizer.htm",
+    "license": "Freeware",
+    "changelog": "https://www.chemtable.com/version-history.htm?prod_id=Autorun%20Organizer",
+    "url": "https://files.chemtable.com/ao/autorun-organizer-setup.exe#/setup.exe",
+    "hash": "42c6f9e00e62b85f1ae845c8d4c0606d8af39d79ddfded9c290c96807f93c1f1",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"AutorunOrganizer\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"Autorun Organizer version*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Autorun Organizer\\AutorunOrganizer.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /CLOSEAPPLICATIONS /SP- | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }",
+            "while ((Get-Process -Name 'AutorunOrganizer' -ErrorAction SilentlyContinue).Count -eq 0) {",
+            "   Start-Sleep -Milliseconds 50",
+            "}",
+            "taskkill /F /IM 'AutorunOrganizer' /FI 'status eq running'"
+        ]
+    },
+    "post_install": [
+        "$DesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$DesktopPath\\Autorun Organizer.lnk\") {Remove-Item \"$DesktopPath\\Autorun Organizer.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://www.chemtable.com/autorun-organizer.htm",
+        "regex": "<title>Autorun Organizer ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://files.chemtable.com/ao/autorun-organizer-setup.exe#/setup.exe"
+    }
+}

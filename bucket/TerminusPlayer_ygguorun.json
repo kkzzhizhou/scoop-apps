@@ -1,0 +1,66 @@
+{
+    "version": "221122",
+    "description": "本播放器是终点站大佬基于 Jellyfin-media-player 项目 修改的一款播放器",
+    "homepage": "https://github.com/Terminus-Media/jellyfin-media-player",
+    "license": "GNU General Public License v2.0",
+    "depends": "dark",
+    "url": "https://github.com/Terminus-Media/jellyfin-media-player/releases/download/v221122/TerminusPlayer-1.7.1-windows-x64_v221122.exe#/installer.exe",
+    "hash": "ef2cf3da22662d4f6dce408663767e1ae892ad27e33c20010b0af3446f8af477",
+    "installer": {
+        "script": [
+            "# install",
+            "Expand-DarkArchive \"$dir\\installer.exe\" \"$dir\\extracted\" -Removal",
+            "Get-ChildItem -Path \"$dir\\extracted\\AttachedContainer\" -Include \"P*.msi\" -Recurse | ForEach-Object {",
+            "    Expand-MsiArchive $_ \"$dir\\msi\"",
+            "}",
+            "Move-Item \"$dir\\msi\\Msi\\*\" \"$dir\" -Force",
+            "Remove-Item \"$dir\\extracted\", \"$dir\\msi\" -Force -Recurse",
+            "Copy-Item \"$dir\\AxureRP*.exe\" \"$dir\\AxureRP.exe\"",
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    New-Item $runtimeCachePersist -Type Directory -Force | Out-Null",
+            "}",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (Test-Path $runtimeCachePersist\\$folderName) {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "        New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "    } else {",
+            "        if (Test-Path $folder) {",
+            "            Move-Item $folder $runtimeCachePersist -Force",
+            "            New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "        }",
+            "    }",
+            "}",
+            "@(\"$env:LOCALAPPDATA\\TerminusPlayer\",\"$env:LOCALAPPDATA\\Terminus Player\") | ForEach-Object { PersistsFolder $_ }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (!(Test-Path $runtimeCachePersist\\$folderName)) {",
+            "        Move-Item $folder $runtimeCachePersist -Force",
+            "    } else {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "    }",
+            "}",
+            "@(\"$env:LOCALAPPDATA\\TerminusPlayer\",\"$env:LOCALAPPDATA\\Terminus Player\") | ForEach-Object { PersistsFolder $_ }"
+        ]
+    },
+    "shortcuts": [
+        [
+            "TerminusPlayer.exe",
+            "Terminus Player"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Terminus-Media/jellyfin-media-player/releases/download/v$version/TerminusPlayer-1.7.1-windows-x64_v$version.exe#/installer.exe"
+    }
+}

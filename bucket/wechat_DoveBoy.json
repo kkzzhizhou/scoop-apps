@@ -1,0 +1,49 @@
+{
+    "homepage": "https://weixin.qq.com",
+    "description": "微信，是一个生活方式",
+    "version": "3.9.12",
+    "license": "© 1998 - 2021 Tencent Inc. All Rights Reserved",
+    "architecture": {
+        "64bit": {
+            "url": "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
+            "hash": "76b4d0f4dc28a679bea09b2471444956e43680982b31eec9584e9ccf695046d9"
+        }
+    },
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+            "$configpath = \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\"",
+            "ensure \"$configpath\" | Out-Null",
+            "Set-Content -NoNewline -Path \"$configpath\\3ebffe94.ini\" -Value \"$persist_dir\"",
+            "$regpath = \"HKCU:Software\\Tencent\\WeChat\"",
+            "if (!(Test-Path \"$regpath\")) {",
+            "    New-Item -Path \"$regpath\" -Type Directory -Force | Out-Null",
+            "}",
+            "New-ItemProperty -Path $regpath -Name \"FileSavePath\" -Value \"$persist_dir\" -Force | Out-Null"
+        ]
+    },
+    "shortcuts": [
+        [
+            "WeChat.exe",
+            "WeChat"
+        ]
+    ],
+    "persist": "WeChat Files",
+    "uninstaller": {
+        "script": [
+            "Remove-Item -Path \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\\3ebffe94.ini\" -Force | Out-Null",
+            "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\WeChat\" -Name \"FileSavePath\" -Force | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://pc.weixin.qq.com",
+        "regex": "class=\"download-version\">([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dldir1.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z"
+            }
+        }
+    }
+}

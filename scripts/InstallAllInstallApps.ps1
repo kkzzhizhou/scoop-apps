@@ -1,0 +1,7 @@
+$ErrorActionPreference = 'SilentlyContinue'
+$Excluded = "*Nightly-*","*NightlyCLI-*","*Alpha-*","*AlphaCLI-*","*Beta-*","*BetaCLI-*","*RC-*","*RCCLI-*","*Dev-*","*DevCLI-*","*Canary-*","*Preview-*"
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Recurse -Filter "*-UserInstall.json" -Exclude $Excluded | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("$env:userprofile\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Recurse -Filter "*-UserManualInstall.json" -Exclude $Excluded | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("$env:userprofile\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Recurse -Filter "*-Install.json" -Exclude $Excluded | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("C:\ProgramData\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+Get-ChildItem -Path "$env:userprofile\scoop\buckets\scoop-apps\bucket" -File -Recurse -Filter "*-ManualInstall.json" -Exclude $Excluded | Select-Object BaseName | ForEach-Object { If(!(test-path -PathType container ("C:\ProgramData\scoop\apps\" + $_.Basename))) {scoop install $_.BaseName}}
+pause
