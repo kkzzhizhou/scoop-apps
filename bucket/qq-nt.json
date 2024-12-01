@@ -1,13 +1,10 @@
 {
     "version": "9.9.16.241121",
-    "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family, Build with Electron",
-    "homepage": "https://im.qq.com",
+    "description": "An instant messaging software service developed by Tencent",
+    "homepage": "https://im.qq.com/pcqq/index.shtml",
     "license": {
         "identifier": "Proprietary",
         "url": "https://ti.qq.com/agreement/index.html"
-    },
-    "suggest": {
-        "LiteLoaderQQNT": "LiteLoaderQQNT"
     },
     "architecture": {
         "64bit": {
@@ -17,38 +14,29 @@
         "32bit": {
             "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.16_241121_x86_01.exe#/dl.7z",
             "hash": "2269a64bba7800cd82a3ea43359210bd6c35efac26b2d698c6b8ab46c5374f97"
+        },
+        "arm64": {
+            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.16_241121_arm64_01.exe#/dl.7z",
+            "hash": "6e217f12a0102d9763b418659327f87dc6de814424afa58e07be34b35c17abcb"
         }
     },
-    "installer": {
-        "script": [
-            "$configpath = \"$env:PUBLIC\\Documents\\Tencent\\QQ\"",
-            "if (!(Test-Path \"$configpath\")) {",
-            "    New-Item -Path \"$configpath\" -Type Directory -Force | Out-Null",
-            "}",
-            "Set-Content -NoNewline -Path \"$configpath\\UserDataInfo.ini\" -Value \"[UserDataSet]`nUserDataSavePathType=2`nUserDataSavePath=$persist_dir\\QQ Files\""
-        ]
-    },
-    "bin": "Files\\QQ.exe",
+    "extract_dir": "Files",
     "shortcuts": [
         [
-            "Files\\QQ.exe",
-            "QQ-NT"
+            "QQ.exe",
+            "QQ"
         ]
     ],
-    "persist": "QQ Files",
-    "uninstaller": {
-        "script": "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null"
-    },
     "checkver": {
         "script": [
-            "$html = Invoke-WebRequest -Uri \"https://im.qq.com/pcqq/index.shtml\" -UseBasicParsing",
-            "$regex1 = '//.*/im.qq.com_new/.*/windowsDownloadUrl\\.js(\\?t=[0-9]+)?'",
-            "$links = ([regex]::Matches($html.Content, $regex1)).value",
-            "$allContent = $links | ForEach-Object { (Invoke-WebRequest -Uri ('https:' + $_) -UseBasicParsing).Content } | Out-String",
-            "$regex2 = 'QQNT/Windows/QQ_([0-9.]+)_([0-9]+)_x64_01.exe'",
-            "(([regex]::Matches($allContent, $regex2)).value | Sort-Object -Descending -CaseSensitive)[0] | Out-String"
+            "$url = 'https://im.qq.com/pcqq/index.shtml'",
+            "$resp = Invoke-WebRequest -Uri $url",
+            "$cont = $resp.Content",
+            "$pattern = 'https://qq-web.cdn-go.cn.*windowsDownloadUrl.js'",
+            "$jsUrl = [regex]::Match($cont, $pattern).Value",
+            "Invoke-WebRequest -Uri $jsUrl"
         ],
-        "regex": "QQNT/Windows/QQ_([\\d\\.]+)_([\\d]+)_x64_01.exe",
+        "regex": "QQNT/Windows/QQ_([\\d\\.]+)_([\\d]+)_x86_01.exe",
         "replace": "${1}.${2}"
     },
     "autoupdate": {
@@ -58,6 +46,9 @@
             },
             "32bit": {
                 "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_01.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_arm64_01.exe#/dl.7z"
             }
         }
     }
