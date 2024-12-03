@@ -1,0 +1,58 @@
+{
+    "version": "2412",
+    "description": "Nintendo GameCube and Wii emulator",
+    "homepage": "https://dolphin-emu.org/",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.dolphin-emu.org/releases/2412/dolphin-2412-x64.7z",
+            "hash": "26889ed38858259b9962cd55ad35e54e642a3baee3793c645cb7055db09516a3",
+            "extract_dir": "Dolphin-x64"
+        },
+        "arm64": {
+            "url": "https://dl.dolphin-emu.org/releases/2412/dolphin-2412-ARM64.7z",
+            "hash": "5a9e6a0178f6b14a919fe6bc3b2b8c73d79d4653cf5de0d97e4de3d4adf772a2",
+            "extract_dir": "Dolphin-ARM64"
+        }
+    },
+    "pre_install": [
+        "$appdataPath = \"$Env:AppData\\Dolphin Emulator\"",
+        "if ((Test-Path -Path $appdataPath\\*) -and (!(Test-Path -Path $persist_dir\\*))) {",
+        "   Write-Warning \"Migrating AppData...\"",
+        "   New-Item -Type Directory -Path $persist_dir\\User -Force | Out-Null",
+        "   Copy-Item -Recurse -Force $appdataPath\\* -Destination $persist_dir\\User\\",
+        "}"
+    ],
+    "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
+    "bin": [
+        "Dolphin.exe",
+        "DolphinTool.exe"
+    ],
+    "shortcuts": [
+        [
+            "Dolphin.exe",
+            "Nintendo GameCube & Wii [ngc][dolphin]"
+        ]
+    ],
+    "persist": "User",
+    "checkver": {
+        "url": "https://dolphin-emu.org/download/",
+        "regex": "https://dl.dolphin-emu.org/releases/(?<version>[\\d]+)/"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.dolphin-emu.org/releases/$version/dolphin-$version-x64.7z"
+            },
+            "arm64": {
+                "url": "https://dl.dolphin-emu.org/releases/$version/dolphin-$version-ARM64.7z"
+            }
+        }
+    }
+}

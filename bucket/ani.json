@@ -1,14 +1,30 @@
 {
-    "version": "4.1.0-alpha02",
-    "description": "One-stop online barrage drama tracking platform",
-    "homepage": "https://github.com/open-ani/ani",
-    "license": "GPL-3.0-only",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/open-ani/ani/releases/download/v4.1.0-alpha02/ani-4.1.0-alpha02-windows-x86_64.zip",
-            "hash": "6b85821b46ca355dfc7a3068e9532621a17d8b033bf10b406c0e50b9ba5166d7",
-            "extract_dir": "Ani"
-        }
+    "version": "4.0.1",
+    "description": "一站式在线弹幕追番平台：全自动 BT + 在线多数据源聚合，离线缓存，Bangumi 收藏同步，弹幕云过滤 ...",
+    "homepage": "https://myani.org/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/open-ani/ani#AGPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/open-ani/ani/releases/download/v4.0.1/ani-4.0.1-windows-x86_64.zip",
+    "hash": "5732fdfe02be434444d29742392e03fac376f866e16f651e5e8781205eba493b",
+    "extract_dir": "Ani",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\cache\" -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
     "bin": "Ani.exe",
     "shortcuts": [
@@ -17,30 +33,11 @@
             "Ani"
         ]
     ],
-    "installer": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name muggle) scripts/DoradoUtils.psm1)",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\data\" -Target \"$env:APPDATA\\Him188\"",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name muggle) scripts/DoradoUtils.psm1)",
-            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Him188\"",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
     "checkver": {
-        "url": "https://api.github.com/repos/open-ani/ani/releases",
-        "jsonpath": "$..tag_name",
-        "regex": "v([-\\d.\\w]+)"
+        "url": "https://api.github.com/repos/open-ani/ani/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/open-ani/ani/releases/download/v$version/ani-$version-windows-x86_64.zip"
-            }
-        }
+        "url": "https://github.com/open-ani/ani/releases/download/v$version/ani-$version-windows-x86_64.zip"
     }
 }
