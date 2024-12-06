@@ -1,0 +1,44 @@
+{
+    "version": "2.1.0",
+    "description": "一个基于 electron typescript vue3 的桌面音乐播放器",
+    "homepage": "https://github.com/algerkong/AlgerMusicPlayer",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/algerkong/AlgerMusicPlayer#Apache-2.0-1-ov-file"
+    },
+    "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/2.1.0/AlgerMusic_2.1.0_Setup_x64.exe#/dl.7z",
+    "hash": "3dbf05c479a7f64e9a2c1380114e779c4e981de68287f8a76b7185da6a8eb06e",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\alger-music\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\alger-music\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "AlgerMusic.exe",
+    "shortcuts": [
+        [
+            "AlgerMusic.exe",
+            "AlgerMusic"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/algerkong/AlgerMusicPlayer/releases/latest",
+        "regex": "/releases/tag/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/$version/AlgerMusic_$version_Setup_x64.exe#/dl.7z"
+    }
+}
