@@ -1,19 +1,17 @@
 {
-    "version": "6.1.22",
+    "version": "7.1.4",
     "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
     "homepage": "https://www.virtualbox.org/",
     "license": {
         "identifier": "GPL-2.0-only|Freeware",
         "url": "https://www.virtualbox.org/wiki/VirtualBox_PUEL"
     },
-    "changelog": "https://www.virtualbox.org/wiki/Changelog",
     "architecture": {
         "64bit": {
-            "url": "https://download.virtualbox.org/virtualbox/6.1.22/VirtualBox-6.1.22-144080-Win.exe#/VBoxSetup.exe",
-            "hash": "ed5796aeb5d143bb4bb59a70bd976411dee79d583deb7a95f621992dd3c6864f"
+            "url": "https://download.virtualbox.org/virtualbox/7.1.4/VirtualBox-7.1.4-165100-Win.exe#/VBoxSetup.exe",
+            "hash": "f970e275f59eeeb129aab88a78dae80784370742b5051650a7926c9ea64afeac"
         }
     },
-    "#pre_download": "Assert-Administrator",
     "pre_install": [
         "$processname = \"virtualbox\"",
         "$process = Get-Process $processname -ErrorAction SilentlyContinue",
@@ -27,18 +25,30 @@
         "}"
     ],
     "installer": {
-        "script": "Start-Process cmd.exe -Verb Runas \"/c $dir\\VBoxSetup.exe --msiparams INSTALLDIR=$dir VBOX_START=0 REBOOT=ReallySuppress --silent\" -Wait -WindowStyle hidden"
-    },
-    "post_install": "remove-item \"$dir\\VBoxSetup.exe\"",
-    "uninstaller": {
         "script": [
-            "$id = wmic product where \"\"\"name like 'Oracle VM VirtualBox%'\"\"\" get IdentifyingNumber | find /i \"\"\"-\"\"\"",
-            "Start-Process cmd.exe -Verb Runas \"/c msiexec /x $id /qn\" -Wait -WindowStyle hidden"
+            "$programname = \"Oracle VM VirtualBox $version\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\Oracle\\VirtualBox\\VirtualBox.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\VBoxSetup.exe`\" --msiparams VBOX_START=0 VBOX_INSTALLDESKTOPSHORTCUT=0 VBOX_INSTALLQUICKLAUNCHSHORTCUT=0 REBOOT=ReallySuppress --silent\" -Verb RunAs",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\VBoxSetup.exe\") { Remove-Item \"$dir\\VBoxSetup.exe\" -Force }",
+            "$url = \"https://download.virtualbox.org/virtualbox/$version/Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\"",
+            "$destination = \"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\"",
+            "(New-Object System.Net.WebClient).DownloadFile($url, $destination)",
+            "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call echo y | `\"$ProgramFilesPath\\Oracle\\VirtualBox\\VBoxManage.exe`\" extpack install --replace `\"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack`\"\" -Verb RunAs",
+            "Remove-Item \"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\""
         ]
     },
     "checkver": {
-        "url": "https://update.virtualbox.org/query.php?platform=WINDOWS_64BITS_GENERIC&version=6.0.0",
-        "re": "VirtualBox-(?<version>[\\d.]+)-(?<revision>[\\d]+)-Win.exe"
+        "url": "https://www.virtualbox.org/wiki/Downloads",
+        "regex": "VirtualBox-(?<version>[\\d.]+)-(?<revision>[\\d]+)-Win.exe"
     },
     "autoupdate": {
         "architecture": {
