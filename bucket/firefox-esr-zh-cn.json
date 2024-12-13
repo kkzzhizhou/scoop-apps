@@ -1,43 +1,83 @@
 {
-    "homepage": "https://www.mozilla.org/en-US/firefox/enterprise/",
-    "description": "Extended Support Release of Firefox: the popular open source web browser.",
+    "version": "128.5.2",
+    "description": "Firefox 的扩展支持版本：流行的开源网络浏览器",
+    "homepage": "https://www.mozilla.org/zh-CN/firefox/organizations/",
     "license": "MPL-2.0",
-    "version": "128.5.1esr",
+    "notes": [
+        "To set profile 'Scoop-ESR' as *DEFAULT*, or profiles/settings was lost after update:",
+        "  - Run 'Firefox ESR Profile Manager', choose 'Scoop-ESR' then click 'Start Firefox'.",
+        "  - Visit 'about:profiles' page in Firefox ESR to check *DEFAULT* profile.",
+        "For details: https://support.mozilla.org/zh-CN/kb/profile-manager-create-remove-switch-firefox-profiles"
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.5.1esr/win64/zh-CN/Firefox%20Setup%20128.5.1esr.exe#/dl.7z",
-            "hash": "d2e2e57bc98cd9f3bd617657f7bf4d3cff8a7e38b94c047cb6452a03997eef93"
+            "url": "https://archive.mozilla.org/pub/firefox/releases/128.5.2esr/win64/zh-CN/Firefox%20Setup%20128.5.2esr.exe#/dl.7z",
+            "hash": "sha512:cbc4cda2aca70ea560a510741949d5b5ba06d5876c6280a1bda5cba869eb8218e8757e2e158369b6db5a2108b8e661a34fac4c136130e7f127f3857e756966fe"
         },
         "32bit": {
-            "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/128.5.1esr/win32/zh-CN/Firefox%20Setup%20128.5.1esr.exe#/dl.7z",
-            "hash": "fd907bb084b2d9de83d0d18a36c6ef70fe4e121caea45b9a44ba71270903f7fa"
+            "url": "https://archive.mozilla.org/pub/firefox/releases/128.5.2esr/win32/zh-CN/Firefox%20Setup%20128.5.2esr.exe#/dl.7z",
+            "hash": "sha512:f99a9ee2a5d093eb3da6b71507d74c0a08a74c8b1dfd8c3ca74f77a362afa66100a1ce7ff3c4be90f8684a64d50d1b4f8b48c49587595e0825b711863c7beaf5"
+        },
+        "arm64": {
+            "url": "https://archive.mozilla.org/pub/firefox/releases/128.5.2esr/win64-aarch64/zh-CN/Firefox%20Setup%20128.5.2esr.exe#/dl.7z",
+            "hash": "sha512:f371f4f3e0ff9ff23582c0ea2ccff16ca738727a96d5bea0eb32ac7aca879ac1a0d17b99af8feadebd5c6b4ec2ec0ba579d28d8e7e9365dc4a0069358b96d8f9"
         }
     },
     "extract_dir": "core",
+    "post_install": [
+        "firefox-esr -CreateProfile \"Scoop-ESR $persist_dir\\profile\"",
+        "$Addition = \"$persist_dir\\addition\"",
+        "if (Test-Path $Addition) {",
+        "  info 'Copying additional items...'",
+        "  Copy-Item -Path $Addition\\* -Destination $dir -Force -Recurse -ErrorAction SilentlyContinue",
+        "}"
+    ],
+    "bin": [
+        [
+            "firefox.exe",
+            "firefox-esr"
+        ]
+    ],
     "shortcuts": [
         [
             "firefox.exe",
-            "Firefox ESR (Simplified Chinese)"
+            "Firefox ESR"
+        ],
+        [
+            "firefox.exe",
+            "Firefox ESR Profile Manager",
+            "-P"
         ]
     ],
+    "persist": [
+        "distribution",
+        "profile"
+    ],
     "checkver": {
-        "url": "https://product-details.mozilla.org/1.0/firefox_versions.json",
-        "jsonpath": "$.FIREFOX_ESR"
+        "url": "https://aus5.mozilla.org/update/6/Firefox/78.0/_/WINNT_x86_64-msvc-x64/zh-CN/esr/_/_/_/_/update.xml",
+        "xpath": "/updates/update/@appVersion"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/$version/win64/zh-CN/Firefox%20Setup%20$version.exe#/dl.7z",
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/win64/zh-CN/Firefox%20Setup%20$versionesr.exe#/dl.7z",
                 "hash": {
-                    "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/$version/SHA256SUMS",
-                    "regex": "$sha256\\s+win64/zh-CN/$basename"
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/SHA512SUMS",
+                    "regex": "$sha512\\s+win64/zh-CN/$basename"
                 }
             },
             "32bit": {
-                "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/$version/win32/zh-CN/Firefox%20Setup%20$version.exe#/dl.7z",
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/win32/zh-CN/Firefox%20Setup%20$versionesr.exe#/dl.7z",
                 "hash": {
-                    "url": "https://download-installer.cdn.mozilla.net/pub/firefox/releases/$version/SHA256SUMS",
-                    "regex": "$sha256\\s+win32/zh-CN/$basename"
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/SHA512SUMS",
+                    "regex": "$sha512\\s+win32/zh-CN/$basename"
+                }
+            },
+            "arm64": {
+                "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/win64-aarch64/zh-CN/Firefox%20Setup%20$versionesr.exe#/dl.7z",
+                "hash": {
+                    "url": "https://archive.mozilla.org/pub/firefox/releases/$versionesr/SHA512SUMS",
+                    "regex": "$sha512\\s+win64-aarch64/zh-CN/$basename"
                 }
             }
         }
