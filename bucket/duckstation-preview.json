@@ -1,6 +1,6 @@
 {
-    "version": "20241215-g03e2463",
-    "description": "Sony PlayStation 1 emulator",
+    "version": "20241215-gb68370d",
+    "description": "A fast PlayStation 1 emulator for PC and Android (preview build)",
     "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
         "identifier": "GPL-3.0-only",
@@ -9,10 +9,10 @@
     "notes": [
         "ATTENTION: Duckstation requires a PSX BIOS to function.",
         "Place the BIOS file in $persist_dir\\bios",
-        "Learn more at: https://www.duckstation.org/wiki/BIOS"
+        "Learn more at: https://web.archive.org/web/20210620033009/https://www.duckstation.org/wiki/BIOS"
     ],
     "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip",
-    "hash": "fedec2ec7a49088dcd61ddcdeabad6337f2b631b20720ff9e9da54a24b291f6a",
+    "hash": "1b0057e4a6a6a9b62a45670bb94bf23f649fcb0a01a6e04196549e505f251f1a",
     "installer": {
         "script": [
             "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
@@ -21,11 +21,19 @@
             "}"
         ]
     },
-    "shortcuts": [
-        [
-            "duckstation-qt-x64-ReleaseLTCG.exe",
-            "Sony PlayStation [ps1][duckstation]"
-        ]
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    },
+    "post_install": [
+        "echo \"update bin/shortcuts\"",
+        "$shell = New-Object -COM WScript.Shell",
+        "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\")",
+        "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
+        "$shortcut.Save()"
+    ],
+    "post_uninstall": [
+        "echo \"update bin/shortcuts\"",
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\""
     ],
     "persist": [
         "bios",
@@ -42,9 +50,6 @@
         "textures",
         "settings.ini"
     ],
-    "uninstaller": {
-        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
-    },
     "checkver": {
         "url": "https://github.com/stenzek/duckstation/releases/tag/preview",
         "regex": " datetime=\"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})[\\s\\S]*?.*duckstation/commit/(?<commit>[0-9a-f]{7})",

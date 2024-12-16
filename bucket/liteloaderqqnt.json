@@ -31,13 +31,13 @@
             "64bit": {
                 "url": [
                     "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$version/LiteLoaderQQNT.zip",
-                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x64.dll"
+                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/latest/dbghelp_x64.dll"
                 ]
             },
             "32bit": {
                 "url": [
                     "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$version/LiteLoaderQQNT.zip",
-                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/DllHijack_1.1.2/dbghelp_x86.dll"
+                    "https://github.com/LiteLoaderQQNT/QQNTFileVerifyPatch/releases/download/latest/dbghelp_x86.dll"
                 ]
             }
         }
@@ -56,8 +56,8 @@
         "$apppath = Join-Path $qqpath 'resources/app'",
         "$versionpath = Join-Path $qqpath 'versions'",
         "if (Test-Path $versionpath) {",
-        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1",
-        "    $apppath = Join-Path $version '/resources/app'",
+        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1 | Split-Path -leaf",
+        "    $apppath = Join-Path (Join-Path $versionpath $version) '/resources/app'",
         "}",
         "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
         "$loader = \"require(String.raw``{0}``)\" -f $dir",
@@ -68,6 +68,7 @@
         "Set-Content -Path $loaderpath -Value $loader -Force",
         "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
         "$package.main = './app_launcher/llqqnt.js'",
+        "Copy-Item (Join-Path $apppath 'package.json') (Join-Path $apppath 'package.json.bak') -Force",
         "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force"
     ],
     "post_uninstall": [
@@ -80,14 +81,14 @@
         "$apppath = Join-Path $qqpath 'resources/app'",
         "$versionpath = Join-Path $qqpath 'versions'",
         "if (Test-Path $versionpath) {",
-        "    # get the subfolder with the highest version number",
-        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1",
-        "    $apppath = Join-Path $version '/resources/app'",
+        "    $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1 | Split-Path -leaf",
+        "    $apppath = Join-Path (Join-Path $versionpath $version) '/resources/app'",
         "}",
         "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
         "Remove-Item $loaderpath -Force",
         "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
         "$package.main = './application/app_launcher/index.js'",
+        "Copy-Item (Join-Path $apppath 'package.json.bak') (Join-Path $apppath 'package.json') -Force",
         "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force",
         "Write-Host 'LiteLoaderQQNT 插件加载器已安装/卸载完成'"
     ]
