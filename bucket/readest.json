@@ -1,0 +1,43 @@
+{
+    "version": "0.8.3",
+    "description": "Readest is a modern, feature-rich ebook reader designed for avid readers offering seamless cross-platform access, powerful tools, and an intuitive interface to elevate your reading experience.",
+    "homepage": "https://readest.com/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/chrox/readest#AGPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/chrox/readest/releases/download/v0.8.3/Readest_0.8.3_x64-setup.exe#/dl.7z",
+    "hash": "481fea4ab91bdb1e6aec62bd88fe0e98ef0be10416c52f30f23839f2fd692c4f",
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.bilingify.readest\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.bilingify.readest\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Readest.exe",
+    "shortcuts": [
+        [
+            "Readest.exe",
+            "Readest"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/chrox/readest/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/chrox/readest/releases/download/v$version/Readest_$version_x64-setup.exe#/dl.7z"
+    }
+}
