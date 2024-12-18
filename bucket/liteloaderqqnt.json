@@ -68,7 +68,10 @@
         "Set-Content -Path $loaderpath -Value $loader -Force",
         "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
         "$package.main = './app_launcher/llqqnt.js'",
-        "Copy-Item (Join-Path $apppath 'package.json') (Join-Path $apppath 'package.json.bak') -Force",
+        "if (Test-Path (Join-Path $apppath 'package.json.bak')) {",
+        "    Remove-Item -Path (Join-Path $apppath 'package.json.bak') -Force",
+        "}",
+        "Rename-Item -Path (Join-Path $apppath 'package.json') -NewName package.json.bak -Force",
         "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force"
     ],
     "post_uninstall": [
@@ -88,8 +91,8 @@
         "Remove-Item $loaderpath -Force",
         "$package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
         "$package.main = './application/app_launcher/index.js'",
-        "Copy-Item (Join-Path $apppath 'package.json.bak') (Join-Path $apppath 'package.json') -Force",
-        "Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force",
+        "Remove-Item -Path (Join-Path $apppath 'package.json') -Force",
+        "Rename-Item -Path (Join-Path $apppath 'package.json.bak') -NewName package.json -Force",
         "Write-Host 'LiteLoaderQQNT 插件加载器已安装/卸载完成'"
     ]
 }
