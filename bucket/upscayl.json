@@ -1,32 +1,41 @@
 {
-    "version": "2.11.5",
+    "version": "2.15.0-pre-release",
+    "description": "Upscayl. Free and Open Source AI Image Upscaler for Linux, MacOS and Windows built with Linux-First philosophy.",
     "homepage": "https://github.com/upscayl/upscayl",
-    "description": "A Free and Open Source AI Image Upscaler.",
-    "license": "AGPL-3.0",
+    "license": {
+        "identifier": "AGPL-3.0-or-later",
+        "url": "https://github.com/upscayl/upscayl/raw/main/LICENSE"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/upscayl/upscayl/releases/download/v2.11.5/upscayl-2.11.5-win.exe#/dl.7z",
-            "hash": "sha512:94695a5e7b916cabdb22726987bbf6168d0ff116b5faa8ec6d6d07b4fa6748137573d209a1e53074bf6fe7e34f2645e48c3ffe5898be917b8c33cea9f0f60352"
+            "url": "https://github.com/upscayl/upscayl/releases/download/v2.15.0-pre-release/upscayl-2.15.0-pre-release-win.exe#/dl.7z",
+            "hash": "sha512:95cc0af0817dcfa7bf7540c9a530f45f83a8b568717106a31f0a6d6ba4b7304c79439d78058806b7c4208f1c7ba3711f551d33747c399e91f5ea744dd37f01d3",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal"
         }
     },
-    "extract_dir": "$PLUGINSDIR",
-    "pre_install": "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\"  -ErrorAction 'SilentlyContinue' -Force -Recurse",
     "shortcuts": [
         [
             "Upscayl.exe",
-            "Upscayl"
+            "Upscayl",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "checkver": "github",
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://api.github.com/repos/upscayl/upscayl/releases",
+        "regex": "(?sm)browser_download_url.*?releases/download/v([\\w.-]+)/upscayl-([\\w.-]+)-win\\.exe"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/upscayl/upscayl/releases/download/v$version/upscayl-$version-win.exe#/dl.7z"
+                "url": "https://github.com/upscayl/upscayl/releases/download/v$version/upscayl-$version-win.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "mode": "extract",
+                    "regex": "(?sm)$basename.*?sha512:\\s*?$base64"
+                }
             }
-        },
-        "hash": {
-            "url": "$baseurl/latest.yml",
-            "regex": "sha512:\\s$base64"
         }
     }
 }

@@ -1,6 +1,6 @@
 {
     "version": "20241219-g31c1cfa",
-    "description": "Sony PlayStation emulator",
+    "description": "A fast PlayStation 1 emulator for PC and Android",
     "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
         "identifier": "GPL-3.0-only",
@@ -9,7 +9,7 @@
     "notes": [
         "ATTENTION: Duckstation requires a PSX BIOS to function.",
         "Place the BIOS file in $persist_dir\\bios",
-        "Learn more at: https://www.duckstation.org/wiki/BIOS"
+        "Learn more at: https://web.archive.org/web/20210620033009/https://www.duckstation.org/wiki/BIOS"
     ],
     "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip",
     "hash": "225f366ecce432dc1d92e126fae868fd383aefc6823b8bd766d7a675d45380b7",
@@ -21,11 +21,19 @@
             "}"
         ]
     },
-    "shortcuts": [
-        [
-            "duckstation-qt-x64-ReleaseLTCG.exe",
-            "Sony PlayStation [ps1][duckstation]"
-        ]
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    },
+    "post_install": [
+        "echo \"update bin/shortcuts\"",
+        "$shell = New-Object -COM WScript.Shell",
+        "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\")",
+        "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
+        "$shortcut.Save()"
+    ],
+    "post_uninstall": [
+        "echo \"update bin/shortcuts\"",
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\""
     ],
     "persist": [
         "bios",
@@ -42,9 +50,6 @@
         "textures",
         "settings.ini"
     ],
-    "uninstaller": {
-        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
-    },
     "checkver": {
         "url": "https://github.com/stenzek/duckstation/releases/tag/latest",
         "regex": " datetime=\"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})[\\s\\S]*?.*duckstation/commit/(?<commit>[0-9a-f]{7})",
