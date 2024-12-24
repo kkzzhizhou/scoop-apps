@@ -1,0 +1,44 @@
+{
+    "version": "0.2.8-patch1",
+    "description": "第三方网易云音乐客户端 / GUI of Netease Cloud Music",
+    "homepage": "https://xc-music.vercel.app/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/yiktllw/XCMusic#MIT-1-ov-file"
+    },
+    "url": "https://github.com/yiktllw/XCMusic/releases/download/0.2.8/xc-music.Setup.0.2.8-patch1.exe#/dl.7z",
+    "hash": "e69a8cbddecd2c1c83a906c277c320a503424a53c6f76d6b382c07cbbc670636",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\xc-music\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\xc-music\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "xc-music.exe",
+    "shortcuts": [
+        [
+            "xc-music.exe",
+            "XCMusic"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/yiktllw/XCMusic/releases/latest",
+        "regex": "/releases/download/(?<tag>[\\d.]+)/xc-music.Setup.([\\w.-]+)\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://github.com/yiktllw/XCMusic/releases/download/$matchTag/xc-music.Setup.$version.exe#/dl.7z"
+    }
+}
