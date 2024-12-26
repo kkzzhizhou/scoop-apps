@@ -1,12 +1,12 @@
 {
-    "version": "3.4.0",
+    "version": "beta",
     "description": "必剪，B站出品，没啥不同",
     "homepage": "https://bcut.bilibili.cn/",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://webcdn.m.qq.com/spcmgr/download/Bcut-Win-3.4.0.exe",
-            "hash": "0a9446505692cdbcbfa0fda0c1ee01b866a00a74036d79b89d4e51cbf03e9d6d"
+            "url": "http://boss.hdslb.com/material/static/ce70bdcc098659d0341ad16160b9b579/Bcut-Win3.4.1.exe?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=4bd6b7b16353c099/20241223/shjd/s3/aws4_request&X-Amz-Date=20241223T074907Z&X-Amz-Expires=94608000&X-Amz-SignedHeaders=host&X-Amz-Signature=5c592bb640258e03c64d15b6c4d8b2dc5d4452cb2ce40ae91c8f0d8360548ed7#/Bcut-Win.exe",
+            "hash": "f3c1fbec8f28cae80112758182483aef9209cb89130feb3b00ef90545b15f55f"
         }
     },
     "innosetup": true,
@@ -17,10 +17,17 @@
         ]
     ],
     "checkver": {
-        "url": "https://pc.qq.com/detail/19/detail_24619.html",
-        "regex": "Bcut-Win-([\\d.]+).exe"
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Bilibili/Bcut'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64.InstallerUrl);\"",
+            "\"hash:$($dl_info.x64.InstallerSha256);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?); hash:(?<hash>.+?);"
     },
     "autoupdate": {
-        "url": "https://webcdn.m.qq.com/spcmgr/download/Bcut-Win-$version.exe"
+        "url": "$matchX64#/Bcut-Win.exe",
+        "hash": "$matchHash"
     }
 }
