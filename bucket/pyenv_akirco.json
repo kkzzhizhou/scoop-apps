@@ -1,28 +1,54 @@
 {
     "version": "3.1.1",
     "description": "Simple python version management tool for switching between multiple versions of Python.",
-    "homepage": "https://github.com/pyenv-win/pyenv-win",
-    "license": {
-        "identifier": "MIT",
-        "url": "https://github.com/pyenv-win/pyenv-win/blob/master/LICENSE"
-    },
-    "url": "https://raw.githubusercontent.com/akirco/dotfiles/refs/heads/master/docs/install-pyenv-win.ps1",
-    "hash": "fce59300c02d7bf693e4a2cad95b27784aeda9bec09c5451a3750034484984a2",
-    "pre_install": [
-        "Write-Host `n",
-        "try { & \"$dir\\install-pyenv-win.ps1\" }catch{ throw 'Install error due to possible network issues.'}"
+    "homepage": "https://pyenv-win.github.io/pyenv-win/",
+    "license": "MIT",
+    "notes": "You can specify the PYTHON_BUILD_MIRROR_URL environment variable and run 'pyenv update' to speed up downloads.",
+    "url": [
+        "https://raw.githubusercontent.com/akirco/aki-apps/refs/heads/master/bin/utils.ps1",
+        "https://github.com/pyenv-win/pyenv-win/archive/v3.1.1.zip"
     ],
-    "pre_uninstall":["Write-Host `n", "& \"$dir\\install-pyenv-win.ps1\" -Uninstall"],
-    "env_add_path":[
-        "pyenv-win\\bin",
-        "pyenv-win\\libexec",
-        "pyenv-win\\shims"
+    "hash": [
+        "95167dd3b92e06f9bc682fe2b90c5efd86e2a4776062694627805f13fa499318",
+        "a7481ccaf1f2328702e4a854a65793e95639f40dc63dd89782d160536f6b1ed0"
+    ],
+    "extract_dir": "pyenv-win-3.1.1",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\pyenv-win\\version\")) { New-Item \"$dir\\pyenv-win\\version\" -ItemType Directory -Force | Out-Null }",
+        "New-Item \"$dir\\pyenv-win\\shims\" -ItemType Directory -Force | Out-Null"
+    ],
+    "post_install": [
+        ". \"$dir\\utils.ps1\"",
+        "$BIN_PATH = Resolve-Path \"$dir\\..\\$version\\pyenv-win\\bin\"",
+        "$SHIMS_PATH = Resolve-Path \"$dir\\..\\$version\\pyenv-win\\shims\"",
+        "Write-Host `nAdding $BIN_PATH to PATH environment variable...",
+        "AddToPath $BIN_PATH",
+        "Write-Host `nAdding $SHIMS_PATH to PATH environment variable...",
+        "AddToPath $SHIMS_PATH"
+    ],
+    "pre_uninstall": [
+        ". \"$dir\\utils.ps1\"",
+        "$BIN_PATH = Resolve-Path \"$dir\\..\\$version\\pyenv-win\\bin\"",
+        "$SHIMS_PATH = Resolve-Path \"$dir\\..\\$version\\pyenv-win\\shims\"",
+        "Write-Host `nRemoving $BIN_PATH to PATH environment variable...",
+        "RemoveFromPath $BIN_PATH",
+        "Write-Host `nRemoving $SHIMS_PATH to PATH environment variable...",
+        "RemoveFromPath $SHIMS_PATH"
     ],
     "env_set": {
-        "PYTHON_BUILD_MIRROR_URL":"https://mirrors.huaweicloud.com/python/"
+        "PYENV": "$dir\\pyenv-win",
+        "PYENV_ROOT": "$dir\\pyenv-win",
+        "PYENV_HOME": "$dir\\pyenv-win",
+        "PYTHON_BUILD_MIRROR_URL": "https://mirrors.huaweicloud.com/python/"
     },
-    "checkver": "github",
+    "checkver": {
+        "github": "https://github.com/pyenv-win/pyenv-win"
+    },
     "autoupdate": {
-        "url": "https://raw.githubusercontent.com/akirco/dotfiles/refs/heads/master/docs/install-pyenv-win.ps1"
+        "url": [
+            "https://raw.githubusercontent.com/akirco/aki-apps/refs/heads/master/bin/utils.ps1",
+            "https://github.com/pyenv-win/pyenv-win/archive/v$version.zip"
+        ],
+        "extract_dir": "pyenv-win-$version"
     }
 }
