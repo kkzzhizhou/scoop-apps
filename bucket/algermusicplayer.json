@@ -1,5 +1,5 @@
 {
-    "version": "2.5.0",
+    "version": "3.1.0",
     "description": "一个基于 electron typescript vue3 的桌面音乐播放器",
     "homepage": "https://github.com/algerkong/AlgerMusicPlayer",
     "license": {
@@ -8,16 +8,16 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v2.5.0/AlgerMusic_2.5.0_Setup_x64.exe#/dl.7z",
-            "hash": "a960438d3e0d3517d06ed5332cd2142a2e1d1beaed57c7b4220d552f28a7dfcc",
+            "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v3.1.0/AlgerMusicPlayer-3.1.0-win-x64.exe#/dl.7z",
+            "hash": "dd9b78a7f76b39989dea2f5d4193f9da49bbd1b7fecf01304c5ec2819c6cba1e",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
                 "Remove-Item \"$dir\\`$*\" -Force -Recurse"
             ]
         },
         "32bit": {
-            "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v2.5.0/AlgerMusic_2.5.0_Setup_x86.exe#/dl.7z",
-            "hash": "178985babb3aeaa73f31dd98864b85a6b01294eeccbb57f8fab25aedcf0788a5",
+            "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v3.1.0/AlgerMusicPlayer-3.1.0-win-ia32.exe#/dl.7z",
+            "hash": "aaa3ae663101f4e3f5705e2c0090ab46548eb4513b0d24d689c6ad824dce6e1c",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
                 "Remove-Item \"$dir\\`$*\" -Force -Recurse"
@@ -55,19 +55,32 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/algerkong/AlgerMusicPlayer/releases/latest",
-        "regex": "/releases/download/v([\\d.]+)/AlgerMusic_(?<build>[\\d.]+)_Setup_x64\\.exe"
+        "script": [
+            "$url = 'https://api.github.com/repos/algerkong/AlgerMusicPlayer/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'AlgerMusicPlayer-([\\d.]+)-win-x64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'AlgerMusicPlayer-([\\d.]+)-win-ia32\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$ia32 = $matches[1]",
+            "$r = 'AlgerMusic_([\\d.]+)_Setup_arm64\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $ia32 $arm64"
+        ],
+        "regex": "([\\d.]+) (?<ia32>[\\d.]+) (?<arm64>[\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$version/AlgerMusic_$matchBuild_Setup_x64.exe#/dl.7z"
+                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$version/AlgerMusicPlayer-$version-win-x64.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$version/AlgerMusic_$matchBuild_Setup_x86.exe#/dl.7z"
+                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$matchIa32/AlgerMusicPlayer-$matchIa32-win-ia32.exe#/dl.7z"
             },
             "arm64": {
-                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$version/AlgerMusic_$matchBuild_Setup_arm64.exe#/dl.7z"
+                "url": "https://github.com/algerkong/AlgerMusicPlayer/releases/download/v$matchArm64/AlgerMusic_$matchArm64_Setup_arm64.exe#/dl.7z"
             }
         }
     }

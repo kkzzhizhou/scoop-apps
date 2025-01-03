@@ -1,0 +1,60 @@
+{
+    "homepage": "https://getquicker.net/",
+    "version": "1.43.57.0",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://getquicker.net/download/item/fast_x64#.msi",
+            "hash": "0714a2eaf7e53349382aa544c2efc25aaefe3292fb71df0c635c457d48803db5"
+        },
+        "32bit": {
+            "url": "https://getquicker.net/download/item/fast_x86#.msi",
+            "hash": "634f5be6e0658b62bb556acd9fd3e25e66233fb5ea17471b8efc59e3d2acaaed"
+        }
+    },
+    "extract_dir": "Quicker",
+    "checkver": {
+        "url": "https://getquicker.net/Download",
+        "regex": "快速通道[\\w\\W]*?(\\d.[\\d.]+)"
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "New-Item Registry::HKEY_CLASSES_ROOT\\quicker -Force -ItemType String -Value 'URL:Quicker Protocol' | Out-Null",
+            "New-ItemProperty Registry::HKEY_CLASSES_ROOT\\quicker -Force -PropertyType string -Name 'URL Protocol' -Value '' | Out-Null",
+            "New-Item Registry::HKEY_CLASSES_ROOT\\quicker\\DefaultIcon -Force -ItemType String -Value 'Quicker.exe' | Out-Null",
+            "New-Item Registry::HKEY_CLASSES_ROOT\\quicker\\shell\\open\\command -Force -ItemType String -Value \"`\"$dir\\QuickerStarter.exe`\" `\"%1`\"\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "if (Test-Path Registry::HKEY_CLASSES_ROOT\\quicker) {",
+            "    Remove-Item Registry::HKEY_CLASSES_ROOT\\quicker -Force -Recurse | Out-Null",
+            "}"
+        ]
+    },
+    "bin": "Quicker.exe",
+    "shortcuts": [
+        [
+            "Quicker.exe",
+            "Quicker"
+        ]
+    ],
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://getquicker.net/download/item/fast_x64#.msi"
+            },
+            "32bit": {
+                "url": "https://getquicker.net/download/item/fast_x86#.msi"
+            }
+        }
+    }
+}
