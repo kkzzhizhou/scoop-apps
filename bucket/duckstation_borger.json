@@ -1,5 +1,5 @@
 {
-    "version": "20241219-g31c1cfa",
+    "version": "20250103-gdda10d3",
     "description": "Sony PlayStation emulator",
     "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
@@ -12,7 +12,7 @@
         "Learn more at: https://www.duckstation.org/wiki/BIOS"
     ],
     "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip",
-    "hash": "225f366ecce432dc1d92e126fae868fd383aefc6823b8bd766d7a675d45380b7",
+    "hash": "f1af4ed99679ba604f93c7a87941340e5400ec68b9795065057e1e55ea2db522",
     "installer": {
         "script": [
             "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
@@ -21,6 +21,13 @@
             "}"
         ]
     },
+    "post_install": [
+        "echo \"update bin/shortcuts\"",
+        "$shell = New-Object -COM WScript.Shell",
+        "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\")",
+        "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
+        "$shortcut.Save()"
+    ],
     "shortcuts": [
         [
             "duckstation-qt-x64-ReleaseLTCG.exe",
@@ -52,5 +59,9 @@
     },
     "autoupdate": {
         "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip"
-    }
+    },
+    "post_uninstall": [
+        "echo \"update bin/shortcuts\"",
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\""
+    ]
 }
