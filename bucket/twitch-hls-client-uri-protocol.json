@@ -1,0 +1,40 @@
+{
+    "$schema": "https://raw.githubusercontent.com/brian6932/Scoop/64bit-v2-v3-v4/schema.json",
+    "version": "0.1.3",
+    "description": "A URI protocol process wrapper for twitch-hls-client.",
+    "homepage": "https://github.com/brian6932/twitch-hls-client-uri-protocol",
+    "license": "AGPL-3.0-only",
+    "suggest": {
+        "twitch-hls-client": "dank-scoop/twitch-hls-client"
+    },
+    "architecture": {
+        "64bit-v3": {
+            "url": "https://github.com/brian6932/twitch-hls-client-uri-protocol/releases/download/0.1.3/twitch-hls-client-uri-protocol-x86_64-v3-pc-windows-msvc.zip",
+            "hash": "eed28830789d9a8d9dae55119c1c02b6f4260e2722962c98af7c0f6d7251f5a7"
+        },
+        "64bit": {
+            "url": "https://github.com/brian6932/twitch-hls-client-uri-protocol/releases/download/0.1.3/twitch-hls-client-uri-protocol-x86_64-pc-windows-msvc.zip",
+            "hash": "2f46d64894fa59c1e152917e762de8a47e173252c4745219c8b98ed5b2deb46d"
+        }
+    },
+    "bin": "twitch-hls-client-uri-protocol.exe",
+    "post_install": [
+        "$prefix = $(if ($global) { 'Registry::HKEY_CLASSES_ROOT' } else { 'HKCU:/Software/Classes' }) + '/thc'",
+        "$null = New-Item $prefix",
+        "$acc = $prefix; 'shell', 'open', 'command' | ForEach-Object { $null = New-Item ($acc += '/'+$_) }",
+        "$null = New-ItemProperty $acc '(Default)' -Value \"$([char][byte]34)$dir\\twitch-hls-client-uri-protocol.exe$([char][byte]34) $([char][byte]34)%1$([char][byte]34)\"",
+        "$null = New-ItemProperty $prefix 'URL Protocol'"
+    ],
+    "post_uninstall": "Remove-Item -Recurse $($(if ($global) { 'Registry::HKEY_CLASSES_ROOT' } else { 'HKCU:/Software/Classes' }) + '/thc')",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit-v3": {
+                "url": "https://github.com/brian6932/twitch-hls-client-uri-protocol/releases/download/$version/twitch-hls-client-uri-protocol-x86_64-v3-pc-windows-msvc.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/brian6932/twitch-hls-client-uri-protocol/releases/download/$version/twitch-hls-client-uri-protocol-x86_64-pc-windows-msvc.zip"
+            }
+        }
+    }
+}
