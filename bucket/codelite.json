@@ -1,18 +1,43 @@
 {
-    "home": "https://codelite.org/",
-    "version": "17.0.0",
-    "architecture": {
-        "64bit": {
-            "url": [
-                "https://downloads.codelite.org/downloads.php?windows_64#/codelite-amd64-17.0.0.exe"
-            ],
-            "hash": [
-                "8dc40a5d1b855610377229a00d70426c5af7742532ba932e769ceba39af9851b"
-            ]
-        }
+    "version": "18.0.0",
+    "description": "CodeLite is an open source, free, cross platform IDE specialized in C, C++, PHP and JavaScript (mainly for backend developers using Node.js) programming languages which runs best on all major Platforms ( OSX, Windows and Linux )",
+    "homepage": "https://codelite.org/",
+    "license": {
+        "identifier": "GPL-2.0-only",
+        "url": "https://github.com/eranif/codelite/blob/master/LICENSE"
     },
-    "innosetup": true,
+    "notes": "Recommend to install gcc or llvm to compile C/C++ code.",
+    "depends": "innounp",
+    "suggest": {
+        "gcc": "gcc",
+        "llvm": "llvm"
+    },
+    "url": "https://downloads.codelite.org/downloads.php?windows_64#/codelite-amd64-18.0.0.exe",
+    "hash": "a7f82387ad2923835f3a84e830f21eef2f8db6eed8c20c6a729853391041bcf0",
+    "pre_install": "Get-ChildItem \"$dir\" | Rename-Item -NewName \"$dir\\codelite-installer.exe\"",
+    "installer": {
+        "script": [
+            "innounp -x -d\"$dir\" $dir\\codelite-installer.exe > $dir\\unpack.log",
+            "Get-ChildItem \"$dir\\{app}\" -Recurse |  Move-Item -Destination \"$dir\"",
+            "Remove-Item \"$dir\\{app}\"",
+            "Remove-Item $dir\\codelite-installer.exe",
+            "Remove-Item $dir\\install_script.iss",
+            "Remove-Item $dir\\unpack.log"
+        ]
+    },
+    "persist": "config",
+    "bin": "codelite.exe",
     "shortcuts": [
-        ["codelite.exe", "CodeLite"]
-    ]
+        [
+            "codelite.exe",
+            "CodeLite"
+        ]
+    ],
+    "checkver": {
+        "url": "https://downloads.codelite.org/ReleaseArchive.php",
+        "regex": "CodeLite Version: ([\\d+\\.\\d+\\.\\d+]+)"
+    },
+    "autoupdate": {
+        "url": "https://downloads.codelite.org/codelite/$version/codelite-amd64-$version.exe"
+    }
 }
