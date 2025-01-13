@@ -1,0 +1,69 @@
+{
+    "version": "2.16.10",
+    "description": "Advanced Subscription Manager",
+    "homepage": "https://github.com/sub-store-org/Sub-Store",
+    "license": "AGPL-3.0 license",
+    "url": "https://github.com/sub-store-org/Sub-Store/releases/download/2.16.10/sub-store.bundle.js",
+    "hash": "9d6297f0a04246252ef48d58d62630cb438fc00119bfbf3a8de51008bb62d4e3",
+    "suggest": {
+        "nodejs-lts": "nodejs-lts"
+    },
+    "pre_install": [
+        "@\"",
+        "@echo off",
+        "setlocal",
+        "pushd %~dp0",
+        "for /f \"tokens=1,2 delims==\" %%a in ('type .env') do (",
+        "    set \"%%a=%%b\"",
+        ")",
+        "echo Open the following URL to use Sub-Store: ",
+        "echo http://%SUB_STORE_FRONTEND_HOST%:%SUB_STORE_FRONTEND_PORT%/?api=http://%SUB_STORE_FRONTEND_HOST%:%SUB_STORE_FRONTEND_PORT%%SUB_STORE_FRONTEND_BACKEND_PATH%",
+        "node sub-store.bundle.js",
+        "popd",
+        "endlocal",
+        "\"@ | Out-File -Encoding ascii -FilePath \"$dir\\sub-store.bat\" -Force",
+        "Invoke-Download \"https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb\" \"$dir\\GeoLite2-Country.mmdb\"",
+        "Invoke-Download \"https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-ASN.mmdb\" \"$dir\\GeoLite2-ASN.mmdb\"",
+        "Invoke-Download \"https://raw.githubusercontent.com/cc63/ICON/main/Sub-Store.png\" \"$dir\\sub-store.png\"",
+        "Invoke-Download \"https://github.com/sub-store-org/Sub-Store-Front-End/releases/latest/download/dist.zip\" \"$dir\\dist.zip\"",
+        "Expand-7zipArchive \"$dir\\dist.zip\" \"$dir\" -Removal",
+        "if (!(Test-Path \"$persist_dir\\sub-store.json\") -or !(Get-Item \"$persist_dir\\sub-store.json\").Length) {",
+        "New-Item \"$persist_dir\\sub-store.json\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+        "'{}' | Set-Content \"$persist_dir\\sub-store.json\" -Force",
+        "}",
+        "$backendpath = ( -join ((65..90) + (97..122) | Get-Random -Count 20 | % { [char]$_ }))",
+        "if (!(Test-Path \"$persist_dir\\.env\") -or !(Get-Item \"$persist_dir\\.env\").Length) {",
+        "New-Item \"$persist_dir\\.env\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+        "@\"",
+        "SUB_STORE_BACKEND_SYNC_CRON=55 23 * * *",
+        "SUB_STORE_FRONTEND_BACKEND_PATH=/$backendpath",
+        "SUB_STORE_FRONTEND_PATH=./dist",
+        "SUB_STORE_FRONTEND_HOST=localhost",
+        "SUB_STORE_FRONTEND_PORT=3001",
+        "SUB_STORE_BACKEND_HOST=localhost",
+        "SUB_STORE_BACKEND_PORT=3000",
+        "SUB_STORE_MMDB_COUNTRY_PATH=./GeoLite2-Country.mmdb",
+        "SUB_STORE_MMDB_ASN_PATH=./GeoLite2-ASN.mmdb",
+        "\"@ | Set-Content \"$persist_dir\\.env\" -Force",
+        "}",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Convert-PngToIco \"$dir\\sub-store.png\" \"$dir\\sub-store.ico\""
+    ],
+    "persist": [
+        "sub-store.json",
+        ".env"
+    ],
+    "bin": "sub-store.bat",
+    "shortcuts": [
+        [
+            "sub-store.bat",
+            "Sub Store",
+            "",
+            "sub-store.ico"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/sub-store-org/Sub-Store/releases/download/$version/sub-store.bundle.js"
+    }
+}

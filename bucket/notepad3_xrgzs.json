@@ -1,0 +1,92 @@
+{
+    "version": "6.24.1221.1",
+    "description": "Notepad-like text editor based on the Scintilla source code",
+    "homepage": "https://rizonesoft.com/downloads/notepad3/",
+    "license": "BSD-3-Clause",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/rizonesoft/Notepad3/releases/download/RELEASE_6.24.1221.1/Notepad3_6.24.1221.1_x64_Portable.zip",
+            "hash": "3ab81bdf132f041a489a09ed2476886218efef8242fe5badf1c8920868c21f70"
+        },
+        "32bit": {
+            "url": "https://github.com/rizonesoft/Notepad3/releases/download/RELEASE_6.24.1221.1/Notepad3_6.24.1221.1_x86_Portable.zip",
+            "hash": "bacda2e4617194104167b8dc7171adaac414f0f952fb59a6518f656ca0fa9c34"
+        }
+    },
+    "post_install": [
+        "if ($global) {",
+        "    $registry_scope = \"HKEY_LOCAL_MACHINE\"",
+        "} else {",
+        "    $registry_scope = \"HKEY_CURRENT_USER\"",
+        "}",
+        "",
+        "@\"",
+        "Windows Registry Editor Version 5.00",
+        "",
+        "[$registry_scope\\SOFTWARE\\Classes\\*\\shell\\Notepad3]",
+        "@=\"使用 Notepad3 编辑(&3)\"",
+        "\"icon\"=\"$($dir -replace '\\\\','\\\\')\\\\Notepad3.exe\"",
+        "",
+        "[$registry_scope\\SOFTWARE\\Classes\\*\\shell\\Notepad3\\command]",
+        "@=\"\\\"$($dir -replace '\\\\','\\\\')\\\\Notepad3.exe\\\" \\\"%1\\\"\"",
+        "\"@ | Set-Content -Path \"$dir\\install-notepad3.reg\" -Encoding Unicode",
+        "",
+        "reg import \"$dir\\install-notepad3.reg\""
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($global) {",
+            "    $registry_scope = \"HKLM\"",
+            "} else {",
+            "    $registry_scope = \"HKCU\"",
+            "}",
+            "reg.exe delete \"$registry_scope\\SOFTWARE\\Classes\\*\\shell\\Notepad3\" /f"
+        ]
+    },
+    "bin": [
+        "Notepad3.exe",
+        "minipath.exe",
+        "grepWinNP3.exe"
+    ],
+    "shortcuts": [
+        [
+            "Notepad3.exe",
+            "Notepad3"
+        ],
+        [
+            "minipath.exe",
+            "minipath"
+        ],
+        [
+            "grepWinNP3.exe",
+            "grepWinNP3"
+        ]
+    ],
+    "persist": [
+        "Favorites",
+        "Themes",
+        "minipath.ini",
+        "Notepad3.ini",
+        "grepwinNP3.ini"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/rizonesoft/Notepad3/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "(?<tag>.*_([\\d.]+))"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/rizonesoft/Notepad3/releases/download/$matchTag/Notepad3_$version_x64_Portable.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/rizonesoft/Notepad3/releases/download/$matchTag/Notepad3_$version_x86_Portable.zip"
+            }
+        }
+    }
+}

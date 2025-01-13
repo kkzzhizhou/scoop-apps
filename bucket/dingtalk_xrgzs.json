@@ -1,0 +1,82 @@
+{
+    "version": "7.6.15.101210804",
+    "description": "钉钉，让进步发生",
+    "homepage": "https://www.dingtalk.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://tms.dingtalk.com/markets/dingtalk/service-terms-zh"
+    },
+    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v7.6.15.101210804.exe#/dl.7z",
+    "hash": "md5:263e0654b18aed58b5be4f4d705c4f8b",
+    "pre_install": [
+        "ensure \"$dir\\main\\current\"",
+        "Move-Item \"$dir\\build\\dist\\*\" \"$dir\\main\\current\" -Force",
+        "Move-Item \"$dir\\build\\updater\\*\" \"$dir\" -Force",
+        "Remove-Item \"$dir\\uninst.exe\" -Force",
+        "Remove-Item \"$dir\\DingTalkUpdater.exe\" -Force"
+    ],
+    "post_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "New-PersistDirectory \"$env:APPDATA\\DingTalk\" \"$persist_dir\\AppData\" -Migrate",
+        "if ($global) {",
+        "    $registry_scope = \"HKEY_LOCAL_MACHINE\"",
+        "} else {",
+        "    $registry_scope = \"HKEY_CURRENT_USER\"",
+        "}",
+        "$instdir = $($dir -replace '\\\\', '\\\\')",
+        "@\"",
+        "Windows Registry Editor Version 5.00",
+        "[$registry_scope\\SOFTWARE\\Classes\\dingtalk]",
+        "\"URL Protocol\"=\"\"",
+        "[$registry_scope\\SOFTWARE\\Classes\\dingtalk\\Shell\\Open]",
+        "[$registry_scope\\SOFTWARE\\Classes\\dingtalk\\Shell\\Open\\Command]",
+        "@=\"\\\"$instdir\\\\DingtalkScheme.exe\\\" %1\"",
+        "[$registry_scope\\SOFTWARE\\Classes\\dingtalkscheme]",
+        "\"URL Protocol\"=\"\"",
+        "[$registry_scope\\SOFTWARE\\Classes\\dingtalkscheme\\Shell\\Open\\Command]",
+        "@=\"\\\"$instdir\\\\DingtalkScheme.exe\\\" %1\"",
+        "[$registry_scope\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\DingTalk.exe]",
+        "@=\"$instdir\\\\DingtalkLauncher.exe\"",
+        "\"path\"=\"$instdir\\\\DingDing\"",
+        "[HKEY_CURRENT_USER\\SOFTWARE\\DingTalk\\Package]",
+        "\"auto_start\"=dword:00000000",
+        "[HKEY_CURRENT_USER\\SOFTWARE\\DingTalk\\Scheme]",
+        "\"钉钉\"=\"$instdir\\\\DingtalkScheme.exe\"",
+        "\"@ | Set-Content -Path \"$dir\\install-dingtalk.reg\" -Encoding Unicode",
+        "reg import \"$dir\\install-dingtalk.reg\""
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\DingTalk\"",
+        "if ($global) {",
+        "    $registry_scope = \"HKLM\"",
+        "} else {",
+        "    $registry_scope = \"HKCU\"",
+        "}",
+        "if ($cmd -eq 'uninstall') {",
+        "    reg.exe delete \"HKCU\\SOFTWARE\\DingTalk\" /f",
+        "}",
+        "reg.exe delete \"$registry_scope\\SOFTWARE\\Classes\\dingtalk\" /f",
+        "reg.exe delete \"$registry_scope\\SOFTWARE\\Classes\\dingtalkscheme\" /f",
+        "reg.exe delete \"$registry_scope\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\DingTalk.exe\" /f"
+    ],
+    "shortcuts": [
+        [
+            "DingTalkLauncher.exe",
+            "钉钉"
+        ]
+    ],
+    "checkver": {
+        "url": "https://im.dingtalk.com/manifest/new/release_windows_vista_later_gray4.json",
+        "regex": "DingTalk_v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/DingTalk_v$version.exe#/dl.7z",
+        "hash": {
+            "url": "https://im.dingtalk.com/manifest/new/release_windows_vista_later_gray4.json",
+            "jsonpath": "$.win.install.md5"
+        }
+    }
+}

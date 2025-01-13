@@ -1,0 +1,88 @@
+{
+    "version": "6.24.309.1_rc3",
+    "description": "Notepad-like text editor based on the Scintilla source code",
+    "homepage": "https://rizonesoft.com/downloads/notepad3/",
+    "license": "BSD-3-Clause",
+    "url": "https://downloads.rizonesoft.com/Notepad3/Notepad3_6.24.309.1_rc3_Portable.zip",
+    "hash": "9c66eca25e2f34c0b25f3e4759ad43d19120ffcb5ab210205aca66712bebadcc",
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Expand-7zipArchive -Path \"$dir\\NotePad3_${version}_x64_Portable.zip\" -DestinationPath $dir"
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Expand-7zipArchive -Path \"$dir\\NotePad3_${version}_x86_Portable.zip\" -DestinationPath $dir"
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item -Path \"$dir\\*.zip\" -Force",
+        "if ($global) {",
+        "    $registry_scope = \"HKEY_LOCAL_MACHINE\"",
+        "} else {",
+        "    $registry_scope = \"HKEY_CURRENT_USER\"",
+        "}",
+        "",
+        "@\"",
+        "Windows Registry Editor Version 5.00",
+        "",
+        "[$registry_scope\\SOFTWARE\\Classes\\*\\shell\\Notepad3RC]",
+        "@=\"使用 Notepad3 RC 编辑(&3)\"",
+        "\"icon\"=\"$($dir -replace '\\\\','\\\\')\\\\Notepad3.exe\"",
+        "",
+        "[$registry_scope\\SOFTWARE\\Classes\\*\\shell\\Notepad3RC\\command]",
+        "@=\"\\\"$($dir -replace '\\\\','\\\\')\\\\Notepad3.exe\\\" \\\"%1\\\"\"",
+        "\"@ | Set-Content -Path \"$dir\\install-notepad3rc.reg\" -Encoding Unicode",
+        "",
+        "reg import \"$dir\\install-notepad3rc.reg\""
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($global) {",
+            "    $registry_scope = \"HKLM\"",
+            "} else {",
+            "    $registry_scope = \"HKCU\"",
+            "}",
+            "reg.exe delete \"$registry_scope\\SOFTWARE\\Classes\\*\\shell\\notepad3RC\" /f"
+        ]
+    },
+    "bin": [
+        "Notepad3.exe",
+        "minipath.exe",
+        "grepWinNP3.exe"
+    ],
+    "shortcuts": [
+        [
+            "Notepad3.exe",
+            "Notepad3 RC"
+        ],
+        [
+            "minipath.exe",
+            "minipath RC"
+        ],
+        [
+            "grepWinNP3.exe",
+            "grepWinNP3 RC"
+        ]
+    ],
+    "persist": [
+        "Favorites",
+        "Themes",
+        "minipath.ini",
+        "Notepad3.ini",
+        "grepwinNP3.ini"
+    ],
+    "checkver": {
+        "regex": "Notepad3_([\\d.]+_rc.)_Portable.zip"
+    },
+    "autoupdate": {
+        "url": "https://downloads.rizonesoft.com/Notepad3/Notepad3_$version_Portable.zip"
+    }
+}

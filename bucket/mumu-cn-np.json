@@ -1,0 +1,64 @@
+{
+    "version": "4.1.13.3607",
+    "description": "MuMu模拟器12 大屏超级炫 手游不受限 安卓12 | 标签拖动分屏 | 自定义应用保活 | 自由多开。",
+    "homepage": "https://mumu.163.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://mumu.163.com/sdk/privacy/index.html"
+    },
+    "url": "http://a11.gdl.netease.com/MuMuNG-setup-V4.1.13.3607-0108052214.exe#/installer.exe",
+    "hash": "md5:b77cf22a6399ddb64567e7ad9439d266",
+    "persist": [
+        "configs",
+        "vms"
+    ],
+    "shortcuts": [
+        [
+            "shell\\MuMuPlayer.exe",
+            "MuMu模拟器12"
+        ],
+        [
+            "shell\\MuMuMultiPlayer.exe",
+            "MuMu多开器12"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    scoop uninstall $app",
+            "    exit 1",
+            "}",
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', '/auto_start=false', \"/D=$dir\") -RunAs",
+            "Remove-Item \"$dir\\installer.exe\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$dir\\shell\\MuMuPlayerUpdater.exe\" -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to uninstall $app.\"",
+        "    exit 1",
+        "}",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "unlink_persist_data $manifest $dir",
+        "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList '/S /no_browser' -RunAs",
+        "Start-Sleep -Seconds 10"
+    ],
+    "checkver": {
+        "script": [
+            "$url = \"https://mumu.nie.netease.com/api/v1/download/nemux?architecture=x86_64&machine=%22%22&usage=0\"",
+            "$response = Invoke-RestMethod -Uri $url -Method Post",
+            "$response.data.mumu.version + '=====' + $response.data.mumu.checksum + '=====' + $response.data.mumu.link"
+        ],
+        "regex": "(.*)=====(?<md5>.*)=====(?<url>.*)"
+    },
+    "autoupdate": {
+        "url": "$matchUrl#/installer.exe",
+        "hash": {
+            "url": "https://httpbin.org/get?md5=$matchMd5",
+            "jsonpath": "$.args.md5"
+        }
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "version": "22.3.3087.64",
+    "description": "360极速浏览器X，极速浏览，极致顺滑。全新Chromium122内核，64位双核浏览器，性能更高，体验更佳。",
+    "homepage": "https://browser.360.cn/eex/",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://down.360safe.com/cse/360csex_22.3.3087.64.exe#/dl.7z",
+            "hash": "a87566ceb6cee2936862c5427377a0407d406f76bce65bbc6b8e3896bc5daa0a"
+        }
+    },
+    "shortcuts": [
+        [
+            "360chromex.exe",
+            "360 极速浏览器X"
+        ]
+    ],
+    "persist": "User Data",
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -Removal",
+            "'ExtFeedWeibo', 'ExtWebmail', 'ExtYouxi', 'gameplugin', 'guard', 'huabao', 'seguard', 'sesvc', 'sesvr' | ForEach-Object {",
+            "    Remove-Item \"$dir\\components\\$_\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "}",
+            "",
+            "'360BDoctorExt' | ForEach-Object {",
+            "    Remove-Item \"$dir\\$version\\$_\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "}",
+            "",
+            "'360net.dll', '360NetBase.dll', '360P2SP.dll', 'ceup.exe', 'chromeup.dll', 'CombineExt.dll', 'livep.dat', 'LiveUpd360.dll', 'PDown.dll', 'Safelive.dll', 'chrome.7z', 'SodaDownloader.exe' | ForEach-Object {",
+            "    Remove-Item \"$dir\\$version\\installer\\$_\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "}",
+            "",
+            "'360bdoctor.exe', 'cloudurls.dat', 'KitTip.dll', 'safe505.dll', 'safehp.exe', 'sesafe64.dll', 'updatecfg.ini', 'urllibauth.dat', 'urlproc.dll', 'urlproc64.dll' | ForEach-Object {",
+            "    Remove-Item \"$dir\\$version\\$_\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "}",
+            "",
+            "'errorpage.zip', 'newtab.zip' | ForEach-Object {",
+            "    Remove-Item \"$dir\\$version\\$_\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "    Invoke-WebRequest \"https://alist.xrgzs.top/d/pxy/Software/360/csex/$_\" -OutFile \"$dir\\$version\\$_\"",
+            "}",
+            "",
+            "if (-not (Test-Path \"$persist_dir\\User Data\\Default\\Preferences\")) {",
+            "    Invoke-WebRequest \"https://alist.xrgzs.top/d/pxy/Software/360/csex/UserData.exe\" -OutFile \"$dir\\UserData.rar\"",
+            "    Expand-7zipArchive -Path \"$dir\\UserData.rar\" -ExtractDir 'User Data' -DestinationPath \"$persist_dir\\User Data\" -Removal",
+            "}"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($cmd -eq 'uninstall') {",
+            "    reg.exe delete HKCU\\SOFTWARE\\360ChromeX /f",
+            "}"
+        ]
+    },
+    "checkver": {
+        "regex": "https://down.360safe.com/cse/360csex_([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://down.360safe.com/cse/360csex_$version.exe#/dl.7z"
+            }
+        }
+    }
+}

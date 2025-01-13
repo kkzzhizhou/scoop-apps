@@ -1,0 +1,41 @@
+{
+    "version": "7.34.6",
+    "homepage": "https://www.feishu.cn/",
+    "description": "Connect with teammates anytime and anywhere",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://www.feishu.cn/en/terms"
+    },
+    "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/1d9fdbec/Feishu-win32_ia32-7.34.6-signed.exe#/dl.7z",
+    "hash": "md5:229c5d22b502acb7ba35b408fd63a761",
+    "extract_to": "app",
+    "shortcuts": [
+        [
+            "app/Feishu.exe",
+            "飞书"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\LarkShell\" \"$persist_dir\\AppData\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\LarkShell\""
+    ],
+    "checkver": {
+        "url": "https://www.feishu.cn/api/downloads",
+        "regex": "(?sm)Windows.*?https://(?<path>[\\w.-/].*?)-(?<version>[\\d.]+)(?<suffix>[\\w.-].*?).exe"
+    },
+    "autoupdate": {
+        "url": "https://$matchPath-$version$matchSuffix.exe#/dl.7z",
+        "hash": {
+            "url": "https://www.feishu.cn/api/downloads",
+            "jsonpath": "$.versions.Windows.hash"
+        }
+    }
+}

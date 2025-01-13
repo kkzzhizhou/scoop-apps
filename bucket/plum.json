@@ -1,0 +1,45 @@
+{
+    "version": "2024.04.17.4c28f11",
+    "homepage": "https://github.com/rime/plum",
+    "description": "東風破 /plum/: Rime configuration manager and input schema repository",
+    "license": "LGPL-3.0-or-later",
+    "url": "https://github.com/rime/plum/archive/4c28f11f451facef809b380502874a48ba964ddb.zip",
+    "hash": "6b6098f9fedf7c6e8993c9a6710cfbddb5bbb91ec9024ea1caaa8a9bb94d46fa",
+    "notes": [
+        "plum 方案安装脚本已添加shims，只需在任意目录运行：'rime-install'即可",
+        "",
+        "常用方案：'iDvel/rime-ice'、'Mintimate/oh-my-rime'"
+    ],
+    "depends": "weasel",
+    "extract_dir": "plum-4c28f11f451facef809b380502874a48ba964ddb",
+    "persist": "package",
+    "bin": "rime-install.bat",
+    "post_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "New-PersistDirectory \"$env:APPDATA\\plum\" \"$dir\"",
+        "$files = Get-ChildItem -Path \"$dir\\*\" -File -Exclude \"manifest.json\"",
+        "$files += Get-ChildItem -Path \"$dir\\scripts\" -File",
+        "foreach ($file in $files) {",
+        "    info \"Processing $file ...\"",
+        "    $content = Get-Content -Path $file.FullName -Raw",
+        "    $newContent = $content -replace 'https://github.com/', 'https://ghp.ci/https://github.com/' -replace \"https://raw.githubusercontent.com/\", \"https://ghp.ci/https://raw.githubusercontent.com/\"",
+        "    $newContent = $content -replace 'rem set plum_dir=\\%APPDATA\\%\\\\plum', 'set plum_dir=%APPDATA%\\plum'",
+        "    Set-Content -Path $file.FullName -Value $newContent",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\plum\""
+    ],
+    "checkver": {
+        "url": "https://github.com/rime/plum/commits/master.atom",
+        "regex": "(?s)>(\\d+)-(\\d+)-(\\d+)T.*?/(?<sha>(?<short>[0-9a-f]{7})[0-9a-f]{33})",
+        "replace": "${1}.${2}.${3}.${short}"
+    },
+    "autoupdate": {
+        "extract_dir": "plum-$matchSha",
+        "url": "https://github.com/rime/plum/archive/$matchSha.zip"
+    }
+}

@@ -1,23 +1,57 @@
 {
-    "homepage": "https://www.microsoft.com/store/apps/9N9TNGVNDL3Q",
-    "description": "Ubuntu 18.04 LTS on WSL",
+    "version": "1804.6.4.0",
+    "description": "Install a complete Ubuntu 18.04 LTS terminal environment in minutes with Windows Subsystem for Linux (WSL)",
+    "homepage": "https://www.microsoft.com/store/productId/9PNKSF5ZN4SW",
     "license": "Proprietary",
-    "version": "18.04",
-    "url": "https://aka.ms/wsl-ubuntu-1804",
+    "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu1804.appxbundle#/dl.7z",
+    "hash": "807fd0e1ccfdb8f02ae033323ecbc29d3fb998d1164457f627f9da194a58302e",
+    "notes": [
+        "Call `ubuntu1804.exe` to start Ubuntu installation.",
+        "See more: https://ubuntu.com/desktop/wsl"
+    ],
+    "extract_to": "Deploy",
+    "suggest": {
+        "Windows Subsystem for Linux 2": "sdoog/wsl2"
+    },
+    "pre_install": [
+        "if (-not (Get-Command \"wslconfig.exe\" -ErrorAction SilentlyContinue)) {",
+        "    error 'It seems that you don''t have WSL installed. Please install it first.'",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_x64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        },
+        "arm64": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\Deploy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "scoop hold $app"
+    ],
+    "uninstaller": {
+        "script": "wslconfig.exe /u Ubuntu-18.04"
+    },
+    "bin": "ubuntu1804.exe",
     "shortcuts": [
         [
             "ubuntu1804.exe",
             "Ubuntu 18.04 LTS"
         ]
     ],
-    "installer": {
-        "script": [
-            "Get-Item \"$dir\\wsl-ubuntu-1804\" | Rename-Item -NewName \"ubuntu1804.zip\"",
-            "Expand-Archive -Path \"$dir\\ubuntu1804.zip\" -DestinationPath \"$dir\"",
-            "Remove-Item \"$dir\\ubuntu1804.zip\""
-        ]
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu1804.appxbundle.ver",
+        "regex": "([\\d.]+)"
     },
-    "uninstaller": {
-        "script": "wslconfig /u Ubuntu-18.04"
+    "autoupdate": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu1804.appxbundle#/dl.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }

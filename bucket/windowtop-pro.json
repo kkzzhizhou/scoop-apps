@@ -1,0 +1,55 @@
+{
+    "version": "5.26.0",
+    "description": "WindowTop enable you to pin any window on top, enable window transparency, even click through transparent window, set window dark/read mode, shrink the window to small size and more.",
+    "homepage": "https://www.cybermania.ws/apps/windowtop-pro/",
+    "license": "Proprietary",
+    "depends": "innounp",
+    "architecture": {
+        "64bit": {
+            "url": "https://alist.xrgzs.top/d/pxy/Software/WindowTopPro/WindowTopProx64.7z",
+            "hash": "583a3a03c33d74fa988037cb8e52b2c98f4d21a2ebd376c047cc908073e15dd2"
+        }
+    },
+    "installer": {
+        "script": [
+            "New-Item -Path \"$dir\\installer\" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem -Path \"$dir\\*.exe\" | ForEach-Object { Expand-7zipArchive -Path $_ -DestinationPath \"$dir\\installer\" -Removal }",
+            "Expand-InnoArchive -Path \"$dir\\installer\\WindowTopSetup.exe\" -DestinationPath $dir -Removal",
+            "Expand-7zipArchive -Path \"$dir\\installer\\Replace.exe\" -DestinationPath $dir -Overwrite 'All'",
+            "Remove-Item -Path \"$dir\\installer\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\WindowTop\" \"$persist_dir\\AppData\" -Migrate",
+            ""
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\WindowTop\""
+    ],
+    "uninstaller": {
+        "script": "reg.exe delete HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v WindowTop /f"
+    },
+    "shortcuts": [
+        [
+            "WindowTop.exe",
+            "WindowTop"
+        ]
+    ],
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WindowTopPro/WindowTopProx64.7z.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://alist.xrgzs.top/d/pxy/Software/WindowTopPro/WindowTopProx64.7z",
+                "hash": {
+                    "url": "https://alist.xrgzs.top/d/pxy/Software/WindowTopPro/WindowTopProx64.7z.sha256"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "version": "6.1.1.29776",
+    "description": "专业驱动更新管理软件",
+    "homepage": "https://www.mefcl.com/drivereasy.html",
+    "license": "Proprietary",
+    "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/iIXbr2e8lc4h&type=down#/installer.exe",
+    "hash": "abe039276168ee2b10743aecff2ecfe317c0c94c06cb4ec63346ef228e908a1a",
+    "shortcuts": [
+        [
+            "DriverEasy.exe",
+            "DriverEasy"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\Easeware\\DriverEasy\" \"$persist_dir\\AppData\" -Migrate",
+            "",
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Quiet",
+            "Remove-Item \"$dir\\installer.exe\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('programs'))\\DriverEasy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList '/S' -Quiet",
+        "Start-Sleep -Seconds 10",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\Easeware\\DriverEasy\""
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$f = Get-LanzouList \"https://mefcl.lanzouw.com/b012r9reb\" 3rs6 | Where-Object { $_.name_all -like \"DriverEasyPro_*_mefcl_Setup.exe\" } | Select-Object -First 1",
+            "$n = $f.name_all -replace 'Stable', ''",
+            "$n + '=====' + $f.id"
+        ],
+        "regex": "DriverEasyPro_(.*)_mefcl_Setup.exe=====(?<sharekey>.*)"
+    },
+    "autoupdate": {
+        "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekey&type=down#/installer.exe"
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "version": "1.18.0.0",
+    "description": "Get Debian for the Windows Subsystem for Linux (WSL)",
+    "homepage": "https://www.microsoft.com/store/productId/9MSVKQC78PK6",
+    "license": "Proprietary",
+    "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Debian.appxbundle#/dl.7z",
+    "hash": "c1eebcc05bf5ef0555ea6d1420aa59b45a69864c38443cdd88bd10dff3bbf1c6",
+    "notes": [
+        "Call `debian.exe` to start Debian installation.",
+        "- Set a username and password for your Debian GNU/Linux installation when prompted.",
+        "- Exit to PowerShell by issuing the command `logout`, or by pressing [Ctrl] + D",
+        "- Shut down your Debian WSL 2 instance from PowerShell",
+        "wsl --shutdown -d Debian",
+        "- Start your Debian instance and log back in",
+        "wsl -d Debian -u <username>",
+        "- Use apt to upgrade your WSL 2 Debian and `apt` or `aptitude` to install some packages (`mesa-utils` is required on the Debian side for the GUI apps integration to work)",
+        "sudo apt update",
+        "sudo apt upgrade",
+        "sudo apt install aptitude",
+        "sudo aptitude install mesa-utils firefox-esr-l10n-nb-no",
+        "",
+        "See more: https://wiki.debian.org/InstallingDebianOn/Microsoft/Windows/SubsystemForLinux"
+    ],
+    "extract_to": "Deploy",
+    "suggest": {
+        "Windows Subsystem for Linux 2": "sdoog/wsl2"
+    },
+    "pre_install": [
+        "if (-not (Get-Command \"wslconfig.exe\" -ErrorAction SilentlyContinue)) {",
+        "    error 'It seems that you don''t have WSL installed. Please install it first.'",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_x64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        },
+        "arm64": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\Deploy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "scoop hold $app"
+    ],
+    "uninstaller": {
+        "script": "wslconfig.exe /u Debian"
+    },
+    "bin": "debian.exe",
+    "shortcuts": [
+        [
+            "debian.exe",
+            "Debian"
+        ]
+    ],
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Debian.appxbundle.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Debian.appxbundle#/dl.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

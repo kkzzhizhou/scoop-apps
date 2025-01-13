@@ -1,0 +1,75 @@
+{
+    "version": "1.2.3",
+    "description": "Lightweight, simple and open source QQNT plugin loader.",
+    "homepage": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT",
+    "license": "MIT",
+    "url": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.2.3/LiteLoaderQQNT.zip",
+    "hash": "c7223a709b9514c1dbfd11e891af7d1a2076e53f888d431490975f170f0f8819",
+    "depends": "sdoog/qqnt",
+    "suggest": {
+        "qqntfileverifypatch": "sdoog/dllhijack-qqnt"
+    },
+    "notes": [
+        "Every time you update qqnt, run llqqnt_install.ps1 to reinstall it.",
+        "We recommend that you first install a plugin such as LL-plugin-list-viewer from https://github.com/ltxhhz/LL-plugin-list-viewer."
+    ],
+    "pre_install": [
+        "$content = '$qqnt_dir = \"path/to/qqnt\\Files\"",
+        "$llqqnt_dir = \"path/to/llqqnt\"",
+        "$path = \"$qqnt_dir\\resources\\app\"",
+        "",
+        "$text = \"require(String.raw``$llqqnt_dir``)\"",
+        "$text = $text.replace(\"\\\\\",\"/\")",
+        "",
+        "if((Test-Path $qqnt_dir\\versions)) {",
+        "    $qq_version = Get-ChildItem -Path \"$qqnt_dir\\versions\" -Name -Directory",
+        "    $path = \"$qqnt_dir\\versions\\$qq_version\\resources\\app\"",
+        "}",
+        "",
+        "Out-File -FilePath \"$path\\app_launcher\\liteLoader.js\" -InputObject $text -Encoding utf8 -Force",
+        "",
+        "$package = Get-Content -Path $path\\package.json | ConvertFrom-Json",
+        "$package.main = \"./app_launcher/liteloader.js\"",
+        "$package = $package | ConvertTo-Json",
+        "$package = $package -replace \"`r`n\",\"`n\"",
+        "$package.TrimEnd(\"`r\",\"`n\") | Set-Content -Path $path\\package.json -NoNewlin",
+        "'",
+        "$content.replace(\"path/to/qqnt\", \"$(appdir qqnt $global)\\current\").replace(\"path/to/llqqnt\", \"$dir\") | Set-Content -Path \"$dir\\llqqnt_install.ps1\"",
+        "powershell -NoLogo -NoProfile -File \"$dir\\llqqnt_install.ps1\""
+    ],
+    "bin": [
+        [
+            "llqqnt_install.ps1",
+            "llqqnt_install"
+        ]
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "post_uninstall": [
+        "$qqnt_dir = \"$(appdir qqnt $global)\\current\\Files\"",
+        "$path = \"$qqnt_dir\\resources\\app\"",
+        "if((Test-Path $qqnt_dir\\versions)) {",
+        "    $qq_version = Get-ChildItem -Path \"$qqnt_dir\\versions\" -Name -Exclude *.json",
+        "    $path = \"$qqnt_dir\\versions\\$qq_version\\resources\\app\"",
+        "}",
+        "if((Test-Path \"$path\\app_launcher\\liteLoader.js\")) {",
+        "    Remove-Item -Path \"$path\\app_launcher\\liteLoader.js\" -Force",
+        "}",
+        "$package = Get-Content -Path $path/package.json | ConvertFrom-Json",
+        "$package.main = \"./application/app_launcher/index.js\"",
+        "$package = $package | ConvertTo-Json",
+        "$package = $package -replace \"`r`n\",\"`n\"",
+        "$package.TrimEnd(\"`r\",\"`n\") | Set-Content -Path $path/package.json -NoNewline"
+    ],
+    "persist": [
+        "data",
+        "plugins"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$version/LiteLoaderQQNT.zip"
+    }
+}

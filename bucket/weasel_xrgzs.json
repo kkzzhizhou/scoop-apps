@@ -1,0 +1,74 @@
+{
+    "##": "由于无法正确解压NSIS中对应architecture的文件，本包目前以np方式安装!",
+    "version": "0.16.3",
+    "description": "【小狼毫】Rime for Windows輸入法。基於 中州韻輸入法引擎/Rime Input Method Engine 等開源技術的 Windows 中文输入法。",
+    "homepage": "https://rime.im/",
+    "license": "GPL-3.0-or-later",
+    "url": "https://github.com/rime/weasel/releases/download/0.16.3/weasel-0.16.3.0-installer.exe#/installer.exe",
+    "hash": "efa114b20a8cda39c34316cd1a9b5ed25ac0581891aa3e485c830ff7cc2dbdd9",
+    "notes": [
+        "如果不会配置小狼毫，请阅读Wiki",
+        "Wiki: https://github.com/rime/weasel/wiki",
+        "",
+        "用户配置目录：\"$env:APPDATA\\Rime\" --> \"$persist_dir\\AppData\"，已做持久化处理",
+        "",
+        "小狼毫内置的方案安装脚本已添加shims，只需在任意目录运行：'rime-install'即可",
+        "",
+        "注意：使用本仓库提供的词库会覆盖默认配置，如果希望以“旁挂”方式使用，请安装：'sdoog/plum'，自动解决网络问题。"
+    ],
+    "suggest": {
+        "plum": "sdoog/plum",
+        "rime-ice": "sdoog/rime-ice"
+    },
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\Rime\" \"$persist_dir\\AppData\" -Migrate",
+            "Invoke-ExternalCommand \"reg.exe\" -ArgumentList @(",
+            "    'add', 'HKLM\\SOFTWARE\\Rime\\Weasel',",
+            "    '/f',",
+            "    '/v', 'InstallDir',",
+            "    '/t', 'REG_SZ',",
+            "    '/d', \"`\"$dir`\"\",",
+            "    '/reg:32'",
+            ") -RunAs -Activity 'Writing Weasel InstallDir registry key...' | Out-Null",
+            "Invoke-ExternalCommand \"reg.exe\" -ArgumentList @(",
+            "    'delete',",
+            "    'HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Weasel',",
+            "    '/f',",
+            "    '/v', 'UninstallString',",
+            "    '/reg:32'",
+            ") -RunAs -Activity 'Removing previous installation registry key...' -ContinueExitCodes @{1='Not installed'} | Out-Null",
+            "reg.exe add HKCU\\SOFTWARE\\Rime\\Weasel /f /v \"RimeUserDir\" /t REG_SZ /d \"$env:APPDATA\\Rime\" *>$null",
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -RunAs -Activity 'Running Weasel NSIS Setup...' | Out-Null",
+            "Remove-Item \"$dir\\installer.exe\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "reg.exe add HKCU\\SOFTWARE\\Rime\\Weasel\\Updates /f /v \"CheckForUpdates\" /t REG_SZ /d 0  *>$null"
+        ]
+    },
+    "bin": [
+        "weasel-0.16.3\\rime-install.bat",
+        "weasel-0.16.3\\WeaselDeployer.exe",
+        "weasel-0.16.3\\WeaselServer.exe"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Invoke-ExternalCommand \"$dir\\weasel-$version\\uninstall.exe\" -ArgumentList '/S' -RunAs -Activity 'Running Weasel uninstaller...' | Out-Null",
+        "info 'Waiting for the Weasel process to exit...'",
+        "Start-Sleep -Seconds 10",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\Rime\""
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/rime/weasel/releases/latest",
+        "regex": "rime/weasel/releases/download/(?<Version>[\\d.]+)/weasel-(?<Real>[\\d.]+)-installer.exe"
+    },
+    "autoupdate": {
+        "url": "https://github.com/rime/weasel/releases/download/$matchVersion/weasel-$matchReal-installer.exe#/installer.exe",
+        "bin": [
+            "weasel-$matchVersion\\rime-install.bat",
+            "weasel-$matchVersion\\WeaselDeployer.exe",
+            "weasel-$matchVersion\\WeaselServer.exe"
+        ]
+    }
+}

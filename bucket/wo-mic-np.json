@@ -1,0 +1,35 @@
+{
+    "version": "5.2",
+    "description": "WO Mic can turn your phone to be a microphone for your computer.",
+    "homepage": "https://wolicheng.com/womic/",
+    "license": "",
+    "url": "https://wolicheng.com/womic/downloads/WOMicClientSetup5_2.exe#/installer.exe",
+    "hash": "c7c7227a636b4c612cdf3f3d803be3ef1cf8f9aedad1c5d6620e0b9f6e0931a8",
+    "shortcuts": [
+        [
+            "WOMicClient.exe",
+            "WO Mic Client"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Quiet",
+            "Remove-Item \"$dir\\installer.exe\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('programs'))\\WO Mic Client\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList '/S' -Quiet",
+        "Start-Sleep -Seconds 10",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "url": "https://wolicheng.com/womic/download.html",
+        "regex": "Client version: ([\\d\\w.]+)"
+    },
+    "autoupdate": {
+        "url": "https://wolicheng.com/womic/downloads/WOMicClientSetup$underscoreVersion.exe#/installer.exe"
+    }
+}

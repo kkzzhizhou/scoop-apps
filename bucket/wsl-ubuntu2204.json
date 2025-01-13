@@ -1,44 +1,57 @@
 {
-    "homepage": "https://www.microsoft.com/store/apps/9PN20MSR04DW",
-    "description": "Ubuntu 22.04 LTS on WSL",
+    "version": "2204.5.10018.0",
+    "description": "Install a complete Ubuntu 22.04 LTS terminal environment in minutes with Windows Subsystem for Linux (WSL)",
+    "homepage": "https://www.microsoft.com/store/productId/9PN20MSR04DW",
     "license": "Proprietary",
-    "version": "22.04",
-    "url": "https://aka.ms/wslubuntu2204",
+    "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2204.appxbundle#/dl.7z",
+    "hash": "b3e4fbd6549644c26984f2503c09eded285e486d44cdd2e8de3cf0782e059c2b",
+    "notes": [
+        "Call `ubuntu2204.exe` to start Ubuntu installation.",
+        "See more: https://ubuntu.com/desktop/wsl"
+    ],
+    "extract_to": "Deploy",
+    "suggest": {
+        "Windows Subsystem for Linux 2": "sdoog/wsl2"
+    },
+    "pre_install": [
+        "if (-not (Get-Command \"wslconfig.exe\" -ErrorAction SilentlyContinue)) {",
+        "    error 'It seems that you don''t have WSL installed. Please install it first.'",
+        "}"
+    ],
     "architecture": {
         "64bit": {
             "installer": {
-                "script": [
-                    "Get-Item \"$dir\\wslubuntu2204\" | Rename-Item -NewName \"ubuntu2204.zip\"",
-                    "Expand-Archive -Path \"$dir\\ubuntu2204.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2204.zip\"",
-                    "Get-Item \"$dir\\*x64.appx\" | Rename-Item -NewName \"ubuntu2204.zip\"",
-                    "Expand-Archive -Force -Path \"$dir\\ubuntu2204.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2204.zip\"",
-                    "Get-Item \"$dir\\*.appx\" | Remove-Item"
-                ]
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_x64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
             }
         },
         "arm64": {
             "installer": {
-                "script": [
-                    "Get-Item \"$dir\\wslubuntu2204\" | Rename-Item -NewName \"ubuntu2204.zip\"",
-                    "Expand-Archive -Path \"$dir\\ubuntu2204.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2204.zip\"",
-                    "Get-Item \"$dir\\*ARM64.appx\" | Rename-Item -NewName \"ubuntu2204.zip\"",
-                    "Expand-Archive -Force -Path \"$dir\\ubuntu2204.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2204.zip\"",
-                    "Get-Item \"$dir\\*.appx\" | Remove-Item"
-                ]
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
             }
         }
     },
+    "post_install": [
+        "Remove-Item \"$dir\\Deploy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "scoop hold $app"
+    ],
+    "uninstaller": {
+        "script": "wslconfig.exe /u Ubuntu-22.04"
+    },
+    "bin": "ubuntu2204.exe",
     "shortcuts": [
         [
-            "ubuntu.exe",
+            "ubuntu2204.exe",
             "Ubuntu 22.04 LTS"
         ]
     ],
-    "uninstaller": {
-        "script": "wslconfig /u Ubuntu"
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2204.appxbundle.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2204.appxbundle#/dl.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }

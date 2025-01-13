@@ -1,0 +1,48 @@
+{
+    "version": "10.0.7-2844087",
+    "homepage": "https://www.vmware.com/",
+    "description": "An application for creating and running virtual machines on your computer.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.vmware.com/ca/help/legal.html"
+    },
+    "url": "https://alist.xrgzs.top/d/pxy/Software/VMware/VMware-workstation-full-10.0.7-2844087.exe#/installer.exe",
+    "hash": "178b2192a0a17444d8c85934ef16e298e9a350f02ad0c4f078942f732c914ba4",
+    "shortcuts": [
+        [
+            "vmware.exe",
+            "VMware Workstation Pro"
+        ],
+        [
+            "vmplayer.exe",
+            "VMware Workstation 10 Player"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    scoop uninstall $app",
+            "    exit 1",
+            "}",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\VMware\" \"$persist_dir\\AppData\" -Migrate",
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/s', '/v', \"`\"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 INSTALLDIR=$dir`\"\") -RunAs"
+        ]
+    },
+    "pre_uninstall": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to uninstall $app.\"",
+        "    exit 1",
+        "}",
+        "if ($cmd -eq 'uninstall') {",
+        "   Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/s', '/v', \"`\"/qn REMOVE=ALL`\"\") -RunAs",
+        "   Start-Sleep -Seconds 2",
+        "   Write-Host \"Please restart your computer to uninstall $app properly\" -F 'Red'",
+        "}",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\VMware\""
+    ]
+}

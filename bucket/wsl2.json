@@ -1,0 +1,52 @@
+{
+    "version": "2.3.26",
+    "description": "Windows Subsystem for Linux (WSL) 2 Installer",
+    "homepage": "https://docs.microsoft.com/windows/wsl",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/microsoft/WSL/releases/download/2.3.26/wsl.2.3.26.0.x64.msi#/wsl.msi_",
+            "hash": "cd3f2a68a1a5836f6a1cc9965a7f5f54db267ca221eaa87df29345ab7957aec4"
+        },
+        "arm64": {
+            "url": "https://github.com/microsoft/WSL/releases/download/2.3.26/wsl.2.3.26.0.arm64.msi#/wsl.msi_",
+            "hash": "d23b30f34d3e21bbf1a92db0a25d55d446262eb2169e84ffff999ee77f751ac5"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to install $app.\"",
+        "    scoop uninstall $app",
+        "    exit 1",
+        "}",
+        "info 'Enable Hyper-V Core for WSL2...'",
+        "Enable-WindowsOptionalFeature -FeatureName 'VirtualMachinePlatform' -All -Online -NoRestart -LimitAccess | Out-Null",
+        "info 'Enable WSL1...'",
+        "Enable-WindowsOptionalFeature -FeatureName 'Microsoft-Windows-Subsystem-Linux' -All -Online -NoRestart -LimitAccess | Out-Null"
+    ],
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand 'msiexec' -RunAs -ArgumentList @('/i', \"$dir\\wsl.msi_\", '/quiet', '/norestart')",
+            "$currentBuildNumber = [int] (Get-ItemProperty \"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\").CurrentBuildNumber",
+            "if ((!(Test-Path \"$env:USERPROFILE\\.wslconfig\") -or !(Get-Item \"$env:USERPROFILE\\.wslconfig\").Length) -and $currentBuildNumber -lt 22000) {",
+            "    New-Item \"$env:USERPROFILE\\.wslconfig\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+            "    \"[wsl2]`nkernel=C:\\\\Program Files\\\\WSL\\\\tools\\\\kernel\" | Set-Content -Path \"$env:USERPROFILE\\.wslconfig\"",
+            "}",
+            ". \"C:\\Program Files\\WSL\\wsl.exe\" --set-default-version 2",
+            "warn 'You must restart your computer for the changes to take effect.'"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/microsoft/WSL"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/microsoft/WSL/releases/download/$version/wsl.$version.0.x64.msi#/wsl.msi_"
+            },
+            "arm64": {
+                "url": "https://github.com/microsoft/WSL/releases/download/$version/wsl.$version.0.arm64.msi#/wsl.msi_"
+            }
+        }
+    }
+}

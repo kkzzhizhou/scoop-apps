@@ -1,22 +1,23 @@
 {
-    "version": "1.6.4",
+    "version": "1.9.0",
     "description": "GUI for SingBox",
     "homepage": "https://github.com/GUI-for-Cores/GUI.for.SingBox",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.6.4/GUI.for.SingBox-windows-amd64.exe#/GUI.for.SingBox.exe",
-            "hash": "b9862dfca12c6dc6c4807d0215e247dbd6236201ebb4d453c5e33bbecdf337ec"
+            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.9.0/GUI.for.SingBox-windows-amd64.zip",
+            "hash": "cb71e4c52d0f89031df77890c2fea8f8876e88075f3917fcbae938deab232659"
         },
         "32bit": {
-            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.6.4/GUI.for.SingBox-windows-386.exe#/GUI.for.SingBox.exe",
-            "hash": "3916105df96b85d6f8724e5478ba3126896144376f6bc908bd214972b33d95e0"
+            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.9.0/GUI.for.SingBox-windows-386.zip",
+            "hash": "cf4927e8139a947334fd1dc1e8b80af0064488f2b52c5f4f89d858dc4b9491aa"
         },
         "arm64": {
-            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.6.4/GUI.for.SingBox-windows-arm64.exe#/GUI.for.SingBox.exe",
-            "hash": "458321c984bf3c33211d4d3a6af97e1f4ab87950736015940915507e0bcaf3b8"
+            "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v1.9.0/GUI.for.SingBox-windows-arm64.zip",
+            "hash": "1ae05ae9272fb067af083ea136b59566cca9ec32ea2af35117cf647a0d598a31"
         }
     },
+    "depends": "sing-box",
     "bin": "GUI.for.SingBox.exe",
     "shortcuts": [
         [
@@ -25,23 +26,34 @@
         ]
     ],
     "persist": "data",
-    "checkver": {
-        "github": "https://github.com/GUI-for-Cores/GUI.for.SingBox"
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-AppLink -App 'sing-box' -Target \"$persist_dir\\data\\sing-box\"",
+            "if (!(Test-Path \"$persist_dir\\data\\user.yaml\") -or !(Get-Item \"$persist_dir\\data\\user.yaml\").Length) {",
+            "    New-Item \"$persist_dir\\data\\user.yaml\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+            "    Set-Content -Path \"$persist_dir\\data\\user.yaml\" -Value \"lang: zh`nkernel:`n  branch: main`nrollingRelease: false\"",
+            "}"
+        ]
     },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Item \"$env:APPDATA\\GUI.for.SingBox.exe\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+    ],
+    "checkver": "github",
     "autoupdate": {
         "architecture": {
-            "64bit": {
-                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-amd64.exe#/GUI.for.SingBox.exe"
-            },
             "32bit": {
-                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-386.exe#/GUI.for.SingBox.exe"
+                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-386.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-amd64.zip"
             },
             "arm64": {
-                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-arm64.exe#/GUI.for.SingBox.exe"
+                "url": "https://github.com/GUI-for-Cores/GUI.for.SingBox/releases/download/v$version/GUI.for.SingBox-windows-arm64.zip"
             }
-        },
-        "hash": {
-            "mode": "download"
         }
     }
 }

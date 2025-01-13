@@ -1,0 +1,51 @@
+{
+    "version": "1.28.3",
+    "description": "📱 使用图形化的 Scrcpy 显示和控制您的 Android 设备，由 Electron 驱动。",
+    "homepage": "https://github.com/viarotel-org/escrcpy",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/viarotel-org/escrcpy#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/viarotel-org/escrcpy/releases/download/v1.28.3/Escrcpy-1.28.3-win-setup-x64.exe#/dl.7z",
+            "hash": "8caf29ddb0a33a4bd1789a01c623f51b8e069fb469672e62cbad78b2db6fef07",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        },
+        "arm64": {
+            "url": "https://github.com/viarotel-org/escrcpy/releases/download/v1.28.3/Escrcpy-1.28.3-win-setup-arm64.exe#/dl.7z",
+            "hash": "dae76fac27fd1701287a14e13ca214744394549f7405ea6b360b435f68bea35e",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\""
+        }
+    },
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\escrcpy\" \"$persist_dir\\AppData\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\escrcpy\""
+    ],
+    "shortcuts": [
+        [
+            "Escrcpy.exe",
+            "Escrcpy"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/viarotel-org/escrcpy/releases/download/v$version/Escrcpy-$version-win-setup-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/viarotel-org/escrcpy/releases/download/v$version/Escrcpy-$version-win-setup-arm64.exe#/dl.7z"
+            }
+        }
+    }
+}

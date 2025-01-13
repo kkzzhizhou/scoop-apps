@@ -1,0 +1,42 @@
+{
+    "version": "3.9.0.5220",
+    "description": "StartAllBack 是一个 Windows 11 下设置工具，可以改变开始菜单为经典样式，还可以更改管理器样式，增加菜单间距等，Windows 11 系统非常值得一试。",
+    "homepage": "https://www.mefcl.com/startallback.html",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/ikbOO2ixn9zg&type=down#/dl.exe",
+            "hash": "4e6ccaa13063e38d4f0caaa020b09205682d39b482a8a9ab538b4f5ed856d060"
+        }
+    },
+    "installer": {
+        "args": [
+            "/install",
+            "/silent"
+        ]
+    },
+    "post_install": "reg.exe add \"HKCU\\Software\\StartIsBack\" /f /v \"DarkMagic\" /t REG_DWORD /d 1",
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "uninstaller": {
+        "script": ". \"$env:LOCALAPPDATA\\StartAllBack\\StartAllBackCfg.exe\" /uninstall /silent"
+    },
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$f = Get-LanzouList \"https://mefcl.lanzn.com/b0izoe9bc\" 2tyr | Where-Object { $_.name_all -like \"StartAllBack_*_Setup.exe\" } | Select-Object -First 1",
+            "$f.name_all + '=====' + $f.id"
+        ],
+        "regex": "StartAllBack_(.*)_Setup.exe=====(?<sharekey>.*)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekey&type=down#/dl.exe"
+            }
+        }
+    }
+}

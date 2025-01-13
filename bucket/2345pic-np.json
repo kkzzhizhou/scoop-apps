@@ -1,0 +1,64 @@
+{
+    "version": "11.4.2.10946",
+    "description": "强大的图片浏览管理软件",
+    "homepage": "https://www.mefcl.com/2345pic.html",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/imw7R2e1oixi&type=down#/installer.exe",
+            "hash": "1b5ec00b6abc9ec40ceecfd5b5e6bb9c5221b939df8bc5cb33ae16b234eec2f8"
+        },
+        "32bit": {
+            "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/ibuyt2e1oj3e&type=down#/installer.exe",
+            "hash": "b7a5d3c38a340c4a9a9a878618a4b68f33db21e5568be69234365a8e16cb2ccd"
+        }
+    },
+    "shortcuts": [
+        [
+            "2345PicViewer.exe",
+            "2345看图王"
+        ],
+        [
+            "2345PdfReader.exe",
+            "2345看图王-PDF阅读器"
+        ],
+        [
+            "2345Pic.exe",
+            "2345看图王-图片管理"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Quiet",
+            "Remove-Item \"$dir\\installer.exe\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('programs'))\\2345王牌软件\\看图王\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "Invoke-ExternalCommand \"$dir\\uninstall.exe\" -ArgumentList '/S' -Quiet",
+        "Start-Sleep -Seconds 10",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$l = Get-LanzouList \"https://mefcl.lanzoui.com/b00zossij\" 965w",
+            "$fa = $l | Where-Object { $_.name_all -like \"2345看图王_*_mefcl_x64_Setup.exe\" } | Select-Object -First 1",
+            "$fb = $l | Where-Object { $_.name_all -like \"2345看图王_*_mefcl_x86_Setup.exe\" } | Select-Object -First 1",
+            "$fa.name_all + '=====' + $fa.id + '=====' + $fb.id"
+        ],
+        "regex": "2345看图王_(.*)_mefcl_x64_Setup.exe=====(?<sharekeya>.*)=====(?<sharekeyb>.*)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekeya&type=down#/installer.exe"
+            },
+            "32bit": {
+                "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekeyb&type=down#/installer.exe"
+            }
+        }
+    }
+}

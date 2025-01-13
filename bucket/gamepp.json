@@ -1,0 +1,46 @@
+{
+    "version": "6.0.286.1227",
+    "description": "游戏加加是一款帮助用户提升电脑性能、有效改善游戏体验的综合性软件，为用户提供专业的电脑硬件检测，一键查看电脑配置；实时的桌面/游戏内硬件状态显示；实用的电脑跑分硬件测试；AI智能的游戏滤镜方案；最新的云顶之弈阵容推荐等功能。",
+    "homepage": "https://gamepp.com",
+    "license": "https://gamepp.com/terms-of-use.html",
+    "url": "https://dl.gamepp.com/global/GamePP_International.exe#/dl.7z",
+    "hash": "0cb260b3d8b8e0484c717396735a3c4d7237817560ad07aa56d584741bfaeb89",
+    "shortcuts": [
+        [
+            "GamePP.exe",
+            "游戏加加",
+            "/main"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:LOCALAPPDATA\\GamePP\" \"$persist_dir\\GPP\" -Migrate",
+            "New-PersistDirectory \"$env:LOCALAPPDATA\\GamePPSdk\" \"$persist_dir\\GPPSDK\" -Migrate",
+            "Move-Item \"$dir\\Apps\" \"$persist_dir\\GPP\\Apps\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Expand-7zipArchive \"$dir\\common.7z\" \"$persist_dir\\GPP\" -Removal -Overwrite All",
+            "Move-Item \"$dir\\SDK\\*\" \"$persist_dir\\GPPSDK\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Move-Item \"$dir\\Main\\*\" \"$dir\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$dir\\Apps\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$dir\\SDK\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null",
+            "Remove-Item \"$dir\\Main\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$bucket = $install.bucket",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "Remove-Junction \"$env:LOCALAPPDATA\\GamePP\"",
+            "Remove-Junction \"$env:LOCALAPPDATA\\GamePPSdk\"",
+            "",
+            "Remove-Item \"$env:ProgramData\\GamePPSdk\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://gamepp.com",
+        "regex": "<span>版本号：V</span><em>(?<version>[\\d.]+)</em>"
+    },
+    "autoupdate": {
+        "url": "https://dl.gamepp.com/global/GamePP_International.exe#/dl.7z"
+    }
+}
