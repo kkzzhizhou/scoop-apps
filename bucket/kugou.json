@@ -1,61 +1,24 @@
 {
-    "version": "20.0.10",
-    "description": "酷狗音乐，就是歌多",
-    "homepage": "https://www.kugou.com/",
-    "license": "Proprietary",
-    "url": "http://download.kugou.com/download/kugou_pc#/dl.7z",
-    "hash": "21b82e090da81800498f2244daa46ae3efc849bad3e7712f038773b8e4b204f9",
-    "installer": {
-        "script": [
-            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-            "# Do not migrate settings",
-            "if (Test-Path \"$env:APPDATA\\KuGou8\\KuGou.ini\") {",
-            "    Remove-Item \"$env:APPDATA\\KuGou8\\KuGou.ini\" -Force -ErrorAction SilentlyContinue | Out-Null",
-            "}",
-            "New-PersistDirectory \"$env:APPDATA\\KuGou8\" \"$persist_dir\\AppData\" -Migrate",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\KuGou.7z\" \"$dir\"",
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\AppData.7z\" \"$persist_dir\\AppData\" -Overwrite 'Skip'",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
-            "",
-            "if (-not (Test-Path \"$persist_dir\\AppData\\KuGou.ini\")) {",
-            "    @\"",
-            "[DownloadConfigSection]",
-            "DownloadPath=$persist_dir\\KuGou",
-            "TempPath=$persist_dir\\KuGou\\Temp",
-            "",
-            "[Fanxing]",
-            "PlayingRecommend=0",
-            "",
-            "[GeneralConfigSection]",
-            "AutoRunDlnaKey=0",
-            "DynamicDesktopUsageDenominator=2",
-            "RegisterRestart=0",
-            "",
-            "[LyricConfigSection]",
-            "LyricPath=$persist_dir\\KuGou\\Lyric\\",
-            "",
-            "[MP3Copy]",
-            "SyncPrompt=0",
-            "",
-            "[Player]",
-            "SystemMediaControl=1",
-            "\"@ | Set-Content \"$persist_dir\\AppData\\KuGou.ini\" -Encoding unicode -Force",
-            "    success \"[New install] The download folder have been set to $persist_dir\\KuGou successfully!\"",
-            "}"
-          ]
+    "##": "酷狗音乐",
+    "version": "11.1.18",
+    "description": "[酷狗音乐] - 一款音乐播放软件，也是中国国内最大的 P2P 音乐共享软件",
+    "bin": "KuGou.exe",
+    "hash": "c69fe3182ebc285a1361d1fc26591286006f70cd16e4ba1b3882003a13716aa1",
+    "homepage": "https://www.kugou.com",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.kugou.com/about/protocol.html"
     },
-    "persist": [
-        "KuGou\\Temp",
-        "KuGou\\Lyric"
-    ],
-    "pre_uninstall": [
-        "$bucket = $install.bucket",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "Stop-App",
-        "Remove-Junction \"$env:APPDATA\\KuGou8\"",
-        "reg.exe delete \"HKCU\\SOFTWARE\\kugou\" /f *>$null",
-        "reg.exe delete \"HKCU\\SOFTWARE\\KuGou8\" /f *>$null",
-        "reg.exe delete \"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\" /v \"KuGou8\" /f *>$null"
+    "url": "https://downmini.yun.kugou.com/web/kugou_release_11118.exe#/dl.7z",
+    "pre_install": [
+        "Move-Item \"$dir\\`$PLUGINSDIR\\KuGou.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "Expand-7zipArchive \"$dir\\KuGou.7z\" -DestinationPath \"$dir\\kugou\" -Removal",
+        "Copy-Item \"$dir\\kugou\\KuGou.exe\" $dir -Recurse",
+        "Expand-7zipArchive \"$dir\\KuGou.exe\" -Switches \"**\\**\\version.txt\"",
+        "$match = Select-String -Path \"$dir\\.rsrc\\**\\version.txt\" -Encoding unicode -Pattern 'FileVersion.*\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"'",
+        "Rename-Item \"$dir\\kugou\" \"$dir\\$($match[0].Matches.Groups[1].Value)\" -Force",
+        "Remove-Item \"$dir\\.rsrc\" -Force -Recurse"
     ],
     "shortcuts": [
         [
@@ -64,10 +27,10 @@
         ]
     ],
     "checkver": {
-        "url": "https://download.kugou.com/",
-        "regex": "V (\\d+(\\.\\d+)+)"
+        "url": "http://download.kugou.com",
+        "regex": "V ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "http://download.kugou.com/download/kugou_pc#/dl.7z"
+        "url": "https://downmini.yun.kugou.com/web/kugou_release_$cleanVersion.exe#/dl.7z"
     }
 }

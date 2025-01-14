@@ -1,0 +1,65 @@
+{
+    "version": "1.2.11",
+    "description": "An online collaboration platform.",
+    "homepage": "https://www.wolai.com/",
+    "license": "Unknown",
+    "notes": [
+        "Visit following site for user guide:",
+        "https://www.wolai.com/wolai/xhqeop8UHpVTMUSVmgz8nq"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn.wostatic.cn/dist/installers/wolai%20Setup%201.2.11.exe#/dl.7z",
+            "hash": "sha512:25b890b343a2de35993e6bb4e84a5575933f0ac7d747534a908d6144067fdf1f0620159b56cb899fe92efe2eb3dde79f6f053b0a8e212e23b2edc63eddd378f9",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Mount-ExternalRuntimeData -Source \"$persist_dir\\wolai\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "} else {",
+            "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "wolai.exe",
+            "wolai"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
+            "if (Test-Path $S4UtilsPath) {",
+            "    Unblock-File $S4UtilsPath",
+            "    Import-Module $S4UtilsPath",
+            "    Dismount-ExternalRuntimeData -Target \"wolai\" -AppData",
+            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://cdn.wostatic.cn/dist/installers/electron-versions.json",
+        "regex": "Setup\\.(.+)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn.wostatic.cn/dist/installers/wolai%20Setup%20$version.exe#/dl.7z",
+                "hash": {
+                    "url": "https://cdn.wostatic.cn/dist/installers/electron-versions.json",
+                    "regex": "exe.+\\n.+ \"$base64"
+                }
+            }
+        }
+    }
+}

@@ -1,83 +1,47 @@
 {
-    "version": "4.37.2",
+    "version": "nightly",
     "description": "Docker Desktop. Open platform for developers and sysadmins to build, ship, and run distributed applications, whether on laptops, data center VMs, or the cloud.",
-    "homepage": "https://www.docker.com/products/docker-desktop/",
-    "license": "Proprietary",
+    "homepage": "https://www.docker.com",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/moby/moby/blob/master/LICENSE"
+    },
+    "notes": [
+        "Conditions:",
+        "refer to the:",
+        "https://learn.microsoft.com/en-us/windows/wsl/install"
+    ],
+
     "architecture": {
-        "arm64": {
-            "url": "https://alist.xrgzs.top/d/pxy/Software/Docker/Desktop/win/main/arm64/Docker%20Desktop%20Installer.exe#/installer.exe",
-            "hash": "d25108f7118216c51ffa97be0e86e7720ca30ea500d9179061265c03aa6b96bf"
-        },
         "64bit": {
-            "url": "https://alist.xrgzs.top/d/pxy/Software/Docker/Desktop/win/main/amd64/Docker%20Desktop%20Installer.exe#/installer.exe",
-            "hash": "331f809f1e139a868e8339af4382d2569ed7301c5341fcec834b47a30994781f"
-        }
-    },
-    "shortcuts": [
-        [
-            "docker\\Docker Desktop.exe",
-            "Docker Desktop"
-        ]
-    ],
-    "suggest": {
-        "Windows Subsystem for Linux 2": "sdoog/wsl2"
-    },
-    "bin": "docker\\DockerCli.exe",
-    "installer": {
-        "args": [
-            "install",
-            "--quiet",
-            "--accept-license",
-            "--backend=wsl-2",
-            "--installation-dir=$dir\\docker"
-        ]
-    },
-    "pre_install": [
-        "if (!(is_admin)) {",
-        "    error \"Administrator rights are required to install $app.\"",
-        "    scoop uninstall $app",
-        "    exit 1",
-        "}",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "New-PersistDirectory \"$env:USERPROFILE\\.docker\" \"$persist_dir\\USERPROFILE\\.docker\" -Migrate",
-        "New-PersistDirectory \"$env:LOCALAPPDATA\\Docker\" \"$persist_dir\\LOCALAPPDATA\\Docker\" -Migrate",
-        "New-PersistDirectory \"$env:APPDATA\\Docker\" \"$persist_dir\\APPDATA\\Docker\" -Migrate"
-    ],
-    "post_install": [
-        "Remove-Item \"$env:USERPROFILE\\Desktop\\Docker Desktop.lnk\" -Force",
-        "Remove-Item \"$env:PROGRAMDATA\\Microsoft\\Windows\\Start Menu\\Docker Desktop.lnk\" -Force"
-    ],
-    "pre_uninstall": [
-        "if (!(is_admin)) {",
-        "    error \"Administrator rights are required to uninstall $app.\"",
-        "    exit 1",
-        "}",
-        "info 'Shutting down Docker Desktop...'",
-        ". \"$dir\\docker\\DockerCli.exe\" -Shutdown",
-        "info 'Uninstalling Docker Desktop...'",
-        "Start-Process -FilePath \"$dir\\docker\\Docker Desktop Installer.exe\" -ArgumentList @('uninstall', '--quiet', \"--installation-dir=$dir\\docker\") -Wait -Verb RunAs",
-        "$bucket = $install.bucket",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "Stop-App",
-        "Remove-Junction \"$env:USERPROFILE\\.docker\"",
-        "Remove-Junction \"$env:LOCALAPPDATA\\Docker\"",
-        "Remove-Junction \"$env:APPDATA\\Docker\""
-    ],
-    "checkver": {
-        "url": "https://alist.xrgzs.top/d/pxy/Software/Docker/Desktop/Version.txt",
-        "regex": "([\\d.]+)"
-    },
-    "autoupdate": {
-        "architecture": {
-            "arm64": {
-                "url": "https://alist.xrgzs.top/d/pxy/Software/Docker/Desktop/win/main/arm64/Docker%20Desktop%20Installer.exe#/installer.exe"
+            "url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
+            "pre_install": [
+                "if(is_admin) {",
+                "    if((Get-WindowsOptionalFeature -FeatureName Microsoft-Hyper-V-All -Online).State -eq 'Disabled') {",
+                "        dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart /loglevel:4 /logpath:$dir",
+                "        dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart /loglevel:4 /logpath:$dir",
+                "    }",
+                "}else{",
+                "       Write-host \"Please run as an administrator\" -ForegroundColor green",
+                "       exit",
+                "}"
+            ],
+            "bin": ["resources\\bin\\docker.exe"],
+            "installer": {
+                "args": [
+                    "install",
+                    "--quiet",
+                    "--accept-license",
+                    "--backend=wsl-2",
+                    "--installation-dir=$dir",
+                    "--admin-settings"
+                ],
+                "keep": true
             },
-            "64bit": {
-                "url": "https://alist.xrgzs.top/d/pxy/Software/Docker/Desktop/win/main/amd64/Docker%20Desktop%20Installer.exe#/installer.exe"
+            "uninstaller": {
+                "file": "Docker%20Desktop%20Installer.exe",
+                "args": ["uninstall", "--quiet"]
             }
-        },
-        "hash": {
-            "url": "$baseurl/checksums.txt"
         }
     }
 }
