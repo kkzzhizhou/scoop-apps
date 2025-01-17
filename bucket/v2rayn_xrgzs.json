@@ -1,0 +1,64 @@
+{
+    "version": "7.6.2",
+    "description": "(Auto update 4 cores by scoop) A V2Ray client for Windows, support Xray core and others",
+    "homepage": "https://github.com/2dust/v2rayN",
+    "license": "GPL-3.0-or-later",
+    "depends": [
+        "main/xray",
+        "extras/hysteria",
+        "main/mihomo",
+        "main/sing-box"
+    ],
+    "notes": "Better use administrator privileges to install so that the cores could be linked by symlinks, rather than shims, providing better compatibility and performance.",
+    "suggest": {
+        ".NET 8 Desktop Runtime": "windowsdesktop-runtime-lts"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.6.2/v2rayN-windows-64.zip",
+            "hash": "318dc2f036694aafdbdfbe3b538eb241cc22370425acca98999462ff8c967da9",
+            "extract_dir": "v2rayN-windows-64"
+        },
+        "arm64": {
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.6.2/v2rayN-windows-arm64.zip",
+            "hash": "f462217ec0e5619d230918f0be0b97e8972b144f9896d30212b68b525b92fe66",
+            "extract_dir": "v2rayN-windows-arm64"
+        }
+    },
+    "bin": "v2rayN.exe",
+    "shortcuts": [
+        [
+            "v2rayN.exe",
+            "v2rayN"
+        ]
+    ],
+    "persist": "guiConfigs",
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-AppLink -App 'xray' -Target \"$dir\\bin\\xray\"",
+            "New-AppLink -App 'hysteria' -Target \"$dir\\bin\\hysteria\"",
+            "New-AppLink -App 'mihomo' -Target \"$dir\\bin\\mihomo\"",
+            "New-AppLink -App 'sing-box' -Target \"$dir\\bin\\sing_box\""
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/v2rayN/releases?per_page=1",
+        "jsonpath": "$.tag_name"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/2dust/v2rayN/releases/download/$version/v2rayN-windows-64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/2dust/v2rayN/releases/download/$version/v2rayN-windows-arm64.zip"
+            }
+        }
+    }
+}

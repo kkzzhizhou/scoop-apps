@@ -1,0 +1,32 @@
+{
+    "##": "苏妈NB，指定官网爬取会卡死",
+    "version": "24.12.1",
+    "description": "AMD Software: Adrenalin Edition Driver Including Vega and Polaris Series Graphics Support for Windows® 10 & Windows® 11 64-bit",
+    "homepage": "https://github.com/24HourSupport/CommonSoftware",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://drivers.amd.com/drivers/whql-amd-software-adrenalin-edition-24.12.1-win10-win11-dec-rdna-combined.exe#/dl.7z",
+            "hash": "adeeefb6c60908c2eb92058e6856233f7693a9a9ca1142afe54128b1ad0d325c"
+        }
+    },
+    "extract_to": "installer",
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer\\Setup.exe\" -ArgumentList @('-INSTALL') -Quiet",
+            "Remove-Item \"$dir\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/24HourSupport/CommonSoftware/raw/refs/heads/main/amd_gpu.json",
+        "jsonpath": "$.consumer.link",
+        "regex": "whql-amd-software-adrenalin-edition-([\\d.]+)-win10-win11-(?<mounth>\\w+)-rdna.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://drivers.amd.com/drivers/whql-amd-software-adrenalin-edition-$version-win10-win11-$matchMounth-rdna-combined.exe#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,85 @@
+{
+    "version": "6.3.1.84",
+    "description": "Listary also brings recent folders and files at your fingertips from Explorer and File Open/Save Dialog box. Last opened file is automatically highlighted for instant access.",
+    "homepage": "https://www.cybermania.ws/apps/listary-pro/",
+    "license": "Proprietary",
+    "depends": "innounp",
+    "architecture": {
+        "64bit": {
+            "url": "https://alist.xrgzs.top/d/pxy/Software/Listary/ListaryProx64.7z",
+            "hash": "a22035a1c7fdc812341760e1863197e28dd103daf9234b921f8f849b458263cc"
+        }
+    },
+    "installer": {
+        "script": [
+            "New-Item -Path \"$dir\\installer\" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Get-ChildItem -Path \"$dir\\*.exe\" | ForEach-Object { Expand-7zipArchive -Path $_ -DestinationPath \"$dir\\installer\" -Removal }",
+            "Expand-InnoArchive -Path \"$dir\\installer\\Listary.exe\" -DestinationPath $dir -Removal",
+            "Expand-7zipArchive -Path \"$dir\\installer\\Replace.exe\" -DestinationPath $dir -Overwrite 'All'",
+            "Remove-Item -Path \"$dir\\installer\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "@\"",
+            "Windows Registry Editor Version 5.00",
+            "",
+            "[HKEY_CLASSES_ROOT\\listary]",
+            "@=\"URL: Listary Custom Protocol\"",
+            "\"URL Protocol\"=\"\"",
+            "",
+            "[HKEY_CLASSES_ROOT\\listary\\shell\\open\\command]",
+            "@=\"$($dir -replace '\\\\','\\\\')\\\\Listary.exe --url-schema=%1\"",
+            "",
+            "\"@ | Set-Content \"$dir\\install-schema.reg\" -Encoding unicode",
+            "",
+            "reg.exe import \"$dir\\install-schema.reg\"",
+            "",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\Listary\" \"$persist_dir\\AppData\" -Migrate",
+            "",
+            "if (-not (Test-Path \"$persist_dir\\AppData\\UserProfile\\Settings\\Preferences.json\")) {",
+            "New-Item -Path \"$persist_dir\\AppData\\UserProfile\\Settings\" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null",
+            "@\"",
+            "{",
+            "  \"AutoUpdate\": {",
+            "    \"EnableAutoUpdate\": false",
+            "  },",
+            "  \"Settings\": {",
+            "    \"General.EnableAnalytics\": false,",
+            "    \"Appearance.Theme\": 0",
+            "  }",
+            "}",
+            "\"@ | Set-Content \"$persist_dir\\AppData\\UserProfile\\Settings\\Preferences.json\" -Encoding UTF8",
+            "}"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\Listary\""
+    ],
+    "uninstaller": {
+        "script": [
+            "reg.exe delete HKCR\\listary /f",
+            "reg.exe delete HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Listary /f"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Listary.exe",
+            "Listary"
+        ]
+    ],
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/Listary/ListaryProx64.7z.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://alist.xrgzs.top/d/pxy/Software/Listary/ListaryProx64.7z",
+                "hash": {
+                    "url": "https://alist.xrgzs.top/d/pxy/Software/Listary/ListaryProx64.7z.sha256"
+                }
+            }
+        }
+    }
+}

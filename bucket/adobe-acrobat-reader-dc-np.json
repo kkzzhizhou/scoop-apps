@@ -1,0 +1,46 @@
+{
+    "version": "24.005.20307",
+    "description": "Adobe Acrobat Reader DC. Not only view, but print, sign, and annotate PDFs with the free Adobe Acrobat Reader DC.",
+    "homepage": "https://acrobat.adobe.com/us/en/acrobat/pdf-reader.html",
+    "license": {
+        "identifier": "Copyright (c) Adobe",
+        "url": "https://www.adobe.com/content/dam/cc/en/legal/licenses-terms/pdf/Reader-EULA-en_US-20181207.pdf"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://ardownload2.adobe.com/pub/adobe/acrobat/win/AcrobatDC/2400520307/AcroRdrDCx642400520307_zh_CN.exe#/dl.7z",
+            "hash": "cfed674aff9b7674345139dcc7fe108950a16f31b003ebc8318171dc9a0940b6"
+        }
+    },
+    "extract_to": "installer",
+    "installer": {
+        "script": [
+            "New-Item \"$dir\\program\" -ItemType Directory -Force -ErrorAction SilentlyContinue | Out-Null",
+            "if ($Global) {",
+            "    $ArgumentList = @('/sAll', '/rs', '/quiet', \"/msi ALLUSERS=1 EULA_ACCEPT=YES DISABLEDESKTOPSHORTCUT=1 INSTALLDIR=`\"$dir\\program`\"\")",
+            "} else {",
+            "    $ArgumentList = @('/sAll', '/rs', '/quiet', \"/msi ALLUSERS=0 EULA_ACCEPT=YES DISABLEDESKTOPSHORTCUT=1 INSTALLDIR=`\"$dir\\program`\"\")",
+            "}",
+            "Invoke-ExternalCommand \"$dir\\installer\\setup.exe\"  -ArgumentList $ArgumentList -Quiet",
+            "Remove-Item \"$dir\\installer\\\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "Get-ItemProperty HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"Adobe Acrobat*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn') -Quiet }",
+        "Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"Adobe Acrobat*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn') -Quiet -RunAs }",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "url": "https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html",
+        "regex": "<span class=\"std std-ref\">([\\d.]+) Optional update"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ardownload2.adobe.com/pub/adobe/acrobat/win/AcrobatDC/$cleanVersion/AcroRdrDCx64$cleanVersion_zh_CN.exe#/dl.7z"
+            }
+        }
+    }
+}

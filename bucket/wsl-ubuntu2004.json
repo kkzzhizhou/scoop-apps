@@ -1,44 +1,57 @@
 {
-    "homepage": "https://www.microsoft.com/store/apps/9n6svws3rx71",
-    "description": "Ubuntu 20.04 LTS on WSL",
+    "version": "2004.6.16.0",
+    "description": "Install a complete Ubuntu 20.04 LTS terminal environment in minutes with Windows Subsystem for Linux (WSL)",
+    "homepage": "https://www.microsoft.com/store/productId/9MTTCL66CPXJ",
     "license": "Proprietary",
-    "version": "20.04",
-    "url": "https://aka.ms/wslubuntu2004",
+    "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2004.appxbundle#/dl.7z",
+    "hash": "4f417ae232f8f2e264ed26f2d0ca9dcceba879d2c03c89d378748e4cbc9d73ce",
+    "notes": [
+        "Call `ubuntu2004.exe` to start Ubuntu installation.",
+        "See more: https://ubuntu.com/desktop/wsl"
+    ],
+    "extract_to": "Deploy",
+    "suggest": {
+        "Windows Subsystem for Linux 2": "sdoog/wsl2"
+    },
+    "pre_install": [
+        "if (-not (Get-Command \"wslconfig.exe\" -ErrorAction SilentlyContinue)) {",
+        "    error 'It seems that you don''t have WSL installed. Please install it first.'",
+        "}"
+    ],
     "architecture": {
         "64bit": {
             "installer": {
-                "script": [
-                    "Get-Item \"$dir\\wslubuntu2004\" | Rename-Item -NewName \"ubuntu2004.zip\"",
-                    "Expand-Archive -Path \"$dir\\ubuntu2004.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2004.zip\"",
-                    "Get-Item \"$dir\\*x64.appx\" | Rename-Item -NewName \"ubuntu2004.zip\"",
-                    "Expand-Archive -Force -Path \"$dir\\ubuntu2004.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2004.zip\"",
-                    "Get-Item \"$dir\\*.appx\" | Remove-Item"
-                ]
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_x64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
             }
         },
         "arm64": {
             "installer": {
-                "script": [
-                    "Get-Item \"$dir\\wslubuntu2004\" | Rename-Item -NewName \"ubuntu2004.zip\"",
-                    "Expand-Archive -Path \"$dir\\ubuntu2004.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2004.zip\"",
-                    "Get-Item \"$dir\\*ARM64.appx\" | Rename-Item -NewName \"ubuntu2004.zip\"",
-                    "Expand-Archive -Force -Path \"$dir\\ubuntu2004.zip\" -DestinationPath \"$dir\"",
-                    "Remove-Item \"$dir\\ubuntu2004.zip\"",
-                    "Get-Item \"$dir\\*.appx\" | Remove-Item"
-                ]
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
             }
         }
     },
+    "post_install": [
+        "Remove-Item \"$dir\\Deploy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "scoop hold $app"
+    ],
+    "uninstaller": {
+        "script": "wslconfig.exe /u Ubuntu-20.04"
+    },
+    "bin": "ubuntu2004.exe",
     "shortcuts": [
         [
-            "ubuntu.exe",
+            "ubuntu2004.exe",
             "Ubuntu 20.04 LTS"
         ]
     ],
-    "uninstaller": {
-        "script": "wslconfig /u Ubuntu-20.04"
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2004.appxbundle.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu2004.appxbundle#/dl.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
     }
 }

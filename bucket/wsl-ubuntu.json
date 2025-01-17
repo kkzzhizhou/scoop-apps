@@ -1,0 +1,57 @@
+{
+    "version": "2404.1.68.0",
+    "description": "Install a complete Ubuntu terminal environment in minutes with Windows Subsystem for Linux (WSL)",
+    "homepage": "https://www.microsoft.com/store/productId/9PDXGNCFSCZV",
+    "license": "Proprietary",
+    "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu.appxbundle#/dl.7z",
+    "hash": "93e4c4f94cb907dfd05e89864d4f2e1d0b200bb2e1df832d68cd5ff6b8668ea0",
+    "notes": [
+        "Call `ubuntu.exe` to start Ubuntu installation.",
+        "See more: https://ubuntu.com/desktop/wsl"
+    ],
+    "extract_to": "Deploy",
+    "suggest": {
+        "Windows Subsystem for Linux 2": "sdoog/wsl2"
+    },
+    "pre_install": [
+        "if (-not (Get-Command \"wslconfig.exe\" -ErrorAction SilentlyContinue)) {",
+        "    error 'It seems that you don''t have WSL installed. Please install it first.'",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_x64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        },
+        "arm64": {
+            "installer": {
+                "script": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.appx\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\Deploy\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "scoop hold $app"
+    ],
+    "uninstaller": {
+        "script": "wslconfig.exe /u Ubuntu"
+    },
+    "bin": "ubuntu.exe",
+    "shortcuts": [
+        [
+            "ubuntu.exe",
+            "Ubuntu"
+        ]
+    ],
+    "checkver": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu.appxbundle.ver",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://alist.xrgzs.top/d/pxy/Software/WSL/Ubuntu.appxbundle#/dl.7z",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

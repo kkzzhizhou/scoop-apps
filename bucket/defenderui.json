@@ -1,0 +1,67 @@
+{
+    "version": "1.30",
+    "description": "DefenderUI: A better UI for Microsoft Defender",
+    "homepage": "https://www.defenderui.com/",
+    "license": "Proprietary",
+    "url": "https://www.defenderui.com/Download/InstallDefenderUI.exe",
+    "hash": "8826ee8823807cb9d8525ebe5ea5f9a5e9202a5ae727992c139128b71c639195",
+    "innosetup": true,
+    "shortcuts": [
+        [
+            "DefenderUI.exe",
+            "DefenderUI",
+            "/sw"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "@\"",
+            "Windows Registry Editor Version 5.00",
+            "",
+            "[HKEY_CLASSES_ROOT\\*\\shell\\DefenderUI Add Exclusion]",
+            "@=\"DefenderUI Add Exclusion\"",
+            "\"Icon\"=\"$dir\\DefenderUI.exe,0\"",
+            "\"MultiSelectModel\"=\"Single\"",
+            "",
+            "[HKEY_CLASSES_ROOT\\*\\shell\\DefenderUI Add Exclusion\\command]",
+            "@=\"$dir\\DefenderUI.exe %1 /addfileexclusion\"",
+            "",
+            "[HKEY_CLASSES_ROOT\\Directory\\shell\\DefenderUI Add Exclusion]",
+            "@=\"DefenderUI Add Exclusion\"",
+            "\"Icon\"=\"$dir\\DefenderUI.exe,0\"",
+            "\"MultiSelectModel\"=\"Single\"",
+            "",
+            "[HKEY_CLASSES_ROOT\\Directory\\shell\\DefenderUI Add Exclusion\\command]",
+            "@=\"$dir\\DefenderUI.exe %1 /addfolderexclusion\"",
+            "",
+            "\"@ | Set-Content \"$dir\\install.reg\"",
+            "",
+            "reg.exe import \"$dir\\install.reg\" *>$null",
+            "",
+            "Invoke-ExternalCommand \"$dir\\DefenderUIService.exe\" -ArgumentList @('--install') -RunAs",
+            "Invoke-ExternalCommand \"sc.exe\" -ArgumentList @('sdset DefenderUIService D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWRPLOCRRC;;;IU)(A;;CCLCSWLOCRRC;;;SU)') -RunAs -Quiet"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "@\"",
+            "Windows Registry Editor Version 5.00",
+            "",
+            "[-HKEY_CLASSES_ROOT\\*\\shell\\DefenderUI Add Exclusion]",
+            "",
+            "[-HKEY_CLASSES_ROOT\\Directory\\shell\\DefenderUI Add Exclusion]",
+            "",
+            "\"@ | Set-Content \"$dir\\uninstall.reg\"",
+            "",
+            "reg.exe import \"$dir\\uninstall.reg\" *>$null",
+            "",
+            "Invoke-ExternalCommand \"$dir\\DefenderUIService.exe\" -ArgumentList @('--uninstall') -RunAs"
+        ]
+    },
+    "checkver": {
+        "regex": "Version (\\d+\\.\\d+)"
+    },
+    "autoupdate": {
+        "url": "https://www.defenderui.com/Download/InstallDefenderUI.exe"
+    }
+}

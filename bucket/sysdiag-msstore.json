@@ -1,0 +1,35 @@
+{
+    "version": "6.0.1.3-2024.07.31.1",
+    "description": "（自动安装）火绒安全软件6.0，畅享纯粹终端防护，轻快运行，静享守护，全面防御",
+    "homepage": "https://www.huorong.cn/person",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn.storeedgefd.dsx.mp.microsoft.com/eus2/cachedpackages/26a3755a-29ce-45be-95c4-50e5daf4f2c1_fdbd58197499b51f9df01f5abc0b9734c7ec41a75f60b5a828f3603e39b51ebb#/installer.exe",
+            "hash": "fdbd58197499b51f9df01f5abc0b9734c7ec41a75f60b5a828f3603e39b51ebb"
+        },
+        "32bit": {
+            "url": "https://cdn.storeedgefd.dsx.mp.microsoft.com/eus2/cachedpackages/26a3755a-29ce-45be-95c4-50e5daf4f2c1_2204bb207044054af546ee0b7760788dd40d1a19ef74b7ab022b47d9b53762cf#/installer.exe",
+            "hash": "2204bb207044054af546ee0b7760788dd40d1a19ef74b7ab022b47d9b53762cf"
+        },
+        "arm64": {
+            "url": "https://cdn.storeedgefd.dsx.mp.microsoft.com/eus2/cachedpackages/26a3755a-29ce-45be-95c4-50e5daf4f2c1_af7cf6b981b6fbaf1b57be5c16afe1b3a4bd29ee2292b1c39f27925284c4614b#/installer.exe",
+            "hash": "af7cf6b981b6fbaf1b57be5c16afe1b3a4bd29ee2292b1c39f27925284c4614b"
+        }
+    },
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:ProgramData\\Huorong\\Sysdiag\" \"$persist_dir\\ProgramData\" -Migrate",
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/S',\"/D=$dir\") -RunAs",
+            "Remove-Item \"$dir\\installer.exe\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "Invoke-ExternalCommand \"$dir\\uninst.exe\" -RunAs",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:ProgramData\\Huorong\\Sysdiag\""
+    ]
+}

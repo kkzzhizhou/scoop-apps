@@ -1,0 +1,74 @@
+{
+    "version": "17.6.2-24409262",
+    "homepage": "https://docs.vmware.com/en/VMware-Tools/index.html",
+    "description": "An application for creating and running virtual machines on your computer.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.vmware.com/ca/help/legal.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.2/24409262/windows/core/VMware-workstation-17.6.2-24409262.exe.tar#/dl.7z",
+            "hash": "d0f62805019d1ca5a1d5bafdf4d030dd782bd17abecea0662a5197563825ec8b"
+        }
+    },
+    "shortcuts": [
+        [
+            "vmware.exe",
+            "VMware Workstation Pro"
+        ],
+        [
+            "vmplayer.exe",
+            "VMware Workstation 17 Player"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    scoop uninstall $app",
+            "    exit 1",
+            "}",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\VMware\" \"$persist_dir\\AppData\" -Migrate",
+            "Invoke-ExternalCommand \"$dir\\VMware-workstation-$version.exe\" -ArgumentList @('/s', '/v', \"`\"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 INSTALLDIR=$dir`\"\") -RunAs",
+            "Remove-Item \"$dir\\VMware-workstation-$version.exe\" -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "if (!(is_admin)) {",
+        "    error \"Administrator rights are required to uninstall $app.\"",
+        "    exit 1",
+        "}",
+        "if ($cmd -eq 'uninstall') {",
+        "   Get-ItemProperty HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"VMware Workstation*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn REBOOT=R REMOVE=ALL') -Quiet }",
+        "   Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"VMware Workstation*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn REBOOT=R REMOVE=ALL') -Quiet -RunAs }",
+        "   Start-Sleep -Seconds 2",
+        "   Write-Host \"Please restart your computer to uninstall $app properly\" -F 'Red'",
+        "}",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\VMware\""
+    ],
+    "checkver": {
+        "script": [
+            "$Object1 = Invoke-WebRequest -Uri \"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/\"",
+            "$Version = $Object1.Links.href.Trim('/') | Where-Object { [version]::TryParse($_, [ref]$null) } | Sort-Object { [version]$_ } -Descending | Select-Object -First 1",
+            "",
+            "$Object2 = Invoke-WebRequest -Uri \"https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$version\"",
+            "$Build = $Object2.Links.href.Trim('/') | Where-Object { $_ -ne '..' } | Select-Object -Last 1",
+            "",
+            "$Version + '=====' + $Build"
+        ],
+        "regex": "(?<ver>.*)=====(?<build>.*)",
+        "replace": "$1-$2"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$matchVer/$matchBuild/windows/core/VMware-workstation-$version.exe.tar#/dl.7z"
+            }
+        }
+    }
+}

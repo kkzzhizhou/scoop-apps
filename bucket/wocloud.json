@@ -1,0 +1,45 @@
+{
+    "version": "2.6.3",
+    "description": "联通云盘是中国联通面向个人及家庭用户全新推出的一款智慧云端存储产品，旨在满足用户的海量数据存储、家庭内容共享和极速数据传输的需求。具有智能相册、畅快下载、微信备份和家庭分组等丰富多彩的智能云存储功能。",
+    "homepage": "https://pan.wo.cn/",
+    "license": "Proprietary",
+    "hash": "b020f0f2181b11156f5ad242c88f9981a4a1bcc8bd8e664fe6f27b1b0084294d",
+    "url": "https://pack.pan.wo.cn/download/WoCloud-2.6.3.exe#/dl.7z",
+    "shortcuts": [
+        [
+            "WoCloud.exe",
+            "联通云盘"
+        ]
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+            }
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse | Out-Null",
+        "",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "New-PersistDirectory \"$env:APPDATA\\wocloud\" \"$persist_dir\\AppData\" -Migrate"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\wocloud\""
+    ],
+    "checkver": {
+        "script": "Invoke-RestMethod -Uri \"https://pack.pan.wo.cn/download/latest.yml?t=$(Get-Date -Format FileDateTime)\"",
+        "regex": "version: (.*)"
+    },
+    "autoupdate": {
+        "url": "https://pack.pan.wo.cn/download/WoCloud-$version.exe#/dl.7z"
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "version": "12.5.0-24276846",
+    "homepage": "https://docs.vmware.com/en/VMware-Tools/index.html",
+    "description": "VMware Tools is a set of services and components that enable several features in various VMware products for better management and seamless user interactions with guest operating systems.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.vmware.com/ca/help/legal.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://packages.vmware.com/tools/releases/12.5.0/windows/x64/VMware-tools-12.5.0-24276846-x64.exe#/installer.exe",
+            "hash": "33b2fd3587fe43d59d12b6c6f94e7cdf2d143a76921a2618f910768d5e7bcab2"
+        },
+        "arm64": {
+            "url": "https://packages.vmware.com/tools/releases/12.5.0/windows/arm/VMware-tools-12.5.0-24276846-arm.exe#/installer.exe",
+            "hash": "c217fd93524f7c206984fa1ab2448986712ae25d2be2bcd09684f9fcfc70ec18"
+        }
+    },
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand \"$dir\\installer.exe\" -ArgumentList @('/s', '/v', \"`\"/qn REBOOT=R ADDLOCAL=ALL`\"\") -RunAs",
+            "Remove-Item \"$dir\\installer.exe\" -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "   Get-ItemProperty HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"VMware Tools*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn REBOOT=R REMOVE=ALL') -Quiet }",
+        "   Get-ItemProperty HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Where-Object { $_.DisplayName -like \"VMware Tools*\" } | Select-Object -ExpandProperty PSChildName | ForEach-Object { Invoke-ExternalCommand \"msiexec.exe\" -ArgumentList @('/x', \"$_\", '/qn REBOOT=R REMOVE=ALL') -Quiet -RunAs }",
+        "   Start-Sleep -Seconds 2",
+        "   Write-Host \"Please restart your computer to uninstall $app properly\" -F 'Red'",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://packages.vmware.com/tools/releases/latest/windows/",
+        "regex": "VMware-tools-windows-(?<version>[\\d.]+)-(?<build>\\d+).iso",
+        "replace": "$1-$2"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://packages.vmware.com/tools/releases/$matchVersion/windows/x64/VMware-tools-$matchVersion-$matchBuild-x64.exe#/installer.exe"
+            },
+            "arm64": {
+                "url": "https://packages.vmware.com/tools/releases/$matchVersion/windows/arm/VMware-tools-$matchVersion-$matchBuild-arm.exe#/installer.exe"
+            }
+        }
+    }
+}

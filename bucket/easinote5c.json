@@ -1,0 +1,47 @@
+{
+    "version": "1.0.1.8095",
+    "description": "易上手的白板书写软件",
+    "homepage": "https://e.seewo.com/product/EasiNote5c",
+    "license": "Proprietary",
+    "url": "https://e.seewo.com/download/file?code=EasiNote5C&&version=1.0.1.8095#/dl.7z",
+    "hash": "75d4b62d58a5d21f6118fd4cb31e0e45f9ba961d8b39109b8d4baccf59831bb0",
+    "extract_dir": "EasiNote5C_1.0.1.8095",
+    "shortcuts": [
+        [
+            "Main\\EasiNote5C.exe",
+            "希沃轻白板"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "Remove-Item \"$env:APPDATA\\Seewo\\EasiNote5C\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "post_install": [
+        "$scoop_startmenu_folder = shortcut_folder $global",
+        "Copy-Item -Path \"$scoop_startmenu_folder\\希沃轻白板.lnk\" -Destination \"$env:USERPROFILE\\Desktop\\希沃轻白板.lnk\" -Force -ErrorAction SilentlyContinue | Out-Null"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "post_uninstall": "Remove-Item \"$env:USERPROFILE\\Desktop\\希沃轻白板.lnk\" -Force -ErrorAction SilentlyContinue | Out-Null",
+    "checkver": {
+        "script": [
+            ". $pwd\\bin\\utils.ps1",
+            "",
+            "$seewoApps = [regex]::Match(",
+            "  (Invoke-WebRequest -Uri 'https://e.seewo.com/' -TimeoutSec 10).Content,",
+            "    \"var apps_str = '(.+?)';\"",
+            ").Groups[1].Value | ConvertFrom-HtmlEncodedText | ConvertFrom-Json",
+            "$seewoApp = $seewoApps | Where-Object { $_.packageCode -like 'EasiNote*c' } | Select-Object -First 1",
+            "$seewoApp.softInfos.softVersion"
+        ],
+        "regex": "([\\d\\w.]+)"
+    },
+    "autoupdate": {
+        "extract_dir": "EasiNote5C_$version",
+        "url": "https://e.seewo.com/download/file?code=EasiNote5C&&version=$version#/dl.7z"
+    }
+}

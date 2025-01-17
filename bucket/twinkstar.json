@@ -1,0 +1,51 @@
+{
+    "version": "10.3.1000.2501",
+    "description": "星愿浏览器（Twinkstar Browser）是一款好用，可靠，时尚的浏览器，兼容Chrome插件，提供漫画阅读模式，视频下载，鼠标手势，超级拖拽等功能",
+    "homepage": "https://www.twinkstar.com/",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://d1.twinkstar.com/win/Twinkstar_v10.3.1000.2501_Release3.exe#/dl.7z",
+            "hash": "2013f93c6f42ebcc8865159841eb3793544ce77d6aff971c8fbc4024d6f90cbe"
+        }
+    },
+    "extract_dir": "$PLUGINSDIR\\tw_data",
+    "shortcuts": [
+        [
+            "twinkstar.exe",
+            "星愿浏览器"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:LOCALAPPDATA\\Twinkstar\\User Data\" \"$persist_dir\\User Data\" -Migrate",
+            "Remove-Item \"$dir\\Uninstall*\", \"$dir\\tsupdater*\"  -Force -Recurse -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:LOCALAPPDATA\\Twinkstar\\User Data\""
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($cmd -eq 'uninstall') {",
+            "    Remove-Item -Path \"$env:LOCALAPPDATA\\Twinkstar\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "    Remove-Item -Path HKCU:\\SOFTWARE\\Twinkstar -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36",
+        "regex": "Twinkstar_v([\\d.]+)_(?<release>\\w+)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://d1.twinkstar.com/win/Twinkstar_v$version_$matchRelease.exe#/dl.7z"
+            }
+        }
+    }
+}

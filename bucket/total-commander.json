@@ -1,0 +1,80 @@
+{
+    "version": "9.3.11.03",
+    "description": "Total Commander 中文增强版是一款著名的文件管理软件，其功能类似于资源管理器。它具有两个并排的文件窗口，用户可以很方便地对文件及文件夹进行操作和管理。",
+    "homepage": "https://www.mefcl.com/total-commander.html",
+    "license": "Proprietary",
+    "notes": [
+        "定制：飞扬时空",
+        "– 完美中文版：集成中文版文档及插件，支持拼音首字母定位功能；",
+        "– 功能更强大：集成实用工具和精选插件，软件功能得以丰富增强；",
+        "– 使用更方便：精心定制菜单、工具栏、文件夹列表、快捷键资源；",
+        "– 界面更美观：精选图标、字体、颜色等界面要素，视觉效果更佳；",
+        "– 安装更灵活：支持多种安装类型，充分满足个性化、多样化需求。"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/iUg041pc6plg&type=down#/dl.7z",
+            "hash": "c398b2811f68f36a9839ff4ea45771e30cd1a00a6d5153c891e3866602f65230",
+            "bin": "TOTALCMD64.EXE",
+            "shortcuts": [
+                [
+                    "TOTALCMD64.EXE",
+                    "Total Commander"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/ia59W1pbj7rg&type=down#/dl.7z",
+            "hash": "becaec263d6a25216993d07a4c560c1a55d46141bcc32020d8578277fd9a1588",
+            "bin": "TOTALCMD.EXE",
+            "shortcuts": [
+                [
+                    "TOTALCMD.EXE",
+                    "Total Commander"
+                ]
+            ]
+        }
+    },
+    "persist": [
+        "plugins",
+        "DEFAULT.BAR",
+        "default.br2",
+        "VERTICAL.BAR",
+        "vertical.br2",
+        "usercmd.ini",
+        "wcx_ftp.ini",
+        "wincmd.ini",
+        "wincmd.key",
+        "contplug.ini",
+        "fsplugin.ini",
+        "lsplugin.ini",
+        "pkplugin.ini"
+    ],
+    "pre_install": "ForEach ($emptyFile in $manifest.persist | Where-Object { $_ -ne 'plugins' }) {New-Item \"$dir\\$emptyFile\" -ItemType file -ErrorAction SilentlyContinue | Out-Null}",
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$l = Get-LanzouList \"https://www.lanzoux.com/b405514\"",
+            "$fa = $l | Where-Object { $_.name_all -like \"TCCEE_x64_*.exe\" } | Select-Object -First 1",
+            "$fb = $l | Where-Object { $_.name_all -like \"TCCEE_x86_*.exe\" } | Select-Object -First 1",
+            "$fa.name_all + '=====' + $fa.id + '=====' + $fb.id"
+        ],
+        "regex": "TCCEE_x64_v(\\d+\\.\\d+)\\((\\d+\\.\\d+)\\).exe=====(?<sharekeya>.*)=====(?<sharekeyb>.*)",
+        "replace": "${1}.${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekeya&type=down#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://api.xrgzs.top/lanzou/?url=https://www.lanzoui.com/$matchSharekeyb&type=down#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "version": "5.0.1215.0",
+    "description": "NanaZip is an open source file archiver intended for the modern Windows experience, forked from the source code of well-known open source file archiver 7-Zip.",
+    "homepage": "https://github.com/M2Team/NanaZip",
+    "license": "MIT",
+    "url": "https://github.com/M2Team/NanaZip/releases/download/5.0.1215.0/NanaZipPreview_5.0.1215.0.msixbundle#/dl.7z",
+    "hash": "0b0d3f77fa2d2c289d5eb25d3ef3b02d3d2458d1dd7a8a5966788424c68e3b4b",
+    "extract_to": "Deploy",
+    "architecture": {
+        "64bit": {
+            "pre_install": "Get-ChildItem \"$dir\\Deploy\\*_x64.msix\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+        },
+        "arm64": {
+            "pre_install": "Get-ChildItem \"$dir\\Deploy\\*_ARM64.msix\" | ForEach-Object { Expand-7zipArchive $_ $dir }"
+        }
+    },
+    "shortcuts": [
+        [
+            "NanaZip.Modern.exe",
+            "NanaZip Preview"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "Enable-DevelopmentMode",
+            "Remove-Item \"$dir\\AppxSignature.p7x\" -Force -ErrorAction SilentlyContinue | Out-Null",
+            "Add-AppxPackage -Path \"$dir\\AppxManifest.xml\" -Register"
+        ]
+    },
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    reg.exe delete \"HKEY_CURRENT_USER\\SOFTWARE\\NanaZip\" /f",
+        "    Get-AppxPackage -Name \"40174MouriNaruto.NanaZipPreview\" | Remove-AppxPackage",
+        "} else {",
+        "    Get-AppxPackage -Name \"40174MouriNaruto.NanaZipPreview\" | Remove-AppxPackage -PreserveApplicationData",
+        "}",
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/M2Team/NanaZip/releases?per_page=1",
+        "jsonpath": "$.tag_name"
+    },
+    "autoupdate": {
+        "url": "https://github.com/M2Team/NanaZip/releases/download/$version/NanaZipPreview_$version.msixbundle#/dl.7z"
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "version": "5.1.1",
+    "description": "猫眼浏览器是一款以简约安全为目标Chrome内核增强版浏览器",
+    "homepage": "https://www.catsxp.com",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://catsxp.oss-cn-hongkong.aliyuncs.com/win_x64/portable_x64_release_132_5_1_1.zip",
+            "hash": "949dad2086cabb8c775a2971817c29108e4ae94b9767bbe800b143b459f7ab56"
+        },
+        "32bit": {
+            "url": "https://catsxp.oss-cn-hongkong.aliyuncs.com/win_x86/portable_x86_release_132_5_1_1.zip",
+            "hash": "82327aa790a856920f7310f891f1c1f58ff2b0f14023d46fa12ea0570833528e"
+        }
+    },
+    "shortcuts": [
+        [
+            "catsxp.exe",
+            "猫眼浏览器"
+        ]
+    ],
+    "persist": [
+        "User Data",
+        "Cache",
+        "StartupParm.txt"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$dir\\Settings.json\") -or !(Get-Item \"$dir\\Settings.json\").Length) {",
+        "    New-Item \"$dir\\Settings.json\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App"
+    ],
+    "checkver": {
+        "regex": "(?sm)<li>(?:版本|Ver)[：:] ?([\\d.]+)</li>\\s*<li>(?:内核|Kernel)[：:] ?(?<kernelmajor>\\d+)[\\d.]+</li>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://catsxp.oss-cn-hongkong.aliyuncs.com/win_x64/portable_x64_release_$matchKernelmajor_$underscoreVersion.zip"
+            },
+            "32bit": {
+                "url": "https://catsxp.oss-cn-hongkong.aliyuncs.com/win_x86/portable_x86_release_$matchKernelmajor_$underscoreVersion.zip"
+            }
+        }
+    }
+}
