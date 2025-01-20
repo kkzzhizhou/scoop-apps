@@ -1,31 +1,10 @@
 {
-    "##": "The MacType installer is created with AdvancedInstaller.",
-    "version": "2021.1-rc1",
-    "description": "Provides better font rendering for Windows.",
+    "version": "2025.1.17",
+    "description": "(Contains preview version) Provides better font rendering for Windows",
     "homepage": "https://mactype.net",
     "license": "GPL-3.0-or-later",
-    "notes": [
-        "Launch MacType Wizard (macwiz.exe) to configure MacType.",
-        "",
-        "Antivirus software may conflict with MacType because it detects MacType trying to modify running software.",
-        "Workarounds:",
-        "- Run in Service Mode (recommended)",
-        "- Add `HookChildProcesses=0` to profile; see: https://github.com/snowie2000/mactype/wiki/HookChildProcesses"
-    ],
-    "url": "https://github.com/snowie2000/mactype/releases/download/2021.1-rc1/MacTypeInstaller_2021.1-rc1.exe",
-    "hash": "3a73d19d4940b6308d07f1eb19a9b6db007423f3d2ebba1216f2df224a8b01f5",
-    "innosetup": true,
-    "uninstaller": {
-        "script": [
-            "$text = @(",
-            "    'If you encounter \"file in use\" error during uninstallation, try the following steps:'",
-            "    '    1. Launch MacType Wizard (macwiz.exe) and select \"Manual\" mode.'",
-            "    '    2. Reboot.'",
-            "    '    3. Run `scoop uninstall mactype-np`.'",
-            ")",
-            "warn $($text -join \"`r`n\")"
-        ]
-    },
+    "url": "https://github.com/snowie2000/mactype/releases/download/v1.2025.1.17/MacTypeInstaller_2025.1.17.exe#/installer.exe",
+    "hash": "26939c0a36a83472719641c09466c9531811c026b860603c8c346dbb486e423f",
     "bin": [
         "MacTray.exe",
         "MacWiz.exe"
@@ -36,20 +15,43 @@
             "MacType Tray"
         ],
         [
+            "MacTuner.exe",
+            "MacType Tuner"
+        ],
+        [
             "MacWiz.exe",
             "MacType Wizard"
         ]
+    ],
+    "installer": {
+        "file": "installer.exe",
+        "args": [
+            "/VERYSILENT",
+            "/FORCECLOSEAPPLICATIONS",
+            "/NORESTART",
+            "/DIR=\"$dir\""
+        ]
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\updater.exe\" -Force -ErrorAction SilentlyContinue | Out-Null",
+        "Remove-Item \"$dir\\updater.ini\" -Force -ErrorAction SilentlyContinue | Out-Null"
     ],
     "persist": [
         "ini",
         "MacType.ini"
     ],
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/NORESTART"
+        ]
+    },
     "checkver": {
-        "url": "https://api.github.com/repos/snowie2000/mactype/releases/latest",
-        "jsonpath": "$.tag_name",
-        "regex": "([\\w.-]+)"
+        "url": "https://api.github.com/repos/snowie2000/mactype/releases?per_page=1",
+        "regex": "download/(?<tag>[\\w.-]+)/MacTypeInstaller_([\\w.-]+)\\.exe"
     },
     "autoupdate": {
-        "url": "https://github.com/snowie2000/mactype/releases/download/$version/MacTypeInstaller_$version.exe"
+        "url": "https://github.com/snowie2000/mactype/releases/download/$matchTag/MacTypeInstaller_$version.exe#/installer.exe"
     }
 }

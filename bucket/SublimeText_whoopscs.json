@@ -1,0 +1,55 @@
+{
+    "version": "4189",
+    "description": "一个文本编辑器。A text editor.(Scoop bucket for Cybersecurity by whoopscs)",
+    "homepage": "https://www.sublimetext.com",
+    "license": "Shareware",
+    "notes": [
+        "Add Sublime Text as a context menu option by running:",
+        "reg import \"$dir\\install-context.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.sublimetext.com/sublime_text_build_4189_x64.zip",
+            "hash": "72328c4450939dd1367b69b8017304f49e0c1816267dac4f2059e54537287343"
+        },
+        "32bit": {
+            "url": "https://download.sublimetext.com/sublime_text_build_4189.zip",
+            "hash": "6ea30f0b07cbee04d93a9e471fb70c6358b66ffc1a0c1772d7263f2dd6066107"
+        }
+    },
+    "post_install": [
+        "$sublimepath = \"$dir\\sublime_text.exe\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\$app\\$_\"",
+        "        $content = $content.Replace('$sublime', $sublimepath)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "}"
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "bin": "subl.exe",
+    "shortcuts": [
+        [
+            "SublimeText.exe",
+            "Sublime Text"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.sublimetext.com/download",
+        "regex": "latest.+Build ([\\d]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.sublimetext.com/sublime_text_build_$preReleaseVersion_x64.zip"
+            },
+            "32bit": {
+                "url": "https://download.sublimetext.com/sublime_text_build_$preReleaseVersion.zip"
+            }
+        }
+    }
+}

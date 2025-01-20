@@ -1,0 +1,34 @@
+{
+    "version": "1.37.0-1",
+    "description": "aria2 static build (with OpenSSL), persist configs",
+    "homepage": "https://github.com/xrgzs/aria2-static-builds",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/xrgzs/aria2-static-builds/releases/download/v1.37.0/aria2-1.37.0-win-64bit-build1.exe#/aria2c.exe",
+            "hash": "cca868da48a85c13a56ccac4dfa8c098f7ed799786a9eaf88248221dbb785bb9"
+        },
+        "32bit": {
+            "url": "https://github.com/xrgzs/aria2-static-builds/releases/download/v1.37.0/aria2-1.37.0-win-32bit-build1.exe#/aria2c.exe",
+            "hash": "95fc0aed475fb53e9f1acc29ecfaa9dd7f2ff71ec6be33442818a1507479d728"
+        }
+    },
+    "bin": "aria2c.exe",
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:USERPROFILE\\.aria2\" \"$persist_dir\\.aria2\" -Migrate",
+            "if (!(Test-Path \"$persist_dir\\.aria2\\aria2.conf\") -or !(Get-Item \"$persist_dir\\.aria2\\aria2.conf\").Length) {",
+            "    New-Item \"$persist_dir\\.aria2\\aria2.conf\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+            "    Invoke-Download \"https://curl.se/ca/cacert.pem\" \"$dir\\ca-certificates.crt\"",
+            "    Set-Content -Path \"$persist_dir\\.aria2\\aria2.conf\" -Value \"ca-certificate=$dir\\ca-certificates.crt\"",
+            "}"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:USERPROFILE\\.aria2\""
+    ]
+}

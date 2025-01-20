@@ -1,55 +1,35 @@
 {
-    "version": "4189",
-    "description": "一个文本编辑器。A text editor.(Scoop bucket for Cybersecurity by whoopscs)",
-    "homepage": "https://www.sublimetext.com",
+    "version": "4192",
+    "description": "一个文本编辑器。A text editor.",
+    "homepage": "https://www.sublimetext.com/",
     "license": "Shareware",
-    "notes": [
-        "Add Sublime Text as a context menu option by running:",
-        "reg import \"$dir\\install-context.reg\""
-    ],
-    "architecture": {
-        "64bit": {
-            "url": "https://download.sublimetext.com/sublime_text_build_4189_x64.zip",
-            "hash": "72328c4450939dd1367b69b8017304f49e0c1816267dac4f2059e54537287343"
-        },
-        "32bit": {
-            "url": "https://download.sublimetext.com/sublime_text_build_4189.zip",
-            "hash": "6ea30f0b07cbee04d93a9e471fb70c6358b66ffc1a0c1772d7263f2dd6066107"
-        }
-    },
-    "post_install": [
-        "$sublimepath = \"$dir\\sublime_text.exe\".Replace('\\', '\\\\')",
-        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
-        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\$app\\$_\") {",
-        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\$app\\$_\"",
-        "        $content = $content.Replace('$sublime', $sublimepath)",
-        "        if ($global) {",
-        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "        }",
-        "    }",
-        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
-        "}"
-    ],
-    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "url": "https://download.sublimetext.com/sublime_text_build_4192_x64.zip",
+    "hash": "6ac2ef44c553bbf43de54b6a50f0f09f17df17a431fc7b3976bffcb6926ae2b7",
     "bin": "subl.exe",
     "shortcuts": [
         [
-            "SublimeText.exe",
+            "sublime_text.exe",
             "Sublime Text"
         ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$dir\\Data\") @(\"$persist_dir\\Data\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files"
     ],
     "checkver": {
         "url": "https://www.sublimetext.com/download",
         "regex": "latest.+Build ([\\d]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://download.sublimetext.com/sublime_text_build_$preReleaseVersion_x64.zip"
-            },
-            "32bit": {
-                "url": "https://download.sublimetext.com/sublime_text_build_$preReleaseVersion.zip"
-            }
-        }
+        "url": "https://download.sublimetext.com/sublime_text_build_$version_x64.zip"
     }
 }
