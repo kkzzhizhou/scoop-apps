@@ -6,27 +6,13 @@
         "identifier": "GPL-3.0",
         "url": "https://github.com/babalae/better-genshin-impact/blob/main/LICENSE"
     },
+    "suggest": {
+        ".Net Desktop Runtime": "extras/windowsdesktop-runtime"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/babalae/better-genshin-impact/releases/download/0.39/BetterGI_v0.39.1.7z",
             "hash": "d42c7a14dd27c541cb700cf4deec8d35c367c336d4ec30a0a28f1069d914c89e"
-        }
-    },
-    "checkver": {
-        "script": [
-            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/babalae/better-genshin-impact/releases'",
-            "$main = $rel_info | Where-Object { $_.target_commitish -eq 'main'} | Select-Object -first 1",
-            "$asset = ($main.assets | Where-Object { $_.name -match '^BetterGI_v((?:\\d+\\.?)+)\\.7z'} | Select-Object -first 1)",
-            "$stable_version = $asset.name.TrimStart('BetterGI_v').TrimEnd('.7z')",
-            "Write-Output $stable_version $asset.browser_download_url"
-        ],
-        "regex": "(?<version>[\\d.]+)\\s(?<dlurl>.+)"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "$matchDlurl"
-            }
         }
     },
     "extract_dir": "BetterGI",
@@ -36,8 +22,16 @@
             "BetterGI"
         ]
     ],
-    "suggest": {
-        ".Net Desktop Runtime": "extras/windowsdesktop-runtime"
+    "persist": "User",
+    "checkver": {
+        "url": "https://api.github.com/repos/babalae/better-genshin-impact/releases/latest",
+        "regex": "download/(?<tag>[\\d.]+)/BetterGI_v([\\d.]+)\\.7z"
     },
-    "persist": "User"
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/babalae/better-genshin-impact/releases/download/$matchTag/BetterGI_v$version.7z"
+            }
+        }
+    }
 }
