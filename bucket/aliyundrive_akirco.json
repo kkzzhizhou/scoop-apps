@@ -1,28 +1,72 @@
 {
-    "version": "6.6.0",
+    "version": "4.15.0",
+    "description": "The official client for Alibaba's cloud dirve service",
     "homepage": "https://www.aliyundrive.com/",
-    "license": "Freeware",
-    "description": "Aliyun Drive offical client",
-    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/6.6.0/win32/x64/aDrive-6.6.0.exe?_=sourceforge.net",
-    "hash": "sha512:e9acebf2b75c5e1a6ff00c67976194f7371c280b2099583388f3867122fbf398be157773f78d3a44b805c0696a27297fa007e6e25d0e79ca6a8c804a073c5120",
-    "installer": {
-        "script": "Expand-7zipArchive -Path \"$dir\\$fname\" -Removal"
+    "license": {
+        "identifier": "EULA",
+        "url": "https://www.aliyundrive.com/protocol/service"
     },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\" -Force -Recurse",
+    "url": "https://sw.pcmgr.qq.com/11aac7d8deee9f66ce08359998d30a86/668547e2/spcmgr/download/aDrive-4.15.0.exe#/aDrive-4.16.0.7z",
+    "hash": "sha512:bd32db5a5309db7521a1d1cb89b0da63edaa4bdfcb8b0cf5a81f00b380ed82d3a906401e7e7c81a073eedc4db1a9b6bf5c7bd37adf4ef44ad1000e32b11d2ca5",
+    "post_install": [
+        "@('$PLUGINSDIR', '$TEMP') | ForEach-Object {",
+        "    Remove-Item \"$dir\\$_\" -Recurse -Force",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\Cache\")) {",
+            "    New-Item \"$persist_dir\\Cache\" -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeutForpcCache = \"$env:APPDATA\\utForpc\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    Remove-Item $runtimeutForpcCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    New-Item -Type Junction -Path $runtimeutForpcCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "    if (Test-Path $runtimeutForpcCache) {",
+            "        Move-Item $runtimeutForpcCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeutForpcCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:APPDATA\\aDrive\"",
+            "$runtimeutForpcCache = \"$env:APPDATA\\utForpc\"",
+            "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "    Move-Item $runtimeutForpcCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    Remove-Item $runtimeutForpcCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
     "shortcuts": [
         [
             "aDrive.exe",
-            "aliyun drive"
+            "阿里云盘"
         ]
     ],
     "checkver": {
-        "url": "https://api.nicoconi.com/updater/aliyundrive",
+        "script": "return (iwr -useb \"$($(iwr -useb 'https://www.aliyundrive.com/desktop/version/update.json' | ConvertFrom-Json).url)/win32/ia32/latest.yml\")",
         "regex": "version: ([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/x64/aDrive-$version.exe?_=sourceforge.net",
+        "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/update/$version/win32/ia32/aDrive-$version.exe#/aDrive-$version.7z",
         "hash": {
-            "url": "https://api.nicoconi.com/updater/aliyundrive",
+            "url": "https://g.alicdn.com/aliyun-drive-fe/aliyun-drive-desktop-version/$version/win32/ia32/latest.yml",
+            "mode": "extract",
             "regex": "sha512: $base64"
         }
     }

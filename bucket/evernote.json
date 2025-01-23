@@ -1,21 +1,20 @@
 {
     "version": "10.123.6",
     "homepage": "https://evernote.com/",
-    "description": "Remember everything and tackle any project with your notes, tasks, and schedule all in one place.",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://evernote.com/legal"
+    "license": "Freeware",
+    "url": "https://win.desktop.evernote.com/builds/Evernote-10.123.6-win-ddl-stage-20250120214354-1e36a463eb4a4f7f40c115a05cb2bc1bc7b47f9b-setup.exe#/dl.7z",
+    "hash": "sha512:748cfaf203795dd0029a85122d4671ac290a63ca6365a2d015bcbc67b0d35d823c5f062e78b817e24a50eed176843cdcd57815f407ef1778594a6b0810a3c8d3",
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$R0\", \"$dir\\resources\" -Force -Recurse",
+            "if ($architecture -eq '64bit') {",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+            "} elseif ($architecture -eq '32bit') {",
+            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+            "}",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+        ]
     },
-    "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip",
-    "hash": "b4703256fd306a4cc78987cda577118648b65663351b679d820f2b4989d5ed09",
-    "pre_install": [
-        "if ($architecture -eq '32bit') {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
-        "}",
-        "else {",
-        "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir; Remove-Item \"$dir\\*\" -Recurse",
-        "}"
-    ],
     "shortcuts": [
         [
             "Evernote.exe",
@@ -23,10 +22,14 @@
         ]
     ],
     "checkver": {
-        "url": "https://evernote.com/release-notes",
-        "regex": "Version.*?([\\d.]+)"
+        "url": "https://public.evernote.com/ddl-updater/updater/win/public/latest.yml",
+        "regex": "Evernote-([\\d.]+)-(?<build>.+).exe"
     },
     "autoupdate": {
-        "url": "https://win.desktop.evernote.com/builds/Evernote-latest.exe#/dl.zip"
+        "url": "https://win.desktop.evernote.com/builds/Evernote-$version-$matchBuild.exe#/dl.7z",
+        "hash": {
+            "url": "https://public.evernote.com/ddl-updater/updater/win/public/latest.yml",
+            "regex": "sha512: $base64"
+        }
     }
 }
