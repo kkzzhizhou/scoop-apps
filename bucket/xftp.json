@@ -1,0 +1,62 @@
+{
+    "version": "8.0.0066p",
+    "description": "Effortless File Transfers Over A Network (Free for Home/School)",
+    "homepage": "https://www.xshell.com/en/free-for-home-school/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.xshell.com/docs/ver8_free_eula.pdf"
+    },
+    "depends": [
+        "isx",
+        "gsudo"
+    ],
+    "url": "https://cdn.netsarang.net/3a9c1902/Xftp-8.0.0066p.exe#/dl.exe",
+    "hash": "ad16bd4f9863d97f7aee2307ea14804f57e11d1dc9757a32c3f20d5ba1f01747",
+    "notes": [
+        "* Known issue:",
+        "  - 'Initialize Flexnet Service failed' is displayed when you start Xftp every time.",
+        "  - User data and passwords ($env:USERPROFILE\\Documents\\NetSarang Computer\\8) are not persisted by Scoop.",
+        "  - The free licensing of Xshell and Xftp is for non-commercial use only."
+    ],
+    "shortcuts": [
+        [
+            "Xftp.exe",
+            "Xftp 8",
+            "",
+            "XftpIcon.ico"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Invoke-ExternalCommand ((Get-Command 'isx' -CommandType Application).Source) -ArgumentList \"$dir\\dl.exe\" -LogPath \"$dir\\isx.log\" | Out-Null",
+            "$folder = Get-ChildItem \"$dir\" -Directory | Select-Object -First 1 -ExpandProperty FullName",
+            "Expand-MsiArchive \"$folder\\Xftp 8.msi\" \"$dir\\_msi\"",
+            "# Move-Item \"$dir\\_msi\\NetSarang\\*\" \"$dir\" -Force",
+            "Move-Item \"$dir\\_msi\\program files\\NetSarang\\Xftp 8\\*\" \"$dir\" -Force",
+            "Remove-Item $folder -Force -Recurse",
+            "Remove-Item \"$dir\\_msi\" -Force -Recurse",
+            "Remove-Item \"$dir\\LiveUpdate.dat\" -Force",
+            "Remove-Item \"$dir\\LiveUpdate.exe\" -Force",
+            "Remove-Item \"$dir\\nsregister.exe\" -Force",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\\License\" /v \"SubmitTime\" /t REG_DWORD /d \"2145888000\" /f",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\\Personal\" /v \"Notified\" /t REG_DWORD /d \"1\" /f",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\\LiveUpdate\" /v \"EnableLiveUpdate\" /t REG_DWORD /d \"0\" /f",
+            "gsudo reg.exe add \"HKLM\\SOFTWARE\\NetSarang\\Xftp\\8\" /v \"MagicCode\" /t REG_BINARY /d \"0b58da690bc91ef18518f1d686c1f47ce80709000b00\" /f /reg:32"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "reg.exe delete \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\" /f",
+            "gsudo {",
+            "    reg.exe delete \"HKLM\\SOFTWARE\\NetSarang\\Xftp\\8\" /f *>$null",
+            "    reg.exe delete \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xftp\\8\" /f *>$null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "regex": "https://cdn.netsarang.net/(?<hash>[^/]+)/Xftp-([\\d.]+p).exe#/dl.exe"
+    },
+    "autoupdate": {
+        "url": "https://cdn.netsarang.net/$matchHash/Xftp-$version.exe"
+    }
+}
