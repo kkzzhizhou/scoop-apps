@@ -1,0 +1,35 @@
+{
+    "version": "5.4.0",
+    "description": "抖音电脑版 记录美好生活",
+    "homepage": "https://www.douyin.com/",
+    "license": "Proprietary",
+    "url": "https://www.douyin.com/download/pc/obj/douyin-pc-web/douyin-pc-client/7044145585217083655/releases/12279727/5.4.0/win32-ia32/douyin-v5.4.0-win32-ia32-douyin.exe#/dl.7z",
+    "hash": "7884f38836e9d58556ce7ee469f8009473c8024e09f0e6dba4c8a117aac95b25",
+    "shortcuts": [
+        [
+            "douyin.exe",
+            "抖音"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\douyin\" \"$persist_dir\\AppData\" -Migrate",
+            "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\app.7z\", \"$dir\\`$*\", \"$dir\\uninst*\", \"$dir\\resources\\app-update.yml\", \"$dir\\installer_downloader*\", \"$dir\\app_shell_updater*\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\douyin\""
+    ],
+    "checkver": {
+        "url": "https://www.douyin.com/downloadpage/pc",
+        "regex": "/douyin-pc-client/(?<id>\\d+)/releases/(?<build>\\d+)/([\\d.]+)/win32-ia32/"
+    },
+    "autoupdate": {
+        "url": "https://www.douyin.com/download/pc/obj/douyin-pc-web/douyin-pc-client/$matchId/releases/$matchBuild/$version/win32-ia32/douyin-v$version-win32-ia32-douyin.exe#/dl.7z"
+    }
+}
