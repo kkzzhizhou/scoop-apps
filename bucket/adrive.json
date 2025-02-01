@@ -1,17 +1,43 @@
 {
-    "version": "6.8.0",
-    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘",
-    "homepage": "https://www.aliyundrive.com/",
-    "license": "BSD-3-Clause",
-    "url": "https://cdn.aliyundrive.net/downloads/apps/desktop/aDrive-6.8.0.exe#/dl.7z",
-    "post_install": [
-        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
-        "Remove-Item \"$dir\\`$TEMP\" -Force -Recurse"
-    ],
+    "version": "6.8.0.0",
+    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘，你可以在这里存储、管理和探索内容，尽情打造丰富的数字世界。",
+    "homepage": "https://www.alipan.com/",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://www.alipan.com/protocol/service"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "http://api.xrgzs.top/360baoku/?appid=2000003258#/dl.7z",
+            "hash": "89a15c8884213bb3861bdb6d0ad61b8b9c4993bb1622b40d746afec6a907609e"
+        }
+    },
     "shortcuts": [
         [
             "aDrive.exe",
             "阿里云盘"
         ]
-    ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\" -Recurse -Force",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "New-PersistDirectory \"$env:APPDATA\\aDrive\" \"$persist_dir\\AppData\" -Migrate"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\aDrive\""
+    ],
+    "checkver": {
+        "url": "https://soft-api.safe.360.cn/main/v1/soft/info?softid=2000003258",
+        "jsonpath": "$.data.version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://api.xrgzs.top/360baoku/?appid=2000003258#/dl.7z"
+            }
+        }
+    }
 }

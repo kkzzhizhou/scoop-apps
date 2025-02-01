@@ -1,0 +1,46 @@
+{
+    "version": "0.3.30",
+    "description": "如快 - 快速启动器 | 提升生产力",
+    "homepage": "https://www.sofast.fun/",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Blushyes/sofast-release/releases/download/v0.3.30/sofast_windows_v0.3.30_setup.exe#/dl.7z",
+            "hash": "dfe37cc95e490afc5891b1b9620313d70b62c6c2a33d0e2bb8b6045984b379f5"
+        }
+    },
+    "bin": "sofast.exe",
+    "shortcuts": [
+        [
+            "sofast.exe",
+            "sofast"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "Remove-Item \"$dir\\uninstall.exe\" -Force",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:USERPROFILE\\.sofast\" \"$persist_dir\\.sofast\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:USERPROFILE\\.sofast\"",
+        "Remove-Item \"$env:AppData\\com.sofast.app\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "Remove-Item \"$env:LocalAppData\\com.sofast.app\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null",
+        "Remove-ItemProperty 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run' -Name 'sofast' -Force -ErrorAction SilentlyContinue | Out-Null"
+    ],
+    "checkver": {
+        "github": "https://github.com/Blushyes/sofast-release"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Blushyes/sofast-release/releases/download/v$version/sofast_windows_v$version_setup.exe#/dl.7z"
+            }
+        }
+    }
+}

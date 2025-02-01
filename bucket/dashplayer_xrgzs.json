@@ -1,0 +1,36 @@
+{
+    "version": "5.1.2",
+    "description": "为英语学习者量身打造的视频播放器，助你通过观看视频、沉浸真实语境，轻松提升英语水平。",
+    "homepage": "https://dash-player.solidspoon.xyz/",
+    "license": "AGPL-3.0-or-later",
+    "url": "https://github.com/solidSpoon/DashPlayer/releases/download/v5.1.2/DashPlayer-5.1.2.setup.exe#/dl.7z",
+    "hash": "11eb166cbaf90efad8f28d77f67a04d2bf7028e2b0ce0b8fc6a2d6d338255deb",
+    "extract_to": "Deploy",
+    "bin": "dash-player.exe",
+    "shortcuts": [
+        [
+            "dash-player.exe",
+            "DashPlayer"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\Deploy\\dashplayer-$version-full.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+            "Remove-Item \"$dir\\Deploy\" -Force -Recurse",
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:AppData\\DashPlayer\" \"$persist_dir\\AppData\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:AppData\\DashPlayer\""
+    ],
+    "checkver": {
+        "github": "https://github.com/solidSpoon/DashPlayer"
+    },
+    "autoupdate": {
+        "url": "https://github.com/solidSpoon/DashPlayer/releases/download/v$version/DashPlayer-$version.setup.exe#/dl.7z"
+    }
+}

@@ -25,6 +25,7 @@
             "Invoke-ExternalCommand ((Get-Command 'isx' -CommandType Application).Source) -ArgumentList \"$dir\\TEMP\\installer.exe\" -LogPath \"$dir\\TEMP\\isx.log\" | Out-Null",
             "Expand-MsiArchive \"$dir\\TEMP\\installer_u\\Xftp 8.msi\" \"$dir\\TEMP\\extracted\"",
             "Move-Item \"$dir\\TEMP\\extracted\\program files\\NetSarang\\Xftp 8\\*\" \"$dir\" -Force",
+            "Move-Item \"$dir\\TEMP\\extracted\\Common\\NetSarang\\NsCopyHook3.dll\" \"$dir\" -Force",
             "Remove-Item -Path \"$dir\\TEMP\" -Recurse -Force",
             "Remove-Item \"$dir\\LiveUpdate.dat\" -Force",
             "Remove-Item \"$dir\\LiveUpdate.exe\" -Force",
@@ -34,7 +35,8 @@
             "reg.exe add \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xftp\\8\" /v \"Path\" /t REG_SZ /d \"$dir\" /f",
             "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\\Personal\" /v \"Notified\" /t REG_DWORD /d \"1\" /f",
             "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\\LiveUpdate\" /v \"EnableLiveUpdate\" /t REG_DWORD /d \"0\" /f",
-            "reg.exe add \"HKLM\\SOFTWARE\\NetSarang\\Xftp\\8\" /v \"MagicCode\" /t REG_BINARY /d \"0b58da690bc91ef18518f1d686c1f47ce80709000b00\" /f /reg:32"
+            "reg.exe add \"HKLM\\SOFTWARE\\NetSarang\\Xftp\\8\" /v \"MagicCode\" /t REG_BINARY /d \"0b58da690bc91ef18518f1d686c1f47ce80709000b00\" /f /reg:32",
+            "regsvr32 /s \"$dir\\NsCopyHook3.dll\""
         ]
     },
     "post_install": [
@@ -51,7 +53,7 @@
         "   } }",
         "New-Item -Force -ItemType SymbolicLink -Path $configdir -Value $dir/data"
     ],
-    "post_uninstall":[
+    "post_uninstall": [
         "Remove-Item -Path \"$env:USERPROFILE\\Documents\\NetSarang Computer\\8\\Xftp\" -Force"
     ],
     "shortcuts": [
@@ -67,6 +69,7 @@
         "script": [
             "# Require Administrator rights",
             "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "regsvr32 /u /s \"$dir\\NsCopyHook3.dll\"",
             "reg.exe delete \"HKCU\\SOFTWARE\\NetSarang\\Xftp\\8\" /f",
             "reg.exe delete \"HKLM\\SOFTWARE\\NetSarang\\Xftp\\8\" /f *>$null",
             "reg.exe delete \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xftp\\8\" /f *>$null"
