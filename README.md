@@ -73,8 +73,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - rasa/scoops
 - ScoopInstaller/Nonportable
 - Paxxs/Cluttered-bucket
-- KNOXDEV/wsl
 - ACooper81/scoop-apps
+- KNOXDEV/wsl
 - echoiron/echo-scoop
 - cderv/r-bucket
 - hermanjustnu/scoop-emulators
@@ -92,8 +92,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
-- DoveBoy/Apps
 - jonz94/scoop-sarasa-nerd-fonts
+- DoveBoy/Apps
 - charmbracelet/scoop-bucket
 - naderi/scoop-bucket
 - amorphobia/siku
@@ -103,8 +103,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - noql-net/scoop
 - ygguorun/scoop-bucket
 - aliesbelik/poldi
-- kengwang/scoop-ctftools-bucket
 - abgox/abgo_bucket
+- kengwang/scoop-ctftools-bucket
 - iquiw/scoop-bucket
 - liaoya/scoop-bucket
 - brian6932/dank-scoop
@@ -114,10 +114,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cc713/ownscoop
 - starise/Scoop-Confetti
 - aoisummer/scoop-bucket
+- Weidows-projects/scoop-3rd
 - Darkatse/Scoop-Darkatse
 - babo4d/scoop-xrtools
 - TianXiaTech/scoop-txt
-- Weidows-projects/scoop-3rd
 - rivy/scoop-bucket
 - Small-Ku/turbo-bucket
 - HUMORCE/nuke
