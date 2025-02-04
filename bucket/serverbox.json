@@ -1,0 +1,49 @@
+{
+    "version": "1.0.1130",
+    "description": "ServerBox - server status & toolbox",
+    "homepage": "https://github.com/lollipopkit/flutter_server_box",
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/lollipopkit/flutter_server_box/releases/download/v1.0.1130/ServerBox_1128_windows_amd64.zip",
+            "hash": "a20f43ebf8f9aadeb86fc43430a65aa481e7e9de531310ffcec158f8f3c2f29a"
+        }
+    },
+    "shortcuts": [
+        [
+            "ServerBox.exe",
+            "ServerBox"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "New-PersistDirectory \"$env:APPDATA\\ServerBox\" \"$persist_dir\\AppData\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:APPDATA\\ServerBox\""
+    ],
+    "checkver": {
+        "script": [
+            "$api = Invoke-RestMethod 'https://api.github.com/repos/lollipopkit/flutter_server_box/releases/latest'",
+            "foreach ($ass in $api.assets) { ",
+            "    if ($ass.name -clike '*windows_amd64.zip') { ",
+            "        $ass.name + '=====' + $api.tag_name",
+            "        break",
+            "    } ",
+            "}"
+        ],
+        "regex": "ServerBox_(?<release>\\d+)_windows_amd64.zip=====v(.+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/lollipopkit/flutter_server_box/releases/download/v$version/ServerBox_$matchRelease_windows_amd64.zip"
+            }
+        }
+    }
+}

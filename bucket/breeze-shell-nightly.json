@@ -1,0 +1,46 @@
+{
+    "version": "13120985366",
+    "description": "Bring fluency & delication back to Windows",
+    "license": "AGPL-3.0-or-later",
+    "homepage": "https://breeze.microblock.cc/",
+    "architecture": {
+        "64bit": {
+            "url": "https://nightly.link/std-microblock/breeze-shell/actions/runs/13120985366/artifact.zip",
+            "hash": "848b9d2b14f0da8cd9b3c839014f7ff7c12293fb45a696456e01c13f64690567",
+            "extract_dir": "x64/release"
+        }
+    },
+    "shortcuts": [
+        [
+            "breeze.exe",
+            "breeze-shell",
+            "",
+            "icon.ico"
+        ]
+    ],
+    "installer": {
+        "script": [
+            ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+            "Invoke-Download \"https://raw.githubusercontent.com/std-microblock/breeze-shell/master/resources/icon.png\" \"$dir\\icon.png\"",
+            "Convert-PngToIco \"$dir\\icon.png\" \"$dir\\icon.ico\"",
+            "New-PersistDirectory \"$env:USERPROFILE\\.breeze-shell\" \"$persist_dir\\.breeze-shell\" -Migrate"
+        ]
+    },
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Junction \"$env:USERPROFILE\\.breeze-shell\""
+    ],
+    "checkver": {
+        "url": "https://nightly.link/std-microblock/breeze-shell/workflows/xmake/master/artifact",
+        "regex": "View run #(\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://nightly.link/std-microblock/breeze-shell/actions/runs/$version/artifact.zip"
+            }
+        }
+    }
+}
