@@ -1,0 +1,45 @@
+{
+    "version": "4.0.6.1311",
+    "description": "为每一个人，为每一个团队，提供优秀的文档与知识库工具。Provide excellent documentation and knowledge base tools for everyone and every team.",
+    "homepage": "https://www.yuque.com/",
+    "license": {
+        "identifier": "Unknown",
+        "url": "https://www.yuque.com/terms"
+    },
+    "url": "https://app.nlark.com/yuque-desktop/4.0.6.1311/BJ1087fa5595ad4a5791241749addd1d6a/Yuque-4.0.6.1311.exe",
+    "hash": "e30bfb4e6735d84c74660b4ca074514676bc1f22dd81dcfb849a5a185dc519eb",
+    "shortcuts": [
+        [
+            "语雀.exe",
+            "语雀"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\Yuque-$($version).exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\语雀.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\yuque-desktop\") @(\"$persist_dir\\yuque-desktop\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\yuque-desktop\")",
+        "$ui_exe=\"$dir\\Uninstall 语雀.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\yuque-desktop-updater\")"
+    ],
+    "checkver": {
+        "url": "https://www.yuque.com/download",
+        "regex": "%2F(?<hash>[\\w\\d]+)%2FYuque-(?<version>[\\d\\.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://app.nlark.com/yuque-desktop/$version/$matchHash/Yuque-$version.exe"
+    }
+}
