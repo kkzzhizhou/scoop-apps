@@ -1,36 +1,49 @@
 {
-    "homepage": "https://getquicker.net/",
-    "version": "1.43.57.0",
-    "license": "freeware",
+    "version": "1.43.58.0",
+    "description": "指尖工具箱, Windows 效率工具",
+    "homepage": "https://getquicker.net",
+    "license": "Shareware",
     "architecture": {
         "64bit": {
-            "url": "https://files.getquicker.net/_productfiles/202412/Quicker.x64.1.43.57.0.msi",
+            "url": "https://getquicker.net/download/item/fast_x64#/quiker.msi",
             "hash": "0714a2eaf7e53349382aa544c2efc25aaefe3292fb71df0c635c457d48803db5"
         },
         "32bit": {
-            "url": "https://files.getquicker.net/_productfiles/202412/Quicker.x86.1.43.57.0.msi",
+            "url": "https://getquicker.net/download/item/fast_x86#/quiker.msi",
             "hash": "634f5be6e0658b62bb556acd9fd3e25e66233fb5ea17471b8efc59e3d2acaaed"
         }
     },
     "extract_dir": "Quicker",
-    "checkver": {
-        "url": "https://getquicker.net/Download",
-        "regex": "快速通道[\\w\\W]*?(\\d.[\\d.]+)"
-    },
-    "bin": "Quicker.exe",
     "shortcuts": [
         [
             "Quicker.exe",
             "Quicker"
         ]
     ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_LocalAppData\\Quicker\",\"$user_Documents\\Quicker\") @(\"$persist_dir\\Quicker\",\"$persist_dir\\Quicker_Documents\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_Documents\\Quicker\",\"$user_LocalAppData\\Quicker\")"
+    ],
+    "checkver": {
+        "url": "https://getquicker.net/open/api/quicker/versionhistory",
+        "jsonpath": "$[0].version"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://files.getquicker.net/_productfiles/202412/Quicker.x64.$version.msi"
+                "url": "https://getquicker.net/download/item/fast_x64#/quiker.msi"
             },
             "32bit": {
-                "url": "https://files.getquicker.net/_productfiles/202412/Quicker.x86.$version.msi"
+                "url": "https://getquicker.net/download/item/fast_x86#/quiker.msi"
             }
         }
     }

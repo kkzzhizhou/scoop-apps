@@ -1,6 +1,6 @@
 {
-    "version": "20250207-ge099e47",
-    "description": "Sony PlayStation 1 emulator",
+    "version": "20250207-gf2cca01",
+    "description": "A fast PlayStation 1 emulator for PC and Android (preview build)",
     "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
         "identifier": "GPL-3.0-only",
@@ -8,10 +8,11 @@
     },
     "notes": [
         "ATTENTION: Duckstation requires a PSX BIOS to function.",
-        "Place the BIOS file in $persist_dir\\bios"
+        "Place the BIOS file in $persist_dir\\bios",
+        "Learn more at: https://web.archive.org/web/20210620033009/https://www.duckstation.org/wiki/BIOS"
     ],
     "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip",
-    "hash": "b60624e5ac9c4be78d6e878ef0b318a93a4679aa4affcdde1288aa288dbfccf3",
+    "hash": "5bc8779062405fde8aae4b5b5ac504ab76ed70afbba930e18b508fd7e9181285",
     "installer": {
         "script": [
             "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
@@ -20,6 +21,9 @@
             "}"
         ]
     },
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    },
     "post_install": [
         "echo \"update bin/shortcuts\"",
         "$shell = New-Object -COM WScript.Shell",
@@ -27,11 +31,9 @@
         "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
         "$shortcut.Save()"
     ],
-    "shortcuts": [
-        [
-            "duckstation-qt-x64-ReleaseLTCG.exe",
-            "Sony PlayStation [ps1][duckstation]"
-        ]
+    "post_uninstall": [
+        "echo \"update bin/shortcuts\"",
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\""
     ],
     "persist": [
         "bios",
@@ -48,9 +50,6 @@
         "textures",
         "settings.ini"
     ],
-    "uninstaller": {
-        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
-    },
     "checkver": {
         "url": "https://github.com/stenzek/duckstation/releases/tag/preview",
         "regex": " datetime=\"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})[\\s\\S]*?.*duckstation/commit/(?<commit>[0-9a-f]{7})",
@@ -58,9 +57,5 @@
     },
     "autoupdate": {
         "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip"
-    },
-    "post_uninstall": [
-        "echo \"update bin/shortcuts\"",
-        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\""
-    ]
+    }
 }
