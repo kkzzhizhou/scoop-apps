@@ -1,0 +1,45 @@
+{
+    "version": "1.9.8",
+    "description": "一个可使用 ChatGPT、Claude 和其他 LLM 的桌面客户端。A desktop client for ChatGPT, Claude and other LLMs.",
+    "homepage": "https://chatboxai.app/",
+    "license": {
+        "identifier": "GNU General Public License v3.0",
+        "url": "https://github.com/Bin-Huang/chatbox/blob/main/LICENSE"
+    },
+    "url": "https://download.chatboxai.app/releases/Chatbox-1.9.8-Setup.exe#/abgo_bucket_installer.exe",
+    "hash": "347b37e24d674c3a751c4b23324a12c3771b6f3ceb87436babcf9db0a43fe3b3",
+    "shortcuts": [
+        [
+            "Chatbox.exe",
+            "Chatbox"
+        ]
+    ],
+    "pre_install": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\Chatbox.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\xyz.chatboxapp.app\") @(\"$persist_dir\\xyz.chatboxapp.app\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\xyz.chatboxapp.app\")",
+        "$ui_exe=\"$dir\\Uninstall Chatbox.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\xyz.chatboxapp.app-updater\")"
+    ],
+    "checkver": {
+        "url": "https://chatboxai.app/zh/help-center/changelog",
+        "regex": "<h3>v([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.chatboxai.app/releases/Chatbox-$version-Setup.exe#/abgo_bucket_installer.exe"
+    }
+}
