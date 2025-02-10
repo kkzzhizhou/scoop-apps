@@ -1,0 +1,43 @@
+{
+    "version": "0.9.10",
+    "description": "Readest is a modern, feature-rich ebook reader designed for avid readers offering seamless cross-platform access, powerful tools, and an intuitive interface to elevate your reading experience.",
+    "homepage": "https://readest.com/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/chrox/readest#AGPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/chrox/readest/releases/download/v0.9.10/Readest_0.9.10_x64-setup.exe#/dl.7z",
+    "hash": "fb2f498d8bd0c803a15352e65ed01ffcf79248b1ed971b3abbb1bb55d5a71f76",
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.bilingify.readest\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.bilingify.readest\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Readest.exe",
+    "shortcuts": [
+        [
+            "Readest.exe",
+            "Readest"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/chrox/readest/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/chrox/readest/releases/download/v$version/Readest_$version_x64-setup.exe#/dl.7z"
+    }
+}

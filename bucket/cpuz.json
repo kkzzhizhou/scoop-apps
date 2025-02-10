@@ -5,37 +5,22 @@
     "license": "Freeware",
     "url": "https://download.cpuid.com/cpu-z/cpu-z_2.14-cn.zip",
     "hash": "d9bbea61c7d652b9aa6ca1668f16ddd0fd3122c1f55acbcb12c1523d0b3f4ec1",
-    "architecture": {
-        "64bit": {
-            "bin": [
-                [
-                    "cpuz_x64.exe",
-                    "cpuz"
-                ]
-            ],
-            "shortcuts": [
-                [
-                    "cpuz_x64.exe",
-                    "CPU-Z"
-                ]
-            ]
-        },
-        "32bit": {
-            "bin": [
-                [
-                    "cpuz_x32.exe",
-                    "cpuz"
-                ]
-            ],
-            "shortcuts": [
-                [
-                    "cpuz_x32.exe",
-                    "CPU-Z"
-                ]
-            ]
-        }
-    },
+    "pre_install": [
+        "if([System.Environment]::Is64BitOperatingSystem){",
+        "    Remove-Item \"$dir\\cpuz_x32.exe\" -ErrorAction SilentlyContinue",
+        "    Rename-Item \"$dir\\cpuz_x64.exe\" -NewName \"cpuz.exe\"",
+        "} else {",
+        "    Remove-Item \"$dir\\cpuz_x64.exe\" -ErrorAction SilentlyContinue",
+        "    Rename-Item \"$dir\\cpuz_32x.exe\" -NewName \"cpuz.exe\"",
+        "}"
+    ],
     "persist": "cpuz.ini",
+    "shortcuts": [
+        [
+            "cpuz.exe",
+            "CPU-Z"
+        ]
+    ],
     "checkver": "Version ([\\d.]+) for windows",
     "autoupdate": {
         "url": "https://download.cpuid.com/cpu-z/cpu-z_$version-cn.zip"
