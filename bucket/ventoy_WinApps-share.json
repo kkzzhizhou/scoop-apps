@@ -1,82 +1,38 @@
 {
-    "version": "1.1.00",
+    "version": "1.1.01",
     "description": "Bootable USB drive creator",
     "homepage": "https://www.ventoy.net/en/index.html",
     "license": "GPL-3.0-or-later",
-    "url": "https://github.com/ventoy/Ventoy/releases/download/v1.1.00/ventoy-1.1.00-windows.zip",
-    "hash": "04ae8ee05f9d7be532817e7d6736111f470e416860dc0a42561bb5083457d38e",
-    "extract_dir": "ventoy-1.1.00",
+    "url": "https://github.com/ventoy/Ventoy/releases/download/v1.1.01/ventoy-1.1.01-windows.zip",
+    "hash": "c088ba56b2d7e05546825380288faa6ee20600652b4fd1d8f78424deb76d76ad",
+    "extract_dir": "ventoy-1.1.01",
     "pre_install": [
         "'log.txt', 'Ventoy2Disk.ini' | ForEach-Object {",
         "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" -ItemType File | Out-Null }",
+        "}",
+        "$arch = $env:PROCESSOR_ARCHITECTURE",
+        "if ($arch -like \"ARM64\") {",
+        "   Copy-Item -Path \"$dir\\altexe\\Ventoy2Disk_ARM64.exe\" -Destination \"$dir\" -Force",
+        "   Remove-Item \"$dir\\Ventoy2Disk.exe\" -Force",
+        "   Remove-Item \"$dir\\altexe\" -Recurse -Force",
+        "   Rename-Item -Path \"$dir\\Ventoy2Disk_ARM64.exe\" -NewName \"Ventoy2Disk.exe\"",
+        "}",
+        "elseif ($arch -like \"AMD64\") {",
+        "   Copy-Item -Path \"$dir\\altexe\\Ventoy2Disk_X64.exe\" -Destination \"$dir\" -Force",
+        "   Remove-Item \"$dir\\Ventoy2Disk.exe\" -Force",
+        "   Remove-Item \"$dir\\altexe\" -Recurse -Force",
+        "   Rename-Item -Path \"$dir\\Ventoy2Disk_X64.exe\" -NewName \"Ventoy2Disk.exe\"",
+        "}",
+        "else {",
+        "   Remove-Item \"$dir\\altexe\" -Recurse -Force",
         "}"
     ],
-    "architecture": {
-        "64bit": {
-            "bin": [
-                [
-                    "altexe\\Ventoy2Disk_x64.exe",
-                    "Ventoy2Disk"
-                ]
-            ],
-            "shortcuts": [
-                [
-                    "altexe\\Ventoy2Disk_X64.exe",
-                    "Ventoy2Disk"
-                ],
-                [
-                    "altexe\\VentoyPlugson_x64.exe",
-                    "VentoyPlugson"
-                ],
-                [
-                    "VentoyVlnk.exe",
-                    "VentoyVlnk",
-                    "-s"
-                ]
-            ]
-        },
-        "32bit": {
-            "bin": "Ventoy2Disk.exe",
-            "shortcuts": [
-                [
-                    "Ventoy2Disk.exe",
-                    "Ventoy2Disk"
-                ],
-                [
-                    "VentoyPlugson.exe",
-                    "VentoyPlugson"
-                ],
-                [
-                    "VentoyVlnk.exe",
-                    "VentoyVlnk",
-                    "-s"
-                ]
-            ]
-        },
-        "arm64": {
-            "bin": [
-                [
-                    "altexe\\Ventoy2Disk_ARM64.exe",
-                    "Ventoy2Disk"
-                ]
-            ],
-            "shortcuts": [
-                [
-                    "altexe\\Ventoy2Disk_ARM64.exe",
-                    "Ventoy2Disk"
-                ],
-                [
-                    "altexe\\VentoyPlugson_x64.exe",
-                    "VentoyPlugson"
-                ],
-                [
-                    "VentoyVlnk.exe",
-                    "VentoyVlnk",
-                    "-s"
-                ]
-            ]
-        }
-    },
+    "shortcuts": [
+        [
+            "Ventoy2Disk.exe",
+            "Ventoy2Disk"
+        ]
+    ],
     "persist": [
         "log.txt",
         "Ventoy2Disk.ini"
