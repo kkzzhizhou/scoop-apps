@@ -1,59 +1,60 @@
 {
-    "version": "1.4.1-0214-ce",
-    "description": " Cyber Security ALL-IN-ONE Platform 交互式应用安全测试平台 ",
-    "homepage": "https://github.com/yaklang/yakit",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/yakit.json，会将yakit自动添加到防火墙允许规则中",
-    "license": "AGPL-3.0-or-later",
+    "version": "1.4.1-0222",
+    "description": "交互式应用安全测试平台 - Cyber Security ALL-IN-ONE Platform.(Scoop bucket for Cybersecurity by whoopscs)",
+    "homepage": "https://www.yaklang.io",
+    "license": "AGPL-3.0",
+    "notes": "请使用 scoop 进行版本更新，更新命令：scoop update yakit",
     "architecture": {
         "64bit": {
-            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.4.1-0214/Yakit-1.4.1-0214-windows-amd64.exe#/dl.7z",
-            "hash": "bc70f4e97b24be59942332599728ef911a0e7dafdcefdb46e363dbbcd92907ee",
-            "pre_install": [
-                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
-            ]
+            "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/1.4.1-0222/Yakit-1.4.1-0222-windows-amd64.exe#/dl.7z",
+            "hash": "141910ad896f917b681a9b340f706ffcb4727f6502fe5d53ad81e47999ef15e3",
+            "extract_dir": "$PLUGINSDIR"
         }
     },
+    "pre_install": [
+        "taskkill /f /im Yakit.exe",
+        "Remove-Item \"$dir\\*\" -Exclude 'app-64.7z' -Force -Recurse",
+        "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal"
+    ],
     "post_install": [
         "ensure \"$persist_dir\" | Out-Null",
-        "$existingRule = Get-NetFirewallRule -DisplayName YakitVi -ErrorAction SilentlyContinue",
-        "if ($existingRule) {  sudo Set-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
-        "else { sudo New-NetFirewallRule -DisplayName YakitVi -Action Allow -Enabled True -Program \"$original_dir\\yakit.exe\" }",
         "$filesToDelete = Get-ChildItem -Path \"$persist_dir\\yakit-projects\\yak-engine\" -Recurse | Where-Object { $_.Name -match '^yak-v\\d'}",
-        "foreach ($file in $filesToDelete) {  Remove-Item $file.FullName -Force;  Write-Host \"已删除旧版本yak.exe文件: $($file.FullName)\";  }",
-        "$resp = Invoke-WebRequest 'https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/version.txt';",
-        "$latestVersion=$resp.Content;",
-        "  $versionOutput = Invoke-Expression \"$persist_dir\\yakit-projects\\yak-engine\\yak.exe --version\";",
-        "if ($versionOutput -match \"yak.exe version\") {",
-        "   if ($versionOutput -notlike \"*$latestVersion*\") {",
-        "     Write-Host \"需要升级 Yak...\"",
-        "      (new-object System.Net.WebClient).DownloadFile(\"https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/yak_windows_amd64.exe\",\"$persist_dir\\yakit-projects\\yak-engine\\yak.exe\");",
-        "  } else {",
-        "    Write-Host \"Yak 已经是最新版本。\"",
-        " }",
+        "foreach ($file in $filesToDelete) { Remove-Item $file.FullName -Force;  Write-Host \"已删除旧版本yak.exe文件: $($file.FullName)\"; }",
+        "$wsShell = New-Object -ComObject WScript.Shell",
+        "$shortcut = $wsShell.CreateShortcut([System.IO.Path]::Combine($env:USERPROFILE, 'Desktop', 'Yakit.lnk'))",
+        "$shortcut.TargetPath = \"powershell.exe\"",
+        "$shortcut.Arguments = \"-NoProfile -ExecutionPolicy Bypass -Command pushd `\"$dir`\"; .\\Yakit.exe \\%*; popd\"",
+        "$shortcut.IconLocation  = \"$dir\\Yakit.exe,0\"",
+        "$shortcut.Save()"
+    ],
+    "pre_uninstall": [
+        "$desktopPath = Join-Path $env:USERPROFILE '\\Desktop'",
+        "$shortcutName = 'Yakit.lnk'",
+        "$shortcutPath = Join-Path $desktopPath $shortcutName",
+        "Write-Host ([Environment]::NewLine + 'Checking for desktop shortcut at: ' + $shortcutPath)",
+        "if (Test-Path $shortcutPath) {",
+        "    Write-Host ('Deleting desktop shortcut: ' + $shortcutPath)",
+        "    Remove-Item $shortcutPath -Force",
         "} else {",
-        "  Write-Host \"未能检测到 Yak 的版本信息。\"",
+        "    Write-Host ('Desktop shortcut not found at: ' + $shortcutPath)",
         "}"
     ],
-    "uninstaller": {
-        "script": "Remove-NetFirewallRule -DisplayName 'YakitVi' -ErrorAction SilentlyContinue"
-    },
-    "persist": "yakit-projects",
+    "bin": "Yakit.exe",
     "shortcuts": [
         [
             "Yakit.exe",
             "Yakit"
         ]
     ],
+    "persist": "yakit-projects",
     "checkver": {
-        "url": "https://api.github.com/repos/yaklang/yakit/releases",
-        "jsonpath": "$..browser_download_url",
-        "regex": "releases/download/v(?<version>[\\w.-]+)/Yakit-(?<file>[\\w.-]+)-windows-amd64.exe"
+        "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/latest/yakit-version.txt",
+        "regex": "(.*)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/$matchFile/Yakit-$matchFile-windows-amd64.exe#/dl.7z"
+                "url": "https://yaklang.oss-cn-beijing.aliyuncs.com/yak/$version/Yakit-$version-windows-amd64.exe#/dl.7z"
             }
         }
     }
