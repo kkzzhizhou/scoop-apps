@@ -1,0 +1,39 @@
+{
+    "version": "2.1.0",
+    "description": "Flash OS images to SD cards & USB drives, safely and easily.",
+    "homepage": "https://etcher.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/balena-io/etcher/blob/master/LICENSE"
+    },
+    "url": "https://github.com/balena-io/etcher/releases/download/v2.1.0/balenaEtcher-2.1.0.Setup.exe#/dl.7z",
+    "hash": "afd199958bca8b3d2926ac25dd385fe043280d2377a58c00752f48495406f82d",
+    "pre_install": [
+        "Get-Item \"$dir\\balena_etcher*.nupkg\" | Rename-Item -NewName 'balenaetcher.nupkg'",
+        "Expand-7zipArchive \"$dir\\balenaetcher.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+        "Remove-Item \"$dir\\lib\", \"$dir\\background.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\setupIcon.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\balena-etcher\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\balena-etcher\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "balenaEtcher.exe",
+            "Etcher"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/balena-io/etcher/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "(?<file>balenaEtcher(?:-Setup)?-([\\d.]+)(?:.Setup)?\\.exe)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/balena-io/etcher/releases/download/v$version/$matchFile#/dl.7z"
+    }
+}
