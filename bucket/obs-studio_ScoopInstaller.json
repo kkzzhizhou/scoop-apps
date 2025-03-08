@@ -1,0 +1,48 @@
+{
+    "version": "31.0.1",
+    "description": "Video recording and live streaming software",
+    "homepage": "https://obsproject.com",
+    "license": "GPL-2.0-only",
+    "notes": [
+        "Add Virtual Camera module by running: \"$dir\\data\\obs-plugins\\win-dshow\\virtualcam-install.bat\"",
+        "Remove it by running: \"$dir\\data\\obs-plugins\\win-dshow\\virtualcam-uninstall.bat\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-31.0.1-Windows.zip",
+            "hash": "e0904d3ec15b26f34053fdf5f120b578eec76a57b1cd51a22903b4ac42887f3f",
+            "shortcuts": [
+                [
+                    "bin\\64bit\\obs64.exe",
+                    "OBS Studio"
+                ]
+            ]
+        }
+    },
+    "pre_install": "if (!(Test-Path \"$persist_dir\\portable_mode.txt\")) { New-Item \"$dir\\portable_mode.txt\" | Out-Null }",
+    "persist": [
+        "config",
+        "portable_mode.txt",
+        "obs-plugins"
+    ],
+    "post_install": [
+        "if (!(Test-Path \"$dir\\obs-plugins.original\")) { return }",
+        "Copy-Item \"$dir\\obs-plugins.original\\*\" \"$dir\\obs-plugins\" -Recurse -Force",
+        "Remove-Item \"$dir\\obs-plugins.original\" -Recurse -Force"
+    ],
+    "checkver": {
+        "url": "https://obsproject.com/download",
+        "regex": "OBS-Studio-([\\d.]+)(-Full|-Windows)?\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-$version-Windows.zip",
+                "hash": {
+                    "url": "https://github.com/obsproject/obs-studio/releases/$version",
+                    "regex": "(?sm)$basename.*?$sha256"
+                }
+            }
+        }
+    }
+}
