@@ -84,8 +84,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - niheaven/scoop-sysinternals
 - borger/scoop-emulators
 - ViCrack/scoop-bucket
-- wangzq/scoop-bucket
 - Qv2ray/mochi
+- wangzq/scoop-bucket
 - kiennq/scoop-misc
 - TheRandomLabs/Scoop-Bucket
 - akirco/aki-apps
@@ -93,9 +93,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
 - DoveBoy/Apps
+- charmbracelet/scoop-bucket
 - jonz94/scoop-sarasa-nerd-fonts
 - naderi/scoop-bucket
-- charmbracelet/scoop-bucket
 - amorphobia/siku
 - hu3rror/scoop-muggle
 - NyaMisty/scoop_bucket_misty
@@ -103,8 +103,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - abgox/abgo_bucket
 - ygguorun/scoop-bucket
 - noql-net/scoop
-- kengwang/scoop-ctftools-bucket
 - aliesbelik/poldi
+- kengwang/scoop-ctftools-bucket
 - brian6932/dank-scoop
 - iquiw/scoop-bucket
 - AStupidBear/scoop-bear
@@ -114,13 +114,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aoisummer/scoop-bucket
 - cc713/ownscoop
 - starise/Scoop-Confetti
-- Small-Ku/turbo-bucket
-- Weidows-projects/scoop-3rd
 - babo4d/scoop-xrtools
+- Weidows-projects/scoop-3rd
+- Small-Ku/turbo-bucket
 - Darkatse/Scoop-Darkatse
 - mo-san/scoop-bucket
 - rivy/scoop-bucket
 - beer-psi/scoop-bucket
+- MCOfficer/scoop-bucket
 - HUMORCE/nuke
 - AkariiinMKII/Scoop4kariiin
 - WinApps-share/WinApps-bucket
