@@ -1,0 +1,29 @@
+{
+    "version": "1.4.0",
+    "description": "vulhub Vulnerability Reproduction Designated Platform",
+    "homepage": "https://java-chains.vulhub.org",
+    "license": "Freeware",
+    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/java-chains.json https://github.com/vicrack/scoop-bucket",
+    "suggest": {
+        "JDK": [
+            "java/oraclejdk",
+            "java/openjdk"
+        ]
+    },
+    "url": "https://github.com/vulhub/java-chains/releases/download/1.4.0/java-chains-1.4.0.jar",
+    "hash": "9401ee7e170ef7cdfee7c12c666e84f25f5fe6e7320a4dccb05a8cc5b2bafcb1",
+    "pre_install": "\n$batContent = @\"\n@echo off\nsetlocal EnableDelayedExpansion\n\nset \"jdk_path=\"\nset \"addOpens=\"\n\nset \"common_addOpens=--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.desktop/sun.awt=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED\"\n\nfor %%J in (JDK_19_HOME JDK_17_HOME JDK_11_HOME) do (\n    if defined %%J (\n        set \"jdk_path=!%%J!\\bin\\\"\n        set \"addOpens=%common_addOpens%\"\n    )\n)\n\nif not defined jdk_path if defined JAVA_HOME (\n    set \"jdk_path=%JAVA_HOME%\\bin\\\"\n)\n\nif not exist \"%jdk_path%java.exe\" (\n    echo ERROR: Java executable not found in %jdk_path%.\n    exit /b 1\n)\n\nset \"javafx_args=\"\nif defined JAVAFX_HOME (\n    if exist \"%JAVAFX_HOME%\\lib\" (\n        set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"\n    ) else (\n        echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.\n    )\n)\n\n@pushd %~dp0\n@\"%jdk_path%java.exe\" %javafx_args% %addOpens% -jar \"java-chains-1.4.0.jar\" %*\n@popd\n\nendlocal\n\"@\n\n$path = \"$dir/java-chains.bat\"\nSet-Content -Path $path -Value $batContent -Encoding Ascii\n",
+    "bin": "java-chains.bat",
+    "shortcuts": [
+        [
+            "java-chains.bat",
+            "Java-chains"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/vulhub/java-chains"
+    },
+    "autoupdate": {
+        "url": "https://github.com/vulhub/java-chains/releases/download/$version/java-chains-$version.jar"
+    }
+}
