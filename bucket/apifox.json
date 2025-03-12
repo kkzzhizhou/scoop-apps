@@ -1,17 +1,12 @@
 {
     "version": "2.7.0",
-    "description": "Apifox 是 API 文档、API 调试、API Mock、API 自动化测试一体化协作平台，定位 Postman + Swagger + Mock + JMeter。",
+    "description": "All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
     "homepage": "https://apifox.com",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/apifox.json",
     "license": "Freeware",
     "architecture": {
-        "32bit": {
-            "url": "https://file-assets.apifox.com/download/2.7.0/Apifox-windows-x86-2.7.0.exe#/dl.7z",
-            "hash": "ff061a55791e29469637b70ce6b8733d8914046feb88ee464800968a15db591a"
-        },
         "64bit": {
             "url": "https://file-assets.apifox.com/download/2.7.0/Apifox-2.7.0.exe#/dl.7z",
-            "hash": "9b5e557633e7d9fb0d81f2f822ceea14a478358b96ef6031cf32b70303bbcd63"
+            "hash": "sha512:fdae3e11926f0c77cafdb5871a9b3522a07d27ba5c8fab3b7ff44e874dd4d759d2f75be5e9435f51910f1d7d4c7057ba359647b7d951e62a5a9d8fc930a0249a"
         }
     },
     "pre_install": [
@@ -26,17 +21,22 @@
         ]
     ],
     "persist": "UserData",
+    "pre_uninstall": [
+        "Stop-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue",
+        "Wait-Process -Name 'ApifoxAppAgent' -ErrorAction SilentlyContinue -Timeout 30"
+    ],
     "checkver": {
-        "url": "https://apifox.com/help/release/changelog.json",
-        "regex": "\"version\": \"([\\d.]+)\""
+        "url": "https://apifox.com/help/app/changelog",
+        "regex": ">([\\d.]+)<"
     },
     "autoupdate": {
         "architecture": {
-            "32bit": {
-                "url": "https://file-assets.apifox.com/download/$version/Apifox-windows-x86-$version.exe#/dl.7z"
-            },
             "64bit": {
-                "url": "https://file-assets.apifox.com/download/$version/Apifox-$version.exe#/dl.7z"
+                "url": "https://file-assets.apifox.com/download/$version/Apifox-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512: $base64"
+                }
             }
         }
     }
