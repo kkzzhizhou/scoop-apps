@@ -6,9 +6,12 @@
     "notes": [
         "This manifest uses a script, which needs admin privilege, to modify Windows firewall rules for system stack in TUN mode.",
         "If it failed in installation, you can manually run:",
-        "sudo \"$dir\\update-firewall-rules.ps1\""
+        "gsudo \"$dir\\update-firewall-rules.ps1\""
     ],
-    "depends": "main/gsudo",
+    "depends": [
+        "main/gsudo",
+        "Scoop4kariiin/Scoop4kariiinUtils"
+    ],
     "architecture": {
         "64bit": {
             "url": "https://github.com/AkariiinMKII/Scoop4kariiinFiles/raw/main/ClashforWindows/Clash.for.Windows.Setup.0.20.39.exe#/dl.7z",
@@ -37,21 +40,16 @@
     },
     "installer": {
         "script": [
-            "if (!(Test-Path \"$persist_dir\\data\")) {",
+            "if (-not(Test-Path \"$persist_dir\\data\")) {",
             "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
             "    if (Test-Path \"$env:USERPROFILE\\.config\\clash\") {",
+            "        Write-Host \"Importing Clash configs ...\" -ForegroundColor Yellow",
             "        Copy-Item -Path \"$env:USERPROFILE\\.config\\clash\\*\" -Destination \"$persist_dir\\data\" -Recurse -Container",
             "    }",
             "}",
-            "$S4UtilsPath = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
-            "if (Test-Path $S4UtilsPath) {",
-            "    Unblock-File $S4UtilsPath",
-            "    Import-Module $S4UtilsPath",
-            "    Mount-ExternalRuntimeData -Source \"$persist_dir\\clash_win\" -AppData",
-            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
-            "} else {",
-            "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
-            "}"
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\clash_win\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
         ]
     },
     "post_install": [
@@ -59,14 +57,14 @@
         "$CFWPath = Get-ChildItem -Path \"$dir\" -Filter \"Clash for Windows.exe\" | Select-Object -ExpandProperty Target",
         "$CorePath = Get-ChildItem -Path \"$dir\" -Filter \"clash-win*.exe\" -Recurse | Select-Object -ExpandProperty Target",
         "if (Test-Path \"$ScriptsDir\\update-firewall-rules.ps1\") {",
-        "    $Content = Get-Content \"$ScriptsDir\\update-firewall-rules.ps1\"",
+        "    $Content = Get-Content \"$ScriptsDir\\update-firewall-rules.ps1\" -Encoding UTF8",
         "    $Content = $Content.Replace('$CFWPath', \"$CFWPath\")",
         "    $Content = $Content.Replace('$CorePath', \"$CorePath\")",
-        "    $Content | Set-Content -Path \"$dir\\update-firewall-rules.ps1\"",
+        "    $Content | Out-File -FilePath \"$dir\\update-firewall-rules.ps1\" -Encoding UTF8",
         "    Write-Host \"Updating Windows firewall rules ...\" -ForegroundColor Yellow",
         "    Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
         "    Start-Sleep -Seconds 1",
-        "    sudo \"$dir\\update-firewall-rules.ps1\"",
+        "    gsudo \"$dir\\update-firewall-rules.ps1\"",
         "    if ($?) {",
         "        Write-Host \"Successfully updated Windows firewall rules!\" -ForegroundColor Green",
         "    } else {",
@@ -85,13 +83,9 @@
     "persist": "data",
     "uninstaller": {
         "script": [
-            "$S4UtilsPath = Find-BucketDirectory -Root -Name $install.bucket | Join-Path -ChildPath \"scripts\\S4Utils.psm1\"",
-            "if (Test-Path $S4UtilsPath) {",
-            "    Unblock-File $S4UtilsPath",
-            "    Import-Module $S4UtilsPath",
-            "    Dismount-ExternalRuntimeData -Target \"clash_win\" -AppData",
-            "    Remove-Module -Name S4Utils -ErrorAction SilentlyContinue",
-            "}"
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Dismount-ExternalRuntimeData -Target \"clash_win\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
         ]
     }
 }

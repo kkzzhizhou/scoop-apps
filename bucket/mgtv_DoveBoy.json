@@ -1,11 +1,26 @@
 {
     "##": "芒果TV",
-    "version": "6.8.2.0",
+    "version": "6.8.2_1.1.49",
     "description": "[芒果TV] - 湖南广播电视台旗下唯一互联网视频平台，提供湖南卫视所有电视栏目高清视频点播服务，并同步推送热门电视剧、电影、综艺和音乐视频内容，以及部分电视台网络同步直播。",
     "license": "Unknown",
     "homepage": "https://www.mgtv.com",
     "url": "https://download.imgo.tv/app/pc/6.8.2_1.1.49/mgtv-client-6.8.2.0-mango.exe#/dl.7z",
     "hash": "80c07930f7820bae13618a1f3759344be7293d51cb5997457c4029c7680fd593",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\芒果TV\\MGTVPCC\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\芒果TV\\MGTVPCC\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "bin": [
         [
             "player\\芒果TV.exe",
@@ -19,11 +34,12 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.mgtv.com/app/",
-        "regex": "pc\\\\u002F(?<prefix>.*?)\\\\u002Fmgtv-client-([\\d.]+)-mango\\.exe"
+        "url": "https://www.mgtv.com/app",
+        "regex": "pc\\\\u002F(?<prefix>.*?)\\\\u002F(?<file>mgtv-client.*?mango([\\d]+)?\\.exe)",
+        "replace": "${prefix}"
     },
     "autoupdate": {
-        "url": "https://download.imgo.tv/app/pc/$matchPrefix/mgtv-client-$version-mango.exe#/dl.7z",
+        "url": "https://download.imgo.tv/app/pc/$matchPrefix/$matchFile#/dl.7z",
         "hash": {
             "mode": "download"
         }

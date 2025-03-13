@@ -3,6 +3,12 @@
     "description": "A small utility that allows administration of MikroTik RouterOS using a fast and simple GUI.",
     "homepage": "https://mikrotik.com/",
     "license": "Unknown",
+    "notes": [
+        "This manifest uses a script, which needs admin privilege, to modify Windows firewall rules for WinBox.",
+        "If it failed in installation, you can manually run:",
+        "gsudo \"$dir\\update-firewall-rules.ps1\""
+    ],
+    "depends": "main/gsudo",
     "architecture": {
         "64bit": {
             "url": "https://download.mikrotik.com/routeros/winbox/4.0beta18/WinBox_Windows.zip",
@@ -21,6 +27,26 @@
             ]
         }
     },
+    "post_install": [
+        "$ScriptsDir = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\winbox-beta\"",
+        "$BinPath = Get-ChildItem -Path \"$dir\" -Filter \"WinBox.exe\" | Select-Object -ExpandProperty Target",
+        "if (Test-Path \"$ScriptsDir\\update-firewall-rules.ps1\") {",
+        "    $Content = Get-Content \"$ScriptsDir\\update-firewall-rules.ps1\" -Encoding UTF8",
+        "    $Content = $Content.Replace('$BinPath', \"$BinPath\")",
+        "    $Content | Out-File -FilePath \"$dir\\update-firewall-rules.ps1\" -Encoding UTF8",
+        "    Write-Host \"Updating Windows firewall rules ...\" -ForegroundColor Yellow",
+        "    Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
+        "    Start-Sleep -Seconds 1",
+        "    gsudo \"$dir\\update-firewall-rules.ps1\"",
+        "    if ($?) {",
+        "        Write-Host \"Successfully updated Windows firewall rules!\" -ForegroundColor Green",
+        "    } else {",
+        "        Write-Host \"[ERROR] Failed updating Windows firewall rules!\" -ForegroundColor Red",
+        "    }",
+        "} else {",
+        "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
+        "}"
+    ],
     "checkver": {
         "url": "https://mikrotik.com/download",
         "regex": "WinBox ([\\d.]+)beta(\\d+)",
