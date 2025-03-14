@@ -1,0 +1,49 @@
+{
+    "version": "1.97.2",
+    "description": "Trae (/treɪ/) is your helpful coding partner. It offers features like AI Q&A, code auto-completion, and agent-based AI programming capabilities. When developing projects with Trae, you can collaborate with AI to enhance your development efficiency.",
+    "homepage": "https://www.trae.com.cn/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.trae.com.cn/terms-of-service"
+    },
+    "depends": "aki/innounpacker",
+    "architecture": {
+        "64bit": {
+            "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/1.0.9043/win32/Trae%20CN-Setup-x64.exe",
+            "hash":"d700ec74849fab13eddcc225d2c6008474a32262e6a5ebe8c77a7a16c4ffd30d"
+        }
+    },
+    "pre_install":[
+        "(Get-ChildItem $dir 'Trae*exe').Fullname | Rename-Item -NewName 'TraeSetup.exe'",
+        "innounpack.exe -x -d\"$dir\" \"$dir\\TraeSetup.exe\" | Out-Null",
+        "Move-Item -Force -Path \"$dir\\{app}\\tools\\*\" -Destination \"$dir\"",
+        "Move-Item -Force -Path \"$dir\\{code_GetDestDir}\\*\" -Destination \"$dir\""
+    ],
+    "post_install":[
+        "Remove-Item -Force -Path \"$dir\\{app}\" -Recurse",
+        "Remove-Item -Force -Path \"$dir\\{code_GetDestDir}\" -Recurse",
+        "Remove-Item -Force -Path \"$dir\\TraeSetup.exe\" -Recurse"
+    ],
+    "shortcuts": [["Trae CN.exe", "Trae CN"]],
+    "persist": "data",
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'ByteDance/Trae/CN'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchX64",
+                "hash": {
+                    "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/Trae/CN/$version/ByteDance.Trae.CN.installer.yaml",
+                    "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+                }
+            }
+        }
+    }
+}
