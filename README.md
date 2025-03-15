@@ -108,10 +108,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - brian6932/dank-scoop
 - iquiw/scoop-bucket
 - AStupidBear/scoop-bear
-- TianXiaTech/scoop-txt
 - seumsc/scoop-seu
-- jfut/scoop-jfut
+- TianXiaTech/scoop-txt
 - aoisummer/scoop-bucket
+- jfut/scoop-jfut
 - cc713/ownscoop
 - starise/Scoop-Confetti
 - Small-Ku/turbo-bucket
