@@ -49,8 +49,18 @@
         ]
     ],
     "checkver": {
-        "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/shimo.yml",
-        "regex": "_v(?<version>[\\d\\.]+)-release\\.(?<release>\\w+)\\."
+        "script":[
+            "$timestamp = [DateTimeOffset]::Now.ToUnixTimeMilliseconds()",
+            "$response = (Invoke-WebRequest https://oas.shimonote.com/panther/shimo/release/win32/x64/shimo.yml?t=$timestamp).Content | ConvertFrom-Yaml",
+            "$path = $response.path",
+            "if ($path -match '_v((?<version>[\\d+])(?:\\.\\d+)*)-[^\\.]+\\.((?<release>\\w+))') {",
+            "   $version = $matches[1]",
+            "   $release = $matches[2]",
+            "\"version:$version;\"",
+            "\"release:$release;\"",
+            "}"
+        ],
+        "regex": "version:(?<version>.+?); release:(?<release>.+?);"
     },
     "autoupdate": {
         "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/%E7%9F%B3%E5%A2%A8%E6%96%87%E6%A1%A3_v$matchVersion-release.$matchRelease.shimo_win32-x64.exe#/dl.7z"
