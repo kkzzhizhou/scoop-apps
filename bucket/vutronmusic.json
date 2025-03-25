@@ -1,0 +1,57 @@
+{
+    "version": "1.6.0",
+    "description": "高颜值的第三方网易云播放器；支持流媒体音乐，如navidrome、emby；支持本地音乐播放、离线歌单、桌面歌词、Touch Bar歌词、Mac状态栏歌词显示、Linux-gnome桌面状态栏歌词显示。支持 Windows / macOS / Linux :electron:",
+    "homepage": "https://github.com/stark81/VutronMusic",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/stark81/VutronMusic#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/stark81/VutronMusic/releases/download/v1.6.0/VutronMusic.1.6.0_x64.exe#/dl.7z",
+            "hash": "sha512:152c4c01da354fd4696f06c5f74760c4e95c1fe8f17b046d22f9a0bc1748ece39acf102ca8c62dbb9939ef52fcd7cc6c823d2945613083e845058d78ca23b51c",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\VutronMusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\VutronMusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "VutronMusic.exe",
+    "shortcuts": [
+        [
+            "VutronMusic.exe",
+            "VutronMusic"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/stark81/VutronMusic/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/VutronMusic.([\\d.]+)_x64.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/stark81/VutronMusic/releases/download/v$version/VutronMusic.$version_x64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}
