@@ -1,23 +1,32 @@
 {
-    "version": "3.9.1",
+    "version": "3.9.2",
     "description": "CUDA on AMD GPUs.",
     "homepage": "https://github.com/lshqqytiger/ZLUDA",
     "license": {
         "identifier": "Apache-2.0",
         "url": "https://github.com/lshqqytiger/ZLUDA/blob/master/LICENSE"
     },
-    "url": "https://github.com/lshqqytiger/ZLUDA/releases/download/rel.ae0540beb129ffd140226ce956b386619b38f84c/ZLUDA-windows-rocm5-amd64.zip",
-    "hash": "9b48cef92cdf75ea3e5f9bfd72beb2d827e3f9f5b0c344af2ac30d439a8d73fc",
+    "url": "https://github.com/lshqqytiger/ZLUDA/releases/download/rel.dba64c0966df2c71e82255e942c96e2e1cea3a2d/ZLUDA-nightly-windows-rocm6-amd64.zip",
+    "hash": "2d43c5c13982c6e44d7131d061465111b5fb5719c08a169172f2d1c260c5dd00",
     "bin": "zluda.exe",
     "env_add_path": ".",
     "checkver": {
         "script": [
-            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/lshqqytiger/ZLUDA/releases'",
-            "$main = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "$download_url = ($main.assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1).browser_download_url",
-            "Write-Output $main.name $download_url $main.tag_name"
+            "$rel_list = Invoke-RestMethod -Uri 'https://api.github.com/repos/lshqqytiger/ZLUDA/releases'",
+            "$rel = $rel_list | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "$assets = $rel.assets | Where-Object { $_.name -match 'windows' } | Sort-Object -Descending {if ($_.name -match '-rocm(\\d+)-') {([int]$Matches[1] + [int]($_.name -match '-nightly-'))} else {0}}",
+            "$download_url = ($rel.assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1).browser_download_url",
+            "Write-Output $rel.name $download_url $rel.tag_name"
         ],
         "regex": "(?<version>[\\d.]+)\\s(?<url>[^\\s]+)\\s(?<tag>.+)"
+    },
+    "installer": {
+        "script": [
+            "if (Test-Path \"$dir\\zluda\") {",
+            "Move-Item \"$dir\\zluda\\*\" \"$dir\"",
+            "Remove-Item -Recurse \"$dir\\zluda\"",
+            "}"
+        ]
     },
     "autoupdate": {
         "url": "$matchUrl"
