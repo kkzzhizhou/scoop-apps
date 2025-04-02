@@ -1,0 +1,51 @@
+{
+    "version": "0.0.1",
+    "description": "多平台直播流自动录制工具 · 基于FFmpeg · 支持监控/定时/转码 | Multi-Platform Live Stream Automatic Recording Tool",
+    "homepage": "https://github.com/ihmily/StreamCap",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/ihmily/StreamCap#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ihmily/StreamCap/releases/download/v0.0.1/StreamCap_0.0.1_Win_x64.zip",
+            "hash": "8ff62cd53fc08bcfde3ba7f02069f558b17efce958ca0d10bb80539b1e2b7c4e",
+            "extract_dir": "StreamCap_0.0.1_Win_x64"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Appveyor Systems Inc\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Appveyor Systems Inc\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "StreamCap.exe",
+    "shortcuts": [
+        [
+            "StreamCap.exe",
+            "StreamCap"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/ihmily/StreamCap/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/StreamCap_([\\d.]+)_Win_x64.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ihmily/StreamCap/releases/download/v$version/StreamCap_$version_Win_x64.zip",
+                "extract_dir": "StreamCap_$version_Win_x64"
+            }
+        }
+    }
+}
