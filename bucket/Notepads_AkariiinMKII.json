@@ -11,7 +11,7 @@
     "hash": "64e48c47ee39aa63616946e4d9f3d287d96b4650fc119eb8cbc73a1d58b36540",
     "installer": {
         "script": [
-            "Write-Host \"`nAdmin privileges are required for installation ...\" -ForegroundColor Yellow",
+            "Write-Host \"`nAdmin privileges are required for installation...\" -ForegroundColor Yellow",
             "Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
             "Start-Sleep -Seconds 1",
             "gsudo Add-AppxProvisionedPackage -Online -PackagePath \"$dir\\Notepads.msixbundle\" -SkipLicense | Out-Null"
@@ -23,7 +23,9 @@
         "    $package_name = (Get-AppxPackage -Name '*JackieLiu*Notepads*').PackageFamilyName",
         "}",
         "$package_dir = \"$env:LOCALAPPDATA\\Packages\\$package_name\"",
-        "while (-not (Test-Path \"$package_dir\\Settings\\settings.dat\")) { Start-Sleep -Milliseconds 250 }",
+        "while (-not (Test-Path \"$package_dir\\Settings\\settings.dat\")) {",
+        "    Start-Sleep -Milliseconds 250",
+        "}",
         "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
         "Mount-ExternalRuntimeData -Source \"$persist_dir\\Settings\" -Target \"$package_dir\\Settings\"",
         "Mount-ExternalRuntimeData -Source \"$persist_dir\\LocalState\" -Target \"$package_dir\\LocalState\"",
@@ -37,7 +39,7 @@
             "    Write-Host \"`nNotepads is running, would you like to continue?\" -ForegroundColor Yellow",
             "    $answer = Read-Host -Prompt \"Enter 'y' to continue, any other key to cancel\"",
             "    if ('y' -eq $answer) {",
-            "        Write-Host \"Stopping process ...\" -ForegroundColor Yellow",
+            "        Write-Host \"Stopping process...\" -ForegroundColor Yellow",
             "        Stop-Process -Name Notepads -ErrorAction Stop",
             "        Start-Sleep -Milliseconds 250",
             "    } else {",
@@ -45,8 +47,7 @@
             "        break",
             "    }",
             "}",
-            "$package = Get-AppxPackage -Name '*JackieLiu*Notepads*'",
-            "Remove-AppxPackage $package",
+            "Get-AppxPackage -Name '*JackieLiu*Notepads*' | Remove-AppxPackage -ErrorAction Stop",
             "Get-ChildItem -Path \"$persist_dir\\LocalState\" -Filter \"_WinStoreSDK_Receipt_Cache\" | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue"
         ]
     },
