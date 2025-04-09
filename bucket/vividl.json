@@ -1,46 +1,33 @@
 {
     "version": "0.8.0",
-    "homepage": "https://sourceforge.net/projects/vividl/",
-    "description": "A Windows app that lets you download videos from various websites, including YouTube, Soundcloud, Vimeo, Dailymotion and various media channels.",
+    "homepage": "https://github.com/Bluegrams/Vividl",
+    "description": "Modern Windows GUI for youtube-dl/yt-dlp",
     "license": "BSD-3-Clause",
-    "url": "https://sourceforge.net/projects/vividl/files/v.0.8.0/Vividl-v.0.8.0-Portable.zip",
-    "hash": "sha1:d6079352fff0a07af1d0c32047b569e754494b71",
-    "extract_dir": "Vividl-v.0.8.0-Portable",
+    "notes": "Required to install youtube-dl/yt-dlp and FFmpeg",
+    "url": "https://downloads.sourceforge.net/project/vividl/v.0.8.0/Vividl-v.0.8.0-Portable-NoLib.zip",
+    "hash": "sha1:a55828ccaf6b19996abb25f30b4286535113f7ca",
+    "extract_dir": "Vividl-v.0.8.0-Portable-NoLib",
     "pre_install": [
-        "if (!(Test-Path \"$persist_dir\\portable.config\")) {",
-        "    $xmlWriter = New-Object System.Xml.XmlTextWriter(\"$dir\\portable.config\", [System.text.UTF8Encoding]($true))",
-        "    # Startup for the xml writer.",
-        "    $xmlWriter.Formatting = 'Indented'",
-        "    $xmlWriter.WriteStartDocument()",
-        "    # Write the required elements and element strings.",
-        "    $arr = @('configuration', 'userSettings', 'Roaming', 'Bluegrams.Application.UpdateCheckerBase')",
-        "    $arr.ForEach({$xmlWriter.WriteStartElement($_)})",
-        "    $xmlWriter.WriteElementString('SkipVersion', 'True')",
-        "    $xmlWriter.WriteElementString('CheckedUpdate', '0.0')",
-        "    $xmlWriter.WriteEndElement()",
-        "    # Write the additional required elements and element strings.",
-        "    $xmlWriter.WriteStartElement('Vividl.Properties.Settings')",
-        "    $xmlWriter.WriteElementString('AutoCheckUpdates', 'False')",
-        "    $xmlWriter.WriteEndElement()",
-        "    # End the xml writer and close it.",
-        "    $xmlWriter.WriteEndDocument()",
-        "    $xmlWriter.Flush(); $xmlWriter.Close()",
-        "}"
+        "function CreateFile ($name, $value = $null) {",
+        "    if (!(Test-Path \"$persist_dir\\$name\")) {",
+        "        Set-Content \"$dir\\$name\" $value -Encoding Ascii",
+        "    }",
+        "}",
+        "CreateFile 'portable.config' "
     ],
+    "persist": "portable.config",
     "shortcuts": [
         [
             "Vividl.exe",
-            "Vividl - Video Downloader"
+            "Vividl"
         ]
     ],
-    "persist": "portable.config",
-    "checkver": "sourceforge",
+    "checkver": {
+        "url": "https://github.com/Bluegrams/Vividl",
+        "regex": "\\/releases\\/tag\\/(?:v|V)?\\.([\\d.]+)"
+    },
     "autoupdate": {
-        "url": "https://sourceforge.net/projects/vividl/files/v.$version/Vividl-v.$version-Portable.zip",
-        "hash": {
-            "url": "$baseurl",
-            "regex": "/$basename\".*?\"sha1\":\"$sha1"
-        },
-        "extract_dir": "Vividl-v.$version-Portable"
+        "url": "https://downloads.sourceforge.net/project/vividl/v.$version/Vividl-v.$version-Portable-NoLib.zip",
+        "extract_dir": "Vividl-v.$version-Portable-NoLib"
     }
 }
