@@ -1,0 +1,32 @@
+{
+  "version": "1.4.0.0",
+  "description": "緊急地震速報受信ソフト",
+  "homepage": "http://www.estrat.co.jp/signalnowx.html",
+  "depends": [
+    "7zip",
+    "pswinutil"
+  ],
+  "url": "http://www.estrat.co.jp/software/SignalNowX/SignalNowX_Installer_1_4_0_0.zip",
+  "hash": "2804db93c983df84a8965168592f21810e1063d1e88d3a7cc5c1591fdae17b41",
+  "installer": {
+    "script": [
+      "$installerPath = (Get-ChildItem $dir 'SignalNowX_Installer_*.exe').Fullname",
+      "7z x ('-o{0}' -f $dir) $installerPath",
+      "$programFilePath = Join-Path $dir 'SignalNowX.exe'",
+      "mkdir \"$env:APPDATA/StrategyCorporation/SignalNowX/DB\" -Force | Out-Null",
+      "Copy-Item -LiteralPath \"$dir/DB/EqHistoryX.fdb\" \"$env:APPDATA/StrategyCorporation/SignalNowX/DB\"",
+      "PSWinUtil\\Register-Startup -LiteralPath $programFilePath -Valuename 'SignalNow X' -Scope CurrentUser"
+    ]
+  },
+  "bin": "SignalNowX.exe",
+  "shortcuts": [
+    [
+      "SignalNowX.exe",
+      "SignalNowX"
+    ]
+  ],
+  "checkver": "version\\s:\\s'([\\d.]+\\d+)'",
+  "autoupdate": {
+    "url": "http://www.estrat.co.jp/software/SignalNowX/SignalNowX_Installer_$underscoreVersion.zip"
+  }
+}
