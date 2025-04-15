@@ -22,9 +22,18 @@
         "Copy-Item -ErrorAction Ignore \"$dir/FortFirewall.exe.example.ini\" \"$dir/FortFirewall.exe.ini\"",
         "$null = New-Item \"$dir/README.portable\"",
         "if (is_admin) { return & \"$dir/driver/scripts/install.bat\" }",
+        "",
         "warn 'Skipping driver installation due to the lack of admin privledges.'"
     ],
+    "post_install": [
+        "$com = New-Object -ComObject WScript.Shell",
+        "$shortcut = $com.CreateShortcut([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup) + '/Fort Firewall.lnk')",
+        "$shortcut.TargetPath = \"$dir/FortFirewall.exe\"",
+        "$shortcut.Save()",
+        "$null = [System.Runtime.Interopservices.Marshal]::FinalReleaseComObject($com)"
+    ],
     "pre_uninstall": [
+        "Remove-Item ([Environment]::GetFolderPath([Environment+SpecialFolder]::Startup) + '/Fort Firewall.lnk')",
         "if (is_admin) { return & \"$dir/driver/scripts/uninstall.bat\" }",
         "warn 'Skipping driver uninstallation due to the lack of admin privledges.'"
     ],
