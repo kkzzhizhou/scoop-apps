@@ -1,0 +1,48 @@
+{
+    "version": "1.6.3",
+    "description": "An AI Code Editor",
+    "homepage": "https://windsurf.com/editor",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://windsurf.com/terms-of-service-individual"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://windsurf-stable.codeiumdata.com/win32-x64-archive/stable/f8ec5d648c43a2f1e54dccd12e2cf74f5ae6bad9/Windsurf-win32-x64-1.6.3.zip",
+            "hash": "d21aba1d07b10a063f150347c135796f4e013ab5cf3d03fc5c1ee7b5be82a881"
+        },
+        "arm64": {
+            "url": "https://windsurf-stable.codeiumdata.com/win32-arm64-user/stable/f8ec5d648c43a2f1e54dccd12e2cf74f5ae6bad9/WindsurfUserSetup-arm64-1.6.3.exe",
+            "hash": "d1841630f57dbb2544d2b7331cd9e3fa85328abac91b4a1b2d834934543abc26"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "if (!(Test-Path \"$dir\\Data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.windsurf\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.windsurf\\extensions\" \"$dir\\Data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Windsurf\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Windsurf\" \"$dir\\Data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\Data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=windsurf(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": "Windsurf.exe",
+    "shortcuts": [
+        [
+            "Windsurf.exe",
+            "Windsurf",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://windsurf.com/changelog",
+        "regex": "Windsurf Editor v([\\d.]+)"
+    }
+}

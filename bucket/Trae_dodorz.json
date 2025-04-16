@@ -1,0 +1,48 @@
+{
+    "version": "1.0.11317",
+    "description": "An AI-powered IDE that makes programming more enjoyable and efficient.",
+    "homepage": "https://www.trae.ai",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://lf-cdn.trae.ai/obj/trae-ai-sg/pkg/app/releases/stable/1.0.11317/win32/Trae-Setup-x64.exe",
+            "hash": "f55acc958501223dddff9e3ca1c8b1a76c62bd5779da1634df5ed8f5693537f1",
+            "extract_dir": "{code_GetDestDir}"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "if (!(Test-Path \"$dir\\Data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.trae\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.trae\\extensions\" \"$dir\\Data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Trae\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Trae\" \"$dir\\Data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\Data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=trae(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": "bin/trae.cmd",
+    "shortcuts": [
+        [
+            "Trae.exe",
+            "Trae",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.trae.ai/icube/api/v1/native/version/trae/latest",
+        "jsonpath": "$.data.manifest.win32.version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://lf-cdn.trae.ai/obj/trae-ai-sg/pkg/app/releases/stable/$version/win32/Trae-Setup-x64.exe"
+            }
+        }
+    }
+}
