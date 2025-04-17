@@ -1,24 +1,28 @@
 {
     "version": "3.0.5",
-    "description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
+    "description": "A shell extension for conveniently calculating and checking file hashes from file properties",
     "homepage": "https://github.com/namazso/OpenHashTab",
-    "license": "GPL-3.0-or-later",
+    "license": "GPL-3.0-only",
+    "notes": "Due to Scoop's limitations, innounp is listed as a dependency though it is only required for installation.",
+    "depends": [
+        "innounp",
+        "sudo"
+    ],
     "url": "https://github.com/namazso/OpenHashTab/releases/download/v3.0.5/OpenHashTab_setup.exe",
     "hash": "98fb1f2d230dfa0a26915c5b314881fbb9fa76b9edbb720fdeaca35f3cb35f95",
     "installer": {
-        "args": [
-            "/VERYSILENT",
-            "/DIR=$dir",
-            "/ALLUSERS"
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\" -Removal",
+            "if ([Environment]::Is64BitOperatingSystem) {",
+            "    Move-Item \"$dir\\OpenHashTab,2.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
+            "} else {",
+            "    Move-Item \"$dir\\OpenHashTab,1.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
+            "}",
+            "sudo \"$env:COMSPEC\" /c \"regsvr32 \"$dir\\OpenHashTab.dll\"\""
         ]
     },
     "uninstaller": {
-        "file": "unins000.exe",
-        "args": [
-            "/VERYSILENT",
-            "/CLOSEAPPLICATIONS",
-            "/FORCECLOSEAPPLICATIONS"
-        ]
+        "script": "regsvr32 /u /s \"$dir\\OpenHashTab.dll\""
     },
     "checkver": "github",
     "autoupdate": {
