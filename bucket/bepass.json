@@ -1,51 +1,34 @@
 {
     "version": "1.6.2",
-    "description": "A simple DPI bypass tool written in Go",
+    "description": "A simple DPI bypass tool written in go.",
     "homepage": "https://github.com/bepass-org/bepass",
-    "license": "MIT",
+    "license": "GPL-3",
+    "notes": "",
     "architecture": {
         "64bit": {
             "url": "https://github.com/bepass-org/bepass/releases/download/v1.6.2/Bepass-windows-amd64.51eb50.zip",
             "hash": "b694ceb4750cec0eeae923603ef176f9e9d57a504a62c5d31f653ea992ca063c"
-        },
-        "32bit": {
-            "url": "https://github.com/bepass-org/bepass/releases/download/v1.6.2/Bepass-windows-386.51eb50.zip",
-            "hash": "7dc839f452b18d6ff027970ddb1d1a029fdce17faf1acd0e19ed81551cfcc26d"
-        },
-        "arm64": {
-            "url": "https://github.com/bepass-org/bepass/releases/download/v1.6.2/Bepass-windows-arm64.51eb50.zip",
-            "hash": "462d7ee22d78784bf5912e17db8ac9c1ddd92b7ef3df93163699e148df75f29e"
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/bepass-org/bepass/releases",
+        "jsonpath": "$.[0].assets[0].browser_download_url",
+        "regex": "v(?<version>[\\d.]+)\/[^\/]+\\.(?<commit>[\\w]+)\\.zip$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/bepass-org/bepass/releases/download/v$version/Bepass-windows-amd64.$matchCommit.zip"
+            }
         }
     },
     "pre_install": "if (!(Test-Path \"$persist_dir\\$config.json\")) { New-Item \"$dir\\config.json\" }",
+    "persist": "config.json",
     "bin": "bepass.exe",
     "shortcuts": [
         [
             "bepass.exe",
             "bepass"
         ]
-    ],
-    "persist": "config.json",
-    "checkver": {
-        "url": "https://api.github.com/repositories/670579868/releases/latest",
-        "jsonpath": "$..browser_download_url",
-        "regex": "v(?<version>[\\d.]+)/[^/]+\\.(?<commit>[\\w]+)\\.zip"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/bepass-org/bepass/releases/download/v$version/Bepass-windows-amd64.$matchCommit.zip"
-            },
-            "32bit": {
-                "url": "https://github.com/bepass-org/bepass/releases/download/v$version/Bepass-windows-386.$matchCommit.zip"
-            },
-            "arm64": {
-                "url": "https://github.com/bepass-org/bepass/releases/download/v$version/Bepass-windows-arm64.$matchCommit.zip"
-            }
-        },
-        "hash": {
-            "url": "$url.dgst",
-            "find": "SHA2-256=\\s+$sha256"
-        }
-    }
+    ]
 }
