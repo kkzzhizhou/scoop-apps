@@ -9,7 +9,6 @@
     "url": "https://github.com/TranslucentTB/TranslucentTB/releases/download/2024.3/bundle.msixbundle",
     "hash": "fd34acf9185facfd94761f0794dd4428d7fdac6bf41d7a7cfde385cb9ccd510b",
     "pre_install": [
-        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
         "$path_installer=\"$dir\\bundle.msixbundle\"",
         "Add-AppPackage -Path $path_installer",
         ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
@@ -17,7 +16,6 @@
         "do_some_things"
     ],
     "post_install": [
-        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
         ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
         "handle_lang -CN {",
         "   write_with_color \"`n<@Yellow>此应用的程序文件不在 Scoop 中。Scoop 只管理数据的持久化(persist)、安装、更新以及卸载操作`n\"",
@@ -26,7 +24,7 @@
         "}"
     ],
     "pre_uninstall": [
-        "$bucket=(scoop bucket list | where-Object { $_.Source -match '(gitee|github).com/abgox/abgo_bucket'})[0].Name",
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
         ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
         "write_with_color (data_replace $json.stop_process)",
         "Stop-Process -Name TranslucentTB -Force -ErrorAction SilentlyContinue",
