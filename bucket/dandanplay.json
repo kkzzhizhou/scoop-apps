@@ -1,50 +1,35 @@
 {
     "homepage": "https://www.dandanplay.com/",
-    "description": "A free to use bangumi player with danmaku support",
-    "version": "15.12.0",
+    "description": "A local video player with danmu.",
+    "version": "15.13.0",
     "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://dandan.sakurateam.top/dandanplay-x64_15.12.0.exe",
-            "hash": "a130883c95706ae5dcc1d3bccd48e63ee9af7c51fbd6c8f29d40ddc094779e7c"
+            "url": "https://github.com/kaedei/dandanplay/releases/download/windows-15.13.0.0/dandanplay-x64_15.13.0.zip",
+            "hash": "70578f1a06d95026fb4f878569156622761a83845d67f1f247d03e97e9dabda6",
+            "extract_dir": "dandanplay-x64"
         }
     },
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\\Config\")) {",
-        "    New-Item -Path \"$persist_dir\\Config\" -ItemType Directory | Out-Null",
-        "}",
-        "# Disable auto update",
-        "if (!(Test-Path \"$persist_dir\\Config\\ConnectionSettings.xml\")) {",
-        "    New-Item -Force -Path \"$persist_dir\\Config\\ConnectionSettings.xml\" -ItemType File -Value '<?xml version=\"1.0\"?><ConnectionSettings><EnableAutoUpdate>false</EnableAutoUpdate><NotifyOnUpdateDownloaded>false</NotifyOnUpdateDownloaded></ConnectionSettings>' | Out-Null",
-        "}",
-        "# Disable tracking",
-        "if (!(Test-Path \"$persist_dir\\Config\\UserSettings.xml\")) {",
-        "    New-Item -Force -Path \"$persist_dir\\Config\\UserSettings.xml\" -ItemType File -Value '<?xml version=\"1.0\"?><UserSettings><EnableTelemetry>false</EnableTelemetry></UserSettings>' | Out-Null",
-        "}"
+    "persist": [
+        "Cache",
+        "Config",
+        "Log"
     ],
-    "installer": {
-        "script": [
-            "Start-Process \"$dir\\$fname\" \"/extract $dir\" -PassThru -NoNewWindow | Wait-Process",
-            "$subdir = (Get-ChildItem -Path \"$dir\" -Exclude \"*NET*\",\"WebView2\" -Directory).Name",
-            "movedir \"$dir\\$subdir\" \"$dir\" | Out-Null",
-            "Remove-Item \"$dir\\$fname\",\"$dir\\decoder.dll\",\"$dir\\$subdir\" -Force -ErrorAction SilentlyContinue"
-        ]
-    },
     "shortcuts": [
         [
             "dandanplay.exe",
-            "弹弹play"
+            "DandanPlay"
         ]
     ],
-    "persist": [
-        "Config",
-        "Log",
-        "Cache"
-    ],
     "checkver": {
-        "regex": "dandanplay-x64_([\\d.]+).exe\""
+        "url": "https://github.com/kaedei/dandanplay/releases/latest",
+        "regex": "(?sm)/releases/tag/windows-(?<ver>[\\d.]+).+\\bv(?<version>[\\d.]+)</"
     },
     "autoupdate": {
-        "url": "https://dandan.sakurateam.top/dandanplay-x64_$version.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kaedei/dandanplay/releases/download/windows-$matchVer/dandanplay-x64_$version.zip"
+            }
+        }
     }
 }
