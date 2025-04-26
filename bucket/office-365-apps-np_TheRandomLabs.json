@@ -1,0 +1,51 @@
+{
+    "version": "office",
+    "description": "Family of client software, server software and services developed by Microsoft.",
+    "homepage": "https://www.office.com/",
+    "license": "Proprietary",
+    "url": "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_13426-20370.exe#/dl.7z",
+    "hash": "029f5429ad105b3f7af144f535b6e6e6679c09c4b5ec5056b08bff41b92e6c07",
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "$null, $bucket = find_manifest($app)",
+                "$bucketdir = Find-BucketDirectory($bucket)",
+                "Copy-Item \"$bucketdir\\..\\scripts\\install-office-365-apps.xml\" -Destination \"$dir\\install-office-365-apps.xml\""
+            ]
+        },
+        "32bit": {
+            "pre_install": [
+                "$null, $bucket = find_manifest($app)",
+                "$bucketdir = bucketdir($bucket)",
+                "(Get-Content \"$bucketdir\\..\\scripts\\install-office-365-apps.xml\").Replace('64', '32') | Set-Content -Path \"$dir\\install-office-365-apps.xml\""
+            ]
+        }
+    },
+    "installer": {
+        "file": "setup.exe",
+        "args": [
+            "/configure",
+            "$dir\\install-office-365-apps.xml"
+        ],
+        "keep": true
+    },
+    "post_install": [
+        "$null, $bucket = find_manifest($app)",
+        "$bucketdir = Find-BucketDirectory($bucket)",
+        "Copy-Item \"$bucketdir\\..\\scripts\\uninstall-office-365-apps.xml\" -Destination \"$dir\\uninstall-office-365-apps.xml\""
+    ],
+    "uninstaller": {
+        "file": "setup.exe",
+        "args": [
+            "/configure",
+            "$dir\\uninstall-office-365-apps.xml"
+        ]
+    },
+    "checkver": {
+        "url": "https://www.microsoft.com/en-au/download/confirmation.aspx?id=49117",
+        "regex": "https://download\\.microsoft\\.com/download/(?<path>[\\w-/]+)/(?<version>office)deploymenttool_(?<build>[\\d-]+)\\.exe"
+    },
+    "autoupdate": {
+        "url": "https://download.microsoft.com/download/$matchPath/officedeploymenttool_$matchBuild.exe#/dl.7z"
+    }
+}
