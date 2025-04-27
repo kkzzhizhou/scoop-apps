@@ -1,10 +1,17 @@
 {
     "version": "7.55.1.101",
     "description": "百度网盘 PC 版",
-    "homepage": "https://pan.baidu.com/download",
-    "license": "Proprietary",
-    "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_7.55.1.101.exe#dl.7z",
-    "hash": "2eada51be73a103e48268d0b9f7dcd1772b26c9696afea2d2ec5eb7934a7a715",
+    "homepage": "https://pan.baidu.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pan.baidu.com/disk/duty/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_7.55.1.101.exe#/dl.7z",
+            "hash": "2eada51be73a103e48268d0b9f7dcd1772b26c9696afea2d2ec5eb7934a7a715"
+        }
+    },
     "bin": "BaiduNetdisk.exe",
     "shortcuts": [
         [
@@ -17,11 +24,35 @@
         "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
         "Remove-Item \"$dir\\`$TEMP\" -Recurse"
     ],
+    "pre_uninstall": [
+        "$processName = \"YunDetectService\"",
+        "if((Get-Process -Name $processName -ErrorAction SilentlyContinue) -eq $null) {",
+        "Write-Host \"YunDetectService is not running.\" -ForegroundColor blue",
+        "} else {",
+        "Stop-Process -ProcessName $processName",
+        "Write-Host \"YunDetectService is exist.\" -ForegroundColor green",
+        "}"
+    ],
+    "post_uninstall": [
+        "$baiduCache = \"$env:APPDATA\\Baidu\"",
+        "$baiduLog = \"$env:APPDATA\\BaiduYunGuanjia\"",
+        "$runtimeCache = \"$env:APPDATA\\BaiduYunKernel\"",
+        "if (Test-Path \"$baiduCache\") {",
+        "Remove-Item $baiduCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "}",
+        "if (Test-Path \"$baiduLog\") {",
+        "Remove-Item $baiduLog -Force -Recurse -ErrorAction SilentlyContinue",
+        "}",
+        "if (Test-Path \"$runtimeCache\") {",
+        "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "}"
+    ],
     "checkver": {
         "url": "https://pan.baidu.com/disk/cmsdata?do=client",
-        "regex": "BaiduNetdisk_(\\d+.\\d+.\\d+.\\d+).exe"
+        "jsonpath": "$.guanjia.url",
+        "regex": "BaiduNetdisk_([\\d.]+).exe"
     },
     "autoupdate": {
-        "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#dl.7z"
+        "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#/dl.7z"
     }
 }
