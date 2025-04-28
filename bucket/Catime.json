@@ -1,0 +1,58 @@
+{
+    "version": "1.0.6",
+    "description": "A very useful timer (Pomodoro Clock).[一款非常好用的计时器(🍅番茄时钟)]",
+    "homepage": "https://github.com/vladelaina/Catime",
+    "license": "Apache-2.0",
+    "url": "https://github.com/vladelaina/Catime/releases/download/v1.0.6/catime_1.0.6.exe#/catime.exe",
+    "hash": "e248615e27dfb240aa6b084b920b2bac6fa7832cd9b14a07e08c53a9127fc61e",
+    "bin": "catime.exe",
+    "shortcuts": [
+        [
+            "catime.exe",
+            "Catime"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    New-Item $runtimeCachePersist -Type Directory -Force | Out-Null",
+            "}",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (Test-Path $runtimeCachePersist\\$folderName) {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "        New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "    } else {",
+            "        if (Test-Path $folder) {",
+            "            Move-Item $folder $runtimeCachePersist -Force",
+            "            New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
+            "        }",
+            "    }",
+            "}",
+            "@(\"$env:LOCALAPPDATA\\Catime\") | ForEach-Object { PersistsFolder $_ }"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "function PersistsFolder([String] $folder) {",
+            "    $folderName = $folder.Split(\"\\\")[-1]",
+            "    if (!(Test-Path $runtimeCachePersist\\$folderName)) {",
+            "        Move-Item $folder $runtimeCachePersist -Force",
+            "    } else {",
+            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
+            "    }",
+            "}",
+            "@(\"$env:LOCALAPPDATA\\Catime\") | ForEach-Object { PersistsFolder $_ }"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/vladelaina/Catime/releases/download/v$version/catime_$version.exe#/catime.exe"
+    }
+}
