@@ -1,27 +1,26 @@
 {
-    "version": "7.11.3",
+    "version": "7.12.0",
     "description": "A V2Ray client for Windows, support Xray & v2fly core",
     "homepage": "https://github.com/2dust/v2rayN",
     "license": "GPL-3.0-only",
     "depends": "xray",
     "suggest": {
-        ".NET Desktop Runtime": "extras/windowsdesktop-runtime-lts",
+        ".NET Desktop Runtime": "windowsdesktop-runtime-lts",
         "v2fly-core": "v2ray"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.11.3/v2rayN-windows-64.zip",
-            "hash": "2014a3878bb144d746889329a10a4a55e9a6ac827f4323e6a078741a9db1ae07",
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.12.0/v2rayN-windows-64.zip",
+            "hash": "a87f22a30f2c79e3a1fd7bb8a010418d73a5f77a691b969bab141a92d2b8b9de",
             "extract_dir": "v2rayN-windows-64"
         },
         "arm64": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.11.3/v2rayN-windows-arm64.zip",
-            "hash": "fdefbdeef4133d21f45843c55a5eabc58b124efb0f76b003b32e40511a99e608",
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.12.0/v2rayN-windows-arm64.zip",
+            "hash": "55078d72e6b11dd82c537fa4b7dd8562f0e39a97eac5490126d13ba0bbc7e47f",
             "extract_dir": "v2rayN-windows-arm64"
         }
     },
     "pre_install": [
-        "if (!(Test-Path \"$dir\\bin\\Xray\")) { New-Item \"$dir\\bin\\Xray\" -ItemType Directory | Out-Null }",
         "foreach ($form in @('*.exe', '*.dat')) {",
         "    foreach ($_ in Get-ChildItem \"$(appdir xray $global)\\current\" -File) {",
         "        $name = $_.Name",
@@ -40,7 +39,17 @@
         ]
     ],
     "persist": "guiConfigs",
-    "checkver": "github",
+    "uninstaller": {
+        "script": [
+            "if (Test-Path \"$dir\\guiConfigs\\config.json\") {",
+            "    Copy-Item \"$dir\\guiConfigs\\config.json\" \"$persist_dir\\guiConfigs\\config.json\" | Out-Null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/v2rayN/releases?per_page=1",
+        "jsonpath": "$[0].tag_name"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
