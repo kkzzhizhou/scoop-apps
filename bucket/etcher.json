@@ -1,10 +1,27 @@
 {
-    "version": "2.1.0",
-    "description": "balenaEtcher lets you flash OS images to SD cards & USB drives, safely and easily.",
-    "homepage": "https://etcher.balena.io/",
-    "license": "Apache-2.0",
-    "url": "https://github.com/balena-io/etcher/releases/download/v2.1.0/balenaEtcher-win32-x64-2.1.0.zip",
-    "hash": "a074e42710ba8ce0a82618f68ab066f786c7deeb1b61f2ddf29edabab8eefd94",
+    "version": "2.1.1",
+    "description": "Flash OS images to SD cards & USB drives, safely and easily.",
+    "homepage": "https://etcher.io/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/balena-io/etcher/blob/master/LICENSE"
+    },
+    "url": "https://github.com/balena-io/etcher/releases/download/v2.1.1/balenaEtcher-2.1.1.Setup.exe#/dl.7z",
+    "hash": "67bf8d61f0f8c05d3c11b866e3b02b9d1445e6ec7a4f23ff77e8622a8c95d213",
+    "pre_install": [
+        "Get-Item \"$dir\\balena_etcher*.nupkg\" | Rename-Item -NewName 'balenaetcher.nupkg'",
+        "Expand-7zipArchive \"$dir\\balenaetcher.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+        "Remove-Item \"$dir\\lib\", \"$dir\\background.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\setupIcon.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\balena-etcher\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\balena-etcher\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
     "shortcuts": [
         [
             "balenaEtcher.exe",
@@ -12,12 +29,11 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/balena-io/etcher"
+        "url": "https://api.github.com/repos/balena-io/etcher/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "(?<file>balenaEtcher(?:-Setup)?-([\\d.]+)(?:.Setup)?\\.exe)"
     },
     "autoupdate": {
-        "url": "https://github.com/balena-io/etcher/releases/download/v$version/balenaEtcher-win32-x64-$version.zip",
-        "hash": {
-            "url": "$baseurl/SHA256SUMS.Windows.x64.txt"
-        }
+        "url": "https://github.com/balena-io/etcher/releases/download/v$version/$matchFile#/dl.7z"
     }
 }
