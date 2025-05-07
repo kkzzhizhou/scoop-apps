@@ -1,21 +1,25 @@
 {
-    "version": "2025.04.0-250",
-    "description": "A next-generation data science IDE",
-    "homepage": "https://positron.posit.co",
+    "version": "2025.05.0-142",
+    "description": "Positron, a next-generation data science IDE.",
+    "homepage": "https://github.com/posit-dev/positron",
     "license": "Elastic-2.0",
-    "suggest": {
-        "R": "r",
-        "Python": "python"
+    "url": "https://cdn.posit.co/positron/dailies/win/x86_64/Positron-2025.05.0-142-UserSetup.exe",
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/DIR=$dir",
+            "/NORESTART",
+            "/TASKS=\"\""
+        ]
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://cdn.posit.co/positron/prereleases/win/x86_64/Positron-2025.04.0-250-UserSetup.exe",
-            "hash": "5f0c529a6e804829c6c65d6c77e9e005c6bc7e516dea455180b36a053d2f975f",
-            "extract_dir": "{code_GetDestDir}"
-        }
-    },
-    "innosetup": true,
     "bin": "bin/positron.cmd",
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/NORESTART"
+        ]
+    },
     "shortcuts": [
         [
             "Positron.exe",
@@ -23,18 +27,25 @@
         ]
     ],
     "checkver": {
-        "url": "https://cdn.posit.co/positron/prereleases/win/x86_64/user-releases.json",
-        "jsonpath": "$.version"
+        "url": "https://positron.posit.co/download.html",
+        "regex": "Positron-(\\d+\\.\\d+\\.\\d+-\\d+)-UserSetup.exe"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://cdn.posit.co/positron/prereleases/win/x86_64/Positron-$version-UserSetup.exe",
-                "hash": {
-                    "url": "$baseurl/user-releases.json",
-                    "jsonpath": "$.sha256hash"
-                }
-            }
-        }
-    }
+        "url": "https://cdn.posit.co/positron/dailies/win/x86_64/Positron-$version-UserSetup.exe"
+    },
+    "notes": [
+        "Please review Positron's license agreement (https://github.com/posit-dev/positron?tab=License-1-ov-file#readme).",
+        "Your acceptance of this license agreement is required as a condition to proceeding with your use of the software."
+    ],
+    "post_install": [
+        "if (Test-Path $(appdir positron-prerelease)) { ",
+        "Write-Host -ForegroundColor DarkGreen \"",
+        "NOTES",
+        "-----",
+        "+ You already had a prelease version of Positron installed with scoop.",
+        "+ Following this installation, 'quarto' will point to the stable version",
+        "  + Use 'scoop reset positron-prerelease' to switch back to pre-release version.",
+        "  + Use 'scoop reset positron' after that to activate the stable version",
+        "\"}"
+    ]
 }
