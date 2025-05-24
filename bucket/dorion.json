@@ -1,5 +1,5 @@
 {
-    "version": "6.7.0",
+    "version": "6.7.1",
     "description": "Tiny alternative Discord client with a smaller footprint, themes and plugins, multi-profile, and more!",
     "homepage": "https://github.com/SpikeHD/Dorion",
     "license": {
@@ -8,45 +8,38 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.7.0/Dorion_6.7.0_win64_portable.zip",
-            "hash": "fdd6b61de123993cc564a980447afbc1b904308401fedfab8cb321455341273d"
+            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.7.1/Dorion_6.7.1_win64_portable.zip",
+            "hash": "08dc1479be3b459068271624127aa8ec629f4d1054e3f584d96a713636d14c4b"
         },
         "arm64": {
-            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.7.0/Dorion_6.7.0_win_arm64_portable.zip",
-            "hash": "47a94709b3cc5b57f34b2c83d43f1d9c62b92b753e29f498a8df6db554f27604"
+            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.7.1/Dorion_6.7.1_win_arm64_portable.zip",
+            "hash": "3e4fcbf610f895923b2b485e9a2c7a55ef53c5b1310701279588c32a30ed2a10"
         }
     },
     "pre_install": [
-        "if (Test-Path -Path $persist_dir) {",
-        "   if (-not (Test-Path -Path (Join-Path $persist_dir 'config.json'))) {",
-        "       New-Item -Path (Join-Path $persist_dir 'config.json')",
-        "   }",
-        "} else {",
-        "   New-Item -Path $persist_dir -ItemType Directory",
-        "   New-Item -Path (Join-Path $persist_dir 'config.json')",
+        "$files = @('config.json', 'detectables.json')",
+        "if (-not (Test-Path -Path $persist_dir)) {",
+        "    New-Item -Path $persist_dir -ItemType Directory",
+        "}",
+        "foreach ($file in $files) {",
+        "    if (-not (Test-Path -Path (Join-Path $persist_dir $file))) {",
+        "        New-Item -Path (Join-Path $persist_dir $file)",
+        "    }",
         "}"
     ],
     "post_install": [
-        "$sourceFolders, $foldersToMove = @(\"~\\dorion\", \"$env:APPDATA\\dorion\"), @(\"plugins\", \"themes\", \"profiles\")",
+        "$sourceFolders = @(\"~\\dorion\", \"$env:APPDATA\\dorion\")",
         "$canMoveFolders = $false",
         "foreach ($sourceFolder in $sourceFolders) {",
-        "    foreach ($folderToMove in $foldersToMove) {",
-        "        If (Test-Path -Path \"$sourceFolder\\$folderToMove\") {$canMoveFolders = $true; break}",
-        "    }",
+        "    If (Test-Path -Path \"$sourceFolder\\*\") {$canMoveFolders = $true; break}",
         "}",
         "If ($canMoveFolders) {",
-        "    $confirm = Read-Host -Prompt \"Do you want to move the data folders to '$dir'? (Y/N)\"",
-        "    If ($confirm -eq \"Y\") {",
+        "    $confirm = Read-Host -Prompt \"Do you want to move the current data to '$persist_dir'? (Y/N)\"",
+        "    If ($confirm.ToUpper() -eq \"Y\") {",
         "        foreach ($sourceFolder in $sourceFolders) {",
         "            If (Test-Path -Path \"$sourceFolder\") {",
-        "                foreach ($folderToMove in $foldersToMove) {",
-        "                    If (Test-Path -Path \"$sourceFolder\\$folderToMove\") {Move-Item -Path \"$sourceFolder\\$folderToMove\\*\" -Destination \"$dir\\$folderToMove\" -Force}",
-        "                }",
-        "                Get-ChildItem $sourceFolder -Recurse -Force -Directory | ",
-        "                    Sort-Object -Property FullName -Descending |",
-        "                    Where-Object { $($_ | Get-ChildItem -Force | Select-Object -First 1).Count -eq 0 } |",
-        "                    Remove-Item -Force",
-        "                If ((Get-ChildItem -Path \"$sourceFolder\" -Force | Measure-Object).Count -eq 0) {Remove-Item \"$sourceFolder\" -Force}",
+        "                If (Test-Path -Path \"$sourceFolder\") {Move-Item -Path \"$sourceFolder\\*\" -Destination \"$persist_dir\" -Force}",
+        "                Remove-Item \"$sourceFolder\" -Force -Recurse",
         "            }",
         "        }",
         "    }",
@@ -55,9 +48,12 @@
     ],
     "persist": [
         "config.json",
+        "detectables.json",
         "plugins",
+        "logs",
         "themes",
-        "profiles"
+        "profiles",
+        "extensions"
     ],
     "checkver": "github",
     "autoupdate": {
