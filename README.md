@@ -106,10 +106,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ygguorun/scoop-bucket
 - brian6932/dank-scoop
 - kengwang/scoop-ctftools-bucket
+- iquiw/scoop-bucket
 - batkiz/backit
 - TianXiaTech/scoop-txt
 - Darkatse/Scoop-Darkatse
-- iquiw/scoop-bucket
 - SayCV/scoop-cvp
 - AStupidBear/scoop-bear
 - seumsc/scoop-seu
@@ -121,8 +121,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - starise/Scoop-Gaming
 - mo-san/scoop-bucket
 - HUMORCE/nuke
-- babo4d/scoop-xrtools
 - Weidows-projects/scoop-3rd
+- babo4d/scoop-xrtools
 - Toddli468/Pentest-Scoop-Bucket
 - rivy/scoop-bucket
 - beer-psi/scoop-bucket
