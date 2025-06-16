@@ -121,14 +121,14 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - starise/Scoop-Gaming
 - mo-san/scoop-bucket
 - HUMORCE/nuke
-- babo4d/scoop-xrtools
 - Weidows-projects/scoop-3rd
+- babo4d/scoop-xrtools
 - Toddli468/Pentest-Scoop-Bucket
 - rivy/scoop-bucket
-- KnotUntied/scoop-fonts
-- WinApps-share/WinApps-bucket
 - beer-psi/scoop-bucket
 - littleli/Scoop-littleli
+- WinApps-share/WinApps-bucket
+- KnotUntied/scoop-fonts
 - AkariiinMKII/Scoop4kariiin
 - ChinLong/scoop-customize
 - yuusakuri/scoop-bucket

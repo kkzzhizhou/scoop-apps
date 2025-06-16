@@ -5,7 +5,7 @@
     "license": "GPL-3.0-only",
     "depends": "xray",
     "suggest": {
-        ".NET Desktop Runtime": "windowsdesktop-runtime-lts",
+        ".NET Desktop Runtime": "extras/windowsdesktop-runtime-lts",
         "v2fly-core": "v2ray"
     },
     "architecture": {
@@ -21,6 +21,7 @@
         }
     },
     "pre_install": [
+        "if (!(Test-Path \"$dir\\bin\\Xray\")) { New-Item \"$dir\\bin\\Xray\" -ItemType Directory | Out-Null }",
         "foreach ($form in @('*.exe', '*.dat')) {",
         "    foreach ($_ in Get-ChildItem \"$(appdir xray $global)\\current\" -File) {",
         "        $name = $_.Name",
@@ -39,17 +40,7 @@
         ]
     ],
     "persist": "guiConfigs",
-    "uninstaller": {
-        "script": [
-            "if (Test-Path \"$dir\\guiConfigs\\config.json\") {",
-            "    Copy-Item \"$dir\\guiConfigs\\config.json\" \"$persist_dir\\guiConfigs\\config.json\" | Out-Null",
-            "}"
-        ]
-    },
-    "checkver": {
-        "url": "https://api.github.com/repos/2dust/v2rayN/releases?per_page=1",
-        "jsonpath": "$[0].tag_name"
-    },
+    "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
