@@ -1,28 +1,28 @@
 {
-    "version": "0.0.879+5bf8a69.11052181225",
+    "version": "2025.06.20-09837ae",
     "description": "Fast and multi-platform Spotify client with native GUI",
     "homepage": "https://github.com/jpochyla/psst",
     "license": {
         "identifier": "MIT",
         "url": "https://github.com/jpochyla/psst/blob/master/LICENSE.md"
     },
-    "url": "https://nightly.link/jpochyla/psst/actions/runs/11052181225/Psst.exe.zip",
-    "hash": "4654e5a8c29a7daec8b79bd9d7affccc5ecfb0b061d5d8c2e8c2ae61fb8ae4a9",
+    "url": "https://github.com/jpochyla/psst/releases/download/rolling/Psst-2025.06.20-09837ae.exe#/psst.exe",
+    "hash": "01f73777f02590a9a178682d5ba4c63b39dba38b1a69b81502fd410c17cb94e3",
     "checkver": {
         "script": [
-            "$actions = Invoke-RestMethod -Uri 'https://api.github.com/repos/jpochyla/psst/actions/workflows/build.yml/runs'",
-            "$latest_develop = $actions.workflow_runs.PSObject.Properties.Value | Where-Object { $_.head_branch -eq 'master' } | Where-Object { $_.conclusion -eq 'success' } | Select-Object -first 1",
-            "$version = '0.0.' + $latest_develop.run_number + '+' + $latest_develop.head_sha.substring(0,7) + '.' + $latest_develop.id",
-            "Write-Output $version $latest_develop.id"
+            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/jpochyla/psst/releases'",
+            "$latest_rel = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "$latest_exe = $latest_rel.assets | Where-Object {$_.name.EndsWith(\".exe\")} | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "Write-Output $latest_exe.name $latest_exe.browser_download_url"
         ],
-        "regex": "(?<version>[^\\s]+)\\s(?<id>\\d+)"
+        "regex": "Psst-(?<version>.+)\\.exe\\s+(?<url>[^\\s]+)"
     },
     "autoupdate": {
-        "url": "https://nightly.link/jpochyla/psst/actions/runs/$matchId/Psst.exe.zip"
+        "url": "$matchUrl#/psst.exe"
     },
     "shortcuts": [
         [
-            "psst-gui.exe",
+            "psst.exe",
             "Psst"
         ]
     ]
