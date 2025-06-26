@@ -1,18 +1,53 @@
 {
-    "version": "8.4.0",
-    "description": "for CUDA 11.x",
-    "notes": [
-        "由于API需要验证,所以会下载失败;",
-        "需要手动下载安装包并改名为 cudnn#8.4.0#https_cudnn_dl.zip 然后移动到 scoop/cache"
+    "version": "8.3.0.98",
+    "description": "NVIDIA CUDA Deep Neural Network (cuDNN) is a GPU-accelerated library of primitives for deep neural networks.",
+    "homepage": "https://developer.nvidia.com/rdp/cudnn-download",
+    "depends": [
+        "cuda",
+        "sudo"
     ],
-    "homepage": "https://developer.nvidia.com/rdp/cudnn-archive",
-    "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://cudnn#/dl.zip",
-            "hash": "9885484D4F3DC8C25C6674225751BD0AF1C80FBB2A77227D1439B917EC16EC92",
-            "extract_dir": "cudnn-windows-x86_64-8.4.0.27_cuda11.6-archive"
+            "url": "http://developer.download.nvidia.com/compute/redist/cudnn/v8.3.0/cudnn-10.2-windows10-x64-v8.3.0.98.zip",
+            "hash": "61c80fbdb410c32c2d5d69085a25232e59725d91792fa02e151ed0526dd6481a"
         }
     },
-    "env_add_path": ["bin"]
+    "extract_dir": "cuda",
+    "installer": {
+        "script": [
+            "if (!$env:CUDA_PATH) {",
+            "    Write-Error \"Environment variable 'CUDA_PATH' not found.\"",
+            "    return",
+            "}",
+            "sudo Copy-Item -LiteralPath (Get-ChildItem -LiteralPath $dir).FullName -Destination $env:CUDA_PATH -Recurse -Force"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!$env:CUDA_PATH) {",
+            "    Write-Error \"Environment variable 'CUDA_PATH' not found.\"",
+            "    return",
+            "}",
+            "$cudnnFiles = Get-ChildItem -LiteralPath $env:CUDA_PATH -File -Recurse | Where-Object {",
+            "    $_.Name -like 'cudnn64.*.dll' -or",
+            "    $_.Name -like 'cudnn.h' -or",
+            "    $_.Name -like 'cudnn.lib'",
+            "}",
+            "sudo Remove-Item -LiteralPath $cudnnFiles -Force"
+        ]
+    },
+    "checkver": {
+        "url": "https://developer.nvidia.com/rdp/cudnn-archive",
+        "regex": "cudnn-(?<cudaversion>[\\d.]+)-windows10-x64-v([\\d.]+)\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "http://developer.download.nvidia.com/compute/redist/cudnn/v$matchHead/cudnn-$matchCudaversion-windows10-x64-v$version.zip",
+                "hash": {
+                    "url": "$url.sha256"
+                }
+            }
+        }
+    }
 }
