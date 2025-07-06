@@ -1,0 +1,54 @@
+{
+    "version": "3.6.1",
+    "description": "A library for network packet interception and manipulation, suitable for custom firewall, VPN and traffic analysis applications.",
+    "homepage": "https://github.com/wiresock/ndisapi",
+    "license": "MIT",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/wiresock/ndisapi/releases/download/v3.6.1/Windows.Packet.Filter.3.6.1.1.x86.msi",
+            "hash": "187447dbcc5e3e8f8ff8d369659f6d2e8fbdf4c8f808af8106ba516de340c961",
+            "extract_dir": "PFiles\\Windows Packet Filter"
+        },
+        "64bit": {
+            "url": "https://github.com/wiresock/ndisapi/releases/download/v3.6.1/Windows.Packet.Filter.3.6.1.1.x64.msi",
+            "hash": "cc41c7c9a7a03bd83cd39e1a1a0e5b9256a11d1a31c21809dcae8a5dd6658c27",
+            "extract_dir": "PFiles64\\Windows Packet Filter"
+        },
+        "arm64": {
+            "url": "https://github.com/wiresock/ndisapi/releases/download/v3.6.1/Windows.Packet.Filter.3.6.1.1.ARM64.msi",
+            "hash": "034f3c9a7d8ee332faa2d3e9d1f388f4cc7a853ef70fd4266f9926436e97ae11",
+            "extract_dir": "PFiles64\\Windows Packet Filter"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { throw 'Administrator privileges are required' }",
+        "certutil.exe -addstore -f \"TrustedPublisher\" \"$dir\\certificates\\sha256\\cert_ip.cer\"",
+        "$os = [Version]::new((Get-CimInstance Win32_OperatingSystem).Version)",
+        "if ($os.Major -ge 10) { $drivers = \"$dir\\drivers\\win10\" }",
+        "elseif ($os.Major -ge 6 -and $os.Minor -ge 2) { $drivers = \"$dir\\drivers\\win8\" }",
+        "elseif ($os.Major -ge 6 -and $os.Minor -ge 1) { $drivers = \"$dir\\drivers\\win7\" }",
+        "else { $drivers = \"$dir\\drivers\\vista\" }",
+        "netcfg.exe -v -l \"$drivers\\ndisrd_lwf.inf\" -c s -i nt_ndisrd",
+        "REG ADD 'HKLM\\Software\\NTKernelResources\\WinpkFilter' /f > nul;",
+        "Set-ItemProperty -Path 'HKLM:\\Software\\NTKernelResources\\WinpkFilter' -Name 'InstallLocation' -Value \"$dir\";"
+    ],
+    "pre_uninstall": [
+        "REG DELETE HKLM\\Software\\NTKernelResources\\WinpkFilter /f > nul;",
+        "netcfg.exe -v -u nt_ndisrd",
+        "certutil.exe -delstore \"TrustedPublisher\" ((certutil.exe -hashfile \"$dir\\certificates\\sha256\\cert_ip.cer\" SHA1) -match '^[0-9A-F]{40}$')"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/wiresock/ndisapi/releases/download/v$version/Windows.Packet.Filter.$version.1.x86.msi"
+            },
+            "64bit": {
+                "url": "https://github.com/wiresock/ndisapi/releases/download/v$version/Windows.Packet.Filter.$version.1.x64.msi"
+            },
+            "arm64": {
+                "url": "https://github.com/wiresock/ndisapi/releases/download/v$version/Windows.Packet.Filter.$version.1.ARM64.msi"
+            }
+        }
+    }
+}

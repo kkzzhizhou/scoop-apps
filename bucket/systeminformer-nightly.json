@@ -1,24 +1,24 @@
 {
-    "version": "3.2.25180.1655",
-    "description": "Originally called Process Hacker, A powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
-    "homepage": "https://processhacker.sourceforge.io/nightly.php",
-    "license": "GPL-3.0-only",
-    "url": "https://github.com/winsiderss/si-builds/releases/download/3.2.25180.1655/systeminformer-3.2.25180.1655-bin.zip",
-    "hash": "65f336ca5c9e7001449ea34f035bc9263f997112f1e87bfc59a44ae8cd5bceae",
+    "version": "3.2.25186.1619",
+    "description": "A powerful, multi-purpose tool that helps you monitor system resources, debug software and detect malware.",
+    "homepage": "https://systeminformer.sourceforge.io",
+    "license": "MIT",
+    "url": "https://github.com/winsiderss/si-builds/releases/download/3.2.25186.1619/systeminformer-3.2.25186.1619-bin.zip",
+    "hash": "126f7d66fe9409adeb4aa5e338f2956d702f21afbe305b16561a1bbbfd1fbf88",
     "architecture": {
-        "64bit": {
-            "extract_dir": "amd64"
-        },
         "32bit": {
             "extract_dir": "i386"
+        },
+        "64bit": {
+            "extract_dir": "amd64"
         },
         "arm64": {
             "extract_dir": "arm64"
         }
     },
-    "bin": [
-        "SystemInformer.exe",
-        "peview.exe"
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object { Copy-Item \"$persist_dir\\$_\" \"$dir\\$_\" -ErrorAction 'SilentlyContinue' }"
     ],
     "shortcuts": [
         [
@@ -26,13 +26,24 @@
             "System Informer"
         ]
     ],
-    "persist": "SystemInformer.exe.settings.xml",
+    "post_install": [
+        "# Clear icon GUIDs",
+        "$settings = Get-ChildItem \"$dir\\SystemInformer.exe.settings.xml\"",
+        "$settingsXml = [xml](Get-Content $settings)",
+        "if ($settingsXml.settings -eq $null) { return }",
+        "($settingsXml.settings.ChildNodes | Where-Object { $_.name.Contains(\"IconGuids\") }) | ForEach-Object { [void]$_.ParentNode.RemoveChild($_) }",
+        "$settingsXml.Save($settings)"
+    ],
+    "pre_uninstall": "'SystemInformer.exe.settings.xml', 'usernotesdb.xml' | ForEach-Object { Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -ErrorAction 'SilentlyContinue' }",
     "checkver": {
-        "url": "https://api.github.com/repos/winsiderss/si-builds/releases",
-        "jsonpath": "$..name",
-        "regex": "([\\d.]+)"
+        "url": "https://systeminformer.sourceforge.io/canary",
+        "regex": "systeminformer-([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/winsiderss/si-builds/releases/download/$version/systeminformer-$version-bin.zip"
+        "url": "https://github.com/winsiderss/si-builds/releases/download/$version/systeminformer-$version-bin.zip",
+        "hash": {
+            "url": "https://systeminformer.sourceforge.io/canary",
+            "regex": "(?s)Binaries.*SHA-256.*?$sha256"
+        }
     }
 }
