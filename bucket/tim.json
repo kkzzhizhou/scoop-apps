@@ -1,30 +1,38 @@
 {
     "version": "3.5.0.22143",
-    "description": "tencent TIM, lightweight alternative to QQ",
+    "description": "Tencent TIM, lightweight alternative to QQ",
     "homepage": "https://office.qq.com/",
     "license": {
         "identifier": "Unknown",
         "url": "http://play.mobile.qq.com/yy/eim/help/serverinfo.html"
     },
-    "url": "http://dldir1.qq.com/qqfile/qq/TIM3.5.0/TIM3.5.0.22143.exe#/TimSetup.exe",
+    "url": "http://dldir1.qq.com/qqfile/qq/TIM3.5.0/TIM3.5.0.22143.exe#/dl.7z",
     "hash": "4143f88baa26d4e61b0380eb917d20918f64b4b7a86e93c39cbf08ff841934e1",
-    "installer": {
-        "script": [
-            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TimSetup.exe`\" -s\" -Verb RunAs",
-            "Remove-Item \"$dir\\TimSetup.exe\""
+    "pre_install": [
+        "if (Test-Path \"$env:AppData\\Tencent\\Tim\") {",
+        "    info '[Persistent data]: Copying user data...'",
+        "    ensure \"$dir\\User Data\" | Out-Null",
+        "    Copy-Item \"$env:AppData\\Tencent\\Tim\\*\" \"$dir\\User Data\\\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+        "    Remove-Item \"$env:AppData\\Tencent\\Tim\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+        "}",
+        "Move-Item \"$dir\\Files\\*\" \"$dir\\\""
+    ],
+    "post_install": "Remove-Item \"$dir\\Application Data\", \"$dir\\Common\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+    "shortcuts": [
+        [
+            "Bin\\QQScLauncher.exe",
+            "Tim",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
-    },
-    "post_install": "Copy-Item -Path \"C:\\Program Files (x86)\\Tencent\\TIM\\TIMUninst.exe\" \"$dir\\TIMUninst.exe\"",
-    "uninstaller": {
-        "script": "Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\TIMUninst.exe`\" -s\" -Verb RunAs"
-    },
+    ],
+    "persist": "User Data",
     "checkver": {
         "url": "https://im.qq.com/rainbow/TIMDownload/",
         "regex": "\"pcLink\":\"https?://dldir1\\.qq\\.com/qqfile/qq(?<extra>.*)/TIM(?<main>\\d+\\.\\d+\\.\\d+)/TIM.*\\.(?<patch>\\d+)\\.exe",
         "replace": "${main}.${patch}"
     },
     "autoupdate": {
-        "url": "http://dldir1.qq.com/qqfile/qq$matchExtra/TIM$matchMain/TIM$version.exe#/TimSetup.exe",
+        "url": "http://dldir1.qq.com/qqfile/qq$matchExtra/TIM$matchMain/TIM$version.exe#/dl.7z",
         "hash": {
             "mode": "download"
         }
