@@ -1,22 +1,53 @@
 {
-    "version": "11.0.0",
-    "description": "Free and easy to use PDF solution with many features",
-    "homepage": "https://tools.pdf24.org/creator",
-    "license": "Freeware",
-    "url": "https://stx.pdf24.org/products/pdf-creator/download/pdf24-creator-11.0.0.msi",
-    "hash": "9e0aec96665122349fe590888a919151d121024320ab8991b557082bd5893c35",
-    "extract_dir": "Program Files/PDF24",
-    "pre_install": [
-        ""
+    "version": "11.27.0",
+    "homepage": "https://tools.pdf24.org/en/creator",
+    "description": "Free and easy to use PDF software with several functions",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.pdf24.org/en/terms-of-use"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download.pdf24.org/pdf24-creator-11.27.0-x64.msi#/setup.msi_",
+            "hash": "9f783e323bbb4eb5e070e5f0e5093a8657455f52a8c368f7ba3e56e83f28637d"
+        },
+        "32bit": {
+            "url": "https://download.pdf24.org/pdf24-creator-11.27.0-x86.msi#/setup.msi_",
+            "hash": "667fce28fa135e025975643fd0c91a928b991bfca9304ec4494ec9f46a82d045"
+        },
+        "arm64": {
+            "url": "https://download.pdf24.org/pdf24-creator-11.27.0-arm64.msi#/setup.msi_",
+            "hash": "2481f18878f54edd5c9734839bff73a8e20d1371aac1bbd01ee4a09d98f287ec"
+        }
+    },
+    "post_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Write-Host \"Please wait and don't cancel the script...\" -F 'Yellow'",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn', \"INSTALLDIR=$dir\", \"TARGETDIR=$dir\")",
+        "Stop-Service -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'; Stop-Process -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'"
     ],
-    "shortcuts": [
-        [
-            "pdf24.exe",
-            "pdf24"
-        ]
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Stop-Service -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'; Stop-Process -Name 'pdf24' -Force -ErrorAction 'SilentlyContinue'",
+        "Write-Host \"Please wait and don't cancel the script...\" -F 'Yellow'",
+        "Start-Process 'msiexec' -Wait -Verb 'RunAs' -WindowStyle 'Hidden' -ArgumentList @('/x', \"$dir\\setup.msi_\", '/qn')"
     ],
-    "checkver": "\"softwareVersion\": \"([\\d.]+)\"",
+    "checkver": "Version\\s([\\d.]+)",
     "autoupdate": {
-        "url": "https://stx.pdf24.org/products/pdf-creator/download/pdf24-creator-11.0.0.msi"
+        "architecture": {
+            "64bit": {
+                "url": "https://download.pdf24.org/pdf24-creator-$version-x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://download.pdf24.org/pdf24-creator-$version-x86.msi#/setup.msi_"
+            },
+            "arm64": {
+                "url": "https://download.pdf24.org/pdf24-creator-$version-arm64.msi#/setup.msi_"
+            }
+        },
+        "hash": {
+            "url": "https://creator.pdf24.org/listVersions.php",
+            "regex": "$basename</a></td>\\n<td>$sha256"
+        }
     }
 }
