@@ -1,0 +1,36 @@
+{
+    "homepage": "https://bitsum.com/",
+    "description": "Real-Time CPU Optimization and Automation",
+    "version": "16.0.0-beta+rel.08.07.2025",
+    "license": "Freemium",
+    "url": "https://dl.bitsum.com/files/beta/processlassosetup64.exe#/dl.7z",
+    "hash": "18840fae1ca4c522298126b3741168c1ccdba37ff5196f3805381a41e0aad155",
+    "extract_to": "Process Lasso",
+    "shortcuts": [
+        [
+            "Process Lasso/ProcessLassoLauncher.exe",
+            "Process Lasso"
+        ]
+    ],
+    "persist": [
+        "Process Lasso/config",
+        "Process Lasso/logs"
+    ],
+    "installer": {
+        "script": "Remove-Item \"$dir/Process Lasso/`$PLUGINSDIR\" -Recurse"
+    },
+    "checkver": {
+        "script": [
+            "$changes = Invoke-WebRequest -Uri 'https://bitsum.com/changes/processlasso'",
+            "$latest_vers = $changes.Links | ForEach-Object {$_.outerHTML | Select-String \"([\\d.]+[^-]+) - ([^<]+)\"}",
+            "$latest = $latest_vers | Sort-Object {Get-Date $_.Matches.Groups[2].Value} | Select-Object -last 1",
+            "$semver = \"$($latest.Matches.Groups[1].Value.ToLower() -replace \"\\s\", \"-\")+rel.$(Get-Date $latest.Matches.Groups[2].Value -Format \"dd.MM.yyyy\")\"",
+            "$url_segment = If ($semver -match 'beta') {'beta/'} Else {''}",
+            "Write-Output $url_segment $semver"
+        ],
+        "regex": "(?<url>[\\w/]*)\\s(?<version>[\\d\\w\\.\\-\\+]+)"
+    },
+    "autoupdate": {
+        "url": "https://dl.bitsum.com/files/$matchUrlprocesslassosetup64.exe#/dl.7z"
+    }
+}
