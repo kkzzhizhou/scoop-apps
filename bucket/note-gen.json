@@ -1,0 +1,60 @@
+{
+    "version": "0.19.3",
+    "description": "A cross-platform Markdown note-taking application dedicated to using AI to bridge recording and writing, organizing fragmented knowledge into a readable note.",
+    "homepage": "https://notegen.top/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/codexu/note-gen#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/codexu/note-gen/releases/download/note-gen-v0.19.3/NoteGen_0.19.3_x64-setup.exe#/dl.7z",
+            "hash": "2f319aa8a0f66b9dfcb8887e807524a116450611d3d91bb60c1cd7c3f878d0c8",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\icons\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.codexu.NoteGen\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.codexu.NoteGen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.codexu.NoteGen\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.codexu.NoteGen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "note-gen.exe",
+            "NoteGen"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "note-gen.exe",
+            "NoteGen"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/codexu/note-gen/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/note-gen-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/codexu/note-gen/releases/download/note-gen-v$version/NoteGen_$version_x64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.json"
+        }
+    }
+}
