@@ -1,17 +1,19 @@
 {
     "##": "QQ音乐",
-    "version": "21.45.0",
+    "version": "21.61",
     "description": "[QQ音乐] - 一款带有精彩音乐推荐功能的播放器，是国内内容丰富之一的音乐平台",
     "homepage": "https://y.qq.com",
     "license": {
         "identifier": "Proprietary",
         "url": "http://y.qq.com/y/static/tips/service_tips.html"
     },
-    "hash": "a9336bc2f1f1c0dba8e1ddef11b6d544a05dc2a45c15fadb851bf93cb073ee77",
-    "url": "https://dldir1v6.qq.com/music/clntupate/QQMusic_Setup_2145.exe#/dl.7z",
-    "post_install": "Copy-Item \"$dir\\QQMusic.tpc\" \"$dir\\instok\"",
+    "hash": "950572828b56351f2342924b7ebfb395af046e0a09770836a0d181364ffad33b",
+    "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_2161.exe&sign=1-c630686be67e75b88b06d2e82e16f8ba7097ab138acb5a4aac811db4c8dcd4b7-686b921a#/dl.7z",
     "installer": {
         "script": [
+            "# simulate instok check",
+            "$helperScript = $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/qqmusic/instok)",
+            "Copy-Item -Path $helperScript -Destination $dir",
             "# handle runtime cache",
             "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
             "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
@@ -25,10 +27,6 @@
             "Remove-Module -Name AppsUtils"
         ]
     },
-    "checkver": {
-        "url": "https://y.qq.com/download/download.html",
-        "regex": "Windows PC.*\\:([\\d.]+)"
-    },
     "bin": "QQMusic.exe",
     "shortcuts": [
         [
@@ -36,7 +34,18 @@
             "QQ音乐"
         ]
     ],
+    "persist": "Plugins",
+    "checkver": {
+        "script": [
+            "$api = 'https://u6.y.qq.com/cgi-bin/musicu.fcg'",
+            "$body = '{\"comm\":{\"ct\":\"19\",\"cv\":\"2022\",\"tmeAppID\":\"qqmusic\"},\"platform.uniteUpdate.UniteUpdateSvr.QueryUpdate\":{\"method\":\"QueryUpdate\",\"module\":\"platform.uniteUpdate.UniteUpdateSvr\",\"param\":{\"chid\":\"1001\",\"osVer\":1}}}'",
+            "$Response = (Invoke-RestMethod $api -Method POST -Body $body) | ConvertTo-Json -Compress",
+            "return $Response"
+        ],
+        "regex": "QQMusic_Setup_(?<version>(?<major>\\d{2})(?<minor>\\d{2})).exe",
+        "replace": "${major}.${minor}"
+    },
     "autoupdate": {
-        "url": "https://dldir1v6.qq.com/music/clntupate/QQMusic_Setup_$majorVersion$minorVersion.exe#/dl.7z"
+        "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_$cleanVersion.exe&sign=1-c630686be67e75b88b06d2e82e16f8ba7097ab138acb5a4aac811db4c8dcd4b7-686b921a#/dl.7z"
     }
 }

@@ -1,22 +1,37 @@
 {
-    "version": "6-beta",
-    "description": "This is the first beta of Listary 6. It is completely rewritten from scratch and takes much longer than expected, but it’s well worth the wait.",
+    "version": "6.0.5.16",
+    "description": "A revolutionary search utility (beta)",
     "homepage": "https://www.listary.com/beta",
+    "license": "Freeware",
+    "notes": "We don't persist your Listary data, they are still storaged in \"$env:APPDATA\\Listary\".",
     "url": "https://www.listary.com/download/beta/listary6/ListaryInstaller.exe",
-    "hash": "",
+    "hash": "5baf39cd63e1d07784f8614fe0ec79fbc1f5ba2f4f8a91d0f2b55b24d493a250",
+    "innosetup": true,
     "installer": {
-        "script": "Start-Process \"$dir\\ListaryInstaller.exe\" -ArgumentList \"/SILENT\" -Verb runas"
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    exit 1",
+            "}",
+            "New-Service -Name ListaryServiceV2 -BinaryPathName \"$dir\\Listary.Service.exe\" -StartupType Automatic",
+            "$WshShell = New-Object -comObject WScript.Shell",
+            "$Shortcut = $WshShell.CreateShortcut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\")",
+            "$Shortcut.TargetPath = \"$dir\\Listary.exe\"",
+            "$Shortcut.Arguments = \"-startup\"",
+            "$Shortcut.Save()"
+        ]
     },
     "uninstaller": {
         "script": [
-            "Get-Process | Where-Object { $_.Name -eq \"Listary\" } | Stop-Process",
-            "$uninstallerPath = \"C:\\Program Files\\Listary\\unins000.exe\"",
-            "if (!(Test-Path -LiteralPath $uninstallerPath -PathType Leaf)) {",
-            "    Write-Warning \"Cannot find path '$uninstallerPath' because it does not exist. The program may have already been uninstalled.\"",
-            "    return",
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
             "}",
-            "",
-            "Start-Process $uninstallerPath -Verb runas -Wait"
+            "Stop-Process -Name Listary",
+            "Stop-Service -Name ListaryServiceV2",
+            "Remove-Service -Name ListaryServiceV2",
+            "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Listary.lnk\""
         ]
-    }
+    },
+    "shortcuts": [["Listary.exe", "Listary"]]
 }
