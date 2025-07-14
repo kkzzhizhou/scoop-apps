@@ -1,49 +1,59 @@
 {
     "version": "0.2.11",
-    "description": "A JPEG XL thumbnail handler for Windows File Explorer.",
+    "description": "A JPEG XL (*.jxl) thumbnail handler for Windows File Explorer.",
     "homepage": "https://github.com/saschanaz/jxl-winthumb",
     "license": "ISC",
     "architecture": {
-        "32bit": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.11/jxl_winthumb_i686.dll#/jxl_winthumb.dll",
-            "hash": "6121b2d109abd3514db18a80ef282aa2ce46a51506ed23bf5be720bdd413b50f"
-        },
         "64bit": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.11/jxl_winthumb_x86_64.dll#/jxl_winthumb.dll",
-            "hash": "5a1161f1f16c3e50d3bf2fb29eb3a529238b051530a429dcee405a45da6f5dc8"
+            "url": [
+                "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.11/jxl_winthumb_x86_64.dll",
+                "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.5/jxl_winthumb_32.dll"
+            ],
+            "hash": [
+                "5a1161f1f16c3e50d3bf2fb29eb3a529238b051530a429dcee405a45da6f5dc8",
+                "584526c33334dd68f6e5efa549da656968fdeeb0197355a7a61e665627777bca"
+            ]
         },
-        "arm64": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.11/jxl_winthumb_aarch64.dll#/jxl_winthumb.dll",
-            "hash": "99eedc7d8a249d17ebfd742c32e9accd2af8f1a81fa020ba50d66f0cabc5f49f"
+        "32bit": {
+            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.11/jxl_winthumb_i686.dll",
+            "hash": "6121b2d109abd3514db18a80ef282aa2ce46a51506ed23bf5be720bdd413b50f"
         }
     },
     "installer": {
         "script": [
-            "if (!(is_admin)) {",
-            "    error \"Administrator rights are required to install $app.\"",
-            "    exit 1",
-            "}",
-            "regsvr32 \"$dir\\jxl_winthumb.dll\""
+            "'aarch64', 'x86_64', 'i686' | foreach {",
+            "    if ( Test-Path $dir\\$_ ) {",
+            "        $Arg = \"/s $dir\\jxl_winthumb_$_.dll\"",
+            "        Start-Process regsvr32.exe -Verb RunAs -ArgumentList $Arg -Wait",
+            "    }",
+            "}"
         ]
     },
-    "pre_uninstall": [
-        "if (!(is_admin)) {",
-        "    error \"Administrator rights are required to uninstall $app.\"",
-        "    exit 1",
-        "}",
-        "regsvr32 /u \"$dir\\jxl_winthumb.dll\""
-    ],
-    "checkver": "github",
+    "uninstaller": {
+        "script": [
+            "'aarch64', 'x86_64', 'i686' | foreach {",
+            "    if ( Test-Path $dir\\$_ ) {",
+            "        $Arg = \"/s /u $dir\\jxl_winthumb_$_.dll\"",
+            "        Start-Process regsvr32.exe -Verb RunAs -ArgumentList $Arg -Wait",
+            "    }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/saschanaz/jxl-winthumb/tags",
+        "jsonpath": "$.[0].name",
+        "regex": "v([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
-            "32bit": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_i686.dll#/jxl_winthumb.dll"
+            "arm64": {
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_aarch64.dll"
             },
             "64bit": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_x86_64.dll#/jxl_winthumb.dll"
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_x86_64.dll"
             },
-            "arm64": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_aarch64.dll#/jxl_winthumb.dll"
+            "32bit": {
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_i686.dll"
             }
         }
     }
