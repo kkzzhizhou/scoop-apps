@@ -1,18 +1,26 @@
 {
-    "version": "11.2.0.11191",
-    "description": "Complete office suite",
-    "homepage": "https://wps.com/zh-hant/",
+    "version": "12.1.0.21915",
+    "description": "WPS Office，让你高效解决办公问题",
+    "homepage": "https://wps.cn/",
     "license": {
         "identifier": "Freeware",
-        "url": "https://wps.com/eula"
+        "url": "https://wps.cn/privacy/full_account/"
     },
-    "url": "https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/11.2.0.11191/500.998/WPSOffice_11.2.0.11191.exe",
-    "hash": "2bc17d20695e2e4862d3fe0c550eecb80265e81311e656e070eea03beb119178",
+    "architecture": {
+        "64bit": {
+            "url": "https://official-package.wpscdn.cn/wps/download/WPS_Setup_21915.exe",
+            "hash": "43d51881e257963504cd6f7251a862e434613b1d825ac5d1c073c6988e8b2af3"
+        }
+    },
     "pre_install": [
-        "Expand-7zipArchive \"$dir\\$fname\" -Switches '-t#'",
-        "Remove-Item \"$dir\\*\" -Exclude '4.7z' -Recurse",
+        "Expand-7zipArchive \"$dir\\$fname\"",
+        "Expand-7zipArchive \"$dir\\`$_11_\\`$EXEFILE\" -Switches '-t#'",
+        "Move-Item \"$dir\\`$_11_\\*.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\*\" -Exclude '4.7z', '2.7z' -Recurse",
+        "Expand-7zipArchive \"$dir\\2.7z\" -ExtractDir 'CONTROL\\office6' -Removal",
         "Expand-7zipArchive \"$dir\\4.7z\" -ExtractDir 'office6' -Removal"
     ],
+    "bin": "wpsoffice.exe",
     "shortcuts": [
         [
             "wpsoffice.exe",
@@ -20,10 +28,10 @@
         ]
     ],
     "checkver": {
-        "url": "https://whatsnew.wps.com/",
-        "regex": "Latest.*?>WPS Office\\s+V([\\d.]+)</"
+        "url": "https://wps.cn/platformUrls",
+        "jsonpath": "$.productDetail.productVcode"
     },
     "autoupdate": {
-        "url": "https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/$version/500.998/WPSOffice_$version.exe"
+        "url": "https://official-package.wpscdn.cn/wps/download/WPS_Setup_$buildVersion.exe"
     }
 }
