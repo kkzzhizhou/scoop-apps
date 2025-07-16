@@ -1,6 +1,6 @@
 {
     "##": "cursor 编辑器",
-    "version": "0.45.14",
+    "version": "1.2.2",
     "description": "Cursor 旨在让您获得非凡的生产力，它是使用 AI 进行编码的最佳方式",
     "license": {
         "identifier": "Proprietary",
@@ -11,28 +11,26 @@
         "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
     ],
-    "url": "https://downloader.cursor.sh/windows/nsis/x64#/dl.7z",
-    "hash": "5888ef88d50cb5a8883dd3f9e41c937b7b22057c4734ef7452731a3f6fd58228",
+    "url": "https://downloads.cursor.com/production/faa03b17cce93e8a80b7d62d57f5eda6bb6ab9fa/win32/x64/user-setup/CursorUserSetup-x64-1.2.2.exe#/dl.7z",
+    "hash": "4a5045d8bf21b5c2f81f76c8d2885d5b831511bc3811bc9d7dbb434e8dd33134",
     "shortcuts": [
         [
             "Cursor.exe",
             "Cursor"
         ]
     ],
-    "persist": "resources/lsp",
     "checkver": {
         "script": [
-            "$downloadUrl = 'https://downloader.cursor.sh/windows/nsis/x64'",
-            "$res = Invoke-WebRequest -Uri $downloadUrl -MaximumRedirection 0 -UseBasicParsing",
-            "$filePath = Join-Path $cachedir $res.Headers['Content-Disposition'].Split('=')[1].TrimStart(\"`\"\").TrimEnd(\"`\"\")",
-            "write-host $filePath",
-            "$version = [regex]::Match($filePath, '([\\d.]+)').Groups[1].Value",
-            "Write-Output $version"
+            "$url = 'https://cursor.com/api/download?platform=win32-x64-user&releaseTrack=stable'",
+            "$res = Invoke-WebRequest -Uri $url -MaximumRedirection 0 -UseBasicParsing",
+            "$json = $res.Content | ConvertFrom-Json",
+            "$str = \"$($json.version)_____$($json.downloadUrl)\"",
+            "Write-Output $str"
         ],
-        "regex": "^([\\d.]+)$"
+        "regex": "^([\\d.]+)_____https://downloads.cursor.com/(?<url>.*?)$"
     },
     "autoupdate": {
-        "url": "https://downloader.cursor.sh/windows/nsis/x64#/dl.7z",
+        "url": "https://downloads.cursor.com/$matchUrl#/dl.7z",
         "hash": {
             "mode": "download"
         }
