@@ -5,24 +5,48 @@
     "license": {
         "identifier": "Freeware"
     },
-    "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/8252f2cf/Feishu-win32_ia32-7.47.5-signed.exe#/dl.7z",
-    "hash": "md5:b7c08a441d40295b8c2ad0caf5c19ccd",
     "shortcuts": [
         [
             "Feishu.exe",
             "飞书"
         ]
     ],
+    "architecture": {
+        "64bit": {
+            "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/42dd146a/Feishu-win32_x64-7.47.5-signed.exe#/dl.7z",
+            "hash": "md5:8b808ad42da76a366544622c77547537"
+        },
+        "32bit": {
+            "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/8252f2cf/Feishu-win32_ia32-7.47.5-signed.exe#/dl.7z",
+            "hash": "md5:b7c08a441d40295b8c2ad0caf5c19ccd"
+        }
+    },
     "checkver": {
-        "url": "https://www.feishu.cn/api/downloads",
-        "jp": "$.versions.Windows.download_link",
-        "regex": "/(?<id>[\\d\\w]+)/Feishu-(?<arch>[\\d\\w]+)-([\\d\\.]+)\\-signed\\.exe"
+        "script": [
+            "$url = 'https://www.feishu.cn/api/downloads'",
+            "$dl = cache_path 'feishu' 'unknown' $url",
+            "Invoke-WebRequest $url -OutFile $dl",
+            "$it = (parse_json $dl).versions[0]",
+            "$it.Windows_x64.download_link + '|' + $it.Windows.download_link"
+        ],
+        "regex": "/(?<xid>[\\d\\w]+)/Feishu-win32_x64.+\\|.+/(?<id>[\\d\\w]+)/Feishu-win32_ia32-([\\d\\.]+)\\-signed\\.exe"
     },
     "autoupdate": {
-        "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId/Feishu-$matchArch-$version-signed.exe#/dl.7z",
-        "hash": {
-            "url": "https://www.feishu.cn/api/downloads",
-            "jp": "$.versions.Windows.hash"
+        "architecture": {
+            "64bit": {
+                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchXid/Feishu-win32_x64-$version-signed.exe#/dl.7z",
+                "hash": {
+                    "url": "https://www.feishu.cn/api/downloads",
+                    "jp": "$.versions.Windows_x64.hash"
+                }
+            },
+            "32bit": {
+                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId/Feishu-win32_ia32-$version-signed.exe#/dl.7z",
+                "hash": {
+                    "url": "https://www.feishu.cn/api/downloads",
+                    "jp": "$.versions.Windows.hash"
+                }
+            }
         }
     }
 }
