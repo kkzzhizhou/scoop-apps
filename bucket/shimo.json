@@ -42,27 +42,27 @@
             "}"
         ]
     },
-    "shortcuts": [
-        [
-            "石墨文档.exe",
-            "石墨文档"
-        ]
-    ],
+    "shortcuts": [["石墨文档.exe", "石墨文档"]],
     "checkver": {
-        "script":[
+        "script": [
             "$timestamp = [DateTimeOffset]::Now.ToUnixTimeMilliseconds()",
             "$response = (Invoke-WebRequest https://oas.shimonote.com/panther/shimo/release/win32/x64/shimo.yml?t=$timestamp).Content | ConvertFrom-Yaml",
             "$path = $response.path",
+            "write-Host $response.sha512",
+            "write-Host \"path: $path\"",
             "if ($path -match '_v((?<version>[\\d+])(?:\\.\\d+)*)-[^\\.]+\\.((?<release>\\w+))') {",
             "   $version = $matches[1]",
             "   $release = $matches[2]",
+            "write-Host \"version: $version; release: $release\"",
             "\"version:$version;\"",
             "\"release:$release;\"",
+            "\"sha512:$($response.sha512);\"",
             "}"
         ],
-        "regex": "version:(?<version>.+?); release:(?<release>.+?);"
+        "regex": "version:(?<version>.+?); release:(?<release>.+?); sha512:(?<sha512>.+?);"
     },
     "autoupdate": {
-        "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/%E7%9F%B3%E5%A2%A8%E6%96%87%E6%A1%A3_v$matchVersion-release.$matchRelease.shimo_win32-x64.exe"
+        "url": "https://oas.shimonote.com/panther/shimo/release/win32/x64/%E7%9F%B3%E5%A2%A8%E6%96%87%E6%A1%A3_v$matchVersion-release.$matchRelease.shimo_win32-x64.exe",
+        "hash": "$matchSha512"
     }
 }
