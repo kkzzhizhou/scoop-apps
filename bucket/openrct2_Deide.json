@@ -1,16 +1,16 @@
 {
     "description": "Open source re-implementation of RollerCoaster Tycoon 2",
     "homepage": "https://github.com/OpenRCT2/OpenRCT2",
-    "version": "0.4.15",
+    "version": "0.4.24",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v0.4.15/OpenRCT2-0.4.15-windows-portable-x64.zip",
-            "hash": "00354d5ae124cf89b2cf1523a393876bc473f011601caa6fa31763136c61665f"
+            "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v0.4.24/OpenRCT2-v0.4.24-windows-portable-x64.zip",
+            "hash": "1b59d7f622279cafc2d9d750a2a5d19a6ef19f2b2389d9d07bdac5faa2f93589"
         },
         "32bit": {
-            "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v0.4.15/OpenRCT2-0.4.15-windows-portable-win32.zip",
-            "hash": "bb719dc1ba429bd11e9846c3c64af62d12484666d0b934a230fe20674b6eae77"
+            "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v0.4.24/OpenRCT2-v0.4.24-windows-portable-win32.zip",
+            "hash": "a0dda0aa3c356bced16e7eb1afbb796f8840dfa571cd20ec2568fbfeb238e48b"
         }
     },
     "bin": "OpenRCT2.exe",
@@ -20,14 +20,34 @@
             "Open RollercCoaster Tycoon 2"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/OpenRCT2/OpenRCT2/releases",
+        "jsonpath": {
+            "version": "$.[0].tag_name",
+            "checksum64": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-x64\\.zip/i)].digest",
+            "download64": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-x64\\.zip/i)].browser_download_url",
+            "checksum32": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-win32\\.zip/i)].digest",
+            "download32": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-win32\\.zip/i)].browser_download_url"
+        },
+        "regex": "v([\\d\\.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v$version/OpenRCT2-$version-windows-portable-x64.zip"
+                "url": "$matchDownload64",
+                "hash": {
+                    "url": "https://api.github.com/repos/OpenRCT2/OpenRCT2/releases",
+                    "jsonpath": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-x64\\.zip/i)].digest",
+                    "regex": "sha256:([\\w\\d]+)"
+                }
             },
             "32bit": {
-                "url": "https://github.com/OpenRCT2/OpenRCT2/releases/download/v$version/OpenRCT2-$version-windows-portable-win32.zip"
+                "url": "$matchDownload32",
+                "hash": {
+                    "url": "https://api.github.com/repos/OpenRCT2/OpenRCT2/releases",
+                    "jsonpath": "$.[0].assets[?(@.name =~ /OpenRCT2-v[\\d\\.]+-windows-portable-win32\\.zip/i)].digest",
+                    "regex": "sha256:([\\w\\d]+)"
+                }
             }
         }
     }
