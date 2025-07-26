@@ -1,38 +1,66 @@
 {
-    "##": "cursor 编辑器",
     "version": "1.2.4",
-    "description": "Cursor 旨在让您获得非凡的生产力，它是使用 AI 进行编码的最佳方式",
+    "description": "The AI Code Editor",
+    "homepage": "https://www.cursor.com/",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://www.cursor.so/"
+        "url": "https://www.cursor.com/terms-of-service"
     },
-    "homepage": "https://www.cursor.so",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.cursor.com/production/a8e95743c5268be73767c46944a71f4465d05c90/win32/x64/user-setup/CursorUserSetup-x64-1.2.4.exe",
+            "hash": "3f999fe24c51707b159201534a6886e1e169760344250979603ea0fc7b9e8506"
+        },
+        "arm64": {
+            "url": "https://downloads.cursor.com/production/a8e95743c5268be73767c46944a71f4465d05c90/win32/arm64/user-setup/CursorUserSetup-arm64-1.2.4.exe",
+            "hash": "7d7082e5eea88040ca7ac4ec8058b91be8a2dfb6fb8cd409214bf0975a6de00d"
+        }
+    },
+    "extract_dir": "{code_GetDestDir}",
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse",
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.cursor\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.cursor\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Cursor\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Cursor\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=cursor(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
     ],
-    "url": "https://downloads.cursor.com/production/a8e95743c5268be73767c46944a71f4465d05c90/win32/x64/user-setup/CursorUserSetup-x64-1.2.4.exe#/dl.7z",
-    "hash": "3f999fe24c51707b159201534a6886e1e169760344250979603ea0fc7b9e8506",
+    "bin": [
+        [
+            "resources\\app\\bin\\cursor.cmd",
+            "",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
     "shortcuts": [
         [
             "Cursor.exe",
-            "Cursor"
+            "Cursor",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
         ]
     ],
+    "persist": "data",
     "checkver": {
-        "script": [
-            "$url = 'https://cursor.com/api/download?platform=win32-x64-user&releaseTrack=stable'",
-            "$res = Invoke-WebRequest -Uri $url -MaximumRedirection 0 -UseBasicParsing",
-            "$json = $res.Content | ConvertFrom-Json",
-            "$str = \"$($json.version)_____$($json.downloadUrl)\"",
-            "Write-Output $str"
-        ],
-        "regex": "^([\\d.]+)_____https://downloads.cursor.com/(?<url>.*?)$"
+        "url": "https://www.cursor.com/api/download?platform=win32-x64-user&releaseTrack=stable",
+        "regex": "production/(?<Code>[\\w]+)/win32.*-([\\d.]+)\\.exe"
     },
     "autoupdate": {
-        "url": "https://downloads.cursor.com/$matchUrl#/dl.7z",
-        "hash": {
-            "mode": "download"
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.cursor.com/production/$matchCode/win32/x64/user-setup/CursorUserSetup-x64-$version.exe"
+            },
+            "arm64": {
+                "url": "https://downloads.cursor.com/production/$matchCode/win32/arm64/user-setup/CursorUserSetup-arm64-$version.exe"
+            }
         }
     }
 }
