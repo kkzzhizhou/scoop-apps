@@ -1,22 +1,40 @@
 {
     "homepage": "https://github.com/mamba-org/mamba",
-    "version": "2.3.0-1",
+    "description": "Micromamba is a tiny version of mamba, the fast conda package installer.",
+    "version": "2.3.1-0",
     "license": "BSD-3-Clause",
-    "description": "The Fast Cross-Platform Package Manager",
-    "url": "https://micro.mamba.pm/api/micromamba/win-64/latest#/dl.tar.bz2",
-    "hash": "dacc5c8b505d73afbff788fd4677789a6c920b578398c9ae6ef31db721581943",
-    "bin": "Library\\bin\\micromamba.exe",
-    "persist": [
-        "envs",
-        "condabin",
-        "pkgs",
-        "Scripts"
-    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mamba-org/micromamba-releases/releases/download/2.3.1-0/micromamba-win-64#/micromamba.exe",
+            "hash": "146de374f2daecd3fb39d817f858f3c8c4a60802e9b60b1d74f36ccfe6adc680"
+        }
+    },
+    "post_install": "New-Item -Path \"$dir\\base\" -ItemType Directory -Force | Out-Null",
+    "env_set": {
+        "MAMBA_ROOT_PREFIX": "$dir\\base",
+        "MAMBA_EXE": "$dir\\micromamba.exe"
+    },
     "checkver": {
-        "url": "https://anaconda.org/conda-forge/micromamba/files",
-        "regex": "win-64/micromamba-([\\d.-]+)\\.tar"
+        "url": "https://api.anaconda.org/release/conda-forge/micromamba/latest",
+        "regex": "win-64/micromamba-([\\d.]+([\\w-]+)).tar.bz2"
     },
     "autoupdate": {
-        "url": "https://micro.mamba.pm/api/micromamba/win-64/latest#/dl.tar.bz2"
-    }
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mamba-org/micromamba-releases/releases/download/$version/micromamba-win-64#/micromamba.exe",
+                "hash": {
+                    "url": "$url.sha256"
+                }
+            }
+        }
+    },
+    "notes": [
+        "No shim is now exposed for micromamba, you have to add following hook to your PowerShell $PROFILE to use it:",
+        "",
+        "(& $env:MAMBA_EXE 'shell' 'hook' -s 'powershell') | Out-String | Invoke-Expression",
+        "",
+        "Also note that the mamba base environment located in $env:MAMBA_ROOT_PREFIX is now NOT persisted,",
+        "we advice to setup 'envs_dirs' to use a seperated path like '~/.conda/envs' and avoid using the base env.",
+        "https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs"
+    ]
 }
