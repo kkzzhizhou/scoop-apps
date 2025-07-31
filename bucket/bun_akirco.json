@@ -1,0 +1,57 @@
+{
+    "version": "1.2.19",
+    "description": "Incredibly fast JavaScript runtime, bundler, transpiler and package manager - all in one.",
+    "homepage": "https://bun.sh/",
+    "license": "MIT",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/oven-sh/bun/releases/download/bun-v1.2.19/bun-windows-x64.zip",
+                "https://github.com/oven-sh/bun/releases/download/bun-v1.2.19/bun-windows-x64-baseline.zip"
+            ],
+            "hash": [
+                "a488f464ce67b30e00cb0ea56b2f62e49b81c3fcea7ba92461d36224b06f75f8",
+                "85f30b63a2ddcb182ccfe3ac3facbb1c6541c850ac6b4e5fdf04c03379b2feaf"
+            ]
+        }
+    },
+    "pre_install": [
+        "$avx2 = Start-Job -ScriptBlock {",
+        "    Add-Type -MemberDefinition '[DllImport(\"kernel32.dll\")] public static extern bool IsProcessorFeaturePresent(int ProcessorFeature);' -Name Kernel32 -Namespace Win32",
+        "    return [Win32.Kernel32]::IsProcessorFeaturePresent(40)",
+        "} | Receive-Job -Wait -AutoRemoveJob",
+        "$target = 'bun-windows-x64'",
+        "if (-not $avx2) {",
+        "    $target += '-baseline'",
+        "}",
+        "Move-Item \"$dir\\$target\\bun.exe\" \"$dir\\bun.exe\"",
+        "Remove-Item \"$dir\\bun-windows-*\" -Recurse"
+    ],
+    "env_set": {
+        "BUN_INSTALL_CACHE_DIR": "$persist_dir\\bun-cache",
+        "BUN_INSTALL": "$dir\\.bun"
+    },
+    "persist": [".bun"],
+    "env_add_path": [".bun\\bin"],
+    "bin": ["bun.exe", ["bun.exe", "bunx", "x"]],
+    "checkver": {
+        "github": "https://github.com/oven-sh/bun",
+        "re": "bun-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": [
+                    "https://github.com/oven-sh/bun/releases/download/bun-v$version/bun-windows-x64.zip",
+                    "https://github.com/oven-sh/bun/releases/download/bun-v$version/bun-windows-x64-baseline.zip"
+                ]
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHASUMS256.txt"
+        }
+    }
+}

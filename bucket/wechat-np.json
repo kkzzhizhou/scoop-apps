@@ -1,16 +1,36 @@
 {
-    "homepage": "https://weixin.qq.com/",
-    "description": "Free messaging and calling app",
-    "version": "nightly",
+    "version": "4.0.6.26",
+    "description": "Free messaging and calling app by Tencent",
+    "homepage": "https://www.wechat.com/",
     "license": {
-        "identifier": "EULA",
-        "url": "https://weixin.qq.com/cgi-bin/readtemplate?lang=zh_CN&t=weixin_agreement&s=default"
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
     },
-    "url": "https://dldir1v6.qq.com/weixin/Universal/Windows/WeChatWin.exe#/dl.7z",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cscnk52/wechat-windows-versions/releases/download/v4.0.6.26/weixin_4.0.6.26.exe#/dl.7z",
+            "hash": "09dbc4ff729bb5d0e2f20e54c7b365f1da464eafc61c6d7b55ef651b156acbd4"
+        }
+    },
     "installer": {
         "script": [
             "Expand-7zipArchive \"$dir\\install.7z\" \"$dir\" -Removal",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\Uninst*\" -Force -Recurse"
+            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+            "$config_path = \"$env:APPDATA\\Tencent\\xwechat\\config\"",
+            "ensure \"$config_path\" | Out-Null",
+            "Set-Content -NoNewline -Path \"$config_path\\51a1fffea11325a1e4104c6b3de47af7.ini\" -Value \"$persist_dir\"",
+            "$reg_path = \"HKCU:Software\\Tencent\\Wexin\"",
+            "if (!(Test-Path \"$reg_path\")) {",
+            "    New-Item -Path \"$reg_path\" -Type Directory -Force | Out-Null",
+            "}",
+            "New-ItemProperty -Path $reg_path -Name \"FileSavePath\" -Value \"$persist_dir\" -Force | Out-Null",
+            "New-Item -Path $reg_path -Name \"InstallPath\" -Value \"$dir\" -Force -ErrorAction SilentlyContinue | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Remove-Item -Path \"$env:APPDATA\\Tencent\\xwechat\\config\\51a1fffea11325a1e4104c6b3de47af7.ini\" -Force | Out-Null",
+            "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\Wexin\" -Name \"FileSavePath\" -Force | Out-Null"
         ]
     },
     "shortcuts": [
@@ -18,5 +38,16 @@
             "Weixin.exe",
             "WeChat"
         ]
-    ]
+    ],
+    "persist": "xwechat_files",
+    "checkver": {
+        "github": "https://github.com/cscnk52/wechat-windows-versions"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cscnk52/wechat-windows-versions/releases/download/v$version/weixin_$version.exe#/dl.7z"
+            }
+        }
+    }
 }

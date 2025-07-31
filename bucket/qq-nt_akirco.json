@@ -1,5 +1,5 @@
 {
-    "version": "9.9.20.250626",
+    "version": "9.9.20.37625",
     "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family, Build with Electron",
     "homepage": "https://im.qq.com",
     "license": {
@@ -11,12 +11,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250626_x64_01.exe#/dl.7z",
-            "hash": "97b99108b5be55fd9ebfca9d825b584450f3fd2fc7a96f7ace0587bbcba5cfd7"
-        },
-        "32bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250626_x86_01.exe#/dl.7z",
-            "hash": "ab6eb98d0ddd5e6c319a5237e0540e1d5e09c7820c7c1a2844513d766ae911bb"
+            "url": "https://dldir1v6.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250724_x64_01.exe#/dl.7z",
+            "hash": "59b097078bd5b3bc6e1029a1dc617559c2d82a8d79fc60798fad5104dc44883c"
         }
     },
     "installer": {
@@ -28,35 +24,26 @@
             "Set-Content -NoNewline -Path \"$configpath\\UserDataInfo.ini\" -Value \"[UserDataSet]`nUserDataSavePathType=2`nUserDataSavePath=$persist_dir\\QQ Files\""
         ]
     },
-    "shortcuts": [
-        [
-            "Files\\QQ.exe",
-            "QQ-NT"
-        ]
-    ],
+    "shortcuts": [["Files\\QQ.exe", "QQ-NT"]],
     "persist": "QQ Files",
     "uninstaller": {
         "script": "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null"
     },
     "checkver": {
         "script": [
-            "$html = Invoke-WebRequest -Uri \"https://im.qq.com/pcqq/index.shtml\" -UseBasicParsing",
-            "$regex1 = '//.*/im.qq.com_new/.*/windowsDownloadUrl\\.js(\\?t=[0-9]+)?'",
-            "$links = ([regex]::Matches($html.Content, $regex1)).value",
-            "$allContent = $links | ForEach-Object { (Invoke-WebRequest -Uri ('https:' + $_) -UseBasicParsing).Content } | Out-String",
-            "$regex2 = 'QQNT/Windows/QQ_([0-9.]+)_([0-9]+)_x64_01.exe'",
-            "(([regex]::Matches($allContent, $regex2)).value | Sort-Object -Descending -CaseSensitive)[0] | Out-String"
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Tencent/QQ/NT'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\"",
+            "\"hash:$($dl_info.x64_exe.InstallerSha256);\""
         ],
-        "regex": "QQNT/Windows/QQ_([\\d\\.]+)_([\\d]+)_x64_01.exe",
-        "replace": "${1}.${2}"
+        "regex": "ver:(?<version>[^;]+)(?:; x64:(?<x64>[^;]*))?(?:; x86:(?<x86>[^;]*))?(?:; arm64:(?<arm64>[^;]*))?"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x64_01.exe#/dl.7z"
-            },
-            "32bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_01.exe#/dl.7z"
+                "url": "$matchX64#/dl.7z",
+                "hash": "$matchHash"
             }
         }
     }
