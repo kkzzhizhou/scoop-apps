@@ -107,9 +107,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aliesbelik/poldi
 - asimov-platform/scoop-bucket
 - brian6932/dank-scoop
+- kengwang/scoop-ctftools-bucket
 - batkiz/backit
 - 42wim/scoop-bucket
-- kengwang/scoop-ctftools-bucket
 - SayCV/scoop-cvp
 - Darkatse/Scoop-Darkatse
 - iquiw/scoop-bucket
@@ -117,8 +117,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - AStupidBear/scoop-bear
 - seumsc/scoop-seu
 - Small-Ku/turbo-bucket
-- aoisummer/scoop-bucket
 - starise/Scoop-Confetti
+- aoisummer/scoop-bucket
 - jfut/scoop-jfut
 - cc713/ownscoop
 - babo4d/scoop-xrtools
@@ -129,11 +129,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KnotUntied/scoop-fonts
 - Toddli468/Pentest-Scoop-Bucket
 - rivy/scoop-bucket
-- beer-psi/scoop-bucket
 - HUMORCE/nuke
-- WinApps-share/WinApps-bucket
-- Deide/deide-bucket
 - littleli/Scoop-littleli
+- WinApps-share/WinApps-bucket
+- beer-psi/scoop-bucket
+- Deide/deide-bucket
 - ChinLong/scoop-customize
 - yuusakuri/scoop-bucket
 - MCOfficer/scoop-bucket
