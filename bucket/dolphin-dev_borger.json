@@ -1,0 +1,51 @@
+{
+    "version": "2506-357",
+    "description": "A Nintendo GameCube and Wii emulator",
+    "homepage": "https://dolphin-emu.org/",
+    "license": {
+        "identifier": "GPL-2.0-or-later",
+        "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.dolphin-emu.org/builds/d8/5e/dolphin-master-2506-357-x64.7z",
+            "hash": "cedc4fa780b5a0cb504aaa641f4f6082266a4c4ef49244e13a4c613d21066e92",
+            "extract_dir": "Dolphin-x64"
+        }
+    },
+    "pre_install": [
+        "$appdataPath = \"$Env:AppData\\Dolphin Emulator\"",
+        "if ((Test-Path -Path $appdataPath\\*) -and (!(Test-Path -Path $persist_dir\\*))) {",
+        "   Write-Warning \"Migrating AppData...\"",
+        "   New-Item -Type Directory -Path $persist_dir\\User -Force | Out-Null",
+        "   Copy-Item -Recurse -Force $appdataPath\\* -Destination $persist_dir\\User\\",
+        "}"
+    ],
+    "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
+    "bin": [
+        "Dolphin.exe",
+        "DolphinTool.exe"
+    ],
+    "shortcuts": [
+        [
+            "Dolphin.exe",
+            "Nintendo GameCube & Wii [ngc][dolphin] (dev)"
+        ]
+    ],
+    "persist": "User",
+    "checkver": {
+        "url": "https://dolphin-emu.org/download/list/master/1/",
+        "regex": "\\/(?<rand1>.{2})\\/(?<rand2>.{2})\\/dolphin-master-(?<major>[\\d\\.]+)-(?<build>[\\d]+)",
+        "replace": "${major}-${build}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.dolphin-emu.org/builds/$matchRand1/$matchRand2/dolphin-master-$matchMajor-$matchBuild-x64.7z"
+            }
+        }
+    }
+}

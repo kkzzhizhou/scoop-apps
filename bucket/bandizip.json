@@ -1,24 +1,19 @@
 {
-    "version": "7.39",
+    "version": "15",
     "description": "Yet another typical ZIP archiver",
     "homepage": "http://www.bandisoft.com/bandizip/",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://en.bandisoft.com/bandizip/eula/"
-    },
+    "license": "Freeware",
     "url": "https://bandisoft.app/bandizip/BANDIZIP-PORTABLE.ZIP",
     "hash": "0a099d10afc3ea7f4be1846864b1d41e6949e480e975dc808dddd6bdae3633d3",
-    "architecture": {
-        "64bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'"
-        },
-        "32bit": {
-            "pre_install": "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'"
-        }
-    },
     "installer": {
         "script": [
-            "Get-ChildItem \"$dir\\Bandizip.x*.exe\" | Remove-Item",
+            "if([System.Environment]::Is64BitOperatingSystem){",
+            "    Remove-Item \"$dir\\Bandizip.x86.exe\" -ErrorAction SilentlyContinue",
+            "    Rename-Item \"$dir\\Bandizip.x64.exe\" -NewName \"Bandizip.exe\"",
+            "} else {",
+            "    Remove-Item \"$dir\\Bandizip.x64.exe\" -ErrorAction SilentlyContinue",
+            "    Rename-Item \"$dir\\Bandizip.x86.exe\" -NewName \"Bandizip.exe\"",
+            "}",
             "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
         ]
     },
@@ -32,9 +27,12 @@
     "persist": "Bandizip.ini",
     "checkver": {
         "url": "https://en.bandisoft.com/bandizip/history/",
-        "regex": "v([\\d.]+)</"
+        "regex": "v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://bandisoft.app/bandizip/BANDIZIP-PORTABLE.ZIP"
+        "url": "https://bandisoft.app/bandizip/BANDIZIP-PORTABLE.ZIP",
+        "hash": {
+            "mode": "download"
+        }
     }
 }

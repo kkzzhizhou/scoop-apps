@@ -1,0 +1,65 @@
+{
+    "version": "15",
+    "description": "Yet another typical ZIP archiver",
+    "homepage": "http://www.bandisoft.com/bandizip/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://en.bandisoft.com/bandizip/eula/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-X64.EXE",
+            "hash": "0b790281dafddb5da2ca492956b34bac73516297c38380379516dfdefb09e371",
+            "pre_install": "Rename-Item \"$dir\\Bandizip.x64.exe\" 'Bandizip.exe'"
+        },
+        "32bit": {
+            "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-ALL.EXE",
+            "hash": "fc5ba00fa7d110e5394f14e13bc4c13d04afd0748f34ca665ea6a692692683ee",
+            "pre_install": "Rename-Item \"$dir\\Bandizip.x86.exe\" 'Bandizip.exe'"
+        },
+        "arm64": {
+            "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-ALL.EXE",
+            "hash": "fc5ba00fa7d110e5394f14e13bc4c13d04afd0748f34ca665ea6a692692683ee",
+            "pre_install": "Rename-Item \"$dir\\Bandizip.a64.exe\" 'Bandizip.exe'"
+        }
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem \"$dir\\Bandizip.*.exe\" | Remove-Item",
+            "if (!(Test-Path \"$persist_dir\\Bandizip.ini\")) { New-Item \"$dir\\Bandizip.ini\" | Out-Null }"
+        ]
+    },
+    "post_install": [
+        "if ((Get-CimInstance Win32_OperatingSystem).Version -ge '10.0.22000'){",
+        "    Start-Process -FilePath \"$dir\\data\\RegPackage.x86.exe\" -ArgumentList '/reg \"$dir\\data\\bzshell.x64.msix\"' -Wait",
+        "}"
+    ],
+    "bin": "Bandizip.exe",
+    "shortcuts": [
+        [
+            "Bandizip.exe",
+            "Bandizip"
+        ]
+    ],
+    "persist": "Bandizip.ini",
+    "checkver": {
+        "url": "https://en.bandisoft.com/bandizip/history/",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-X64.EXE"
+            },
+            "32bit": {
+                "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-ALL.EXE"
+            },
+            "arm64": {
+                "url": "https://bandisoft.app/bandizip/BANDIZIP-SETUP-STD-ALL.EXE"
+            }
+        },
+        "hash": {
+            "mode": "download"
+        }
+    }
+}

@@ -1,0 +1,57 @@
+{
+    "version": "1.103.1",
+    "description": "Lightweight but powerful source code editor",
+    "homepage": "https://code.visualstudio.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://code.visualstudio.com/License/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/360a4e4fd251bfce169a4ddf857c7d25d1ad40da/VSCodeSetup-x64-1.103.1.exe#/setup.exe",
+            "hash": "952d6e6b7c4fe2f315a32b00f674e659c30fa13af1539691e9d16e93cd45aed0"
+        },
+        "arm64": {
+            "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/360a4e4fd251bfce169a4ddf857c7d25d1ad40da/VSCodeSetup-arm64-1.103.1.exe#/setup.exe",
+            "hash": "fd4200af859e719186c1b420a23d67f76ab9512a1016500e905e24ad9534fafb"
+        }
+    },
+    "env_add_path": "bin",
+    "shortcuts": [
+        [
+            "code.exe",
+            "Visual Studio Code"
+        ]
+    ],
+    "pre_install": [
+        "innounp -x -q \"-d$dir\" \"$dir\\setup.exe\" *> $null",
+        "Copy-Item \"$dir\\{code_GetDestDir}\\*\" \"$dir\" -Recurse",
+        "Remove-Item \"$dir\\{code_GetDestDir}\" -Recurse",
+        "Remove-Item \"$dir\\{app}\" -Recurse",
+        "Remove-Item \"$dir\\install_script.iss\""
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://code.visualstudio.com/sha?build=stable",
+        "regex": "version\":\"(?<Code>[\\d\\w]+)\",\"productVersion\":\"(?<version>[\\d.]+)",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/$matchCode/VSCodeSetup-x64-$version.exe#/setup.exe",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=stable",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-x64')].sha256hash"
+                }
+            },
+            "arm64": {
+                "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/$matchCode/VSCodeSetup-arm64-$version.exe#/setup.exe",
+                "hash": {
+                    "url": "https://code.visualstudio.com/sha?build=stable",
+                    "jsonpath": "$.products[?(@.platform.os == 'win32-arm64')].sha256hash"
+                }
+            }
+        }
+    }
+}
