@@ -1,0 +1,62 @@
+{
+    "version": "17.6.3-24583834",
+    "description": "Application for creating and running virtual machines on your computer.",
+    "homepage": "https://vmware.com/products/desktop-hypervisor.html",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://broadcom.com/company/legal/terms-of-use"
+    },
+    "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/17.6.3/24583834/windows/core/VMware-workstation-17.6.3-24583834.exe.tar",
+    "hash": "2e87994dd2580bc006a0b96ef089f500a718d05c3302d78bd9c85df4439cf67c",
+    "suggest": {
+        "vcredist": "extras/vcredist"
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process -Wait ($exe = \"$dir/VMware-workstation-$version.exe\") /x",
+        "$temp = $env:TEMP+'/'+(Select-Xml /component/installerList/installer/productCode \"$dir/descriptor.xml\").Node.'#text'+'~setup'",
+        "Move-Item \"$temp/VMwareWorkstation.msi\" \"$dir\"",
+        "Remove-Item -Recurse $temp,$exe",
+        "Start-Process -Wait \"$dir/VMwareWorkstation.msi\" \"/qn /norestart ADDLOCAL=ALL ADDVKDTOPATH=0 AUTOSOFTWAREUPDATE=0 DATACOLLECTION=0 DESKTOP_SHORTCUT=0 EULAS_AGREED=1 INSTALLDIR=\"\"$dir\"\" STARTMENU_SHORTCUT=0\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Set-Service VMAuthdService -StartupType Disabled",
+        "Stop-Service VMAuthdService",
+        "Get-Process vmware-tray -ErrorAction Ignore | Stop-Process",
+        "Start-Process -Wait \"$dir/VMwareWorkstation.msi\" '/qn /norestart /uninstall'"
+    ],
+    "bin": [
+        "vmware.exe",
+        "bin/vctl.exe",
+        "bin/docker-machine-driver-vmware.exe",
+        "x64/vmware-vmx.exe",
+        "x64/vmware-vmx-debug.exe",
+        "x64/vmware-vmx-stats.exe",
+        "x64/mksSandbox.exe",
+        "x64/mksSandbox-debug.exe",
+        "x64/mksSandbox-stats.exe",
+        "x64/tpm2emu.exe"
+    ],
+    "shortcuts": [
+        [
+            "vmware.exe",
+            "VMware Workstation Pro"
+        ]
+    ],
+    "checkver": {
+        "url": "https://scoop.sh",
+        "script": [
+            "try {",
+            "    ([string]$version = ([Version[]](($_ = (Invoke-RestMethod https://softwareupdate.vmware.com/cds/vmw-desktop/ws/).html.body.ul.li.a.'#text')[1..$_.Length]) | Sort-Object)[-1]),",
+            "    ([UInt32[]](($_ = (Invoke-RestMethod https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$version).html.body.ul.li.a.'#text')[1..$_.Length]) | Sort-Object)[-1] -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A([\\d.]+) (\\d+)\\Z",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "url": "https://softwareupdate.vmware.com/cds/vmw-desktop/ws/$match1/$match2/windows/core/VMware-workstation-$version.exe.tar"
+    }
+}

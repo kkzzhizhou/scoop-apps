@@ -1,0 +1,92 @@
+{
+    "version": "12.13.7.1",
+    "description": "Media player, mobile device management utility, iTunes Store client",
+    "license": "Proprietary",
+    "homepage": "https://www.apple.com/itunes/",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.apple.com/itunes/download/win64#/dl.7z",
+            "hash": "2f5a7f4a85e24810297cb3ef63fd6d743df1c62edfc5e4ca3677c7b083bc2ff0"
+        },
+        "32bit": {
+            "url": "https://www.apple.com/itunes/download/win32#/dl.7z",
+            "hash": "12d8edf49fed3252e86ca94304ef44556c1fb8adc5f1832e36bb9b932bd2f99d"
+        }
+    },
+    "pre_install": [
+        "if (-not $global) {",
+        "   throw 'This package must be installed globally.'",
+        "}",
+        "Remove-Item \"$dir\\SetupAdmin.exe\", \"$dir\\AppleSoftwareUpdate.msi\"",
+        "Stop-Service 'Apple Mobile Device Service' -ErrorAction SilentlyContinue",
+        "Stop-Service 'Bonjour Service' -ErrorAction SilentlyContinue"
+    ],
+    "installer": {
+        "script": [
+            "$binary_suffix = ''",
+            "if ($architecture -eq \"64bit\") {",
+            "   $binary_suffix = '64'",
+            "}",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\iTunes$binary_suffix.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\", \"INSTALLDIR=$dir\") -RunAs | Out-Null",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\AppleMobileDeviceSupport$binary_suffix.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\AppleMobileDeviceSupport\", \"INSTALLDIR=$dir\\AppleMobileDeviceSupport\") -RunAs | Out-Null",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\Bonjour$binary_suffix.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\Bonjour\", \"INSTALLDIR=$dir\\Bonjour\") -RunAs | Out-Null",
+            "if (Test-Path \"$dir\\AppleApplicationSupport64.msi\") {",
+            "    Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\AppleApplicationSupport64.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\AppleApplicationSupport\", \"INSTALLDIR=$dir\\AppleApplicationSupport\") -RunAs | Out-Null",
+            "}",
+            "if (Test-Path \"$dir\\AppleApplicationSupport.msi\") {",
+            "    Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\AppleApplicationSupport.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\AppleApplicationSupport\", \"INSTALLDIR=$dir\\AppleApplicationSupport\") -RunAs | Out-Null",
+            "}",
+            "if (Test-Path \"$dir\\QuickTime.msi\") {",
+            "    Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\QuickTime.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\QuickTime\", \"INSTALLDIR=$dir\\QuickTime\") -RunAs | Out-Null",
+            "}"
+        ]
+    },
+    "post_install": [
+        "Remove-Item -Recurse \"$([Environment]::GetFolderPath('CommonStartMenu'))\\Programs\\iTunes\"",
+        "Remove-Item -Recurse \"$([Environment]::GetFolderPath('CommonDesktopDirectory'))\\iTunes.lnk\""
+    ],
+    "pre_uninstall": [
+        "Stop-Service 'Apple Mobile Device Service'",
+        "Stop-Service 'Bonjour Service'"
+    ],
+    "uninstaller": {
+        "script": [
+            "$binary_suffix = ''",
+            "if ($architecture -eq \"64bit\") {",
+            "   $binary_suffix = '64'",
+            "}",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\iTunes$binary_suffix.msi\", '/qn', '/norestart') -RunAs | Out-Null",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\AppleMobileDeviceSupport$binary_suffix.msi\", '/qn', '/norestart') -RunAs | Out-Null",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\Bonjour$binary_suffix.msi\", '/qn', '/norestart') -RunAs | Out-Null",
+            "if (Test-Path \"$dir\\AppleApplicationSupport64.msi\") {",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\AppleApplicationSupport64.msi\", '/qn', '/norestart') -RunAs | Out-Null",
+            "}",
+            "if (Test-Path \"$dir\\AppleApplicationSupport.msi\") {",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\AppleApplicationSupport.msi\", '/qn', '/norestart') -RunAs | Out-Null",
+            "}",
+            "if (Test-Path \"$dir\\QuickTime.msi\") {",
+            "    Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\QuickTime.msi\", '/qn', '/norestart', \"TARGETDIR=$dir\\QuickTime\") -RunAs | Out-Null",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "iTunes.exe",
+            "iTunes"
+        ]
+    ],
+    "checkver": {
+        "url": "https://en.wikipedia.org/wiki/History_of_iTunes",
+        "regex": "background:#3d4;\">([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.apple.com/itunes/download/win64#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://www.apple.com/itunes/download/win32#/dl.7z"
+            }
+        }
+    }
+}

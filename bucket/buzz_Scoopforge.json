@@ -1,0 +1,48 @@
+{
+    "version": "1.2.0",
+    "description": "Buzz transcribes and translates audio offline on your personal computer. Powered by OpenAI's Whisper.",
+    "homepage": "https://buzzcaptions.com/",
+    "license": "MIT license",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/chidiwilliams/buzz/releases/download/v1.2.0/Buzz-1.2.0-windows.exe",
+            "hash": "bbc37eb36c517d3e9f25d5d247728a2684f355ae8702dcac85c45e7f332b8244"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name extras-cn) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Buzz\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\model\\huggingface\" -Target \"$env:USERPROFILE\\.cache\\huggingface\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\model\\whisper\" -Target \"$env:USERPROFILE\\.cache\\whisper\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name extras-cn) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Buzz\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:USERPROFILE\\.cache\\huggingface\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:USERPROFILE\\.cache\\whisper\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Buzz.exe",
+            "Buzz"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/chidiwilliams/buzz"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/chidiwilliams/buzz/releases/download/v$version/Buzz-$version-windows.exe"
+            }
+        }
+    }
+}
