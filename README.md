@@ -115,9 +115,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TianXiaTech/scoop-txt
 - iquiw/scoop-bucket
 - AStupidBear/scoop-bear
+- seumsc/scoop-seu
 - Small-Ku/turbo-bucket
 - aoisummer/scoop-bucket
-- seumsc/scoop-seu
 - starise/Scoop-Confetti
 - jfut/scoop-jfut
 - cc713/ownscoop
@@ -131,8 +131,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Toddli468/Pentest-Scoop-Bucket
 - rivy/scoop-bucket
 - HUMORCE/nuke
-- beer-psi/scoop-bucket
 - Scoopforge/Extras-Plus
+- beer-psi/scoop-bucket
 - Deide/deide-bucket
 - natecohen/scoop-av
 - littleli/Scoop-littleli
