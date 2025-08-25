@@ -32,20 +32,18 @@
             ]
         }
     },
-    "installer": {
-        "script": [
-            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\CrystalMarkRetro\" -AppData",
-            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
-            "Dismount-ExternalRuntimeData -Target \"CrystalMarkRetro\" -AppData",
-            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
-        ]
-    },
+    "pre_install": [
+        "'CrystalMarkRetro32S.ini', 'CrystalMarkRetro64S.ini', 'CrystalMarkRetroA64S.ini' | ForEach-Object {",
+        "    if (-not (Test-Path \"$persist_dir\\$_\")) {",
+        "        New-Item \"$dir\\$_\" -ItemType File | Out-Null",
+        "    }",
+        "}"
+    ],
+    "persist": [
+        "CrystalMarkRetro32S.ini",
+        "CrystalMarkRetro64S.ini",
+        "CrystalMarkRetroA64S.ini"
+    ],
     "checkver": {
         "url": "https://crystalmark.info/en/download/",
         "regex": "CrystalMark Retro ([\\w\\.]+) &#8211;"
