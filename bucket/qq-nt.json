@@ -1,47 +1,54 @@
 {
-    "version": "9.9.20.250724",
-    "description": "An instant messaging software service developed by Tencent",
-    "homepage": "https://im.qq.com/pcqq/index.shtml",
+    "version": "9.9.21.38711",
+    "description": "An instant messaging tool that gives you the best way to keep in touch with your friends and family, Build with Electron",
+    "homepage": "https://im.qq.com",
     "license": {
         "identifier": "Proprietary",
         "url": "https://ti.qq.com/agreement/index.html"
     },
+    "suggest": {
+        "LiteLoaderQQNT": "LiteLoaderQQNT"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250724_x64_01.exe#/dl.7z",
-            "hash": "59b097078bd5b3bc6e1029a1dc617559c2d82a8d79fc60798fad5104dc44883c"
-        },
-        "32bit": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250724_x86_01.exe#/dl.7z",
-            "hash": "7a0d51871d2b5add030633b6b87a834119b60daad1098b3747cc7121da4278aa"
-        },
-        "arm64": {
-            "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.20_250724_arm64_01.exe#/dl.7z",
-            "hash": "8f1a08f515e93585523412b9435f27e052a0d464eb53658a9e991b084965f64d"
+            "url": "https://dldir1v6.qq.com/qqfile/qq/QQNT/Windows/QQ_9.9.21_250822_x64_01.exe#/dl.7z",
+            "hash": "6b880332e6407f088834ce185ada9f1d0b4c7f6ba7ee266005b5c5179a9d2f74"
         }
     },
-    "extract_dir": "Files",
+    "installer": {
+        "script": [
+            "$configpath = \"$env:PUBLIC\\Documents\\Tencent\\QQ\"",
+            "if (!(Test-Path \"$configpath\")) {",
+            "    New-Item -Path \"$configpath\" -Type Directory -Force | Out-Null",
+            "}",
+            "Set-Content -NoNewline -Path \"$configpath\\UserDataInfo.ini\" -Value \"[UserDataSet]`nUserDataSavePathType=2`nUserDataSavePath=$persist_dir\\QQ Files\""
+        ]
+    },
     "shortcuts": [
         [
-            "QQ.exe",
-            "QQ"
+            "Files\\QQ.exe",
+            "QQ-NT"
         ]
     ],
+    "persist": "QQ Files",
+    "uninstaller": {
+        "script": "Remove-Item -Path \"$env:PUBLIC\\Documents\\Tencent\" -Recurse -Force | Out-Null"
+    },
     "checkver": {
-        "url": "https://qq-web.cdn-go.cn/im.qq.com_new/latest/rainbow/windowsConfig.js",
-        "regex": "QQNT/Windows/QQ_([\\d\\.]+)_([\\d]+)_x86_01.exe",
-        "replace": "${1}.${2}"
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Tencent/QQ/NT'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\"",
+            "\"hash:$($dl_info.x64_exe.InstallerSha256);\""
+        ],
+        "regex": "ver:(?<version>[^;]+)(?:; x64:(?<x64>[^;]*))?(?:; x86:(?<x86>[^;]*))?(?:; arm64:(?<arm64>[^;]*))?"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x64_01.exe#/dl.7z"
-            },
-            "32bit": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_x86_01.exe#/dl.7z"
-            },
-            "arm64": {
-                "url": "https://dldir1.qq.com/qqfile/qq/QQNT/Windows/QQ_$match1_$match2_arm64_01.exe#/dl.7z"
+                "url": "$matchX64#/dl.7z",
+                "hash": "$matchHash"
             }
         }
     }
