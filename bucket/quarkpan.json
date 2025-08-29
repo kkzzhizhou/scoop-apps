@@ -16,12 +16,33 @@
         "Move-Item -Force -Path \"$dir\\app-$version\\*\" -Destination \"$dir\"",
         "Remove-Item -Force -Recurse -Path \"$dir\\app-$version\""
     ],
+  "installer": {
+        "script": [
+            "Ensure \"$persist_dir\" | Out-Null",
+            "$quarkData1 = \"$env:APPDATA\\quark-cloud-drive\"",
+            "$quarkData2 = \"$env:APPDATA\\Quark\"",
+            "foreach ($path in @($quarkData1, $quarkData2)) {",
+            "    if (Test-Path $path) {",
+            "        $linkType = (Get-Item -Path $path -ErrorAction SilentlyContinue).LinkType",
+            "        if ($linkType -eq 'Junction') {",
+            "            Remove-Item -Path $path -Force",
+            "        } else {",
+            "            Get-ChildItem -Path $path -Force | Move-Item -Destination \"$persist_dir\\$(Split-Path $path -Leaf)\" -Force",
+            "            Remove-Item -Path $path -Force -Recurse",
+            "        }",
+            "    }",
+            "    $targetPersist = \"$persist_dir\\$(Split-Path $path -Leaf)\"",
+            "    if (!(Test-Path $targetPersist)) {",
+            "        New-Item -ItemType Directory -Path $targetPersist -Force | Out-Null",
+            "    }",
+            "    New-Item -Path $path -ItemType Junction -Target $targetPersist | Out-Null",
+            "}"
+        ]
+    },
     "uninstaller": {
         "script": [
-            "$runtimeCache = \"$env:APPDATA\\quark-cloud-drive\"",
-            "$runtimeData = \"$env:APPDATA\\Quark\"",
-            "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-            "Remove-Item $runtimeData -Force -Recurse -ErrorAction SilentlyContinue"
+            "Remove-Item \"$env:APPDATA\\quark-cloud-drive\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Remove-Item \"$env:APPDATA\\Quark\" -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
     "checkver": {

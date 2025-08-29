@@ -1,0 +1,51 @@
+{
+    "version": "0.0.4",
+    "description": "QuickClipboard 是一款为 Windows 设计的高效剪贴板管理工具，支持文本、图片与文件的历史记录管理，并配备多种便捷操作方式，让剪贴板使用更加流畅与智能。",
+    "homepage": "https://github.com/mosheng1/QuickClipboard",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/mosheng1/QuickClipboard#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mosheng1/QuickClipboard/releases/download/v0.0.4/QuickClipboard.exe",
+            "hash": "781b7f8fdffb55ed94bc2d8cc9ede724102b67545725aba1d112ced628e35c49"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\quickclipboard\" -Target \"$env:LOCALAPPDATA\\quickclipboard\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\com.quickclipboard.app\" -Target \"$env:LOCALAPPDATA\\com.quickclipboard.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\quickclipboard\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.quickclipboard.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "QuickClipboard.exe",
+    "shortcuts": [
+        [
+            "QuickClipboard.exe",
+            "QuickClipboard"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/mosheng1/QuickClipboard/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/QuickClipboard"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mosheng1/QuickClipboard/releases/download/v$version/QuickClipboard.exe"
+            }
+        }
+    }
+}
