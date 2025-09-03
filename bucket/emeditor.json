@@ -1,14 +1,27 @@
 {
     "version": "25.3.1",
-    "description": "world’s fastest text editor.",
-    "homepage": "https://www.emeditor.com/download/",
-    "license": "BSD-3-Clause",
-    "url": "https://xmod-my.sharepoint.cn/:u:/g/personal/admin_xmod_partner_onmschina_cn/EbEr-rzAQuBKm4CcIJfeSTABZrIP44Eq6hX6M89R6eJhLA?download=1#/dl.7z",
+    "description": "A fast, lightweight and extensible text editor for Windows. Useful for opening very large files.",
+    "homepage": "https://www.emeditor.com/",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://emeditor.blob.core.windows.net/emed64_25.3.1_portable.zip",
+            "hash": "c577a662d89daad32fa3edc2e9b05fa0f3c459d47c8bee207edb7a60800d2db0"
+        }
+    },
     "pre_install": [
-        "if(!(Test-Path \"$persist_dir\\eeCommon.ini\")) { Add-Content \"$dir\\eeCommon.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eeConfig.ini\")) { Add-Content \"$dir\\eeConfig.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eeLM.ini\")) { Add-Content \"$dir\\eeLM.ini\" $null }",
-        "if(!(Test-Path \"$persist_dir\\eePlugins.ini\")) { Add-Content \"$dir\\eePlugins.ini\" $null }"
+        "$manifest.persist | ForEach-Object {",
+        "    if ([io.path]::GetExtension($_)) {",
+        "        if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" | Out-Null }",
+        "    }",
+        "}"
+    ],
+    "bin": "EmEditor.exe",
+    "shortcuts": [
+        [
+            "EmEditor.exe",
+            "EmEditor"
+        ]
     ],
     "persist": [
         "eeCommon.ini",
@@ -16,10 +29,15 @@
         "eeLM.ini",
         "eePlugins.ini"
     ],
-    "shortcuts": [
-        [
-            "EmEditor.exe",
-            "EmEditor"
-        ]
-    ]
+    "checkver": {
+        "url": "https://www.emeditor.com/",
+        "regex": "EmEditor v([\\d.]+) (R|r)eleased"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://emeditor.blob.core.windows.net/emed64_$version_portable.zip"
+            }
+        }
+    }
 }

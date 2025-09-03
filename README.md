@@ -111,16 +111,16 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - 42wim/scoop-bucket
 - SayCV/scoop-cvp
-- iquiw/scoop-bucket
 - TianXiaTech/scoop-txt
+- iquiw/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - AStupidBear/scoop-bear
 - seumsc/scoop-seu
 - Small-Ku/turbo-bucket
 - starise/Scoop-Confetti
+- babo4d/scoop-xrtools
 - aoisummer/scoop-bucket
 - jfut/scoop-jfut
-- babo4d/scoop-xrtools
 - cc713/ownscoop
 - mo-san/scoop-bucket
 - starise/Scoop-Gaming
@@ -140,7 +140,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - yuusakuri/scoop-bucket
 - MCOfficer/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
-- typst-community/scoop-bucket
 - The-Simples/scoop-minecraft
+- typst-community/scoop-bucket
 - littleli/Scoop-AtariEmulators
 - yuanying1199/scoopbucket
