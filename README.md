@@ -66,8 +66,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TheCjw/scoop-retools
 - kodybrown/scoop-nirsoft
 - TheRandomLabs/scoop-nonportable
-- ScoopInstaller/Nirsoft
 - littleli/scoop-clojure
+- ScoopInstaller/Nirsoft
 - scoopcn/scoopcn
 - kkzzhizhou/scoop-zapps
 - rasa/scoops
@@ -97,8 +97,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - charmbracelet/scoop-bucket
 - TheRandomLabs/Scoop-Python
 - jonz94/scoop-sarasa-nerd-fonts
-- hu3rror/scoop-muggle
 - amorphobia/siku
+- hu3rror/scoop-muggle
 - naderi/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - noql-net/scoop
@@ -130,11 +130,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - AkariiinMKII/Scoop4kariiin
 - Toddli468/Pentest-Scoop-Bucket
 - rivy/scoop-bucket
-- Scoopforge/Extras-Plus
-- HUMORCE/nuke
-- littleli/Scoop-littleli
-- beer-psi/scoop-bucket
 - natecohen/scoop-av
+- HUMORCE/nuke
+- Scoopforge/Extras-Plus
+- beer-psi/scoop-bucket
+- littleli/Scoop-littleli
 - Deide/deide-bucket
 - ChinLong/scoop-customize
 - yuusakuri/scoop-bucket
