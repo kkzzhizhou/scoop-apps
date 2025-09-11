@@ -1,0 +1,74 @@
+{
+    "version": "1.8.7",
+    "description": "Another Mihomo GUI.",
+    "homepage": "https://mihomo.party/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/mihomo-party-org/clash-party#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v1.8.7/clash-party-windows-1.8.7-x64-setup.exe#/dl.7z",
+            "hash": "93b8e23501fd05c484ecc63c1c411d478af5b6063b6b9efac42780c717c9d4cf",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "32bit": {
+            "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v1.8.7/clash-party-windows-1.8.7-ia32-setup.exe#/dl.7z",
+            "hash": "0b10b2a491457a39f6fdf11fd13c7b9499f0407963d85fa4cd0b63f846bac737",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v1.8.7/clash-party-windows-1.8.7-arm64-setup.exe#/dl.7z",
+            "hash": "ca16bc8d7ad5d385f68339cb10963304f3644e9fa74ad5dcb1620e6317621f7b",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\mihomo-party\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\mihomo-party\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Clash Party.exe",
+    "shortcuts": [
+        [
+            "Clash Party.exe",
+            "Clash Party"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/mihomo-party-org/clash-party/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v$version/clash-party-windows-$version-x64-setup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v$version/clash-party-windows-$version-ia32-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/mihomo-party-org/clash-party/releases/download/v$version/clash-party-windows-$version-arm64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}
