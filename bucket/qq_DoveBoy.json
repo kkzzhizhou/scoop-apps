@@ -1,7 +1,7 @@
 {
-    "homepage": "https://im.qq.com",
-    "description": "I'm QQ - 每一天，乐在沟通",
     "version": "9.7.25.29411",
+    "description": "I'm QQ - 每一天，乐在沟通",
+    "homepage": "https://im.qq.com",
     "license": {
         "identifier": "Proprietary",
         "url": "https://ti.qq.com/agreement/index.html"
@@ -32,10 +32,17 @@
         ]
     },
     "checkver": {
-        "url": "https://qq-web.cdn-go.cn/im.qq.com_new/latest/rainbow/windowsConfig.js",
-        "regex": "QQ([\\d.]+)\\.exe"
+        "script": [
+            "# Please keep this script. An empty Accept-Encoding header can cause the CDN to deliver expired cache.",
+            "# See : https://github.com/ScoopInstaller/Extras/issues/15916",
+            "$headers = @{ 'Accept-Encoding' = 'gzip' }",
+            "$url = 'https://cdn-go.cn/qq-web/im.qq.com_new/latest/rainbow/windowsConfig.js'",
+            "$response = Invoke-WebRequest -Uri $url -UseBasicParsing -Headers $headers",
+            "Write-Output $response.Content"
+        ],
+        "regex": "QQ(?<version>[\\d.]+)\\.exe"
     },
     "autoupdate": {
-        "url": "https://dldir1.qq.com/qqfile/qq/PCQQ$majorVersion.$minorVersion.$patchVersion/QQ$majorVersion.$minorVersion.$patchVersion.$buildVersion.exe#/dl.7z"
+        "url": "https://dldir1.qq.com/qqfile/qq/PCQQ$matchHead/QQ$version.exe#/dl.7z"
     }
 }
