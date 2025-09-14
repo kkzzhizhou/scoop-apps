@@ -1,12 +1,11 @@
 {
     "version": "2.0.1",
     "description": "A PC port of Legend of Zelda: Majora's Mask",
-    "homepage": "https://github.com/HarbourMasters/2ship2harkinian",
-    "license": "Unlicense",
+    "homepage": "https://www.shipofharkinian.com",
+    "license": "CC0-1.0",
     "notes": [
-        "ATTENTION: 2Ship2Harkinian requires specific n64 rom(s) of Majora's Mask to function.",
-        "Place the rom(s) in $persist_dir.",
-        "Learn more at http://2ship.equipment"
+        "2 Ship 2 Harkinian requires specific ROM(s) of Majora's Mask to function.",
+        "Learn more at https://www.shipofharkinian.com/setup-guide and https://2ship.equipment."
     ],
     "architecture": {
         "64bit": {
@@ -15,38 +14,35 @@
         }
     },
     "pre_install": [
-        "if (!(Test-Path \"$persist_dir\\2ship2harkinian.json\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\2ship2harkinian.json\" | Out-Null",
-        "}"
-    ],
-    "post_install": [
-        "'2ship2harkinian.json' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "'2ship2harkinian.json', 'imgui.ini' | % {",
+        "   if (!(Test-Path \"$persist_dir\\$_\")) {",
+        "      New-Item \"$dir\\$_\" | Out-Null",
         "   }",
         "}"
     ],
-    "bin": "2ship.exe",
+    "post_install": [
+        "if (Test-Path \"$persist_dir\\mm.o2r\") {",
+        "    Copy-Item \"$persist_dir\\mm.o2r\" \"$dir\\mm.o2r\" -Force",
+        "}"
+    ],
     "shortcuts": [
         [
             "2ship.exe",
-            "2Ship2Harkinian [win][mm]"
+            "2 Ship 2 Harkinian"
         ]
     ],
     "persist": [
+        "logs",
         "mods",
-        "Save",
-        "2ship2harkinian.json"
+        "saves",
+        "2ship2harkinian.json",
+        "imgui.ini"
     ],
-    "uninstaller": {
-        "script": [
-            "'2ship2harkinian.json' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
-            "}"
-        ]
-    },
+    "pre_uninstall": [
+        "if (Test-Path \"$dir\\mm.o2r\") {",
+        "    Copy-Item \"$dir\\mm.o2r\" \"$persist_dir\\mm.o2r\" -Force",
+        "}"
+    ],
     "checkver": {
         "github": "https://github.com/HarbourMasters/2ship2harkinian/",
         "regex": "(?<majorName>(\\w+))\\s(?<minorName>(\\w+))\\s(?<version>([\\d\\.]+))",

@@ -1,0 +1,62 @@
+{
+    "version": "2.0.1",
+    "description": "A PC port of Legend of Zelda: Majora's Mask",
+    "homepage": "https://github.com/HarbourMasters/2ship2harkinian",
+    "license": "Unlicense",
+    "notes": [
+        "ATTENTION: 2Ship2Harkinian requires specific n64 rom(s) of Majora's Mask to function.",
+        "Place the rom(s) in $persist_dir.",
+        "Learn more at http://2ship.equipment"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/HarbourMasters/2ship2harkinian/releases/download/2.0.1/2Ship-Rena-Bravo-Win64.zip",
+            "hash": "db1dcd8c0f8db809bb6b8fa53758546425bfad35368684aac2b76554308ff268"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\2ship2harkinian.json\")) {",
+        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\2ship2harkinian.json\" | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "'2ship2harkinian.json' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
+        "   } else {",
+        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}"
+    ],
+    "bin": "2ship.exe",
+    "shortcuts": [
+        [
+            "2ship.exe",
+            "2Ship2Harkinian [win][mm]"
+        ]
+    ],
+    "persist": [
+        "mods",
+        "Save",
+        "2ship2harkinian.json"
+    ],
+    "uninstaller": {
+        "script": [
+            "'2ship2harkinian.json' | ForEach-Object {",
+            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/HarbourMasters/2ship2harkinian/",
+        "regex": "(?<majorName>(\\w+))\\s(?<minorName>(\\w+))\\s(?<version>([\\d\\.]+))",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/HarbourMasters/2ship2harkinian/releases/download/$version/2Ship-$matchMajorname-$matchMinorname-Win64.zip"
+            }
+        }
+    }
+}
