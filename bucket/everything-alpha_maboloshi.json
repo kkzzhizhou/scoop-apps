@@ -1,0 +1,73 @@
+{
+    "version": "1.5.0.1396a",
+    "description": "Locate files and folders by name instantly.",
+    "homepage": "https://www.voidtools.com",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://www.voidtools.com/Everything-1.5.0.1396a.x64.zip",
+                "https://www.voidtools.com/Everything.lng.zip"
+            ],
+            "hash": [
+                "0616d44e0fa235aaae31678c74643e70a258b74d588a16063ef5937227ecac6e",
+                "782f3c01fc1b8a3b74f0331035100239b42ee20457bfbe4b0bc666df9cc09567"
+            ]
+        }
+    },
+    "pre_install": [
+        "if (Test-Path \"$dir\\Everything64.exe\") { Rename-Item \"$dir\\Everything64.exe\" 'Everything.exe' }",
+        "ensure \"$persist_dir\" | Out-Null",
+        "Copy-Item -Path \"$persist_dir\\*\" -Destination \"$dir\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding 936",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding 936",
+        "    }",
+        "}",
+        "reg import \"$dir\\install-context.reg\""
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
+        "    $ServiceName = $(Get-Service -Name Everything* -ErrorAction SilentlyContinue).Name",
+        "    if ($ServiceName) {",
+        "        if (!(is_admin)) {",
+        "            Invoke-ExternalCommand -FilePath powershell.exe -ArgumentList @('-Command', \"sc.exe stop '$ServiceName'; sc.exe delete '$ServiceName'\") -RunAs -Quiet",
+        "        } else {",
+        "            sc.exe stop \"$ServiceName\"; sc.exe delete \"$ServiceName\"",
+        "        }",
+        "    }",
+        "    reg import \"$dir\\uninstall-context.reg\"",
+        "}",
+        "Get-ChildItem \"$dir\\*\" -Exclude 'Everything.exe', 'Everything.lng', 'install-context.reg', 'uninstall-context.reg', 'install.json', 'manifest.json' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    ],
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.voidtools.com/forum/viewtopic.php?f=12&t=9787",
+        "regex": "Everything-([\\d.]+a)\\.x64"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": [
+                    "https://www.voidtools.com/Everything-$version.zip",
+                    "https://www.voidtools.com/Everything.lng.zip"
+                ]
+            }
+        }
+    }
+}

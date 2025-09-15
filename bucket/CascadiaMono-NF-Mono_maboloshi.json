@@ -1,0 +1,29 @@
+{
+    "version": "3.4.0",
+    "description": "Nerd Fonts patched 'CascadiaMono' Font family. (Monospace version, Nerd Fonts Symbol/Icon will be always 1 cell wide)",
+    "homepage": "https://github.com/ryanoasis/nerd-fonts",
+    "license": "MIT",
+    "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaMono.tar.xz",
+    "hash": "7c22db8c8460ef62abffbb6d5c7b212507de0798a4a762fa2a005a8bc4c90fc6",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/ryanoasis/nerd-fonts/releases/download/v$version/CascadiaMono.tar.xz"
+    },
+    "post_install": [
+        "$registryRoot = if ($global) { \"HKLM\" } else { \"HKCU\" }",
+        "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+        "Get-ChildItem $dir -Filter '*NerdFontMono-*' | ForEach-Object {",
+        "    New-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$dir\\$($_.Name)\" -Force | Out-Null",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$registryRoot = if ($global) { \"HKLM\" } else { \"HKCU\" }",
+        "$registryKey = \"${registryRoot}:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\"",
+        "Get-ChildItem $dir -Filter '*NerdFontMono-*' | ForEach-Object {",
+        "    Remove-ItemProperty -Path $registryKey -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+        "}",
+        "if ($cmd -eq \"uninstall\") {",
+        "    Write-Host \"The '$app' Font family has been uninstalled and will not be present after restarting your computer.\" -Foreground Magenta",
+        "}"
+    ]
+}

@@ -1,0 +1,78 @@
+{
+    "version": "4-4200",
+    "description": "A sophisticated text editor for code, markup and prose",
+    "homepage": "https://www.sublimetext.com",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.sublimetext.com/eula"
+    },
+    "notes": [
+        "1. Add Sublime Text as a context menu option by running:",
+        "   reg import \"$dir\\install-context.reg\"",
+        "2. Already cracked, you may need to enter any characters as the registration code."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.sublimetext.com/sublime_text_build_4200_x64.zip",
+            "hash": "d20456bbefcd626c7c89a4a2e95c326a0c570df2fd7626fc35091e43ae5bff9f"
+        }
+    },
+    "post_install": [
+        "@('crash_handler.exe', 'update_installer.exe') | ForEach-Object { Remove-Item -Force \"$dir\\$_\" }",
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding 936",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding 936",
+        "    }",
+        "}",
+        "if ($version -eq \"4-4200\") {",
+        "   info 'Cracking . . .'",
+        "   $sublimepath = \"$dir\\sublime_text.exe\"",
+        "   $stream = [System.IO.File]::OpenWrite($sublimepath)",
+        "   @'",
+        "   0X000318AA: 90 90 90 90 90",
+        "   0X000318C3: 90 90 90 90 90",
+        "   0X000AA0DC: 48 31 C0 48 FF C0 C3",
+        "   0X000A85E5: 48 31 C0 C3",
+        "   0X000A891C: 48 31 C0 C3",
+        "'@ -split \"`r?`n\" | ForEach-Object {",
+        "       $offset, $data = ($_ -split ':').Trim()",
+        "       $offset = [convert]::ToInt32($offset, 16)",
+        "       $data = $data -split ' ' | ForEach-Object { [byte]::Parse($_, 'HexNumber') }",
+        "       $stream.Seek($offset, [System.IO.SeekOrigin]::Begin) | Out-Null",
+        "       $stream.Write($data, 0, $data.Length)",
+        "   }",
+        "   $stream.Close()",
+        "}"
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "bin": "subl.exe",
+    "shortcuts": [
+        [
+            "sublime_text.exe",
+            "Sublime Text 4"
+        ]
+    ],
+    "persist": "Data",
+    "checkver": {
+        "script": [
+            "$dev_version, $stable_version = ",
+            "     'dev', 'stable' | ForEach-Object { (Invoke-RestMethod \"https://www.sublimetext.com/updates/4/$_`_update_check\").latest_version }",
+            "if ($dev_version -gt $stable_version) { $dev_version } else { $stable_version }"
+        ],
+        "regex": "((\\d)\\d+)",
+        "replace": "$2-$1"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.sublimetext.com/sublime_text_build_$preReleaseVersion_x64.zip"
+            }
+        }
+    }
+}

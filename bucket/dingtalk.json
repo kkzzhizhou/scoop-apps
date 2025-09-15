@@ -1,27 +1,31 @@
 {
-    "version": "7.8.8.250704005",
-    "description": "钉钉",
-    "homepage": "https://www.dingtalk.com/",
+    "version": "8.0.3.250829001",
+    "description": "Overseas version DingtTalk. An all-in-one free communication and collaboration platform",
+    "homepage": "https://www.dingtalk.com/en",
     "license": {
-        "identifier": "Freeware"
+        "identifier": "EULA",
+        "url": "https://page.dingtalk.com/wow/dingtalk/act/service-en-lite"
     },
-    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/overseas/DingTalk_v7.8.8.250704005.exe#/dl.7z",
-    "pre_install": "Move-Item \"$dir\\build\\dist\\*\" -Destination \"$dir\"",
-    "hash": "b084339cb4d437a6155b5a626d46b3c059ee877b79d00ccc221b3ffda21635ab",
+    "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/overseas/DingTalk_v8.0.3.250829001.exe#/dl.7z",
+    "hash": "080967284d95b5fcac9344cc87df0feec03718afc2d0e8d709a9957a0c876acc",
+    "pre_install": "Remove-Item \"$dir\\build\\updater\", \"$dir\\setup.xml\", \"$dir\\uninst*\" -Force -Recurse",
     "shortcuts": [
         [
-            "DingTalk.exe",
-            "钉钉"
+            "build\\dist\\Dingtalk.exe",
+            "DingTalk"
         ]
     ],
     "checkver": {
         "script": [
-            "$i = Invoke-WebRequest 'https://www.dingtalk.com/win/d/qd=oversea' -MaximumRedirection 0 -ErrorAction Ignore",
-            "$i.Headers.Location"
+            "$response = [System.Net.HttpWebRequest]::Create('https://www.dingtalk.com/win/d/qd=oversea?spm=a213l2.14171110.4290834532.4.63e32726MyWurc').GetResponse()",
+            "$finalUrl = $response.ResponseUri.AbsoluteUri",
+            "Write-Output $finalUrl",
+            "$response.Close()"
         ],
-        "regex": "DingTalk_v([\\d\\.]+)\\.exe"
+        "regex": "DingTalk_v([\\d.]+)\\.exe"
     },
     "autoupdate": {
         "url": "https://dtapp-pub.dingtalk.com/dingtalk-desktop/win_installer/Release/overseas/DingTalk_v$version.exe#/dl.7z"
-    }
+    },
+    "notes": "We don't persist your DingTalk data, they are still storaged in '%APPDATA%\\DingTalk'."
 }

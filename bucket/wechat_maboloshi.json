@@ -1,0 +1,63 @@
+{
+    "version": "3.9.12.57",
+    "description": "微信 Windows 版",
+    "homepage": "https://pc.weixin.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.wechat.com/en/service_terms.html"
+    },
+    "suggest": {
+        "revokemsgpatcher": "revokemsgpatcher"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
+            "hash": "c29fc05630cfc95ef6483f6b5b52aabfe74265bb260e210e78ae437d305d8990"
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+        "$configpath = ensure \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\"",
+        "# 设置微信文件保存位置",
+        "$FileSavePath = if (Test-Path \"E:\\微信聊天记录\") { \"E:\\微信聊天记录\" } else { ensure \"$persist_dir\" }",
+        "Set-Content -NoNewline -Path \"$configpath\\3ebffe94.ini\" -Value \"$FileSavePath\"",
+        "$regpath = \"HKCU:Software\\Tencent\\WeChat\"",
+        "if (!(Test-Path \"$regpath\")) {",
+        "    New-Item -Path \"$regpath\" -Type Directory -Force | Out-Null",
+        "}",
+        "New-ItemProperty -Path $regpath -Name \"FileSavePath\" -Value \"$FileSavePath\" -Force | Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "wechat.exe",
+            "微信"
+        ]
+    ],
+    "persist": "WeChat Files",
+    "post_uninstall": [
+        "Remove-Item -Path \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\\3ebffe94.ini\" -Force | Out-Null",
+        "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\WeChat\" -Name \"FileSavePath\" -Force | Out-Null"
+    ],
+    "checkver": {
+        "script": [
+            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/Tencent.WeChat%23x64'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
+        ],
+        "regex": "Version:\\s*([0-9.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
+                "hash": {
+                    "url": "https://github.com/microsoft/winget-pkgs/raw/refs/heads/master/manifests/t/Tencent/WeChat/$version/Tencent.WeChat.installer.yaml",
+                    "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
+                }
+            }
+        }
+    }
+}
