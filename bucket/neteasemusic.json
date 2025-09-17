@@ -1,16 +1,57 @@
 {
-    "version": "3.1.18.204470",
-    "description": "The official NetEase Cloud Music client.",
     "homepage": "https://music.163.com/",
-    "license": "BSD-3-Clause",
-    "url": "https://xmod-my.sharepoint.cn/:u:/g/personal/admin_xmod_partner_onmschina_cn/EfB9vKjDE5VGlH3ZFEJ5rigBfEzR-SPcq10tgQIugsp2CA?download=1#/dl.7z",
+    "description": "The official NetEase Cloud Music client.",
+    "version": "3.1.19.204510",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://music.163.com/html/web2/service.html"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_3.1.19.204510_64.exe#/dl.7z",
+            "hash": "e5f639913123b1a6e1a6525e2a9175aecdc8c947175b0fcf70cb65f7c6bbfbd3"
+        },
+        "32bit": {
+            "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_3.1.19.204510_32.exe#/dl.7z",
+            "hash": "0f5b8297095ab778cba4e6f30239af87efaf6940cf8705109b86609fad735f01"
+        }
+    },
+    "installer": {
+        "script": [
+            "Get-ChildItem \"$dir\\redist_packages\" | Move-Item -Destination \"$dir\" -Force",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\redist_packages\" -Force -Recurse",
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "cloudmusic.exe",
     "shortcuts": [
         [
             "cloudmusic.exe",
             "网易云音乐"
         ]
     ],
-    "ext": {
-        "url": "https://music.163.com/api/pc/package/download/latest"
+    "checkver": {
+        "url": "https://music.163.com/api/appcustomconfig/get",
+        "jsonpath": "$.data.web-new-download.pc64.downloadUrl",
+        "regex": "NeteaseCloudMusic_Music_official_([\\d.]+)_64.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_$version_64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://d8.music.126.net/dmusic2/NeteaseCloudMusic_Music_official_$version_32.exe#/dl.7z"
+            }
+        }
     }
 }

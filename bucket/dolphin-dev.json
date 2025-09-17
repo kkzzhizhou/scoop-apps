@@ -1,32 +1,31 @@
 {
-    "version": "2506-433",
-    "description": "A Nintendo GameCube and Wii emulator, with enhancements and Netplay. (development version)",
+    "version": "2509-45",
+    "description": "A Nintendo GameCube and Wii emulator",
     "homepage": "https://dolphin-emu.org/",
     "license": {
-        "identifier": "GPL-2.0-or-later",
-        "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING"
+        "url": "https://github.com/dolphin-emu/dolphin/blob/master/COPYING",
+        "identifier": "GPL-2.0-or-later"
     },
     "suggest": {
-        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+        "Microsoft Visual C++ Runtime 2019": "extras/vcredist2019"
     },
     "architecture": {
         "64bit": {
-            "url": "https://dl.dolphin-emu.org/builds/e7/9d/dolphin-master-2506-433-x64.7z",
-            "hash": "6ab2480763cf68b301cde9140f5af5156995f7a57e691f7cb999c4acef6c2c59",
+            "url": "https://dl.dolphin-emu.org/builds/24/f6/dolphin-master-2509-45-x64.7z",
+            "hash": "a2c77cd101fb7c2f911d700d066994afc07a2467c95d7a50ba770f8283c6bc8c",
             "extract_dir": "Dolphin-x64"
-        },
-        "arm64": {
-            "url": "https://dl.dolphin-emu.org/builds/89/14/dolphin-master-2506-433-ARM64.7z",
-            "hash": "9f2f910aee8e58b32da1b1e82419e29ab8c649878f6b93e2e7240b8d8a9c2278",
-            "extract_dir": "Dolphin-ARM64"
         }
     },
+    "extract_dir": "Dolphin-x64",
     "pre_install": [
-        "$appdataPath = \"$Env:AppData\\Dolphin Emulator\"",
-        "if ((Test-Path -Path $appdataPath\\*) -and (!(Test-Path -Path $persist_dir\\*))) {",
-        "   Write-Warning \"Migrating AppData...\"",
-        "   New-Item -Type Directory -Path $persist_dir\\User -Force | Out-Null",
-        "   Copy-Item -Recurse -Force $appdataPath\\* -Destination $persist_dir\\User\\",
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\User\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\\*\" -Destination \"$persist_dir\\User\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Dolphin Emulator\" -Recurse",
+        "   }",
         "}"
     ],
     "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
@@ -34,30 +33,24 @@
         [
             "Dolphin.exe",
             "dolphin-dev"
-        ],
-        [
-            "DolphinTool.exe",
-            "dolphintool-dev"
         ]
     ],
     "shortcuts": [
         [
             "Dolphin.exe",
-            "Dolphin (Development)"
+            "Dolphin (dev)"
         ]
     ],
     "persist": "User",
     "checkver": {
-        "url": "https://dolphin-emu.org/download/",
-        "regex": "(?<prefix1>.{5})/dolphin-master-(?<version>[\\w-]+)-x64[\\s\\S]+?(?<prefix2>.{5})/dolphin-master-\\k<version>-ARM64"
+        "url": "https://dolphin-emu.org/download/list/master/1/",
+        "regex": "\\/(?<rand1>.{2})\\/(?<rand2>.{2})\\/dolphin-master-(?<major>[\\d\\.]+)-(?<build>[\\d]+)",
+        "replace": "${major}-${build}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dl.dolphin-emu.org/builds/$matchPrefix1/dolphin-master-$version-x64.7z"
-            },
-            "arm64": {
-                "url": "https://dl.dolphin-emu.org/builds/$matchPrefix2/dolphin-master-$version-ARM64.7z"
+                "url": "https://dl.dolphin-emu.org/builds/$matchRand1/$matchRand2/dolphin-master-$version-x64.7z"
             }
         }
     }
