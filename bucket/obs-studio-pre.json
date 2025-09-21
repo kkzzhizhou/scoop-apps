@@ -1,35 +1,46 @@
 {
-    "version": "30.1.0-rc1",
+    "version": "32.0.0-rc1",
     "description": "Video recording and live streaming software",
     "homepage": "https://obsproject.com",
     "license": "GPL-2.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/obsproject/obs-studio/releases/download/30.1.0-rc1/OBS-Studio-30.1-rc1.zip",
-            "hash": "fcaf4e366e7b005e2878b1bebb819eb2ca884a3f1661eb69d4fe67b17e7a5638",
-            "shortcuts": [
-                [
-                    "bin\\64bit\\obs64.exe",
-                    "OBS Studio (Preview)"
-                ]
-            ]
+            "url": "https://github.com/obsproject/obs-studio/releases/download/32.0.0-rc1/OBS-Studio-32.0.0-rc1-Windows-x64.zip",
+            "hash": "70c43db5629de0e2c810523e2855822482ba5474720776ce307e790142c0ece1"
+        },
+        "arm64": {
+            "url": "https://github.com/obsproject/obs-studio/releases/download/32.0.0-rc1/OBS-Studio-32.0.0-rc1-Windows-arm64.zip",
+            "hash": "4b3be578bd3aa1d5ea4cc3e1a321da16c9c067cffa044e8f535199377a8f783a"
         }
     },
     "pre_install": "if (!(Test-Path \"$persist_dir\\portable_mode.txt\")) { New-Item \"$dir\\portable_mode.txt\" | Out-Null }",
+    "shortcuts": [
+        [
+            "bin\\64bit\\obs64.exe",
+            "OBS Studio"
+        ]
+    ],
     "persist": [
         "config",
         "portable_mode.txt"
     ],
     "checkver": {
-        "url": "https://api.github.com/repositories/13233158/releases",
-        "jsonpath": "$..assets[0].browser_download_url",
-        "regex": "/([\\d.]+-(?:rc|beta)\\d+)/"
+        "url": "https://api.github.com/repos/obsproject/obs-studio/releases",
+        "regex": "obs-studio/releases/download/([\\d.]+-[\\w]+)/OBS-Studio-([\\d.]+-[\\w]+)",
+        "jp": "$.[*].assets.[*].browser_download_url"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$majorVersion.$minorVersion-$preReleaseVersion.zip"
+                "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$version-Windows-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$version-Windows-arm64.zip"
             }
+        },
+        "hash": {
+            "url": "https://github.com/obsproject/obs-studio/releases/$version",
+            "regex": "(?sm)$basename.*?$sha256"
         }
     }
 }
