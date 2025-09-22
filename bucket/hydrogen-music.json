@@ -1,0 +1,56 @@
+{
+    "version": "0.5.4",
+    "description": "第三方网易云播放器 Hydrogen Music 复活版",
+    "homepage": "https://github.com/ldx123000/Hydrogen-Music",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/ldx123000/Hydrogen-Music#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ldx123000/Hydrogen-Music/releases/download/v0.5.4/Hydrogen.Music.Setup.0.5.4.exe#/dl.7z",
+            "hash": "sha512:14ab6a9fc7088e3c099a25a7029b2e54b1aace5d2e1acaa1f11e86c6ba414b361e6ef72fde29268bfc5a952dca98c8864aaa3440ed03b2cf1abb6c291e7ca575",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\hydrogenmusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\hydrogenmusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Hydrogen Music.exe",
+            "Hydrogen Music"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/ldx123000/Hydrogen-Music/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ldx123000/Hydrogen-Music/releases/download/v$version/Hydrogen.Music.Setup.$version.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

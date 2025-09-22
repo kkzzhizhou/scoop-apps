@@ -1,0 +1,52 @@
+{
+    "version": "0.5.4",
+    "description": "第三方网易云播放器 Hydrogen Music 复活版",
+    "homepage": "https://github.com/ldx123000/Hydrogen-Music",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/ldx123000/Hydrogen-Music#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ldx123000/Hydrogen-Music/releases/download/v0.5.4/Hydrogen.Music.0.5.4.exe#/dl.7z",
+            "hash": "fb73083ba974919bf7c16af6e11dad9cb9e0ce269547c340248744c5e2cf5501",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\hydrogenmusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\hydrogenmusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "Hydrogen Music.exe",
+            "Hydrogen Music"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/ldx123000/Hydrogen-Music/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ldx123000/Hydrogen-Music/releases/download/v$version/Hydrogen.Music.$version.exe#/dl.7z"
+            }
+        }
+    }
+}
