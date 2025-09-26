@@ -1,70 +1,26 @@
 {
+    "homepage": "https://pan.baidu.com/download",
+    "description": "百度网盘PC版 ",
     "version": "7.60.7.104",
-    "description": "百度网盘 PC 版",
-    "homepage": "https://yun.baidu.com",
-    "license": "Unknown",
-    "url": "https://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_7.60.7.104.exe#/dl.7z",
+    "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_7.60.7.104.exe#dl.7z",
     "hash": "f7aeac200cc60a23d90164128e1f2c35348e04b5c7212283d36defeefa294663",
-    "installer": {
-        "script": [
-            "# handle runtime cache",
-            "if (!(Test-Path $persist_dir)) {",
-            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
-            "}",
-            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
-            "if (!(Test-Path $runtimeCachePersist)) {",
-            "    New-Item $runtimeCachePersist -Type Directory -Force | Out-Null",
-            "}",
-            "function PersistsFolder([String] $folder) {",
-            "    $folderName = $folder.Split(\"\\\")[-1]",
-            "    if (Test-Path $runtimeCachePersist\\$folderName) {",
-            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
-            "        New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
-            "    } else {",
-            "        if (Test-Path $folder) {",
-            "            Move-Item $folder $runtimeCachePersist -Force",
-            "            New-Item -Type Junction -Path $folder -Target $runtimeCachePersist\\$folderName | Out-Null",
-            "        }",
-            "    }",
-            "}",
-            "@(\"$env:APPDATA\\Baidu\",\"$env:APPDATA\\BaiduYunGuanjia\",\"$env:APPDATA\\BaiduYunKernel\") | ForEach-Object { PersistsFolder $_ }",
-            "#  associated browser call items",
-            "Invoke-ExternalCommand regsvr32 -ArgumentList @('/s', \"$dir\\npYunWebDetect.dll\") -RunAs | Out-Null",
-            "Invoke-ExternalCommand \"$dir\\YunDetectService.exe\" -ArgumentList @(\"reg\") -RunAs | Out-Null"
-        ]
+    "bin": "BaiduNetdisk.exe",
+    "persist": "users",
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse",
+        "Remove-Item \"$dir\\`$TEMP\" -Recurse"
+    ],
+    "checkver": {
+        "url": "https://pan.baidu.com/disk/cmsdata?do=client",
+        "regex": "BaiduNetdisk_(\\d+.\\d+.\\d+.\\d+).exe"
     },
-    "uninstaller": {
-        "script": [
-            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
-            "function PersistsFolder([String] $folder) {",
-            "    $folderName = $folder.Split(\"\\\")[-1]",
-            "    if (!(Test-Path $runtimeCachePersist\\$folderName)) {",
-            "        Move-Item $folder $runtimeCachePersist -Force",
-            "    } else {",
-            "        Remove-Item $folder -Force -Recurse -ErrorAction SilentlyContinue",
-            "    }",
-            "}",
-            "@(\"$env:APPDATA\\Baidu\",\"$env:APPDATA\\BaiduYunGuanjia\",\"$env:APPDATA\\BaiduYunKernel\") | ForEach-Object { PersistsFolder $_ }",
-            "#  cancel associated browser call items",
-            "Invoke-ExternalCommand regsvr32 -ArgumentList @('/s', '/u', \"$dir\\npYunWebDetect.dll\") -RunAs | Out-Null",
-            "Invoke-ExternalCommand \"$dir\\YunDetectService.exe\" -ArgumentList @(\"unreg\") -RunAs | Out-Null"
-        ]
+    "autoupdate": {
+        "url": "http://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#dl.7z"
     },
     "shortcuts": [
         [
             "BaiduNetdisk.exe",
             "百度网盘"
         ]
-    ],
-    "post_install": [
-        "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
-        "Remove-Item -Force -Recurse \"$dir\\`$TEMP\""
-    ],
-    "checkver": {
-        "url": "https://pan.baidu.com/disk/cmsdata?do=client",
-        "regex": "BaiduNetdisk_([\\d.]+).exe"
-    },
-    "autoupdate": {
-        "url": "https://issuecdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#/dl.7z"
-    }
+    ]
 }
