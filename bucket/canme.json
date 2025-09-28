@@ -1,0 +1,52 @@
+{
+    "version": "0.1.21",
+    "description": "跨平台视频下载与字幕编辑工具｜Cross-platform video downloader & subtitle editor",
+    "homepage": "https://canme.dreamapp.cc/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/arnoldhao/canme#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/arnoldhao/canme/releases/download/v0.1.21/CanMe_Setup_0.1.21_windows_x64.exe#/dl.7z",
+            "hash": "a223131863e04c39ae168092f52c0c280047dfb3cb4f723f58f07123dd7d7348",
+            "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\CanMe.exe\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\CanMe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\CanMe.exe\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\CanMe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "CanMe.exe",
+    "shortcuts": [
+        [
+            "CanMe.exe",
+            "CanMe"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/arnoldhao/canme/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/arnoldhao/canme/releases/download/v$version/CanMe_Setup_$version_windows_x64.exe#/dl.7z"
+            }
+        }
+    }
+}

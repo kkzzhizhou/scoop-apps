@@ -1,0 +1,51 @@
+{
+    "version": "0.1.21",
+    "description": "跨平台视频下载与字幕编辑工具｜Cross-platform video downloader & subtitle editor",
+    "homepage": "https://canme.dreamapp.cc/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/arnoldhao/canme#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/arnoldhao/canme/releases/download/v0.1.21/CanMe_Portable_0.1.21_windows_x64.zip",
+            "hash": "1feac0708ec6425690de0eef56bd41eead71d8828d0aeb92b8a38b0b9a1594b9"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\CanMe.exe\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\CanMe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\CanMe.exe\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\CanMe\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "CanMe.exe",
+    "shortcuts": [
+        [
+            "CanMe.exe",
+            "CanMe"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/arnoldhao/canme/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/arnoldhao/canme/releases/download/v$version/CanMe_Portable_$version_windows_x64.zip"
+            }
+        }
+    }
+}
