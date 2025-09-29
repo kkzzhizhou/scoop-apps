@@ -1,0 +1,38 @@
+{
+    "version": "1.0.6",
+    "description": "A desktop client that supports for multiple LLM providers.",
+    "homepage": "https://cherry-ai.com",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/CherryHQ/cherry-studio/releases/download/v1.0.6/Cherry-Studio-1.0.6-setup.exe#/dl.7z",
+            "hash": "2790e8359a5eefd82ef744ac317404c868576baeeb05df60b42fb6032701d4b9",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Unintall*\" -Recurse"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "Cherry Studio.exe",
+            "Cherry Studio"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "    ensure \"$persist_dir\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\data\")) {",
+        "    ensure \"$persist_dir\\data\" | Out-Null",
+        "}",
+        "New-Item $env:AppData\\CherryStudio -ItemType Junction -Target \"$persist_dir\\data\" | Out-Null"
+    ],
+    "pre_uninstall": [
+        "if (Test-Path \"$Env:AppData\\CherryStudio\\*\") {",
+        "    Remove-Item $env:APPDATA\\CherryStudio -Force -Recurse",
+        "}"
+    ],
+    "persist": "data"
+}

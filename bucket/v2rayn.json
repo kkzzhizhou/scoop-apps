@@ -1,24 +1,35 @@
 {
-    "version": "7.14.12",
+    "version": "7.15.0",
     "description": "A V2Ray client for Windows, support Xray & v2fly core",
     "homepage": "https://github.com/2dust/v2rayN",
     "license": "GPL-3.0-only",
     "suggest": {
-        ".NET Desktop Runtime": "extras/windowsdesktop-runtime-lts",
+        ".NET Desktop Runtime": "windowsdesktop-runtime-lts",
         "v2fly-core": "v2ray"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.14.12/v2rayN-windows-64.zip",
-            "hash": "49e754dd67cf1725f2a4da6735459fe13cbfe29272a3c7897977432cbe34e410",
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.15.0/v2rayN-windows-64.zip",
+            "hash": "078ce3fc4a7e7e333cc217bfa1b068e09ad4149549a10bf8525b3f1f9741f363",
             "extract_dir": "v2rayN-windows-64"
         },
         "arm64": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.14.12/v2rayN-windows-arm64.zip",
-            "hash": "ab377ad98284bf244116f2339551e5f4e3cf00229d7dd29744254a8a95b7dd4f",
+            "url": "https://github.com/2dust/v2rayN/releases/download/7.15.0/v2rayN-windows-arm64.zip",
+            "hash": "05974a93416dcb142adf9969ce46942304fec76e9b3cc5eeba55cbf6ca7361d0",
             "extract_dir": "v2rayN-windows-arm64"
         }
     },
+    "pre_install": [
+        "foreach ($form in @('*.exe', '*.dat')) {",
+        "    foreach ($_ in Get-ChildItem \"$(appdir xray $global)\\current\" -File) {",
+        "        $name = $_.Name",
+        "        if ($name -Like $form) {",
+        "            Write-Host \"Creating hardlink for $name\"",
+        "            New-Item -ItemType HardLink -Path \"$dir\\bin\\Xray\" -Name $name -Target \"$(appdir xray $global)\\current\\$name\" | Out-Null",
+        "        }",
+        "    }",
+        "}"
+    ],
     "bin": "v2rayN.exe",
     "shortcuts": [
         [
@@ -27,7 +38,17 @@
         ]
     ],
     "persist": "guiConfigs",
-    "checkver": "github",
+    "uninstaller": {
+        "script": [
+            "if (Test-Path \"$dir\\guiConfigs\\config.json\") {",
+            "    Copy-Item \"$dir\\guiConfigs\\config.json\" \"$persist_dir\\guiConfigs\\config.json\" | Out-Null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/2dust/v2rayN/releases?per_page=1",
+        "jsonpath": "$[0].tag_name"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
