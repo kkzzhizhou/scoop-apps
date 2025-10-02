@@ -1,0 +1,27 @@
+{
+    "version": "1.14",
+    "description": "A tool to dump Java serialization streams in a more human readable form",
+    "homepage": "https://github.com/NickstaDB/SerializationDumper",
+    "license": "MIT",
+    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/serializationdumper.json https://github.com/vicrack/scoop-bucket",
+    "suggest": {
+        "JDK": [
+            "java/oraclejdk",
+            "java/openjdk"
+        ]
+    },
+    "url": "https://github.com/NickstaDB/SerializationDumper/releases/download/v1.14/SerializationDumper-v1.14.jar#/SerializationDumper.jar",
+    "hash": "14a28514a74909279081f4fceb1402ebc72cf12904316b03edc02c307275d823",
+    "pre_install": "\n$batContent = @\"\n@echo off\nsetlocal EnableDelayedExpansion\n\nset \"jdk_path=\"\nset \"addOpens=\"\n\nset \"common_addOpens=--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.desktop/sun.awt=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED\"\n\nfor %%J in (JDK_19_HOME JDK_17_HOME) do (\n    if defined %%J (\n        set \"jdk_path=!%%J!\\bin\\\"\n        set \"addOpens=%common_addOpens%\"\n    )\n)\n\nif not defined jdk_path if defined JAVA_HOME (\n    set \"jdk_path=%JAVA_HOME%\\bin\\\"\n)\n\nset \"javafx_args=\"\nif defined JAVAFX_HOME (\n    if exist \"%JAVAFX_HOME%\\lib\" (\n        set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"\n    ) else (\n        echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.\n    )\n)\n\n@pushd %~dp0\n@\"%jdk_path%java.exe\" %javafx_args% %addOpens% -jar \"SerializationDumper.jar\" %*\n@popd\n\nendlocal\n\"@\n\n$path = \"$dir/serializationdumper.bat\"\nSet-Content -Path $path -Value $batContent -Encoding Ascii\n",
+    "bin": "serializationdumper.bat",
+    "shortcuts": [
+        [
+            "serializationdumper.bat",
+            "Serializationdumper"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/NickstaDB/SerializationDumper/releases/download/v$version/SerializationDumper-v$version.jar#/SerializationDumper.jar"
+    }
+}

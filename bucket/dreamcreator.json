@@ -1,0 +1,57 @@
+{
+    "version": "1.0.0",
+    "description": "跨平台视频下载与字幕编辑工具｜Cross-platform video downloader & subtitle editor",
+    "homepage": "https://dreamcreator.dreamapp.cc/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/arnoldhao/dreamcreator#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/arnoldhao/dreamcreator/releases/download/v1.0.0/Dream.Creator.Setup_1.0.0_windows_x64.exe#/dl.7z",
+            "hash": "dd8fa2e886de930a5c471eae19c8617349413ab342b2fef76c982c67bf9ff5c5",
+            "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Dream Creator.exe\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\Dream Creator\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Dream Creator.exe\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Dream Creator\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Dream Creator.exe",
+            "DreamCreator"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Dream Creator.exe",
+            "DreamCreator"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/arnoldhao/dreamcreator/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/arnoldhao/dreamcreator/releases/download/v$version/Dream.Creator.Setup_$version_windows_x64.exe#/dl.7z"
+            }
+        }
+    }
+}
