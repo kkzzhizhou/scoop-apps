@@ -1,36 +1,51 @@
 {
+    "version": "8.0.5",
+    "description": "测试当前网络的 NAT 类型（STUN）",
     "homepage": "https://github.com/HMBSbige/NatTypeTester",
-    "description": "Test tool for testing Nat network type",
-    "version": "8.0.4",
-    "license": "MIT",
-    "url": "https://github.com/HMBSbige/NatTypeTester/releases/download/8.0.4/NatTypeTester-8.0.4.7z",
-    "hash": "e585d5a1d6fcf0ef01b662d4e0e27a33ab367de1497232278aa9596d6c9827d3",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/HMBSbige/NatTypeTester#MIT-1-ov-file"
+    },
+    "url": "https://github.com/HMBSbige/NatTypeTester/releases/download/8.0.5/NatTypeTester-8.0.5.7z",
+    "hash": "61457c572a3c218d6bf7057c426aa76d6843bd5759238c933bcc7b8d9f6ff967",
     "extract_dir": "NatTypeTester",
     "architecture": {
         "64bit": {
-            "shortcuts": [
-                [
-                    "NatTypeTester-x64.exe",
-                    "NatTypeTester"
-                ]
+            "pre_install": [
+                "Get-ChildItem \"$dir\\NatTypeTester-x64.exe\" | Rename-Item -NewName 'NatTypeTester.exe'",
+                "Remove-Item \"$dir\\*x86.exe\", \"$dir\\*arm64.exe\" -Force -Recurse"
             ]
         },
         "32bit": {
-            "shortcuts": [
-                [
-                    "NatTypeTester-x86.exe",
-                    "NatTypeTester"
-                ]
+            "pre_install": [
+                "Get-ChildItem \"$dir\\NatTypeTester-x86.exe\" | Rename-Item -NewName 'NatTypeTester.exe'",
+                "Remove-Item \"$dir\\*x64.exe\", \"$dir\\*arm64.exe\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "pre_install": [
+                "Get-ChildItem \"$dir\\NatTypeTester-arm64.exe\" | Rename-Item -NewName 'NatTypeTester.exe'",
+                "Remove-Item \"$dir\\*x64.exe\", \"$dir\\*x86.exe\" -Force -Recurse"
             ]
         }
     },
-    "checkver": "github",
+    "bin": "NatTypeTester.exe",
+    "shortcuts": [
+        [
+            "NatTypeTester.exe",
+            "NatTypeTester"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/HMBSbige/NatTypeTester/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/([\\d.]+)/NatTypeTester-([\\d.]+)"
+    },
     "autoupdate": {
         "url": "https://github.com/HMBSbige/NatTypeTester/releases/download/$version/NatTypeTester-$version.7z",
         "hash": {
-            "url": "https://github.com/HMBSbige/NatTypeTester/releases/tag/$version",
-            "mode": "extract",
-            "regex": "(?sm)$version.7z.*?$sha256"
+            "url": "https://github.com/HMBSbige/NatTypeTester/releases",
+            "regex": "(?s)$basename.*?$sha256"
         }
     }
 }
