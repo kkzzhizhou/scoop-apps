@@ -1,0 +1,80 @@
+{
+    "homepage": "https://www.swift.org/",
+    "description": "The Swift Programming Language (Nightly builds)",
+    "license": "Apache-2.0",
+    "version": "20250930.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20250930.2/installer-amd64.exe",
+            "hash": "65fb91531ccb772d0806e5f39893314ec965dda7d9af9044e02db0585595d1af"
+        },
+        "arm64": {
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20250930.2/installer-arm64.exe",
+            "hash": "a0ff4718134dc2a39c58ad07b97af8791c447e06d92bc372f026f0b7cb13dffb"
+        }
+    },
+    "depends": "main/wixtoolset",
+    "suggest": {
+        "python39": "versions/python39",
+        "vcredist": "extras/vcredist2022"
+    },
+    "installer": {
+        "script": [
+            "wix.exe burn extract \"$dir\\$fname\" -o \"$dir\\extracted\" -oba \"$dir\\extracted\"",
+            "$productVersion = '0.0.0'",
+            "Get-ChildItem \"$dir\\extracted\\WixAttachedContainer\\*.msi\" | ForEach-Object {",
+            "    if ($_.Name -match 'rtl.msi') {",
+            "        Expand-MsiArchive $_ \"$dir\\Runtimes\\usr\\bin\"",
+            "    } else {",
+            "        Expand-MsiArchive $_ \"$dir\"",
+            "    }",
+            "}",
+            "if (Test-Path \"$dir\\LocalApp\\Programs\\Swift\\Tools\") {",
+            "    Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\\Tools\\$productVersion\" | ForEach-Object {",
+            "        Move-Item -Path $_ -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\\bin\" -Force",
+            "    }",
+            "    Remove-Item \"$dir\\LocalApp\\Programs\\Swift\\Tools\" -Recurse | Out-Null",
+            "}",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Platforms\\$productVersion\\Windows.platform\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Platforms\"",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\"",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\\$productVersion\\*\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\"",
+            "Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\" | ForEach-Object {",
+            "    Move-Item -Path $_ -Destination \"$dir\\\" -Force",
+            "}",
+            "Remove-Item \"$dir\\Platforms\\$productVersion\" -Recurse | Out-Null",
+            "Remove-Item \"$dir\\Toolchains\\$($productVersion)+Asserts\" -Recurse | Out-Null",
+            "Remove-Item \"$dir\\Redistributables\\$productVersion\" -Recurse | Out-Null",
+            "@(\"$fname\", 'extracted', 'LocalApp', 'SourceDir') | ForEach-Object {",
+            "    Remove-Item \"$dir\\$_\" -Recurse -ErrorAction SilentlyContinue | Out-Null",
+            "}"
+        ]
+    },
+    "env_add_path": [
+        "Toolchains\\usr\\bin",
+        "Runtimes\\usr\\bin"
+    ],
+    "env_set": {
+        "SDKROOT": "$dir\\Platforms\\Windows.platform\\Developer\\SDKs\\Windows.sdk"
+    },
+    "checkver": {
+        "github": "https://api.github.com/repos/thebrowsercompany/swift-build/releases?per_page=50",
+        "regex": "tag/([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-amd64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-arm64.exe"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    },
+    "notes": [
+        "Swift Toolchain does not bundle Python39 which is a requirement for LLDB to work.",
+        "Please install Python39 from versions/python39 if you want to use the LLDB debugger."
+    ]
+}
