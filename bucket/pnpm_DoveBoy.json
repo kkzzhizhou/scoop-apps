@@ -7,13 +7,48 @@
         "64bit": {
             "url": "https://github.com/pnpm/pnpm/releases/download/v10.18.1/pnpm-win-x64.exe#/pnpm.exe",
             "hash": "a30c43f4a48ea317a5a3ecf8486f27de9e0cfdc2768d4870e23005a3254f3009"
+        },
+        "arm64": {
+            "url": "https://github.com/pnpm/pnpm/releases/download/v10.18.1/pnpm-win-arm64.exe#/pnpm.exe",
+            "hash": "ce77420bdf308e1f4ed803b68cd8251c675b9851d6ae1267731e111b40216c51"
         }
     },
-    "bin": "pnpm.exe",
+    "bin": [
+        "pnpm.exe",
+        [
+            "pnpm.exe",
+            "pnpx",
+            "dlx"
+        ]
+    ],
     "checkver": {
-        "github": "https://github.com/pnpm/pnpm"
+        "script": [
+            "# Using checkver script to check through all release tags",
+            "$auth = Get-GitHubToken",
+            "$head = @{}",
+            "if($auth) { $head.add('authorization', \"Bearer $auth\") }",
+            "$url = 'https://api.github.com/repositories/50565430/releases'",
+            "$latest_ver = [Version]::new(0,0,0,0) # note: Powershell 5 does not support casting 'int' or 'float' to 'System.Version'",
+            "$releases = $(Invoke-WebRequest -Headers $head $url).Content | ConvertFrom-Json",
+            "$releases | ForEach-Object {",
+            "    if (!($_.tag_name -match '([\\d.]+)')) { return }",
+            "    if ($_.prerelease) { return }",
+            "    $ver = [Version]::new($matches[1])",
+            "    if ($ver -gt $latest_ver) { $latest_ver = $ver }",
+            "}",
+            "if ($latest_ver -eq [Version]::new(0,0,0,0)) { error \"Could not match version string in '$url'\"; continue }",
+            "Write-Output $latest_ver"
+        ],
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/pnpm/pnpm/releases/download/v$version/pnpm-win-x64.exe#/pnpm.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/pnpm/pnpm/releases/download/v$version/pnpm-win-x64.exe#/pnpm.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/pnpm/pnpm/releases/download/v$version/pnpm-win-arm64.exe#/pnpm.exe"
+            }
+        }
     }
 }
