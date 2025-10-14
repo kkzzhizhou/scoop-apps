@@ -1,34 +1,35 @@
 {
-    "version": "8.51",
-    "description": "爱思助手",
+    "version": "9.03.010",
+    "description": "简单好用的多功能苹果设备管理助手。轻松备份、恢复、删除、储存、各种设备资料，一键传输您的视频、照片、音乐、通讯录、短信等各种文件，支持管理应用、照片、音乐、铃声、视频以及其他多媒体文件，为iOS用户提供智能化一键刷机、验机功能。",
     "homepage": "https://www.i4.cn/pro_pc.html",
     "license": "Freeware",
     "architecture": {
         "64bit": {
-            "url": "https://d-app6-i4-cn.tliveapp.com/i4tools/V8/8.51/i4Tools8_v8.51_Setup_x64.exe#/dl.7z",
-            "hash": "3d60d8669d3220befaf7ac9777f69d2cd9adcca3c076909ae61165eb3b21c349"
+            "url": "https://d-app6.i4.cn/i4tools/V9/i4Tools_v9.03.010_Setup_x64.exe#/dl.7z",
+            "hash": "fd84d9bb9096e1a20d1ccabf7642bc7a8fcd56dd8efd4549befcd822e3ae6d07"
         },
         "32bit": {
-            "url": "https://d-app6.i4.cn/i4tools/V8/8.51/i4Tools8_v8.51_Setup_x86.exe#/dl.7z",
-            "hash": "21f496cce682ed7f94e761fb828d9eac6daf0af2ecf81f918de6609ba4b8fe03"
+            "url": "https://d-app6.i4.cn/i4tools/V9/i4Tools_v9.03.010_Setup_x86.exe#/dl.7z",
+            "hash": "92d25cb15a8d576980240af8ed25f1472b4885c8074c57bfbc6925280f7a6870"
         }
     },
     "bin": "i4Tools.exe",
     "shortcuts": [
         [
             "i4Tools.exe",
-            "i4Tools"
+            "爱思助手"
         ]
     ],
     "persist": [
         "Download",
-        "cache"
+        "cache",
+        "extrastools"
     ],
     "pre_install": [
         "if (Test-Path \"$persist_dir\\data.db\") { Move-Item \"$persist_dir\\data.db\" \"$dir\" -Force }",
         "if (Test-Path \"$persist_dir\\setting.cfg\") { Move-Item \"$persist_dir\\setting.cfg\" \"$dir\" -Force }"
     ],
-    "post_install": "Remove-Item \"$dir\\Uninstall*\" -Force -Recurse",
+    "post_install": "Remove-Item \"$dir\\Uninstall*\", \"$dir\\updater*\" -Force -Recurse",
     "uninstaller": {
         "script": [
             "if(Test-Path \"$dir\\data.db\") { Move-Item \"$dir\\data.db\" \"$persist_dir\" -Force }",
@@ -36,16 +37,19 @@
         ]
     },
     "checkver": {
-        "url": "https://www.i4.cn/pro_pc.html",
-        "regex": "\\SV([\\d.]+)\\&nbsp"
+        "script": [
+            "try { $detail = Invoke-WebRequest 'https://url.i4.cn/bUjmeyaa' -MaximumRedirection 0 -ErrorAction Ignore } catch { $_.Exception.Response }",
+            "return $detail.Headers.Location"
+        ],
+        "regex": "V(?<majorVersion>\\d)/i4Tools_v([\\d.]+?)_Setup_x64.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://d-app6-i4-cn.tliveapp.com/i4tools/V$majorVersion/$version/i4Tools$majorVersion_v$version_Setup_x64.exe#/dl.7z"
+                "url": "https://d-app6.i4.cn/i4tools/V$majorVersion/i4Tools_v$version_Setup_x64.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://d-app6.i4.cn/i4tools/V$majorVersion/$version/i4Tools$majorVersion_v$version_Setup_x86.exe#/dl.7z"
+                "url": "https://d-app6.i4.cn/i4tools/V$majorVersion/i4Tools_v$version_Setup_x86.exe#/dl.7z"
             }
         }
     }
