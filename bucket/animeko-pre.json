@@ -1,0 +1,55 @@
+{
+    "version": "5.1.0-alpha02",
+    "description": "集找番、追番、看番的一站式弹幕追番平台，云收藏同步 (Bangumi)，离线缓存，BitTorrent，弹幕云过滤。100% Kotlin/Compose Multiplatform",
+    "homepage": "https://animeko.org/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/open-ani/animeko#AGPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/open-ani/animeko/releases/download/v5.1.0-alpha02/ani-5.1.0-alpha02-windows-x86_64.zip",
+            "hash": "sha1:8a94a3d2d1c60f0681e58d6ab1b3dddfa97235a3"
+        }
+    },
+    "extract_dir": "Ani",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Ani.exe",
+    "shortcuts": [
+        [
+            "Ani.exe",
+            "Ani"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/open-ani/animeko/releases",
+        "jp": "$[*].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+-[\\w]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/open-ani/animeko/releases/download/v$version/ani-$version-windows-x86_64.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha1"
+        }
+    }
+}

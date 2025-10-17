@@ -1,0 +1,54 @@
+{
+    "version": "4.8.3",
+    "description": "Modern YouTube downloader with a clean PySide6 interface. Download videos in any quality, extract audio, fetch subtitles, sponsorBlock, and view video metadata. Built with yt-dlp for reliable performance.",
+    "homepage": "https://github.com/oop7/YTSage",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/oop7/YTSage#MIT-1-ov-file"
+    },
+    "suggest": {
+        "ffmpeg": "ffmpeg"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/oop7/YTSage/releases/download/v4.8.3/YTSage-v4.8.3-Setup.exe",
+            "hash": "a823dc80d80767da77c40fc27ab9ff0b4c82a3dc77dc293e0860e96494cb9d66"
+        }
+    },
+    "innosetup": true,
+    "pre_install": "Get-ChildItem \"$dir\\YTSage*.exe\" | Rename-Item -NewName 'YTSage.exe'",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\YTSage\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\YTSage\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "YTSage.exe",
+    "shortcuts": [
+        [
+            "YTSage.exe",
+            "YTSage"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/oop7/YTSage/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/oop7/YTSage/releases/download/v$version/YTSage-v$version-Setup.exe"
+            }
+        }
+    }
+}
