@@ -1,0 +1,52 @@
+{
+    "version": "1.4",
+    "description": "an IDE layer for Neovim",
+    "homepage": "https://www.lunarvim.org/",
+    "license": "GPL-3.0-or-later",
+    "url": [
+        "https://raw.githubusercontent.com/LunarVim/LunarVim/master/utils/installer/install.ps1",
+        "https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/uninstall.ps1"
+    ],
+    "hash": [
+        "fc6f0ebc6104cd085c58e35ce737a367afcda2e10080a506212762eae5294d52",
+        "90799fcdc9dd2ca8959281fabeed2683562a9df59943fbec63405266ebde8f0e"
+    ],
+    "installer": {
+        "script": [
+            "$env:INSTALL_PREFIX = \"$dir\"",
+            "$env:LUNARVIM_RUNTIME_DIR = \"$dir\\LunarVim\"",
+            "$env:LUNARVIM_BASE_DIR = \"$dir\\LunarVim\\lvim\"",
+            "$env:LUNARVIM_CONFIG_DIR = \"$dir\\config\"",
+            "$env:LUNARVIM_CACHE_DIR = \"$dir\\cache\"",
+            ". \"$dir\\install.ps1\"",
+            "Set-Content \"$dir\\lvim.bat\" (@('@echo off', 'set LUNARVIM_RUNTIME_DIR=%~dp0LunarVim', 'set LUNARVIM_BASE_DIR=%~dp0LunarVim\\lvim', 'set LUNARVIM_CONFIG_DIR=%~dp0config', 'set LUNARVIM_CACHE_DIR=%~dp0cache', 'nvim -u \"%LUNARVIM_BASE_DIR%\\init.lua\" %*') -join \"`r`n\") -Encoding Ascii"
+        ]
+    },
+    "uninstaller": {
+        "file": "uninstall.ps1"
+    },
+    "bin": "lvim.bat",
+    "shortcuts": [
+        [
+            "lvim.bat",
+            "LunarVim"
+        ]
+    ],
+    "depends": [
+        "main/neovim",
+        "main/git",
+        "main/make"
+    ],
+    "suggest": {
+        "Python": "main/python",
+        "Node.js": "main/nodejs"
+    },
+    "persist": "config",
+    "checkver": {
+        "url": "https://www.lunarvim.org/docs/installation",
+        "regex": "https://raw\\.githubusercontent\\.com/LunarVim/LunarVim/release-([\\d.]+)/neovim-(?<nvim>[\\d.]+)/utils/installer/install\\.ps1"
+    },
+    "autoupdate": {
+        "url": "https://raw.githubusercontent.com/LunarVim/LunarVim/release-$version/neovim-$matchNvim/utils/installer/install.ps1"
+    }
+}
