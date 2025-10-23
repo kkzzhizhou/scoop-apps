@@ -105,9 +105,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - noql-net/scoop
 - abgox/abgo_bucket
 - aliesbelik/poldi
+- asimov-platform/scoop-bucket
 - ygguorun/scoop-bucket
 - kengwang/scoop-ctftools-bucket
-- asimov-platform/scoop-bucket
 - brian6932/dank-scoop
 - batkiz/backit
 - AStupidBear/scoop-bear
@@ -117,10 +117,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Darkatse/Scoop-Darkatse
 - iquiw/scoop-bucket
 - 42wim/scoop-bucket
+- jfut/scoop-jfut
 - seumsc/scoop-seu
 - starise/Scoop-Confetti
 - aoisummer/scoop-bucket
-- jfut/scoop-jfut
 - babo4d/scoop-xrtools
 - cc713/ownscoop
 - Scoopforge/Extras-Plus
@@ -131,10 +131,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - AkariiinMKII/Scoop4kariiin
 - rivy/scoop-bucket
 - Toddli468/Pentest-Scoop-Bucket
+- natecohen/scoop-av
 - HUMORCE/nuke
 - beer-psi/scoop-bucket
 - littleli/Scoop-littleli
-- natecohen/scoop-av
 - KnotUntied/scoop-fonts
 - typst-community/scoop-bucket
 - Darkatse/Scoop-KanColle
