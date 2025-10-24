@@ -1,0 +1,49 @@
+{
+    "version": "0.8.0",
+    "description": "🧡 Follow everything in one place",
+    "homepage": "https://follow.is/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/RSSNext/Folo#GPL-3.0-1-ov-file"
+    },
+    "url": "https://github.com/RSSNext/Folo/releases/download/desktop/v0.8.0/Folo-0.8.0-windows-x64.exe#/dl.7z",
+    "hash": "sha512:91a85213d29dca32e08e95f7c16ee6586df89444131c16fe55a8e631d27fc4c4704edbb8bb088ced46341c643e781790a0e953d4a07254d5d54d435e71571c3d",
+    "pre_install": [
+        "Get-Item \"$dir\\Folo*.nupkg\" | Rename-Item -NewName 'Folo.nupkg'",
+        "Expand-7zipArchive \"$dir\\Folo.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+        "Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\",  \"$dir\\*.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\Folo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Folo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Folo.exe",
+    "shortcuts": [
+        [
+            "Folo.exe",
+            "Folo"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/RSSNext/Folo/releases/latest",
+        "regex": "/releases/tag/desktop/v([\\w.-]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/RSSNext/Folo/releases/download/desktop/v$version/Folo-$version-windows-x64.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}
