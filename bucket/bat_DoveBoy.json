@@ -4,6 +4,7 @@
     "homepage": "https://github.com/sharkdp/bat",
     "license": "Apache-2.0",
     "suggest": {
+        "vcredist": "vcredist2022",
         "less": "less"
     },
     "architecture": {
@@ -16,8 +17,32 @@
             "url": "https://github.com/sharkdp/bat/releases/download/v0.26.0/bat-v0.26.0-i686-pc-windows-msvc.zip",
             "hash": "d6f4f38815ae2f7f400d8091869ec487f930c36e3f6c189d104e4ddd9e81131d",
             "extract_dir": "bat-v0.26.0-i686-pc-windows-msvc"
+        },
+        "arm64": {
+            "url": "https://github.com/sharkdp/bat/releases/download/v0.26.0/bat-v0.26.0-aarch64-pc-windows-msvc.zip",
+            "hash": "8feb1582b5a141b2c6d63d1f1abfc496c97ff2255eb9b797d5444393d233232c",
+            "extract_dir": "bat-v0.26.0-aarch64-pc-windows-msvc"
         }
     },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config\")) {",
+        "    Copy-Item -ErrorAction Ignore \"$env:APPDATA\\bat\\config\" \"$dir\\config\"",
+        "    New-Item -ErrorAction Ignore \"$dir\\config\" | Out-Null",
+        "}",
+        "'syntaxes', 'themes' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_\")) {",
+        "        Copy-Item -ErrorAction Ignore -Recurse \"$env:APPDATA\\bat\\$_\" \"$dir\\$_\"",
+        "    }",
+        "}"
+    ],
+    "env_set": {
+        "BAT_CONFIG_DIR": "$dir"
+    },
+    "persist": [
+        "config",
+        "syntaxes",
+        "themes"
+    ],
     "bin": "bat.exe",
     "checkver": "github",
     "autoupdate": {
@@ -29,6 +54,10 @@
             "32bit": {
                 "url": "https://github.com/sharkdp/bat/releases/download/v$version/bat-v$version-i686-pc-windows-msvc.zip",
                 "extract_dir": "bat-v$version-i686-pc-windows-msvc"
+            },
+            "arm64": {
+                "url": "https://github.com/sharkdp/bat/releases/download/v$version/bat-v$version-aarch64-pc-windows-msvc.zip",
+                "extract_dir": "bat-v$version-aarch64-pc-windows-msvc"
             }
         }
     }
