@@ -1,0 +1,58 @@
+{
+    "version": "0.92.17-208",
+    "description": "High quality DirectShow video renderer",
+    "homepage": "http://madvr.com",
+    "license": "Freeware",
+    "depends": "gsudo",
+    "url": [
+        "https://www.videohelp.com/download/madVR09217.zip",
+        "https://www.videohelp.com/download/madVRhdrMeasure208.zip"
+    ],
+    "hash": [
+        "87e088f7b5de20d0a9065c73015d7fb7c225870380dd3169c70171b77e74bb97",
+        "e2d777b6431bb5e9511de5fe0830b6585ef98209676c7c37720fdecfc06f062e"
+    ],
+    "pre_install": [
+        "if (-not (Test-Path \"$persist_dir\\settings.bin\")) { New-Item \"$dir\\settings.bin\" | Out-Null }",
+        "(Get-Content \"$dir\\install.bat\") -replace '@pause >nul' | Out-File \"$dir\\install.bat\" -Encoding Ascii -Force",
+        "(Get-Content \"$dir\\uninstall.bat\") -replace '@pause >nul' | Out-File \"$dir\\uninstall.bat\" -Encoding Ascii -Force"
+    ],
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "sudo \"$dir\\install.bat\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "sudo \"$dir\\uninstall.bat\""
+        ]
+    },
+    "shortcuts": [
+        [
+            "madTPG.exe",
+            "madTPG"
+        ],
+        [
+            "madLevelsTweaker.exe",
+            "NVidia & Intel RGB Levels Tweaker"
+        ],
+        [
+            "madHcCtrl.exe",
+            "mad Home Cinema Control"
+        ]
+    ],
+    "persist": "settings.bin",
+    "checkver": {
+        "url": "https://www.videohelp.com/software/madVR",
+        "regex": "(?<prefix>[\\d.]+) / Test Build (?<suffix>[\\d]+[a-z]?)",
+        "replace": "${prefix}-${suffix}"
+    },
+    "autoupdate": {
+        "url": [
+            "https://www.videohelp.com/download/madVR$majorVersion$minorVersion$patchVersion.zip",
+            "https://www.videohelp.com/download/madVRhdrMeasure$matchSuffix.zip"
+        ]
+    }
+}
