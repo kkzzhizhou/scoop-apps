@@ -1,0 +1,41 @@
+{
+    "version": "1.0",
+    "description": "CESI Chinese Fonts - A collection of standardized Chinese fonts in GB2312, GB13000 and GB18030 encodings",
+    "homepage": "https://mirrors.huaweicloud.com/deepin/pool/non-free/f/fonts-cesi/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.cesi.cn/"
+    },
+    "notes": [
+        "CESI fonts have been installed for current user.",
+        "These fonts include 5 types with 3 encodings each:",
+        "  - FangSong (FS): GB2312, GB13000, GB18030",
+        "  - HeiTi (HT): GB2312, GB13000, GB18030",
+        "  - KaiTi (KT): GB2312, GB13000, GB18030",
+        "  - SongTi (SS): GB2312, GB13000, GB18030",
+        "  - XiaoBiaoSong (XBS): GB2312, GB13000, GB18030",
+        "",
+        "Total 15 font files installed."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://mirrors.huaweicloud.com/deepin/pool/non-free/f/fonts-cesi/fonts-cesi_1.0.orig.tar.xz",
+            "hash": "ba9f41cda4f249493c17f46289d585ab0f67fad484dec4b2a35c363798d23130"
+        }
+    },
+    "post_install": [
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-fonts.reg', 'uninstall-fonts.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding 936",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding 936",
+        "    }",
+        "}",
+        "reg import \"$dir\\install-fonts.reg\""
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-fonts.reg\" }"
+}
