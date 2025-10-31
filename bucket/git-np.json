@@ -1,0 +1,82 @@
+{
+    "version": "2.51.2",
+    "description": "Distributed version control system",
+    "homepage": "https://gitforwindows.org",
+    "license": "GPL-2.0-only",
+    "notes": [
+        "Set Git Credential Manager Core by running: \"git config --global credential.helper manager\"",
+        "",
+        "To add context menu entries, run '$dir\\install-context.reg'",
+        "",
+        "To create file-associations for .git* and .sh files, run '$dir\\install-file-associations.reg'"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/git-for-windows/git/releases/download/v2.51.2.windows.1/Git-2.51.2-64-bit.exe",
+            "hash": "ebd318e1d3ee0cc1ac8ead026f1edf8678dcb42c7d74d757b8e2fa8a1be0b25f"
+        },
+        "arm64": {
+            "url": "https://github.com/git-for-windows/git/releases/download/v2.51.2.windows.1/Git-2.51.2-arm64.exe",
+            "hash": "cfa59dc9ca121844a9346224e856ee11916ebd606b211d4291f8b97aa482dd94"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "'install-context', 'uninstall-context', 'install-file-associations', 'uninstall-file-associations' | ForEach-Object {",
+        "    $reg_file_in  = \"$bucketsdir\\main\\scripts\\git\\$_.reg\"",
+        "    $reg_file_out = \"$dir\\$_.reg\"",
+        "    $git_root     = \"$dir\".Replace('\\', '\\\\')",
+        "    if (Test-Path $reg_file_in) {",
+        "        $content = Get-Content $reg_file_in",
+        "        $content = $content.Replace('$git_root', $git_root)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path $reg_file_out -Value $content -Encoding Ascii",
+        "    }",
+        "}"
+    ],
+    "bin": [
+        "bin\\sh.exe",
+        "bin\\bash.exe",
+        "cmd\\git.exe",
+        "cmd\\gitk.exe",
+        "cmd\\git-gui.exe",
+        "cmd\\scalar.exe",
+        "usr\\bin\\tig.exe",
+        "git-bash.exe"
+    ],
+    "shortcuts": [
+        [
+            "git-bash.exe",
+            "Git Bash",
+            "--cd-to-home"
+        ],
+        [
+            "cmd\\git-gui.exe",
+            "Git GUI"
+        ]
+    ],
+    "env_set": {
+        "GIT_INSTALL_ROOT": "$dir"
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/git-for-windows/git/releases/latest",
+        "jsonpath": "$..browser_download_url",
+        "regex": "download/v(?<tag>[\\d.]+windows\\.\\d)/PortableGit-([\\d.]+)-64"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/git-for-windows/git/releases/download/v$version.windows.1/Git-$version-64-bit.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/git-for-windows/git/releases/download/v$version.windows.1/Git-$version-arm64.exe"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/git-for-windows/git/releases/tag/v$matchTag",
+            "regex": "(?s)$basename.*?$sha256"
+        }
+    }
+}
