@@ -14,10 +14,10 @@
         "script": [
             "$rel_list = Invoke-RestMethod -Uri 'https://api.github.com/repos/vosen/ZLUDA/releases'",
             "$rel = $rel_list | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "$download_url = ($rel.assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1).browser_download_url",
-            "Write-Output $rel.tag_name $download_url"
+            "$asset = $rel.assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1",
+            "Write-Output $rel.tag_name $asset.browser_download_url $asset.digest"
         ],
-        "regex": "(?<version>[\\w\\d.-]+)\\s(?<url>[^\\s]+)"
+        "regex": "(?<version>[\\w\\d.-]+)\\s(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)?"
     },
     "installer": {
         "script": [
@@ -28,6 +28,7 @@
         ]
     },
     "autoupdate": {
-        "url": "$matchUrl"
+        "url": "$matchUrl",
+        "hash": "$matchHash"
     }
 }

@@ -2,10 +2,12 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-x64.zip"
+                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-x64.zip",
+                "hash": "$matchX64hash"
             },
             "arm64": {
-                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-ARM64.zip"
+                "url": "https://github.com/Blinue/Magpie/releases/download/$version/Magpie-$version-ARM64.zip",
+                "hash": "$matchArmhash"
             }
         }
     },
@@ -13,9 +15,11 @@
         "script": [
             "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/Blinue/Magpie/releases'",
             "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "Write-Output $latest.tag_name"
+            "$latest_x64 = $latest.assets | Where-Object {$_.name.EndsWith('x64.zip')} | Select-Object -first 1",
+            "$latest_arm64 = $latest.assets | Where-Object {$_.name.EndsWith('ARM64.zip')} | Select-Object -first 1",
+            "Write-Output $latest.tag_name $latest_x64.digest $latest_arm64.digest"
         ],
-        "regex": "(?<version>.+)"
+        "regex": "(?<version>[^\\s]+)\\s(?<x64hash>[^\\s]+)?\\s(?<armhash>[^\\s]+)?"
     },
     "description": "Magpie magnifies any window to fullscreen with a handful of algorithms/filter. The main goal is to tackle the situations where the games either do not natively support fullscreen or display blurry images under fullscreen modes(Preview Edition).",
     "homepage": "https://github.com/Blinue/Magpie",

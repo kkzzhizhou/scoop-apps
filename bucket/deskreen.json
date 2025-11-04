@@ -1,25 +1,51 @@
 {
-    "version": "3.0.1",
+    "version": "3.0.9",
     "description": "Deskreen turns any device with a web browser into a secondary screen for your computer. ⭐️ Star to support our work!",
     "homepage": "https://deskreen.com/",
     "license": {
         "identifier": "AGPL-3.0 license",
         "url": "https://github.com/pavlobu/deskreen#AGPL-3.0-1-ov-file"
     },
-    "url": "https://github.com/pavlobu/deskreen/releases/download/v3.0.1/Deskreen.Setup.3.0.1.exe#/dl.7z",
-    "hash": "sha512:0c80076f42c4c5cc8bcf5b04ae25725200cd997e003b6856dec4897a4c3366d858aeeb494fd15a21fa3e8b57f338a530bb6753dbc75f2b7ae0d9676975f1989d",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
-    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pavlobu/deskreen/releases/download/v3.0.9/deskreen-ce-3.0.9-x64-setup.exe#/dl.7z",
+            "hash": "sha512:8191da026a2c9971144abbee9999e3fea63a73d8236470fcd25cbdbd0be4897c8d85f2e835e482ed1bfdc23b8726c0d29c9d47f6b23e1831eaed141886d43732",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "32bit": {
+            "url": "https://github.com/pavlobu/deskreen/releases/download/v3.0.9/deskreen-ce-3.0.9-ia32-setup.exe#/dl.7z",
+            "hash": "sha512:1481f1cbecb661e27c80620017fcf7cbcc7cece48ae66caf88215468befb888d940e8eae18ec777dde81d58b573eac9a829bd4c9edbf544e3d4e7e9e1a2d7251",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/pavlobu/deskreen/releases/download/v3.0.9/deskreen-ce-3.0.9-arm64-setup.exe#/dl.7z",
+            "hash": "sha512:8f0170d2287ce83bf559b047cfee7b1b982906717287501a82a0ef948aa436c67f97d67a2894904b99f2c570996b694e73bf9fab748920dc0c24cb2a9e817ca3",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
-            "New-Item \"$env:APPDATA\\Deskreen\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Deskreen\"",
+            "Remove-Module -Name AppsUtils"
         ]
     },
     "uninstaller": {
-        "script": "Remove-Item \"$env:APPDATA\\Deskreen\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Deskreen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
     "shortcuts": [
         [
@@ -32,10 +58,28 @@
         "regex": "/releases/tag/v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/pavlobu/deskreen/releases/download/v$version/Deskreen.Setup.$version.exe#/dl.7z",
-        "hash": {
-            "url": "$baseurl/latest.yml",
-            "regex": "sha512:\\s+$base64"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/pavlobu/deskreen/releases/download/v$version/deskreen-ce-$version-x64-setup.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-windows-amd64.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/pavlobu/deskreen/releases/download/v$version/deskreen-ce-$version-ia32-setup.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-windows-amd32.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/pavlobu/deskreen/releases/download/v$version/deskreen-ce-$version-arm64-setup.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-windows-arm64.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
         }
     }
 }

@@ -1,24 +1,25 @@
 {
-    "version": "2025.06.28-e539ab5",
+    "version": "2025.07.26-31861f4",
     "description": "Fast and multi-platform Spotify client with native GUI",
     "homepage": "https://github.com/jpochyla/psst",
     "license": {
         "identifier": "MIT",
         "url": "https://github.com/jpochyla/psst/blob/master/LICENSE.md"
     },
-    "url": "https://github.com/jpochyla/psst/releases/download/rolling/Psst-2025.06.28-e539ab5.exe#/psst.exe",
-    "hash": "abdbb71192000df96f3c1b54058d83fcc504af628900ba24e8f57e99e9591652",
+    "url": "https://github.com/jpochyla/psst/releases/download/rolling/Psst.exe#/psst.exe",
+    "hash": "e486a0d9bca7286bd25fffc57330940211638cc7660545f98f70aab266455230",
     "checkver": {
         "script": [
             "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/jpochyla/psst/releases'",
             "$latest_rel = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
             "$latest_exe = $latest_rel.assets | Where-Object {$_.name.EndsWith(\".exe\")} | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "Write-Output $latest_exe.name $latest_exe.browser_download_url"
+            "Write-Output $latest_rel.name $latest_exe.browser_download_url $latest_exe.digest"
         ],
-        "regex": "Psst-(?<version>.+)\\.exe\\s+(?<url>[^\\s]+)"
+        "regex": "\\((?<version>[\\w\\d.-]+)\\)\\s+(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)?"
     },
     "autoupdate": {
-        "url": "$matchUrl#/psst.exe"
+        "url": "$matchUrl#/psst.exe",
+        "hash": "$matchHash"
     },
     "shortcuts": [
         [

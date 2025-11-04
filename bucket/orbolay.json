@@ -1,5 +1,5 @@
 {
-    "version": "0.1.0-alpha3",
+    "version": "0.1.0-alpha7",
     "description": "Tiny alternative Discord client with a smaller footprint, themes and plugins, multi-profile, and more!",
     "homepage": "https://github.com/SpikeHD/Orbolay",
     "license": {
@@ -8,29 +8,24 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/SpikeHD/Orbolay/releases/download/v0.1.0-alpha3/orbolay-x86_64-pc-windows-msvc.exe#/orbolay.exe",
-            "hash": "3215e6ed3457bfb94f883db4d995e48ca03c024d016a58992ce71da6b3114a80"
-        },
-        "arm64": {
-            "url": "https://github.com/SpikeHD/Orbolay/releases/download/v0.1.0-alpha3/orbolay-aarch64-pc-windows-msvc.exe#/orbolay.exe",
-            "hash": "a521fc8b9378ea523d45e09f6da4edbcbd8299b839fed8500f3c5db46542c3c3"
+            "url": "https://github.com/SpikeHD/Orbolay/releases/download/v0.1.0-alpha7/orbolay-x86_64-pc-windows-msvc.exe#/orbolay.exe",
+            "hash": "8618c89eaa41878d036abd67e48922c90041b465a7adb820401af9d67a7a7855"
         }
     },
     "checkver": {
         "script": [
             "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/SpikeHD/Orbolay/releases'",
             "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
-            "Write-Output $latest.tag_name"
+            "$latest_asset = $latest.assets | Where-Object {$_.name -eq 'orbolay-x86_64-pc-windows-msvc.exe'} | Select-Object -first 1",
+            "Write-Output $latest.tag_name $latest_asset.digest"
         ],
-        "regex": "v(?<version>[\\d\\w\\.\\-]+)"
+        "regex": "v(?<version>[\\d\\w\\.\\-]+)\\s(?<hash>[^\\s]+)?"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/SpikeHD/Orbolay/releases/download/v$version/orbolay-x86_64-pc-windows-msvc.exe#/orbolay.exe"
-            },
-            "arm64": {
-                "url": "https://github.com/SpikeHD/Orbolay/releases/download/v$version/orbolay-aarch64-pc-windows-msvc.exe#/orbolay.exe"
+                "url": "https://github.com/SpikeHD/Orbolay/releases/download/v$version/orbolay-x86_64-pc-windows-msvc.exe#/orbolay.exe",
+                "hash": "$matchHash"
             }
         }
     },

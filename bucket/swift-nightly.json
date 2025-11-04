@@ -2,15 +2,15 @@
     "homepage": "https://www.swift.org/",
     "description": "The Swift Programming Language (Nightly builds)",
     "license": "Apache-2.0",
-    "version": "20251102.3",
+    "version": "20251103.3",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20251102.3/installer-amd64.exe",
-            "hash": "8b86e4ccc0fb0c2fc2df2bd7f15aa480ca05f7683d79098a573b2d4dcf0766a3"
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20251103.3/installer-offline-amd64.exe",
+            "hash": "32e88a38f0ab12cfdfd28ce343b66f8735aeb318d265adac5e78a25903b7cd39"
         },
         "arm64": {
-            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20251102.3/installer-arm64.exe",
-            "hash": "80235c754e28c759ef06708c56c4664ec6d3d317cf52e19092dfff6bb08e85c1"
+            "url": "https://github.com/thebrowsercompany/swift-build/releases/download/20251103.3/installer-offline-arm64.exe",
+            "hash": "7132a14107babead92d5f462aba5d7b117924df2d981ae0d4b370050b877fe52"
         }
     },
     "depends": "main/wixtoolset",
@@ -23,26 +23,20 @@
             "wix.exe burn extract \"$dir\\$fname\" -o \"$dir\\extracted\" -oba \"$dir\\extracted\"",
             "$productVersion = '0.0.0'",
             "Get-ChildItem \"$dir\\extracted\\WixAttachedContainer\\*.msi\" | ForEach-Object {",
-            "    if ($_.Name -match 'rtl.msi') {",
+            "    if ($_.Name -match 'rtl.*.msi') {",
             "        Expand-MsiArchive $_ \"$dir\\Runtimes\\usr\\bin\"",
             "    } else {",
             "        Expand-MsiArchive $_ \"$dir\"",
             "    }",
             "}",
-            "if (Test-Path \"$dir\\LocalApp\\Programs\\Swift\\Tools\") {",
-            "    Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\\Tools\\$productVersion\" | ForEach-Object {",
-            "        Move-Item -Path $_ -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\\bin\" -Force",
-            "    }",
-            "    Remove-Item \"$dir\\LocalApp\\Programs\\Swift\\Tools\" -Recurse | Out-Null",
-            "}",
-            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Platforms\\$productVersion\\Windows.platform\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Platforms\"",
-            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\\usr\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\"",
+            "Rename-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+Asserts\" -NewName \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\Asserts\"",
+            "Rename-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\$($productVersion)+NoAsserts\" -NewName \"$dir\\LocalApp\\Programs\\Swift\\Toolchains\\NoAsserts\"",
+            "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Platforms\\$productVersion\\*.platform\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Platforms\"",
             "Move-Item -Path \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\\$productVersion\\*\" -Destination \"$dir\\LocalApp\\Programs\\Swift\\Redistributables\"",
             "Get-ChildItem \"$dir\\LocalApp\\Programs\\Swift\" | ForEach-Object {",
             "    Move-Item -Path $_ -Destination \"$dir\\\" -Force",
             "}",
             "Remove-Item \"$dir\\Platforms\\$productVersion\" -Recurse | Out-Null",
-            "Remove-Item \"$dir\\Toolchains\\$($productVersion)+Asserts\" -Recurse | Out-Null",
             "Remove-Item \"$dir\\Redistributables\\$productVersion\" -Recurse | Out-Null",
             "@(\"$fname\", 'extracted', 'LocalApp', 'SourceDir') | ForEach-Object {",
             "    Remove-Item \"$dir\\$_\" -Recurse -ErrorAction SilentlyContinue | Out-Null",
@@ -50,7 +44,7 @@
         ]
     },
     "env_add_path": [
-        "Toolchains\\usr\\bin",
+        "Toolchains\\Asserts\\usr\\bin",
         "Runtimes\\usr\\bin"
     ],
     "env_set": {
@@ -63,14 +57,11 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-amd64.exe"
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-offline-amd64.exe"
             },
             "arm64": {
-                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-arm64.exe"
+                "url": "https://github.com/thebrowsercompany/swift-build/releases/download/$version/installer-offline-arm64.exe"
             }
-        },
-        "hash": {
-            "url": "$url.sha256"
         }
     },
     "notes": [

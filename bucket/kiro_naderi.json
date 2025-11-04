@@ -1,0 +1,53 @@
+{
+    "version": "0.5.0",
+    "description": "The AI IDE for prototype to production",
+    "homepage": "https://kiro.dev",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://prod.download.desktop.kiro.dev/releases/202510301715-Kiro-win32-x64.zip",
+            "hash": "6af79a498970a5df596755103cf95fa0620d48c1c53af2f3ce87a36523859441"
+        }
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.kiro\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.kiro\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Kiro\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\Kiro\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=kiro(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin\\kiro.cmd",
+            "kiro",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Kiro.exe",
+            "Kiro",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://prod.download.desktop.kiro.dev/stable/metadata-win32-x64-user-stable.json",
+        "regex": "\"version\":\"(?<version>[\\d.]+)\".*?releases/(?<build>\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://prod.download.desktop.kiro.dev/releases/$matchBuild-Kiro-win32-x64.zip"
+            }
+        }
+    }
+}

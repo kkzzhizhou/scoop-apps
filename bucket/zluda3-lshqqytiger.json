@@ -15,10 +15,10 @@
             "$rel_list = Invoke-RestMethod -Uri 'https://api.github.com/repos/lshqqytiger/ZLUDA/releases'",
             "$rel = $rel_list | Sort-Object {$_.published_at} | Select-Object -last 1",
             "$assets = $rel.assets | Where-Object { $_.name -match 'windows' } | Sort-Object -Descending {if ($_.name -match '-rocm(\\d+)-') {([int]$Matches[1] + [int]($_.name -match '-nightly-'))} else {0}}",
-            "$download_url = ($assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1).browser_download_url",
-            "Write-Output $rel.name $download_url $rel.tag_name"
+            "$download_asset = $assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1",
+            "Write-Output $rel.name $download_asset.browser_download_url $download_asset.digest"
         ],
-        "regex": "(?<version>[\\d.]+)\\s(?<url>[^\\s]+)\\s(?<tag>.+)"
+        "regex": "(?<version>[\\d.]+)\\s(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)?"
     },
     "installer": {
         "script": [
@@ -29,6 +29,7 @@
         ]
     },
     "autoupdate": {
-        "url": "$matchUrl"
+        "url": "$matchUrl",
+        "hash": "$matchHash"
     }
 }

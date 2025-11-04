@@ -30,18 +30,24 @@
     "checkver": {
         "script": [
             "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/lapce/lapce/releases'",
-            "$nightly = $rel_info | Where-Object { $_.tag_name -eq 'nightly'} | Select-Object -first 1",
-            "$stable_version = ($rel_info | Where-Object { $_.tag_name -match '^v(\\d+\\.?)+'} | Select-Object -first 1).tag_name.TrimStart('v').Split('.')",
-            "$stable_version[-1] = [int]$stable_version[-1] + 1",
-            "$next_version = $stable_version -join '.'",
-            "Write-Output (\"{0}-nightly.{1}\" -f $next_version, ($nightly.target_commitish.Substring(0,7)))"
+            "$latest = $rel_info | Sort-Object {$_.updated_at} | Select-Object -last 1",
+            "$latest_asset = $latest.assets | Where-Object {$_.name -eq 'Lapce-windows-portable.zip'} | Select-Object -first 1",
+            "if ($latest.tag_name -eq 'nightly') {",
+            "    $stable_version = ($rel_info | Where-Object { $_.tag_name -match '^v(\\d+\\.?)+'} | Select-Object -first 1).tag_name.TrimStart('v').Split('.')",
+            "    $stable_version[-1] = [int]$stable_version[-1] + 1",
+            "    $next_version = $stable_version -join '.'",
+            "    Write-Output (\"{0}-nightly.{1} {2} {3}\" -f $next_version, ($latest.target_commitish.Substring(0,7)), $latest_asset.browser_download_url, $latest_asset.digest)",
+            "} else {",
+            "    Write-Output $latest.tag_name $latest_asset.browser_download_url $latest_asset.digest",
+            "}"
         ],
-        "regex": "(.+)"
+        "regex": "(?<version>[^\\s]+)\\s(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)?"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/lapce/lapce/releases/download/nightly/Lapce-windows-portable.zip"
+                "url": "$matchUrl",
+                "hash": "$matchHash"
             }
         }
     }
