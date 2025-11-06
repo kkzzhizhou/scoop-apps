@@ -1,5 +1,5 @@
 {
-    "version": "2112",
+    "version": "2115",
     "description": "A Git client with snappy UI, three-way merge tool, side-by-side diffs, syntax highlighting, and more.",
     "homepage": "https://www.sublimemerge.com/",
     "license": {
@@ -7,29 +7,51 @@
         "url": "https://www.sublimehq.com/eula"
     },
     "notes": [
-        "Sublime Merge may be downloaded and evaluated for free, however a license must be purchased for continued use. There is currently no enforced time limit for the evaluation. For more information please see https://www.sublimemerge.com/",
-        "Add Sublime Merge as a context menu option by running:",
-        "reg import \"$dir\\install-context.reg\""
+        "1. Sublime Merge may be downloaded and evaluated for free, however a license must be purchased for continued use. There is currently no enforced time limit for the evaluation. For more information please see https://www.sublimemerge.com/",
+        "2. For now, it's cracked, and you may need to enter any character as a registration code.",
+        "3. Add Sublime Merge as a context menu option by running:",
+        "   reg import \"$dir\\install-context.reg\""
     ],
     "architecture": {
         "64bit": {
-            "url": "https://download.sublimetext.com/sublime_merge_build_2112_x64.zip",
-            "hash": "0404dc75a57283223d41843eac0b650d1dcd69dde41eba39731611dff57e3664"
+            "url": "https://download.sublimetext.com/sublime_merge_build_2115_x64.zip",
+            "hash": "7aa7e76306a5f23bbdb0efcbd7bdf332e933b46bd685bc8b7c14f2c05d1b05fb"
         }
     },
     "post_install": [
-        "$exepath = \"$dir\\sublime_merge.exe\".Replace('\\', '\\\\')",
-        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
-        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\$app\\$_\") {",
-        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\$app\\$_\"",
-        "        $content = $content.Replace('$sublime-merge-path', $exepath)",
+        "@('crash_handler.exe', 'update_installer.exe') | ForEach-Object { Remove-Item -Force \"$dir\\$_\" }",
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding 936",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
         "        if ($global) {",
         "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
         "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding 936",
         "    }",
-        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "}",
+        "if ($version -eq \"2112\") {",
+        "    info 'Cracking . . .'",
+        "    $sublimepath = \"$dir\\sublime_merge.exe\"",
+        "    $stream = [System.IO.File]::OpenWrite($sublimepath)",
+        "    @'",
+        "    0x00047D06: 48 C7 C0 01 00 00 00 C3",
+        "    0x0004A126: 90 90 90 90 90         ",
+        "    0x0004A13F: 90 90 90 90 90         ",
+        "    0x000479FD: C3                     ",
+        "    0x00048DFF: C3                     ",
+        "'@ -split \"`r?`n\" | ForEach-Object {",
+        "        $offset, $data = ($_ -split ':').Trim()",
+        "        $offset = [convert]::ToInt32($offset, 16)",
+        "        $data = $data -split ' ' | ForEach-Object { [byte]::Parse($_, 'HexNumber') }",
+        "        $stream.Seek($offset, [System.IO.SeekOrigin]::Begin) | Out-Null",
+        "        $stream.Write($data, 0, $data.Length)",
+        "    }",
+        "    $stream.Close()",
         "}"
     ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
     "bin": "smerge.exe",
     "shortcuts": [
         [
@@ -38,12 +60,13 @@
         ]
     ],
     "persist": "Data",
-    "uninstaller": {
-        "script": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }"
-    },
     "checkver": {
-        "url": "https://www.sublimemerge.com/updates/stable_update_check",
-        "jsonpath": "$.latest_version"
+        "script": [
+            "$dev_version, $stable_version = ",
+            "     'dev', 'stable' | ForEach-Object { (Invoke-RestMethod \"https://www.sublimemerge.com/updates/$_`_update_check\").latest_version }",
+            "if ($dev_version -gt $stable_version) { $dev_version } else { $stable_version }"
+        ],
+        "regex": "(\\d+)"
     },
     "autoupdate": {
         "architecture": {
