@@ -1,5 +1,5 @@
 {
-    "version": "7.6.0-1",
+    "version": "8.0.0-1-py313",
     "description": "A command-line utility that pipes video streams from various services into a video player.",
     "homepage": "https://streamlink.github.io/",
     "license": "BSD-2-Clause",
@@ -17,25 +17,26 @@
     "architecture": {
         "64bit": {
             "url": [
-                "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-7.6.0-1-py313-x86_64.zip.zip",
+                "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-8.0.0-1-py313-x86_64.zip.zip",
                 "https://raw.githubusercontent.com/2bc4/streamlink-ttvlol/master/twitch.py"
             ],
             "hash": [
-                "6a147d50861bf554c34b3cab709f1f3b619ed408612479df40ed1afbcda5df2e",
-                "aaaad89a582bf1283249de0aa3f66ad23363f009590f1a3ef3b98f3c76944260"
+                "a8db554bd64c90fb018a5748206b2837782d7d0c9ee55c3e95ec13c881cb1c85",
+                "4e582cc30a54c2cb28870e27a7a526279f8c1b46ec3515ab048426dd1710f8da"
             ]
         }
     },
     "pre_install": [
-        "Expand-7zipArchive \"$dir/streamlink-$version-py313-x86*.zip\" \"$dir\" -Removal",
-        "$python = try { $null = (py.exe -0p | Select-Object -First 1) -cmatch '\\S+\\Z'; $Matches[1] } catch {}",
+        "Expand-7zipArchive \"$dir/streamlink-$version-*.zip\" \"$dir\" -Removal",
+        "$python = try { $null = (py.exe -0p | Select-Object -First 1) -cmatch '\\S+\\Z'; $Matches[0] } catch {}",
+        "$null = $version -cmatch '-py(\\d)(\\d{1,2})\\Z'",
         "$paths = 'bin', 'pkgs'",
-        "if ($python -and ($ver = try { [Version]((py.exe -V) -Replace '[^\\d.]') } catch {}) -lt [Version]'3.14.0' -and $ver -ge [Version]'3.13.0') {",
+        "if ($python -and ($ver = try { [Version]((py.exe -V) -Replace '[^\\d.]') } catch {}) -lt [Version]\"$($Matches[1]).$([byte]$Matches[2] + 1).0\" -and $ver -ge [Version]\"$($Matches[1]).$($Matches[2]).0\") {",
         "    $null = New-Item -ItemType Junction -Path \"$dir/Python\" -Target (Split-Path $python)",
         "}",
         "else { $paths += 'Python' }",
-        "$paths | ForEach-Object { Move-Item \"$dir/streamlink-$version-py313-x86*/$_\" \"$dir\" }",
-        "Remove-Item -Recurse \"$dir/streamlink-$version-py313-x86*\"",
+        "$paths | ForEach-Object { Move-Item \"$dir/streamlink-$version-*/$_\" \"$dir\" }",
+        "Remove-Item -Recurse \"$dir/streamlink-$version-*\"",
         "Move-Item -Force \"$dir/twitch.py\" \"$dir/pkgs/streamlink/plugins\"",
         "$session = (Get-ChildItem \"$dir/pkgs/streamlink/session/session.py\").FullName",
         "(Get-Content -Raw $session).Replace('plugins_lazy: bool = True', 'plugins_lazy: bool = False') | Set-Content $session",
@@ -58,25 +59,19 @@
     "checkver": {
         "script": [
             "try {",
-            "    $null = (Invoke-RestMethod https://api.github.com/repositories/472790314/actions/artifacts).artifacts[0].name -cmatch 'streamlink-([\\w.-]+)-py'",
-            "    $verSplit = $matches[1].split('-')",
-            "    if ($verSplit.Length -eq 3 -and $verSplit[2][0] -eq 'g') { $build = 'nightly' }",
-            "    else { $build = 'main' }",
-            "    $build, $matches[1] -join ' '",
+            "    $id = (Invoke-RestMethod 'https://api.github.com/repositories/472790314/actions/workflows/main.yml/runs?branch=master&status=success').workflow_runs[0].id",
+            "    (Invoke-RestMethod \"https://api.github.com/repositories/472790314/actions/runs/$id/artifacts\").artifacts[0].name",
             "}",
             "catch {",
             "    ''",
             "}"
         ],
-        "regex": "\\A(?<build>\\S+) (\\S+)\\Z"
+        "regex": "\\Astreamlink-([^h-z]+-py\\d+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": [
-                    "https://nightly.link/streamlink/windows-builds/workflows/$matchBuild/master/streamlink-$version-py313-x86_64.zip.zip",
-                    "https://raw.githubusercontent.com/2bc4/streamlink-ttvlol/master/twitch.py"
-                ]
+                "url": "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-$version-x86_64.zip.zip"
             }
         }
     }
