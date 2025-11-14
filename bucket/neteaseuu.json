@@ -1,13 +1,27 @@
 {
     "homepage": "https://uu.163.com/",
     "description": "Game accelerator created by Netease Inc.",
-    "version": "5.65.1.5113",
+    "version": "5.66.0.5114",
     "license": {
         "identifier": "EULA",
         "url": "https://uu.163.com/agreement.html"
     },
-    "url": "https://dorado-api.deno.dev/neteaseuu?version=5.65.1.5113#/dl.7z",
-    "hash": "ee1a7b1138d1e55c2f665767cbc156145bc63f1f3933867de60737822e1cd2d3",
+    "url": "https://uu.gdl.netease.com/5114/UU-5.66.0.exe#/dl.7z",
+    "hash": "e366ac6a76bbd45381b0f94501b6e8c54e313c3517391783459f3c2867028c49",
+    "installer": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "shortcuts": [
         [
             "uu_launcher.exe",
@@ -16,14 +30,14 @@
     ],
     "checkver": {
         "script": [
-            "$url = 'https://adl.netease.com/d/g/uu/c/gw/js'",
+            "$url = 'https://adl.netease.com/d/g/uu/c/gw?type=pc'",
             "$response = Invoke-WebRequest -Uri $url -UseBasicParsing",
             "Write-Output $response.Content"
         ],
-        "regex": "gdl.netease.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+).exe(?<keys>.*?)\"",
+        "regex": "pc_link = \"https://.*?.gdl.netease.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+).exe",
         "replace": "${ver}.${build}"
     },
     "autoupdate": {
-        "url": "https://dorado-api.deno.dev/neteaseuu?version=$version#/dl.7z"
+        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$matchVer.exe#/dl.7z"
     }
 }
