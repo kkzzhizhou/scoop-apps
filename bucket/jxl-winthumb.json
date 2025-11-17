@@ -1,49 +1,56 @@
 {
     "version": "0.2.12",
-    "description": "A JPEG XL thumbnail handler for Windows File Explorer.",
+    "description": "A JPEG XL (*.jxl) thumbnail handler for Windows File Explorer.",
     "homepage": "https://github.com/saschanaz/jxl-winthumb",
     "license": "ISC",
     "architecture": {
-        "32bit": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_i686.dll#/jxl_winthumb.dll",
-            "hash": "736014058987eed28a6fa622ffd4ab532e243fc73afd74267f44836bf5dd5bb0"
+        "arm64": {
+            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_aarch64.dll",
+            "hash": "cc30724fb82d2aea0bc00313d5dc6c48885868a3a8ed1251ceddab6418c709e3"
         },
         "64bit": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_x86_64.dll#/jxl_winthumb.dll",
+            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_x86_64.dll",
             "hash": "7416c3134277e7f108eaa73db3652ea8b083c6a5b4623c19962aa0b455ffeb5e"
         },
-        "arm64": {
-            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_aarch64.dll#/jxl_winthumb.dll",
-            "hash": "cc30724fb82d2aea0bc00313d5dc6c48885868a3a8ed1251ceddab6418c709e3"
+        "32bit": {
+            "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v0.2.12/jxl_winthumb_i686.dll",
+            "hash": "736014058987eed28a6fa622ffd4ab532e243fc73afd74267f44836bf5dd5bb0"
         }
     },
     "installer": {
         "script": [
-            "if (!(is_admin)) {",
-            "    error \"Administrator rights are required to install $app.\"",
-            "    exit 1",
-            "}",
-            "regsvr32 \"$dir\\jxl_winthumb.dll\""
+            "'aarch64', 'x86_64', 'i686' | foreach {",
+            "    if ( Test-Path $dir\\$_ ) {",
+            "        $Arg = \"/s $dir\\jxl_winthumb_$_.dll\"",
+            "        Start-Process regsvr32.exe -Verb RunAs -ArgumentList $Arg -Wait",
+            "    }",
+            "}"
         ]
     },
-    "pre_uninstall": [
-        "if (!(is_admin)) {",
-        "    error \"Administrator rights are required to uninstall $app.\"",
-        "    exit 1",
-        "}",
-        "regsvr32 /u \"$dir\\jxl_winthumb.dll\""
-    ],
-    "checkver": "github",
+    "uninstaller": {
+        "script": [
+            "'aarch64', 'x86_64', 'i686' | foreach {",
+            "    if ( Test-Path $dir\\$_ ) {",
+            "        $Arg = \"/s /u $dir\\jxl_winthumb_$_.dll\"",
+            "        Start-Process regsvr32.exe -Verb RunAs -ArgumentList $Arg -Wait",
+            "    }",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://github.com/saschanaz/jxl-winthumb/tags",
+        "regex": "releases/tag/v([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
-            "32bit": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_i686.dll#/jxl_winthumb.dll"
+            "arm64": {
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_aarch64.dll"
             },
             "64bit": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_x86_64.dll#/jxl_winthumb.dll"
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_x86_64.dll"
             },
-            "arm64": {
-                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_aarch64.dll#/jxl_winthumb.dll"
+            "32bit": {
+                "url": "https://github.com/saschanaz/jxl-winthumb/releases/download/v$version/jxl_winthumb_i686.dll"
             }
         }
     }
