@@ -1,15 +1,15 @@
 {
     "homepage": "https://getwacup.com/",
-    "version": "1.99.39.22656",
+    "version": "1.99.41.22982",
     "description": "The WinAmp Community Update Project (WACUP) is designed to work only with the patched Winamp 5.666 release to provide bug fixes, updates of existing features and most importantly new features with the goal to eventually become it's own highly Winamp compatible media player.",
     "architecture": {
         "32bit": {
-            "url": "https://getwacup.com/preview/WACUP_Preview_v1_99_39_22656_x86.exe",
-            "hash": "eada424a347c710429451f97aaf0008b2dfc82f0669693b1d120a22b50c6e6c4"
+            "url": "https://getwacup.com/preview/WACUP_Preview_v1_99_41_22982_x86.exe",
+            "hash": "de72445b0ad5850050102b459ee0196f6c3a5a9f66c79d057209854cf739d1b1"
         },
         "64bit": {
-            "url": "https://getwacup.com/preview_x64/WACUP_Preview_v1_99_39_22656_x64.exe",
-            "hash": "b9a67b86beaedb48796da4c0692a060548fc99c6eb01956e5f6433f4b3e0b943"
+            "url": "https://getwacup.com/preview_x64/WACUP_Preview_v1_99_41_22982_x64.exe",
+            "hash": "458d3d8bf9a03ee9f265dedaeddb896844bfc5d2b02051ae0949efebb5bdc809"
         }
     },
     "pre_install": [
@@ -20,13 +20,20 @@
         "   }",
         "}",
         "create $dir/Profile Directory",
-        "create $dir/paths.ini File \"[Winamp]`ninidir=.\\Profile`nportable=1\""
+        "create $dir/paths.ini File \"[WACUP]`ninidir=.\\Profile`nportable=1\""
     ],
     "installer": {
-        "args": [
-            "/S",
-            "/PORTABLE",
-            "/D=$dir"
+        "script": [
+            "push-location $dir",
+            "sudo ./$fname /S /PORTABLE /D=$dir",
+            "$processName = \"wacup\"",
+            "Stop-Process -Name $processName -ErrorAction SilentlyContinue",
+            "do {",
+            "    $process = Get-Process $processName -ErrorAction SilentlyContinue",
+            "    Start-Sleep 1",
+            "} until ($process -ne $Null)",
+            "$process | Stop-Process -ErrorAction SilentlyContinue",
+            "pop-location"
         ]
     },
     "bin": "wacup.exe",
@@ -37,6 +44,10 @@
         ]
     ],
     "persist": "Profile",
+    "depends": [
+        "gsudo"
+    ],
+    "notes": "Requires elevation for now",
     "checkver": {
         "url": "https://getwacup.com/",
         "regex": "Preview v(?<version>[\\d.]+)"
