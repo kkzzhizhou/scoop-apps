@@ -1,6 +1,6 @@
 {
     "version": "1.10.0",
-    "description": "Featuring powerful AI capabilities and supporting various e-book formats, it makes reading smarter and more focused.",
+    "description": "A thoughtfully crafted e-book reader for book lovers.",
     "homepage": "https://github.com/Anxcye/anx-reader",
     "license": "MIT",
     "architecture": {
@@ -15,20 +15,13 @@
             "Anx Reader"
         ]
     ],
-    "installer": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name muggle) scripts/DoradoUtils.psm1)",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\anx_reader_data\" -Target \"$env:APPDATA\\com.anxcye\\anx_reader\"",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name muggle) scripts/DoradoUtils.psm1)",
-            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.anxcye\\anx_reader\"",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
+    "post_uninstall": [
+        "if ($purge) {",
+        "    $env:APPDATA, $env:LOCALAPPDATA | ForEach-Object {",
+        "        Join-Path -Path $_ -ChildPath 'com.anxcye\\anx_reader' | Remove-Item -Force -Recurse -ErrorAction Ignore",
+        "    }",
+        "}"
+    ],
     "checkver": "github",
     "autoupdate": {
         "architecture": {

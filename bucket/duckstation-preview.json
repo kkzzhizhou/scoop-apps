@@ -1,68 +1,37 @@
 {
-    "version": "20251117-gacadbff",
-    "description": "Fast PlayStation 1 emulator (preview build)",
-    "homepage": "https://www.duckstation.org/",
+    "version": "20251120-gbea07e7",
+    "description": "Sony PlayStation 1 emulator",
+    "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
-        "identifier": "CC-BY-NC-ND-4.0",
+        "identifier": "GPL-3.0-only",
         "url": "https://github.com/stenzek/duckstation/blob/master/LICENSE"
     },
     "notes": [
         "ATTENTION: Duckstation requires a PSX BIOS to function.",
-        "Place the BIOS file in $persist_dir\\bios",
-        "Learn more at: https://web.archive.org/web/20210620033009/https://www.duckstation.org/wiki/BIOS"
+        "Place the BIOS file in $persist_dir\\bios"
     ],
-    "suggest": {
-        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip",
+    "hash": "4c34704d585f1cfce0ed033df517efba54e2eccf8464a3dfd9fdbea61420eae1",
+    "installer": {
+        "script": [
+            "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
+            "if (!(Test-Path \"$persist_dir\")) {",
+            "  '[Main]', 'SettingsVersion = 3', '[AutoUpdater]', 'CheckAtStartup = false' | Set-Content \"$dir\\settings.ini\"",
+            "}"
+        ]
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip",
-            "hash": "8f56f97874823287fddd598913a5d519b5cacd31dce7709d38600f19eca94309",
-            "post_install": [
-                "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
-                "echo \"update bin/shortcuts\"",
-                "$shell = New-Object -COM WScript.Shell",
-                "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\")",
-                "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
-                "$shortcut.Save()"
-            ],
-            "bin": [
-                [
-                    "duckstation-qt-x64-ReleaseLTCG.exe",
-                    "duckstation"
-                ]
-            ]
-        },
-        "arm64": {
-            "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-arm64-release.zip",
-            "hash": "91b73112a805298fb5931ce73d0a20f3e894d2954d88e7325a84e772feffa6b7",
-            "post_install": [
-                "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
-                "echo \"update bin/shortcuts\"",
-                "$shell = New-Object -COM WScript.Shell",
-                "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\")",
-                "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-ARM64-ReleaseLTCG.exe\"",
-                "$shortcut.Save()"
-            ],
-            "bin": [
-                [
-                    "duckstation-qt-ARM64-ReleaseLTCG.exe",
-                    "duckstation"
-                ]
-            ]
-        }
-    },
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:USERPROFILE\\Documents\\DuckStation\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\DuckStation\\*\" -Destination \"$persist_dir\" -Recurse",
-        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\DuckStation\" -Recurse",
-        "   } else {",
-        "       '[Main]', 'SettingsVersion = 3', '[AutoUpdater]', 'CheckAtStartup = false' | Set-Content \"$dir\\settings.ini\"",
-        "   }",
-        "}"
+    "post_install": [
+        "echo \"update bin/shortcuts\"",
+        "$shell = New-Object -COM WScript.Shell",
+        "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\")",
+        "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
+        "$shortcut.Save()"
+    ],
+    "shortcuts": [
+        [
+            "duckstation-qt-x64-ReleaseLTCG.exe",
+            "Sony PlayStation [ps1][duckstation]"
+        ]
     ],
     "persist": [
         "bios",
@@ -79,24 +48,19 @@
         "textures",
         "settings.ini"
     ],
-    "pre_uninstall": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
-    "post_uninstall": [
-        "echo \"update bin/shortcuts\"",
-        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\""
-    ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    },
     "checkver": {
         "url": "https://github.com/stenzek/duckstation/releases/tag/preview",
         "regex": " datetime=\"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})[\\s\\S]*?.*duckstation/commit/(?<commit>[0-9a-f]{7})",
         "replace": "${year}${month}${day}-g${commit}"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip"
-            },
-            "arm64": {
-                "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-arm64-release.zip"
-            }
-        }
-    }
+        "url": "https://github.com/stenzek/duckstation/releases/download/preview/duckstation-windows-x64-release.zip"
+    },
+    "post_uninstall": [
+        "echo \"update bin/shortcuts\"",
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation (preview).lnk\""
+    ]
 }
