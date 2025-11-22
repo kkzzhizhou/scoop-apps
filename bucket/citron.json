@@ -1,32 +1,53 @@
 {
-    "version": "0.11.0",
-    "description": "Advanced Nintendo Switch emulator",
-    "homepage": "https://citron-emu.org/",
-    "license": "GPL-3.0-or-later",
-    "architecture": {
-        "64bit": {
-            "url": "https://git.citron-emu.org/Citron/Emulator/releases/download/0.11.0/Citron-windows-stable_0.11.0_x64.zip",
-            "hash": "d876adfac0fbc68206505c322bd0bcb5565f7fb6b77bc6c4355b6cdb63a22b47",
-            "extract_dir": "Citron-windows-stable_0.11.0_x64"
-        }
-    },
-    "shortcuts": [
-        [
-            "citron.exe",
-            "Citron"
-        ]
-    ],
-    "persist": "user",
-    "checkver": {
-        "url": "https://git.citron-emu.org/Citron/Emulator/releases",
-        "regex": "/releases/tag/(?:v|V)?([\\d.]+)"
-    },
-    "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://git.citron-emu.org/Citron/Emulator/releases/download/$version/Citron-windows-stable_$version_x64.zip",
-                "extract_dir": "Citron-windows-stable_$version_x64"
-            }
-        }
+  "version": "3f5587ea9",
+  "description": "Nintendo Switch Emulator",
+  "homepage": "https://github.com/Zephyron-Dev/Citron-CI",
+  "license": "GPL-3.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-3f5587ea9-x64.zip",
+      "hash": "df01e56217542dbde0ba425f5de84976405a923fc6c6f726da95d285d6664b7e"
     }
+  },
+  "pre_install": [
+    "",
+    "# Ensure user folder exists",
+    "if (-not (Test-Path \"$dir\\user\")) {",
+    "New-Item -ItemType Directory -Path \"$dir\\user\" -Force | Out-Null",
+    "}",
+    "$appDataPath = $env:APPDATA",
+    "$documentsPath = [Environment]::GetFolderPath('MyDocuments')",
+    "",
+    "# Migrate application data from common locations",
+    "$appDataPath, $documentsPath | ForEach-Object {",
+    "$path = if ($_ -eq $appDataPath) { \"$appDataPath\\citron\" } else { \"$documentsPath\\citron\" }",
+    "if (Test-Path $path) {",
+    "$items = Get-ChildItem -Path $path -Force",
+    "if ($items) {",
+    "Write-Host \"Migrating data from $path\"",
+    "$items | Copy-Item -Destination \"$dir\\portable_data\" -Recurse -Force -ErrorAction SilentlyContinue",
+    "}",
+    "}",
+    "}"
+  ],
+  "bin": "citron.exe",
+  "shortcuts": [
+    [
+      "citron.exe",
+      "Nintendo Switch [switch][citron]"
+    ]
+  ],
+  "persist": "user",
+  "checkver": {
+    "jp": "$.name",
+    "re": "Nightly: ([a-f0-9]+)",
+    "url": "https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases/tags/nightly-windows"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-$version-x64.zip"
+      }
+    }
+  }
 }
