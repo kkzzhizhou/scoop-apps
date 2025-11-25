@@ -21,6 +21,28 @@
             "腾讯会议"
         ]
     ],
+    "post_install": [
+        "Get-ChildItem \"$bucketsdir\\$bucket\\scripts\\$app\\*.ps1\" | ForEach-Object {",
+        "    $content = Get-Content $_",
+        "    $content = $content.Replace('$WeMeetPath', $dir)",
+        "    if ($global) {",
+        "        $content = $content.Replace('HKCU', 'HKLM')",
+        "    }",
+        "    Set-Content -Path \"$dir\\$($_.Name)\" $content -Encoding UTF8",
+        "}",
+        "& \"$dir\\install-wemeet-url-protocol.ps1\""
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    Write-Host `n'正在取消注册腾讯会议协议...'",
+        "    if ($global) {",
+        "       Remove-Item 'HKLM:\\SOFTWARE\\Classes\\wemeet' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "    } else {",
+        "       Remove-Item 'HKCU:\\SOFTWARE\\Classes\\wemeet' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "    }",
+        "    Write-Host '腾讯会议协议取消注册完成！' -ForegroundColor Green",
+        "}"
+    ],
     "checkver": {
         "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%0A%09%7B%0A%09%09%22package-type%22%3A%20%22app%22,%0A%09%09%22channel%22%3A%20%220300000000%22,%0A%09%09%22platform%22%3A%20%22windows%22%0A%09%7D%0A%5D&nonce=iYw8ncQFDF8DAjHn",
         "regex": "\"md5\":\"(?<hash>[a-f0-9]+)\".+\"version\":\"([\\d\\.]+)\""

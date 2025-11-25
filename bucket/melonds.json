@@ -1,18 +1,23 @@
 {
     "version": "1.1",
-    "description": "Nintendo DS emulator",
+    "description": "A Nintendo DS emulator aiming for fast and accurate emulation",
     "homepage": "http://melonds.kuribo64.net/",
     "license": {
         "identifier": "GPL-3.0",
         "url": "https://github.com/melonDS-emu/melonDS/blob/master/LICENSE"
     },
     "url": "https://github.com/melonDS-emu/melonDS/releases/download/1.1/melonDS-1.1-windows-x86_64.zip",
-    "hash": "9F3F8A244103BE20B5B657AF5B0ED1B2A66BB20A7181476A6D294C9A53D4F8C8",
+    "hash": "9f3f8a244103be20b5b657af5b0ed1b2a66bb20a7181476a6d294c9a53d4f8c8",
     "installer": {
         "script": [
-            "$FILE = 'melonDS.ini'",
-            "if (!(Test-Path \"$persist_dir\\$FILE\")) {",
-            "    New-Item \"$dir\\$FILE\" -Type File | Out-Null",
+            "if (Test-Path \"$persist_dir\\melonDS.toml\" -PathType Container) {",
+            "    Remove-Item \"$persist_dir\\melonDS.toml\" -Recurse -Force",
+            "}",
+            "$FILES = @('melonDS.ini', 'melonDS.toml')",
+            "foreach ($FILE in $FILES) {",
+            "    if (!(Test-Path \"$persist_dir\\$FILE\")) {",
+            "        New-Item \"$dir\\$FILE\" -Type File | Out-Null",
+            "    }",
             "}"
         ]
     },
@@ -20,10 +25,13 @@
     "shortcuts": [
         [
             "melonDS.exe",
-            "Nintendo DS [nds][melonds]"
+            "melonDS"
         ]
     ],
-    "persist": "melonDS.ini",
+    "persist": [
+        "melonDS.ini",
+        "melonDS.toml"
+    ],
     "checkver": {
         "github": "https://github.com/melonDS-emu/melonDS",
         "regex": "/releases/tag/(?:v|V)?([\\w.]+)"

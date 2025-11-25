@@ -1,69 +1,69 @@
 {
-  "version": "2025-11-22-c27533949",
-  "description": "Nintendo Switch Emulator",
-  "homepage": "https://github.com/Zephyron-Dev/Citron-CI",
-  "license": "GPL-3.0",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-c27533949-x64.zip",
-      "hash": "3B5185A4572B42CE986C2847B9C3DC46B460A7861898BB61E85D5C62752D999D"
-    }
-  },
-  "pre_install": [
-    "",
-    "# Ensure user folder exists",
-    "if (-not (Test-Path \"$dir\\user\")) {",
-    "New-Item -ItemType Directory -Path \"$dir\\user\" -Force | Out-Null",
-    "}",
-    "$appDataPath = $env:APPDATA",
-    "$documentsPath = [Environment]::GetFolderPath('MyDocuments')",
-    "",
-    "# Migrate application data from common locations",
-    "$appDataPath, $documentsPath | ForEach-Object {",
-    "$path = if ($_ -eq $appDataPath) { \"$appDataPath\\citron\" } else { \"$documentsPath\\citron\" }",
-    "if (Test-Path $path) {",
-    "$items = Get-ChildItem -Path $path -Force",
-    "if ($items) {",
-    "Write-Host \"Migrating data from $path\"",
-    "$items | Copy-Item -Destination \"$dir\\portable_data\" -Recurse -Force -ErrorAction SilentlyContinue",
-    "}",
-    "}",
-    "}"
-  ],
-  "bin": "citron.exe",
-  "shortcuts": [
-    [
-      "citron.exe",
-      "Nintendo Switch [switch][citron]"
-    ]
-  ],
-  "persist": "user",
-  "checkver": {
-    "regex": "^citron:\\s*(?<date>\\d{4}-\\d{2}-\\d{2})-(?<commit>[a-f0-9]{7,40})",
-    "replace": "${commit}",
-    "script": [
-      "# Emit version as '<app>: <builddate>-<shortsha>'",
-      "$app = 'citron'",
-      "$api = 'https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases/tags/nightly-windows'",
-      "$hdr = @{ 'User-Agent' = 'Mozilla/5.0' }",
-      "try { $rel = Invoke-RestMethod -Uri $api -Headers $hdr -UseBasicParsing -ErrorAction Stop } catch { Write-Error 'api-failed'; exit 1 }",
-      "$sha = $null",
-      "if ($rel.name -and $rel.name -match '([a-f0-9]{7,40})') { $sha = $matches[1] }",
-      "if (-not $sha -and $rel.tag_name -and $rel.tag_name -match '([a-f0-9]{7,40})') { $sha = $matches[1] }",
-      "if (-not $sha -and $rel.assets -and $rel.assets.Count -gt 0) { foreach ($a in $rel.assets) { if ($a.name -match '([a-f0-9]{7,40})') { $sha = $matches[1]; break } } }",
-      "$date = $null",
-      "if ($rel.published_at) { $date = (Get-Date $rel.published_at -Format 'yyyy-MM-dd') }",
-      "if (-not $date -and $rel.name -and $rel.name -match '(\\d{4}-\\d{2}-\\d{2})') { $date = (Get-Date $matches[1] -Format 'yyyy-MM-dd') }",
-      "if ($date -and $sha) { Write-Output ($app + ': ' + ($date + '-' + $sha)); exit 0 }",
-      "if ($sha) { Write-Output ($app + ': ' + $sha); exit 0 }",
-      "Write-Error 'could not parse release metadata'"
-    ]
-  },
-  "autoupdate": {
+    "version": "2025-11-22-c27533949",
+    "description": "Nintendo Switch Emulator",
+    "homepage": "https://github.com/Zephyron-Dev/Citron-CI",
+    "license": "GPL-3.0",
     "architecture": {
-      "64bit": {
-        "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-$matchCommit-x64.zip"
-      }
+        "64bit": {
+            "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-c27533949-x64.zip",
+            "hash": "3B5185A4572B42CE986C2847B9C3DC46B460A7861898BB61E85D5C62752D999D"
+        }
+    },
+    "pre_install": [
+        "",
+        "# Ensure user folder exists",
+        "if (-not (Test-Path \"$dir\\user\")) {",
+        "New-Item -ItemType Directory -Path \"$dir\\user\" -Force | Out-Null",
+        "}",
+        "$appDataPath = $env:APPDATA",
+        "$documentsPath = [Environment]::GetFolderPath('MyDocuments')",
+        "",
+        "# Migrate application data from common locations",
+        "$appDataPath, $documentsPath | ForEach-Object {",
+        "$path = if ($_ -eq $appDataPath) { \"$appDataPath\\citron\" } else { \"$documentsPath\\citron\" }",
+        "if (Test-Path $path) {",
+        "$items = Get-ChildItem -Path $path -Force",
+        "if ($items) {",
+        "Write-Host \"Migrating data from $path\"",
+        "$items | Copy-Item -Destination \"$dir\\portable_data\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "}",
+        "}",
+        "}"
+    ],
+    "bin": "citron.exe",
+    "shortcuts": [
+        [
+            "citron.exe",
+            "Nintendo Switch [switch][citron]"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "regex": "^citron:\\s*(?<date>\\d{4}-\\d{2}-\\d{2})-(?<commit>[a-f0-9]{7,40})",
+        "replace": "${commit}",
+        "script": [
+            "# Emit version as '<app>: <builddate>-<shortsha>'",
+            "$app = 'citron'",
+            "$api = 'https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases/tags/nightly-windows'",
+            "$hdr = @{ 'User-Agent' = 'Mozilla/5.0' }",
+            "try { $rel = Invoke-RestMethod -Uri $api -Headers $hdr -UseBasicParsing -ErrorAction Stop } catch { Write-Error 'api-failed'; exit 1 }",
+            "$sha = $null",
+            "if ($rel.name -and $rel.name -match '([a-f0-9]{7,40})') { $sha = $matches[1] }",
+            "if (-not $sha -and $rel.tag_name -and $rel.tag_name -match '([a-f0-9]{7,40})') { $sha = $matches[1] }",
+            "if (-not $sha -and $rel.assets -and $rel.assets.Count -gt 0) { foreach ($a in $rel.assets) { if ($a.name -match '([a-f0-9]{7,40})') { $sha = $matches[1]; break } } }",
+            "$date = $null",
+            "if ($rel.published_at) { $date = (Get-Date $rel.published_at -Format 'yyyy-MM-dd') }",
+            "if (-not $date -and $rel.name -and $rel.name -match '(\\d{4}-\\d{2}-\\d{2})') { $date = (Get-Date $matches[1] -Format 'yyyy-MM-dd') }",
+            "if ($date -and $sha) { Write-Output ($app + ': ' + ($date + '-' + $sha)); exit 0 }",
+            "if ($sha) { Write-Output ($app + ': ' + $sha); exit 0 }",
+            "Write-Error 'could not parse release metadata'"
+        ]
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-$matchCommit-x64.zip"
+            }
+        }
     }
-  }
 }
