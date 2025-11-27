@@ -1,0 +1,131 @@
+{
+    "version": "8.8.8",
+    "description": "A free source code editor and Notepad replacement that supports several languages.",
+    "homepage": "https://notepad-plus-plus.org",
+    "license": "GPL-2.0-only",
+    "notes": [
+        "   To add Explorer context menu entries for Notepad++, run either",
+        "      \"cd $dir\" and there \"regsvr32 /i NppShell.dll\" or",
+        "      \"$dir\\notepadplusplus-install-context.reg\"",
+        "   Find more infos on https://npp-user-manual.org/docs/shell-extension",
+        " "
+    ],
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.8/npp.8.8.8.portable.x64.zip",
+                "https://raw.githubusercontent.com/notepad-plus-plus/notepad-plus-plus//v8.3.3/PowerEditor/bin/NppShell64.dll#/NppShell.dll",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-install-context.reg#/notepadplusplus-install-context.reg",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-uninstall-context.reg#/notepadplusplus-uninstall-context.reg"
+            ],
+            "hash": [
+                "b8bc370b76653c194caf32450056030be580b9fa97348fb31b2e2e61ee8d2393",
+                "ea12f872f99c93644c1ad3117fdbfd6a23631e2cc1770a21bbc8f673e1a2d414",
+                "b65d66860d9ccc18bfb05237b03e06db0d6c574be3d4b946c2a5e6865c08cb28",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        },
+        "32bit": {
+            "url": [
+                "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.8/npp.8.8.8.portable.zip",
+                "https://raw.githubusercontent.com/notepad-plus-plus/notepad-plus-plus//v8.3.3/PowerEditor/bin/NppShell.dll#/NppShell.dll",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-install-context.reg#/notepadplusplus-install-context.reg",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-uninstall-context.reg#/notepadplusplus-uninstall-context.reg"
+            ],
+            "hash": [
+                "3095c6601e0a6f1eacb5828cc1489bf15bc6acb4de5c9ea651a78e16911ce175",
+                "2dd9520ba0a62456ecf35c7c4a6e5cfcb07af09f2d7c1a1fe6c490ff0083feb9",
+                "b65d66860d9ccc18bfb05237b03e06db0d6c574be3d4b946c2a5e6865c08cb28",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        },
+        "arm64": {
+            "url": [
+                "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.8/npp.8.8.8.portable.arm64.zip",
+                "https://raw.githubusercontent.com/notepad-plus-plus/notepad-plus-plus//v8.3.3/PowerEditor/bin/NppShell.dll#/NppShell.dll",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-install-context.reg#/notepadplusplus-install-context.reg",
+                "https://raw.githubusercontent.com/AntonOks/scoop-aoks/master/local/notepadplusplus-uninstall-context.reg#/notepadplusplus-uninstall-context.reg"
+            ],
+            "hash": [
+                "1c13c9efb697320aab6b33cf6884e8509a19d976c92ff2505fab87ca775be073",
+                "2dd9520ba0a62456ecf35c7c4a6e5cfcb07af09f2d7c1a1fe6c490ff0083feb9",
+                "b65d66860d9ccc18bfb05237b03e06db0d6c574be3d4b946c2a5e6865c08cb28",
+                "df2a5162e72e2518e2b75b4337c8e7b46c136554872af90fa0de1cf6ebef376f"
+            ]
+        }
+    },
+    "pre_install": [
+        "'session.xml', 'userDefineLang.xml', 'nativeLang.xml' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_\")) { New-Item \"$dir\\$_\" -ItemType File | Out-Null }",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\stylers.xml\")) { Copy-Item \"$dir\\stylers.model.xml\" \"$dir\\stylers.xml\" }"
+    ],
+    "post_install": [
+        "if (Test-Path \"$dir\\notepadplusplus-install-context.reg\") {",
+        "  $codepath = \"$dir\\notepad++.exe\".Replace('\\', '\\\\')",
+        "  $content = Get-Content \"$dir\\notepadplusplus-install-context.reg\"",
+        "  $content = $content.Replace('$code', $codepath)",
+        "  $content = $content.Replace('Code', 'Notepad++')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\notepadplusplus-install-context.reg\"",
+        "}",
+        "if (Test-Path \"$dir\\notepadplusplus-uninstall-context.reg\") {",
+        "  $content = Get-Content \"$dir\\notepadplusplus-uninstall-context.reg\"",
+        "  $content = $content.Replace('Code', 'Notepad++')",
+        "  if ($global) {",
+        "    $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "  }",
+        "  $content | Set-Content -Path \"$dir\\notepadplusplus-uninstall-context.reg\"",
+        "}"
+    ],
+    "bin": "notepad++.exe",
+    "shortcuts": [
+        [
+            "notepad++.exe",
+            "Notepad++"
+        ]
+    ],
+    "persist": [
+        "backup",
+        "cloud",
+        "plugins",
+        "themes",
+        "userDefineLangs",
+        "config.xml",
+        "nativeLang.xml",
+        "session.xml",
+        "shortcuts.xml",
+        "stylers.xml",
+        "userDefineLang.xml"
+    ],
+    "checkver": {
+        "github": "https://github.com/notepad-plus-plus/notepad-plus-plus"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.x64.zip",
+                "hash": {
+                    "url": "$baseurl/npp.$version.checksums.sha256",
+                    "regex": "$sha256\\s+$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.zip",
+                "hash": {
+                    "url": "$baseurl/npp.$version.checksums.sha256",
+                    "regex": "$sha256\\s+$basename"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.arm64.zip",
+                "hash": {
+                    "url": "$baseurl/npp.$version.checksums.sha256",
+                    "regex": "$sha256\\s+$basename"
+                }
+            }
+        }
+    }
+}

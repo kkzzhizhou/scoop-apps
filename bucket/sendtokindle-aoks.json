@@ -1,0 +1,34 @@
+{
+    "##": "see https://github.com/ScoopInstaller/Scoop/issues/5215 for the 'do_dl' bug",
+    "version": "1.1.1.257",
+    "description": "Send Files to kindle easily",
+    "homepage": "https://www.amazon.com/sendtokindle/pc",
+    "license": "Freeware",
+    "url": "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe",
+    "hash": "cc688d26fbfd128fb46d72800dbbae3d307649bdc0c1cc04d738780fb895799b",
+    "installer": {
+        "script": "Expand-7ZipArchive \"$dir\\SendToKindleForPC-installer.exe\""
+    },
+    "post_install": "Remove-Item \"$dir\\SendToKindleForPC-installer.exe\" -Force",
+    "bin": "SendToKindle.exe",
+    "shortcuts": [
+        [
+            "sendtokindle.exe",
+            "SendToKindle"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe'",
+            "$dl = cache_path 'SendToKindle' 'unknown' $dl_url",
+            "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest $dl_url -OutFile $dl | Out-Null",
+            "$version = (Get-Item $dl).VersionInfo.ProductVersion",
+            "Move-Item -Force $dl -Destination (cache_path 'SendToKindle' $version $dl_url)",
+            "return $version"
+        ],
+        "regex": "(.+)"
+    },
+    "autoupdate": {
+        "url": "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
+    }
+}
