@@ -1,12 +1,17 @@
 {
-    "version": "3.38.1.421",
+    "version": "3.39.1.427",
     "description": "tencent meeting",
     "homepage": "https://meeting.tencent.com/index.html",
     "license": {
-        "identifier": "Freeware"
+        "identifier": "Proprietary",
+        "url": "https://rule.tencent.com/rule/ab9ea528-0bf1-47b3-a8c3-f001b98912e2"
     },
-    "url": "https://updatecdn.meeting.qq.com/cos/063c2234e198f24c6c85688f8a2e57ab/TencentMeeting_0300000000_3.38.1.421.publish.officialwebsite.exe#/dl.7z",
-    "hash": "md5:063c2234e198f24c6c85688f8a2e57ab",
+    "architecture": {
+        "64bit": {
+            "url": "https://updatecdn.meeting.qq.com/cos/9a27d0a6b9faf68786d997cea293a201/TencentMeeting_0300000000_3.39.1.427_x86_64.publish.officialwebsite.exe#/dl.7z",
+            "hash": "md5:9a27d0a6b9faf68786d997cea293a201"
+        }
+    },
     "installer": {
         "script": [
             "Get-Item \"$dir\\`$_*_\" | Rename-Item -NewName \"$version\"",
@@ -20,16 +25,43 @@
             "腾讯会议"
         ]
     ],
+    "post_install": [
+        "Get-ChildItem \"$bucketsdir\\$bucket\\scripts\\$app\\*.ps1\" | ForEach-Object {",
+        "    $content = Get-Content $_",
+        "    $content = $content.Replace('$WeMeetPath', $dir)",
+        "    if ($global) {",
+        "        $content = $content.Replace('HKCU', 'HKLM')",
+        "    }",
+        "    Set-Content -Path \"$dir\\$($_.Name)\" $content -Encoding UTF8",
+        "}",
+        "& \"$dir\\install-wemeet-url-protocol.ps1\""
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    Write-Host `n'正在取消注册腾讯会议协议...'",
+        "    if ($global) {",
+        "       Remove-Item 'HKLM:\\SOFTWARE\\Classes\\wemeet' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "    } else {",
+        "       Remove-Item 'HKCU:\\SOFTWARE\\Classes\\wemeet' -ErrorAction 'SilentlyContinue' -Recurse -Force",
+        "    }",
+        "    Write-Host '腾讯会议协议取消注册完成！' -ForegroundColor Green",
+        "}"
+    ],
     "checkver": {
-        "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%0A%09%7B%0A%09%09%22package-type%22%3A%20%22app%22,%0A%09%09%22channel%22%3A%20%220300000000%22,%0A%09%09%22platform%22%3A%20%22windows%22%0A%09%7D%0A%5D&nonce=iYw8ncQFDF8DAjHn",
+        "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%220300000000%22,%22platform%22:%22windows%22,%22arch%22:%22x86_64%22%7D%5D&nonce=AAAAAAAAAAAAAAAA",
         "regex": "\"md5\":\"(?<hash>[a-f0-9]+)\".+\"version\":\"([\\d\\.]+)\""
     },
+    "##": "更新链接来自: https://github.com/SpecterShell/Dumplings/blob/main/Tasks/#Tencent.TencentMeeting#1/Script.ps1",
     "autoupdate": {
-        "url": "https://updatecdn.meeting.qq.com/cos/$matchHash/TencentMeeting_0300000000_$version.publish.officialwebsite.exe#/dl.7z",
-        "hash": {
-            "mode": "json",
-            "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%0A%09%7B%0A%09%09%22package-type%22%3A%20%22app%22,%0A%09%09%22channel%22%3A%20%220300000000%22,%0A%09%09%22platform%22%3A%20%22windows%22%0A%09%7D%0A%5D&nonce=iYw8ncQFDF8DAjHn",
-            "jp": "$.info-list[0].md5"
+        "architecture": {
+            "64bit": {
+                "url": "https://updatecdn.meeting.qq.com/cos/$matchHash/TencentMeeting_0300000000_$version_x86_64.publish.officialwebsite.exe#/dl.7z",
+                "hash": {
+                    "mode": "json",
+                    "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22:%22app%22,%22channel%22:%220300000000%22,%22platform%22:%22windows%22,%22arch%22:%22x86_64%22%7D%5D&nonce=AAAAAAAAAAAAAAAA",
+                    "jp": "$.info-list[0].md5"
+                }
+            }
         }
     }
 }
