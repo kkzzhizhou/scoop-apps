@@ -1,5 +1,5 @@
 {
-    "version": "20251124",
+    "version": "20251128-e039e0d",
     "description": "Neovim GUI which uses a Golang Qt backend",
     "homepage": "https://github.com/akiyosi/goneovim",
     "license": "MIT",
@@ -9,12 +9,12 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/akiyosi/goneovim/releases/download/nightly/goneovim-windows-x86_64.zip",
-            "hash": "b2c7b5b4c026f9dc488b50243fdc4b7b1cc17581c3fbeb3f2910aa82b1b95dde",
+            "hash": "02141157d249e27905b2a1675d573ecad9ee662cbfc7f4d45fde420cff419c63",
             "extract_dir": "goneovim-windows-x86_64"
         },
         "arm64": {
             "url": "https://github.com/akiyosi/goneovim/releases/download/nightly/goneovim-windows-arm64.zip",
-            "hash": "c3d7cd1f2f6479e4fba72fb8018c319d5f8c45358d8c7cb9ec94b4fd0039c8b9",
+            "hash": "117cfb3a333dbef723a4c3a1894b0c5b019df144ffe8fe13e01a38d9ee5792a8",
             "extract_dir": "goneovim-windows-arm64"
         }
     },
@@ -27,9 +27,18 @@
     ],
     "checkver": {
         "url": "https://api.github.com/repositories/107124394/releases/tags/nightly",
-        "jsonpath": "$.assets[?(@.name =~ /goneovim-windows-(x86_64|arm64).zip/)].updated_at",
-        "regex": ".*(?<year>\\d{4})\\D(?<month>\\d{2})\\D(?<day>\\d{2}).*",
-        "replace": "${year}${month}${day}"
+        "script": [
+            "try {",
+            "    $release = $page | ConvertFrom-Json",
+            "    $date = Get-Date $release.updated_at -Format 'yyyyMMdd'",
+            "    $commit = $release.target_commitish",
+            "    return \"$date-$commit\"",
+            "",
+            "}catch {",
+            "    return ''",
+            "}"
+        ],
+        "regex": "(?<version>^\\d{8}-[0-9a-f]{7})"
     },
     "autoupdate": {
         "architecture": {
