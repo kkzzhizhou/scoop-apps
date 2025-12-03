@@ -1,0 +1,58 @@
+{
+  "version": "2.5.7",
+  "description": "A Windows GUI based on Clashr",
+  "homepage": "https://github.com/ClashrAuto/Clashr-Auto-Desktop",
+  "license": "Unknown",
+  "url": "https://github.com/ClashrAuto/Clashr-Auto-Desktop/releases/download/v2.5.7/Clash.Auto-amd64.Setup.2.5.7.exe#/dl.7z",
+  "hash": "ab3c5d04a47db7795037d097502910c752700badacd59fcaeabaa1eb5a1d7e67",
+  "pre_install": [
+    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
+  ],
+  "installer": {
+    "script": [
+      "if (!(Test-Path \"$persist_dir\\data\")) {",
+      "    New-Item \"$persist_dir\\data\" -Type Directory -Force | Out-Null",
+      "    if (Test-Path \"$env:USERPROFILE\\.config\\ClashrAuto\") {",
+      "        Copy-Item -Path \"$env:USERPROFILE\\.config\\ClashrAuto\\*\" -Destination \"$persist_dir\\data\" -Recurse -Container",
+      "    }",
+      "}",
+      "$runtimeCache = \"$env:APPDATA\\clashr-auto\"",
+      "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+      "if (Test-Path $runtimeCachePersist) {",
+      "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+      "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+      "} else {",
+      "    if (Test-Path $runtimeCache) {",
+      "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+      "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+      "    }",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "$runtimeCache = \"$env:APPDATA\\clash-auto\"",
+      "$runtimeCachePersist = \"$persist_dir\\Cache\"",
+      "if (!(Test-Path $runtimeCachePersist)) {",
+      "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+      "} else {",
+      "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+      "}"
+    ]
+  },
+  "shortcuts": [
+    [
+      "Clash Auto.exe",
+      "Clash Auto"
+    ]
+  ],
+  "persist": "data",
+  "checkver": {
+    "url": "https://github.com/ClashrAuto/Clashr-Auto-Desktop/releases/latest",
+    "regex": "Clashr Auto v([\\d.]+)"
+  },
+  "autoupdate": {
+    "url": "https://github.com/ClashrAuto/Clashr-Auto-Desktop/releases/download/v$version/Clash.Auto-amd64.Setup.$version.exe#/dl.7z"
+  }
+}

@@ -1,0 +1,88 @@
+{
+    "version": "1.4.1.1030",
+    "description": "文件搜索工具，基于名称快速定位文件和文件夹。Locate files and folders by name instantly.",
+    "homepage": "https://www.voidtools.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.voidtools.com/zh-cn/License.txt"
+    },
+    "notes": [
+        "To add Everything to right-click context menu, run:",
+        "reg import \"$dir\\install-context.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.x64.zip",
+            "hash": "c1a1bf4e2b87addb5ce662c3835cee8cfc2738396906b3544d589502d54a08be"
+        },
+        "32bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.x86.zip",
+            "hash": "c29380b7d87eff859808072555c8387528a8631b17ba0f9a0c66685704efba60"
+        },
+        "arm64": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.ARM64.zip",
+            "hash": "3f5c7fc440102b99c2d3cd8afc2ccca67f0b948d3288ec795fed6f680f677545"
+        }
+    },
+    "pre_install": [
+        "# for arm64",
+        "if ($architecture -eq 'arm64') { Rename-Item \"$dir\\EverythingARM64.exe\" -NewName 'Everything.exe' }",
+        "# END",
+        "ensure \"$persist_dir\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Start-Process -Wait \"$dir\\Everything.exe\" -Args @('-install-config null') }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "$app_path = \"$dir\\Everything.exe\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\everything\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\everything\\$_\"",
+        "        $content = $content.Replace('$app_path', $app_path)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "}"
+    ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'Everything' -Force -ErrorAction SilentlyContinue",
+        "$service_installed_in_current_dir_via_scoop = (sc.exe qc Everything) -match $dir.Replace('\\', '\\\\')",
+        "if ($service_installed_in_current_dir_via_scoop) {",
+        "    if ($(Get-Service -Name Everything -ErrorAction SilentlyContinue).Status -ne 'Stopped') {",
+        "        if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to stop Everything service'; break }",
+        "        Stop-Service -Name 'Everything' -Force -ErrorAction SilentlyContinue | Out-Null",
+        "    }",
+        "    if ((Get-Service -Name Everything -ErrorAction SilentlyContinue) -and ($cmd -eq 'uninstall')) {",
+        "        if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to remove Everything service'; break }",
+        "        sc.exe delete 'Everything'",
+        "    }",
+        "}",
+        "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+        "Get-ChildItem \"$dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    ],
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "checkver": "Download Everything ([\\d\\.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x86.zip"
+            },
+            "arm64": {
+                "url": "https://www.voidtools.com/Everything-$version.ARM64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Everything-$version.sha256"
+        }
+    }
+}

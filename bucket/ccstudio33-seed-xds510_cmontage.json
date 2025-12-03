@@ -1,0 +1,99 @@
+{
+  "version": "20210724",
+  "description": "CCSTUDIO — Code Composer Studio integrated development environment (IDE)",
+  "homepage": "https://www.seeddsp.com/index.php/Home/Product/detail/id/33.html",
+  "license": {
+    "identifier": "Freeware",
+    "url": "https://software-dl.ti.com/ccs/esd/documents/ccs_downloads.html"
+  },
+  "depends": [
+    "ccstudio33"
+  ],
+  "notes": [
+    "",
+    "ccstudio33-seed-xds510",
+    "https://www.seeddsp.com/Public/Home/down/1529478447_102640977.zip",
+    "https://www.seeddsp.com/Public/Home/down/1529478515_1857678411.zip",
+    ":: SEED-XDS510PLUS仿真器安装、使用指南_CCS4.x&Above(Rev.C)",
+    "::   https://www.seeddsp.com/Public/Home/down/1509947018_340090398.pdf",
+    "",
+    ""
+  ],
+  "url": [
+    "https://github.com/SayCV/gh-cdn-cvp/releases/download/v1.0.0/ccs33-seed-xds510-v20210724-cvp.7z"
+  ],
+  "hash": [
+    "5975916b8ace34dcc42ee2aec028f4afb3107db1c3535e74b44302c789183d59"
+  ],
+  "#innosetup": true,
+  "extract_dir": "",
+  "extract_to": "",
+  "#pre_install": [
+    "",
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "$file = (Get-Item \"$dir\\installer\\*.exe\").FullName",
+    "Rename-Item \"$file\" \"$dir\\installer\\setup.exe\"",
+    "",
+    "cp \"$bucketdir\\..\\bin\\extract-issetup2.cmd\" \"$dir\\installer\"",
+    "",
+    "Start-Process 'silentcmd' -ArgumentList @(\"$dir\\installer\\extract-issetup2.cmd\") -Verb RunAs -Wait | Out-Null",
+    "",
+    ""
+  ],
+  "post_install": [
+    "",
+    "$evalDir = \"$(appdir ccstudio33 $global)\\current\".Replace('/', '\\')",
+    "",
+    "'SEED-XP', 'SEED-WIN7' | ForEach-Object { ensure \"$evalDir\\ccs\\drivers\\$_\" | Out-Null }",
+    "",
+    "Write-Host \"::Patching...\" -ForegroundColor DarkCyan",
+    "#cp \"$dir\\ccs412-\\common\\targetdb\\connections\\*.xml\" \"$evalDir\\ccs\\drivers\\TargetDB\\connections\" -force",
+    "#cp \"$dir\\ccs412-\\common\\targetdb\\drivers\\*.xml\" \"$evalDir\\ccs\\drivers\\TargetDB\\drivers\" -force",
+    "#cp \"$dir\\ccs412-\\common\\uscif\\*.dll\" \"$evalDir\\ccs\\cc\\bin\" -force",
+    "#cp \"$dir\\ccs412-\\emulation\\drivers\\*.dvr\" \"$evalDir\\ccs\\drivers\\SEED-WIN7\" -force",
+    "cp \"$dir\\ccs412-\\emulation\\seed\\*.*\" \"$evalDir\\ccs\\drivers\\SEED-WIN7\" -force",
+    "",
+    "cp \"$dir\\ccs33\\drivers\" \"$evalDir\\ccs\" -Recurse -force",
+    "cp \"$dir\\ccs33\\cc\" \"$evalDir\\ccs\" -Recurse -force",
+    "",
+    ""
+  ],
+  "installer": {
+    "script": [
+      "",
+      "",
+      ""
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "",
+      "",
+      ""
+    ]
+  },
+  "#bin": [
+    [
+      "ccs/cc/bin/cc_app.exe"
+    ]
+  ],
+  "#shortcuts": [
+    [
+      "ccs/cc/bin/cc_app.exe",
+      "TI/CCS33/CCStudio v3.3"
+    ]
+  ],
+  "#persist": [
+    "data"
+  ],
+  "checkver": {
+    "github": "https://github.com/SayCV/gh-cdn-cvp/releases",
+    "regex": "ccs33-seed-xds510-v([\\d.-]+)-cvp.7z"
+  },
+  "autoupdate": {
+    "url": [
+      "https://github.com/SayCV/gh-cdn-cvp/releases/download/v1.0.0/ccs33-seed-xds510-v$version-cvp.7z"
+    ]
+  }
+}

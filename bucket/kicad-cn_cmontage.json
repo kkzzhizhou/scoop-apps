@@ -1,0 +1,63 @@
+{
+  "description": "Electronics Design Automation Suite",
+  "homepage": "https://kicad.org",
+  "version": "9.0.3",
+  "license": "GPL-3.0-only",
+  "architecture": {
+    "64bit": {
+      "url": "https://mirror.nju.edu.cn/kicad/windows/stable/kicad-9.0.3-x86_64.exe#/dl.7z",
+      "hash": "582635ced8552c07e043ce9f2eba01dc0c42c96dcb87ce12ba85db1530da593f"
+    }
+  },
+  "pre_install": "Remove-Item \"$dir\\`$*\" -Recurse",
+  "bin": "bin\\kicad-cli.exe",
+  "shortcuts": [
+    [
+      "bin\\kicad.exe",
+      "KiCad"
+    ],
+    [
+      "bin\\eeschema.exe",
+      "Eeschema"
+    ],
+    [
+      "bin\\pcbnew.exe",
+      "PCBNew"
+    ],
+    [
+      "bin\\gerbview.exe",
+      "Gerber Viewer"
+    ]
+  ],
+  "post_install": [
+    "'install-file-associations', 'uninstall-file-associations' | ForEach-Object {",
+    "    $reg_file_in  = \"$bucketsdir\\$bucket\\scripts\\kicad\\$_.reg\"",
+    "    $reg_file_out = \"$dir\\$_.reg\"",
+    "    $kicad_root     = \"$dir\".Replace('\\', '\\\\')",
+    "    if (Test-Path $reg_file_in) {",
+    "        $content = Get-Content $reg_file_in",
+    "        $content = $content.Replace('$kicad_root', $kicad_root)",
+    "        if ($global) {",
+    "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+    "        }",
+    "        Set-Content -Path $reg_file_out -Value $content -Encoding Ascii",
+    "    }",
+    "}"
+  ],
+  "post_uninstall": [
+    "'uninstall-file-associations' | ForEach-Object {",
+    "    $reg_file = \"$dir\\$_.reg\"",
+    "    if (Test-Path $reg_file) {",
+    "        regedit /s $reg_file",
+    "    }",
+    "}"
+  ],
+  "checkver": {
+    "url": "https://mirror.nju.edu.cn/kicad/windows/stable/",
+    "regex": "kicad-([\\d.]+)-x86_64\\.exe",
+    "replace": "${1}${2}"
+  },
+  "autoupdate": {
+    "url": "https://mirror.nju.edu.cn/kicad/windows/stable/$version/kicad-$version-x86_64.exe#/dl.7z"
+  }
+}

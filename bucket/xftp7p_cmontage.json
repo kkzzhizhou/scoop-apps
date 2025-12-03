@@ -1,0 +1,47 @@
+{
+  "homepage": "https://www.netsarang.com/zh/xftp/",
+  "description": "业界最强大的SSH客户机",
+  "version": "7.0.0106",
+  "depends": [
+    "sudo",
+    "vcredist2012",
+    "vcredist2019"
+  ],
+  "url": "https://scoop-zapps.ziiyc.com/d/Xftp7p/Xftp-7.0.0106p.exe#/setup.exe",
+  "hash": "fe9586c0cc6f25866df73ac255d71eae10cd9abf952aa8209b0a3b028bc264ab",
+  "installer": {
+    "script": [
+      "Start-Process -Wait \"$dir\\setup.exe\" \"/b$dir /S /v/qn\" -Verb RunAs",
+      "Start-Process -Wait msiexec \"/i `\"$dir\\xftp` 7.msi`\" INSTALLDIR=`\"$dir`\" /qb\" -Verb RunAs"
+    ],
+    "keep": true
+  },
+  "post_install": [
+    "$null, $bucket = find_manifest($app)",
+    "$bucketdir = Find-BucketDirectory($bucket)",
+    "$userdir = $env:USERPROFILE.Replace('\\', '\\\\')",
+    "$escdir = $dir -replace \"\\\\\",\"\\\\\"",
+    "(gc \"$bucketdir\\..\\scripts\\xftp7p\\register.reg.templ\") | % { $_ -replace 'USERPROFILE', \"$userdir\" } | out-file -enc oem \"$dir\\register.reg\"",
+    "sudo regedit /s $dir\\register.reg"
+  ],
+  "uninstaller": {
+    "script": "Start-Process -Wait msiexec \"/x `\"$dir\\xftp` 7.msi`\" /qb\" -Verb RunAs"
+  },
+  "shortcuts": [
+    [
+      "xftp.exe",
+      "xftp"
+    ]
+  ],
+  "checkver": {
+    "url": "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/versions/xftp7p.latest",
+    "regex": "([\\d.]+)"
+  },
+  "autoupdate": {
+    "url": "https://scoop-zapps.ziiyc.com/d/Xftp7p/Xftp-$versionp.exe#/setup.exe",
+    "hash": {
+      "url": "$url.sha256",
+      "regex": "$sha256"
+    }
+  }
+}

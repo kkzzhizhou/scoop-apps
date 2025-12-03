@@ -1,0 +1,65 @@
+{
+    "version": "1.16.8",
+    "description": "Sandboxie is a sandbox-based isolation software for 32-bit and 64-bit Windows NT-based operating systems.",
+    "homepage": "https://sandboxie-plus.com/",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/sandboxie-plus/Sandboxie/raw/master/LICENSE"
+    },
+    "notes": "Get Sandboxie Classic if you have used Sandboxie for a long time and prefer a familiar environment over new features.",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.16.8/Sandboxie-Plus-x64-v1.16.8.exe",
+            "hash": "3b5971f24a22b4b88f0d1f637570bffa385ba9300d5e07532869e53e19426e69"
+        },
+        "arm64": {
+            "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/v1.16.8/Sandboxie-Plus-ARM64-v1.16.8.exe",
+            "hash": "ac1ef93a5688c29f01a056f45d14eddf7d8d3fdec018ac17e45e5f5e16f05d54"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:LOCALAPPDATA\\Sandboxie-Plus\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:LOCALAPPDATA\\Sandboxie-Plus\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "SandMan.exe",
+            "Sandboxie-Plus//Sandboxie-Plus"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie-Plus//Run any program sandboxed",
+            "/box:__ask__ run_dialog"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie-Plus//Run Web browser sandboxed",
+            "default_browser"
+        ],
+        [
+            "Start.exe",
+            "Sandboxie-Plus//Sandboxie Start Menu",
+            "/box:__ask__ start_menu"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/sandboxie-plus/Sandboxie/releases",
+        "regex": "releases/download/(?<tag>[vV]?[\\d.]+)/Sandboxie-Plus-x64-v([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchTag/Sandboxie-Plus-x64-v$version.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/sandboxie-plus/Sandboxie/releases/download/$matchTag/Sandboxie-Plus-ARM64-v$version.exe"
+            }
+        }
+    }
+}

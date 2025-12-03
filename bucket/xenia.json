@@ -1,0 +1,54 @@
+{
+    "version": "1.0.2825",
+    "description": "Xbox 360 Emulator Research Project",
+    "homepage": "https://xenia.jp",
+    "license": {
+        "identifier": "BSD-3-Clause",
+        "url": "https://github.com/xenia-project/xenia/blob/master/LICENSE"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/xenia-project/release-builds-windows/releases/download/v1.0.2825-master/xenia_master.zip",
+            "hash": "e14e3c9e219b3f166fd43ba61867fac6f91fee213adb866fa2865c903c07dc71"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Xenia\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\" -Recurse",
+        "   } else {",
+        "       New-item \"$dir\\xenia.config.toml\" -ItemType File | Out-Null",
+        "   }",
+        "}"
+    ],
+    "post_install": "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
+    "bin": "xenia.exe",
+    "shortcuts": [
+        [
+            "xenia.exe",
+            "Xenia"
+        ]
+    ],
+    "persist": [
+        "cache",
+        "content",
+        "xenia.config.toml"
+    ],
+    "checkver": {
+        "github": "https://github.com/xenia-project/release-builds-windows",
+        "regex": "v([\\d.]+)-master/xenia_master\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/xenia-project/release-builds-windows/releases/download/v$version-master/xenia_master.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,53 @@
+{
+  "version": "3.4.26",
+  "description": "Simple and powerful Git GUI",
+  "homepage": "https://www.sourcetreeapp.com",
+  "license": {
+    "identifier": "Proprietary",
+    "url": "https://www.atlassian.com/legal/software-license-agreement"
+  },
+  "architecture": {
+    "64bit": {
+      "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTree-3.4.26-full.nupkg",
+      "hash": "sha1:a8e5cd5c9e6722eccd0438352164e632b891c7e9",
+      "extract_dir": "lib\\net45"
+    }
+  },
+  "post_install": [
+    "mkdir -p \"$env:LOCALAPPDATA\\Atlassian\\SourceTree\" -ErrorAction SilentlyContinue",
+    "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+    "  if (-not (Test-Path $runtimeCache)) { return }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}",
+    "foreach ($folder in @('Atlassian')) {",
+    "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+    "}"
+  ],
+  "bin": "SourceTree.exe",
+  "shortcuts": [
+    [
+      "SourceTree.exe",
+      "Sourcetree"
+    ]
+  ],
+  "checkver": {
+    "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/RELEASES",
+    "regex": "SourceTree-([\\d.]+)-full\\.nupkg",
+    "reverse": true
+  },
+  "autoupdate": {
+    "url": "https://product-downloads.atlassian.com/software/sourcetree/windows/ga/SourceTree-$version-full.nupkg",
+    "hash": {
+      "url": "$baseurl/RELEASES"
+    }
+  }
+}

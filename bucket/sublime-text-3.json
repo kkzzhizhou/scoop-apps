@@ -1,0 +1,60 @@
+{
+    "version": "3-3211",
+    "description": "A sophisticated text editor for code, markup and prose",
+    "homepage": "https://www.sublimetext.com",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://www.sublimetext.com/eula"
+    },
+    "notes": [
+        "Add Sublime Text as a context menu option by running:",
+        "reg import \"$dir\\install-context.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.sublimetext.com/Sublime%20Text%20Build%203211%20x64.zip",
+            "hash": "fb77731fa3eda907620a9e8b85bdccc5b5cb4dcf655dcfdc6c7591b78abd0f31"
+        },
+        "32bit": {
+            "url": "https://download.sublimetext.com/Sublime%20Text%20Build%203211.zip",
+            "hash": "e169691d88498fdc8dddc72d336680339707d459d12acf665e830f5ed4a4c98d"
+        }
+    },
+    "post_install": [
+        "$sublimepath = \"$dir\\sublime_text.exe\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\"",
+        "        $content = $content.Replace('$sublime', $sublimepath)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "    }",
+        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "}"
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "bin": "subl.exe",
+    "shortcuts": [
+        [
+            "sublime_text.exe",
+            "Sublime Text 3"
+        ]
+    ],
+    "persist": "Data",
+    "checkver": {
+        "url": "https://www.sublimetext.com/3",
+        "regex": "Build ((\\d)\\d+)",
+        "replace": "$2-$1"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.sublimetext.com/Sublime%20Text%20Build%20$preReleaseVersion%20x64.zip"
+            },
+            "32bit": {
+                "url": "https://download.sublimetext.com/Sublime%20Text%20Build%20$preReleaseVersion.zip"
+            }
+        }
+    }
+}

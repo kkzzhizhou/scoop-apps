@@ -1,0 +1,49 @@
+{
+    "version": "0.14.0",
+    "description": "Just pick a Torrent, stream and download on all your devices",
+    "homepage": "https://www.pikatorrent.com/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/G-Ray/pikatorrent#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/G-Ray/pikatorrent/releases/download/v0.14.0/PikaTorrent-v0.14.0-windows-x64.zip",
+            "hash": "038c451dada6c5ba5cf3c60ac8c6e06389d25f227bfc259167915251272dd86e"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.pikatorrent\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.pikatorrent\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "pikatorrent.exe",
+    "shortcuts": [
+        [
+            "pikatorrent.exe",
+            "PikaTorrent"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/G-Ray/pikatorrent/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/G-Ray/pikatorrent/releases/download/v$version/PikaTorrent-v$version-windows-x64.zip"
+            }
+        }
+    }
+}

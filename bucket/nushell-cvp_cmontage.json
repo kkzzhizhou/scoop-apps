@@ -1,0 +1,35 @@
+{
+  "version": "0.20230505",
+  "description": "Nushell helper utils",
+  "homepage": "https://github.com/nushell/nushell",
+  "license": "MIT",
+  "notes": [
+    "Nushell helper utils"
+  ],
+  "depends": "nu",
+  "url": "https://github.com/excitoon/empty/releases/download/empty-1.0.7/empty-1.0.7.zip",
+  "hash": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+  "post_install": [
+    "",
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "$evalDir = \"$(appdir nushell $global)\\current\".Replace('/', '\\')",
+    "$unixEvalDir = \"$evalDir\".Replace('\\', '/')",
+    "$unixDir = \"$dir\".Replace('\\', '/')",
+    "",
+    "$srcdir = \"$dir\\AppData\"",
+    "ensure $srcdir | Out-Null",
+    "$companyname = 'nushell'",
+    "$dstdir = \"$env:AppData\\$companyname\"",
+    "",
+    "Write-Host \":: Linking $(friendly_path $dstdir) => $(friendly_path $srcdir)\" -ForegroundColor DarkCyan",
+    "",
+    "if (Test-Path -LiteralPath $dstdir -PathType 'Container') {",
+    "    Remove-Item \"$dstdir\" -Force -Recurse",
+    "}",
+    "New-Item -ItemType Junction -Path \"$dstdir\" -Value $srcdir | Out-Null",
+    "",
+    ""
+  ],
+  "persist": "AppData"
+}

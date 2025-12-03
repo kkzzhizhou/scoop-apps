@@ -1,0 +1,53 @@
+{
+  "version": "1.2.1",
+  "description": "The first open source fingerprint browser.",
+  "homepage": "https://github.com/zmzimpl/chrome-power-app",
+  "license": "AGPL-3.0-or-later",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/zmzimpl/chrome-power-app/releases/download/v1.2.1/chrome-power-Setup-1.2.1.exe#dl.7z",
+      "hash": "1340d3f7c825365416ea12f801d9f94e69e6978bbb8d8148cbfa8bd7799fba19"
+    }
+  },
+  "pre_install": [
+    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+    "Remove-Item -Recurse -Force \"$dir\\`$*\"",
+    "if (!(Test-Path \"$dir\\resources\\chrome-power-config.json\")) { New-Item \"$dir\\resources\\chrome-power-config.json\" | Out-Null }",
+    "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+    "  if (-not (Test-Path $runtimeCache)) { return }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}",
+    "foreach ($folder in @('chrome-power')) {",
+    "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+    "}"
+  ],
+  "shortcuts": [
+    [
+      "Chrome Power.exe",
+      "Chrome Power"
+    ]
+  ],
+  "persist": [
+    "logs",
+    "resources\\chrome-power-config.json",
+    "resources\\Chrome-bin\\chrome"
+  ],
+  "checkver": {
+    "github": "https://github.com/zmzimpl/chrome-power-app"
+  },
+  "autoupdate": {
+    "url": "https://github.com/zmzimpl/chrome-power-app/releases/download/v$version/chrome-power-Setup-$version.exe#dl.7z",
+    "hash": {
+      "mode": "download"
+    }
+  }
+}

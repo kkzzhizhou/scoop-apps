@@ -1,0 +1,44 @@
+{
+  "version": "4.4",
+  "description": "支持Xray / V2Ray（vmess / vless），Shadowsocks，SSR，Trojan，NaïveProxy，Trojan-go通用客户端（Windows）！默认基于xray核心！本程序采用aardio设计与开发！",
+  "homepage": "https://github.com/TheMRLL/WinXray",
+  "license": "Unlicense",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/TheMRLL/WinXray/releases/download/V4.4/WinXray.7z",
+      "hash": "ae52a53e6ab9925b4a0edae7576f4b0e3649a390cf90d61cc1cb7e1caf79b5a2"
+    }
+  },
+  "pre_install": [
+    "foreach ($folder in @('AppData\\Local\\WinXray')) {",
+    "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+    "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+    "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  } else {",
+    "    if (Test-Path \"$env:APPDATA\\$folder\") {",
+    "      $runtimeCache = \"$env:APPDATA\\$folder\"",
+    "      $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+    "    } else {continue}",
+    "  }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}"
+  ],
+  "bin": "WinXray.exe",
+  "shortcuts": [
+    [
+      "WinXray.exe",
+      "WinXray"
+    ]
+  ],
+  "checkver": "github",
+  "autoupdate": {
+    "url": "https://github.com/TheMRLL/WinXray/releases/download/V$version/WinXray.7z"
+  }
+}

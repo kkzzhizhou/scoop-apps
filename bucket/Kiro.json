@@ -1,0 +1,48 @@
+{
+    "version": "0.6.32",
+    "description": "The AI IDE for prototype to productionr",
+    "homepage": "https://kiro.dev/",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://prod.download.desktop.kiro.dev/releases/stable/win32-x64/signed/0.6.32/kiro-ide-0.6.32-stable-win32-x64.zip",
+            "hash": "58ec14406c3e609c54f96217e21a944a2078fd7b94c1b4a2285320d46777ca14"
+        }
+    },
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.kiro\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Move-Item \"$env:USERPROFILE\\.kiro\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Kiro\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Move-Item \"$env:AppData\\Kiro\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=kiro(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin\\kiro.cmd",
+            "kiro",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Kiro.exe",
+            "Kiro",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://kiro.dev/changelog/",
+        "regex": "\\\"version\\\":\\\"([\\d.]+)"
+    }
+}

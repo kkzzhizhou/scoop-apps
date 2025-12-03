@@ -1,0 +1,50 @@
+{
+    "version": "3835",
+    "description": "Sony PlayStation Vita emulator",
+    "homepage": "https://vita3k.org",
+    "license": "GPL-2.0-only",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip",
+            "hash": "354433d95c8d22cafd0aa81c639ecef62d6e4b06a456ee4a2dad381b9281d929"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config.yml\")) {",
+        "   New-Item \"$dir\\config.yml\" | Out-Null",
+        "}"
+    ],
+    "bin": "Vita3K.exe",
+    "shortcuts": [
+        [
+            "Vita3K.exe",
+            "Sony PlayStation Vita [vita][vita3k]"
+        ]
+    ],
+    "persist": [
+        "cache",
+        "config.yml"
+    ],
+    "checkver": {
+        "script": [
+            "$app = 'vita3k'",
+            "$url = 'https://github.com/Vita3K/Vita3K/releases/tag/continuous'",
+            "$cont = (Invoke-WebRequest $url -UseBasicParsing -Headers @{ 'User-Agent' = 'Mozilla/5.0' }).Content",
+            "if ($cont -match 'Vita3K Build:\\s*(\\d+)') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
+            "if ($cont -match 'Corresponding commit:\\s*([a-f0-9]{7})') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
+            "# fallback: try to extract first 7-char commit from the page",
+            "if ($cont -match '([a-f0-9]{7})') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
+            "Write-Error 'could not detect vita3k build or commit'"
+        ]
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip"
+            }
+        }
+    }
+}

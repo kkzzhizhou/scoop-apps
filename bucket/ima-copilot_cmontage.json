@@ -1,0 +1,37 @@
+{
+  "version": "138.0.7204.3669",
+  "homepage": "https://ima.qq.com/",
+  "license": "Freeware",
+  "url": "https://ima-app.image.myqcloud.com/win/2.1.0_3484/ima.copilot_win_x64_1018_2.1.0_3484.exe#/dl.7z",
+  "hash": "4339fc553484979a8c33ca94d3e47d4f92ab81eb6f933ea2247c717155c4cb5d",
+  "pre_install": [
+    "Expand-7zipArchive \"$dir\\chrome.7z\" \"$dir\"",
+    "Move-Item \"$dir\\Chrome-bin\\*\" \"$dir\""
+  ],
+  "post_install": [
+    "Remove-Item \"$dir\\chrome.7z\" -Force -Recurse",
+    "Remove-Item \"$dir\\Chrome-bin\" -Force -Recurse"
+  ],
+  "shortcuts": [
+    [
+      "ima.copilot.exe",
+      "ima"
+    ]
+  ],
+  "checkver": {
+    "script": [
+      ". \"$pwd\\bin\\utils.ps1\"",
+      "$dl_info = get_installer_info 'Tencent/ima-copilot'",
+      "\"ver:$($dl_info.PackageVersion);\"",
+      "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+    ],
+    "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+  },
+  "autoupdate": {
+    "url": "$matchX64#/dl.7z",
+    "hash": {
+      "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/ima-copilot/$version/Tencent.ima-copilot.installer.yaml",
+      "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+    }
+  }
+}

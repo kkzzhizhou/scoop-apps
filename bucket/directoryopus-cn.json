@@ -1,0 +1,81 @@
+{
+    "##": [
+        "_edited_from",
+        "https://github.com/xrgzs/sdoog/blob/master/bucket/directoryopus-cn.json",
+        "https://github.com/okibcn/ScoopMaster/blob/master/bucket/DirectoryOpus.json"
+    ],
+    "version": "13.19.7",
+    "description": "Directory Opus 是受欢迎的一款文件管理器。Directory Opus 注重鼠标操作，与倾向于键盘快捷键操作的 Total Commander 形成鲜明的对比。Directory Opus 集成许多非常实用的功能，包括音视频的预览、解压缩处理等。",
+    "homepage": "https://www.gpsoft.com.au/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://docs.dopus.com/doku.php?id=licence:end_user"
+    },
+    "url": [
+        "https://cdn2.gpsoft.com.au/files/Opus13/Beta/DOpusInstall-13.19.7.Beta.exe#/installer.exe",
+        "https://github.com/maboloshi/scoop-private/releases/download/v1.0/dopus_patcher.exe"
+    ],
+    "hash": [
+        "8882ce61af52513346304e0d7f3607afb8158f71b32496e24d9830ca1e83fef4",
+        "d4a2c30bfd1aa426eaaa7d36d9cec05317a1dd87c464d35229d5f5cab8944142"
+    ],
+    "bin": "dopusrt.exe",
+    "shortcuts": [
+        [
+            "dopus.exe",
+            "Directory Opus"
+        ]
+    ],
+    "installer": {
+        "file": "installer.exe",
+        "args": [
+            "/VERYSILENT",
+            "/FORCECLOSEAPPLICATIONS",
+            "/NORESTART",
+            "/TASKS=\"\"",
+            "/DIR=\"$dir\""
+        ]
+    },
+    "post_install": [
+        "Write-Host \"`rTry applying crack patch...\" -Foreground Magenta",
+        "Stop-Process -Name 'dopus' -Force -ErrorAction SilentlyContinue",
+        "Invoke-ExternalCommand \"cmd.exe\" -ArgumentList @('/c', \"echo y | `\"$dir\\dopus_patcher.exe`\"\") -Quiet -RunAs",
+        "Write-Host '[Portable Mode]: Copying user config data . . .' -Foreground Magenta",
+        "$source = \"$env:APPDATA\\GPSoftware\\Directory Opus\"",
+        "$target = ensure \"$persist_dir\"",
+        "if (Test-Path \"$source\") {",
+        "    Copy-Item -Path \"$source\\*\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "    Remove-Item -Path \"$source\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null",
+        "$source = ensure \"$env:LOCALAPPDATA\\GPSoftware\\Directory Opus\\State Data\"",
+        "if (Test-Path \"$source\") {",
+        "    Move-Item -Path \"$source\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\\State Data\" | Out-Null"
+    ],
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/FORCECLOSEAPPLICATIONS",
+            "/NORESTART"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "$rssUrl = 'https://resource.dopus.com/c/new-releases/28.rss'",
+            "$version, $isBeta = [regex]::Match(",
+            "    (Invoke-RestMethod -Uri $rssUrl)[0].title,",
+            "    'Directory Opus (?<v>[\\d.]+)(?: \\((?<beta>Beta)\\))?'",
+            ").Groups['v','beta'].Value",
+            "$betaPath = if ($isBeta) { 'Beta/' } else { '' }",
+            "$betaSuffix = if ($isBeta) { '.Beta' } else { '' }",
+            "Write-Output \"$version|$betaPath|$betaSuffix\""
+        ],
+        "regex": "^(?<version>[\\d.]+)\\|(?<betaPath>.+)\\|(?<betaSuffix>.+)$"
+    },
+    "autoupdate": {
+        "url": "https://cdn2.gpsoft.com.au/files/Opus$majorVersion/$matchBetapathDOpusInstall-$version$matchBetasuffix.exe#/installer.exe"
+    }
+}

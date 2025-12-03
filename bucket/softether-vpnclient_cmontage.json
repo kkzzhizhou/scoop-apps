@@ -1,0 +1,67 @@
+{
+  "version": "4.38-9760-rtm",
+  "description": "softether-vpnclient",
+  "homepage": "https://github.com/SoftEtherVPN/SoftEtherVPN_Stable",
+  "license": "GPL-2.0-only",
+  "depends": [
+    "autohotkey"
+  ],
+  "url": "https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/releases/download/v4.38-9760-rtm/softether-vpnclient-v4.38-9760-rtm-2021.08.17-windows-x86_x64-intel.exe#/setup.exe",
+  "hash": "fe1cf6cd8d78c063f898d1841feecd35db0d5d2ab0e3d51a709924ea1d2b4b7c",
+  "#innosetup": true,
+  "pre_install": [
+    "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+    "Test-Persistence 'vpn_client.config'",
+    "",
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "$origc = $(Get-Culture).Name",
+    "",
+    "cp \"$bucketdir\\..\\scripts\\$app\\softether-vpnclient-install.$origc.ahk\" \"$dir\"",
+    "",
+    "$ahkExe = 'AutoHotKey.exe'",
+    "$args = \"$dir\\softether-vpnclient-install.$origc.ahk\"",
+    "$ahkProc = Start-Process -FilePath $ahkExe -ArgumentList $args -PassThru",
+    "$ahkId = $ahkProc.Id",
+    "Write-Host \"$ahkExe start time:`t$($ahkProc.StartTime.ToShortTimeString())\"",
+    "Write-Host \"Process ID:`t$ahkId\"",
+    "",
+    "#$origc = Get-Culture",
+    "#Set-Culture en-US",
+    "$proc = Start-Process $dir\\setup.exe -Verb RunAs -PassThru",
+    "$timeouted = $null # reset any previously set timeout",
+    "# wait up to x seconds for normal termination",
+    "$proc | Wait-Process -Timeout 30 -ErrorAction SilentlyContinue -ErrorVariable timeouted",
+    "if ($timeouted) {",
+    "   # terminate the process",
+    "   $proc | kill",
+    "   Write-Host \"::Detecting and ignoring internal error.\"",
+    "}",
+    "#Set-Culture $origc.Name",
+    "",
+    ""
+  ],
+  "#bin": [
+    "vpncmd_x64.exe",
+    [
+      "vpncmd_x64.exe",
+      "vpncmd"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "vpncmgr_x64.exe",
+      "SoftEther VPN Client 管理工具"
+    ]
+  ],
+  "persist": [
+    "vpn_client.config"
+  ],
+  "checkver": {
+    "github": "https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/releases",
+    "regex": "softether-vpnclient-v(?<version>[\\d.]+)-(?<year>[\\d]+).(?<mon>[\\d]+).(?<day>[\\d]+)-windows-x86_x64-intel.exe"
+  },
+  "autoupdate": {
+    "url": "https://github.com/SoftEtherVPN/SoftEtherVPN_Stable/releases/download/v$version/softether-vpnclient-v$version-$matchYear.$matchMon.$matchDay-windows-x86_x64-intel.exe#/setup.exe"
+  }
+}

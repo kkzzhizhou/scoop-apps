@@ -1,0 +1,40 @@
+{
+    "version": "0.9.15",
+    "description": "一款简洁、高效、高颜值的输入、截图、划词翻译软件。A concise, efficient, and high-quality input, screenshot, and word translation software.",
+    "homepage": "https://github.com/InkTimeRecord/TTime",
+    "license": {
+        "identifier": "Apache License 2.0(with the additional conditions)",
+        "url": "https://github.com/InkTimeRecord/TTime/blob/main/LICENSE.txt"
+    },
+    "url": "https://github.com/InkTimeRecord/TTime/releases/download/v0.9.15/TTime-0.9.15-setup.exe",
+    "hash": "fd40f6ed0e91ac785d3f1e46868a9c5db72202d93d88b58cf91fcc1fdaabfe09",
+    "shortcuts": [
+        [
+            "TTime.exe",
+            "TTime"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\TTime-$($version)-setup.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\TTime.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\time-translate\") @(\"$persist_dir\\time-translate\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\time-translate\")",
+        "$ui_exe=\"$dir\\Uninstall TTime.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/InkTimeRecord/TTime/releases/download/v$version/TTime-$version-setup.exe"
+    }
+}

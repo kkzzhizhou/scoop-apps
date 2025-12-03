@@ -1,0 +1,45 @@
+{
+    "homepage": "https://github.com/microsoft/terminal",
+    "description": "The new Windows Terminal and the original Windows console host, all in the same place!",
+    "version": "1.4.3243.0",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/microsoft/terminal/blob/master/LICENSE"
+    },
+    "url": "https://github.com/microsoft/terminal/releases/download/v1.4.3243.0/Microsoft.WindowsTerminal_1.4.3243.0_8wekyb3d8bbwe.msixbundle",
+    "hash": "9de2891139f922e0a3640ab2894c5c3b2928d9c7855e4d7a63d34c3cc3f31598",
+    "installer": {
+        "script": [
+            "if ([Environment]::OSVersion.Version.Major -ne \"10\") {",
+            "    throw \"Windows Terminal requires Windows 10 to work.\"",
+            "}",
+            "if ([Environment]::OSVersion.Version.Build -lt \"18362\") {",
+            "    throw \"Windows Terminal requires at least Windows 10 version 1903 (build 18362) to work.\"",
+            "}",
+            "Add-AppxPackage -Path \"$dir\\$fname\"",
+            "Remove-Item \"$dir\\$fname\"",
+            "# Resolve settings",
+            "ensure $persist_dir | Out-Null",
+            "$packageName = (Get-AppxPackage -Name Microsoft.WindowsTerminal).PackageFamilyName",
+            "$settingsDir = \"$env:LocalAppData\\Packages\\$packageName\\LocalState\"",
+            "if (Test-Path \"$persist_dir\\settings.json\") {",
+            "    Copy-Item -Path \"$persist_dir\\settings.json\" -Destination $settingsDir | Out-Null",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "# Backup settings file",
+            "$packageName = (Get-AppxPackage -Name Microsoft.WindowsTerminal).PackageFamilyName",
+            "$settingsFile = \"$env:LocalAppData\\Packages\\$packageName\\LocalState\\settings.json\"",
+            "if (Test-Path $settingsFile) {",
+            "    Copy-Item -Path $settingsFile -Destination \"$persist_dir\" -Force | Out-Null",
+            "}",
+            "Get-AppxPackage -Name Microsoft.WindowsTerminal | Remove-AppxPackage"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminal_$version_8wekyb3d8bbwe.msixbundle"
+    }
+}

@@ -1,0 +1,36 @@
+{
+    "version": "5.20.0",
+    "description": "Performant endpoint visibility",
+    "homepage": "https://osquery.io/",
+    "license": "Apache-2.0|GPL-2.0-only",
+    "url": "https://pkg.osquery.io/windows/osquery-5.20.0.msi",
+    "hash": "68bc735b82aeb7af8660a770b6626be2adba5403e8112c62bab254ba5b917960",
+    "extract_dir": "osquery",
+    "bin": [
+        "osqueryi.exe",
+        "osqueryd\\osqueryd.exe",
+        "manage-osqueryd.ps1"
+    ],
+    "persist": "osquery.conf",
+    "post_install": [
+        "$mng_d = \"$dir\\manage-osqueryd.ps1\"",
+        "$find = \"$PSScriptRoot, '..', 'osquery', 'osqueryd', 'osqueryd.exe'\"",
+        "$replace = \"$PSScriptRoot, 'osqueryd', 'osqueryd.exe'\"",
+        "(Get-Content \"$mng_d\").replace(\"$find\", \"$replace\") | Set-Content \"$mng_d\" | Out-Null"
+    ],
+    "notes": [
+        "run \"manage-osqueryd.ps1 -help\" to learn howto install/uninstall/start/stop the osqueryd daemon... and more...",
+        "run \"osqueryd --help\" for the osqueryd daemon help",
+        "run \"osqueryi --help\" for the interactive shell help"
+    ],
+    "checkver": {
+        "url": "https://raw.githubusercontent.com/osquery/osquery-site/source/src/data/osquery_metadata.json",
+        "jp": "$.current_version"
+    },
+    "autoupdate": {
+        "url": "https://pkg.osquery.io/windows/osquery-$version.msi",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

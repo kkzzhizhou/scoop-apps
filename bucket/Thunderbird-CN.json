@@ -1,0 +1,49 @@
+{
+    "version": "128.10.0esr",
+    "description": "一款易于设置和定制的免费电子邮件应用程序。A free email application that's easy to set up and customize.",
+    "homepage": "https://www.thunderbird.net",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.mozilla.org/zh-CN/foundation/licensing/"
+    },
+    "url": "https://download.mozilla.org/?product=thunderbird-128.10.0esr-SSL&os=win64&lang=zh-CN#/abgo_bucket_installer.exe",
+    "hash": "1c96d6e15e3ad6d847b1778317b3635154ae5f9552a32c8a98cf132447b245cb",
+    "bin": "thunderbird.exe",
+    "shortcuts": [
+        [
+            "thunderbird.exe",
+            "Thunderbird"
+        ],
+        [
+            "thunderbird.exe",
+            "Thunderbird Profile Manager",
+            "-P"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\thunderbird.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\Thunderbird\",\"$user_LocalAppData\\Thunderbird\") @(\"$persist_dir\\Thunderbird\",\"$persist_dir\\Thunderbird_LocalAppData\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\Thunderbird\",\"$user_LocalAppData\\Thunderbird\")",
+        "$ui_exe=\"$dir\\uninstall\\helper.exe\"",
+        "& $ui_exe /S",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": {
+        "url": "https://www.thunderbird.net/thunderbird/all/",
+        "regex": "product=thunderbird-([\\d\\.\\w]+)-"
+    },
+    "autoupdate": {
+        "url": "https://download.mozilla.org/?product=thunderbird-$version-SSL&os=win64&lang=zh-CN#/abgo_bucket_installer.exe"
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "version": "1.5.6.0",
+    "description": "一款设计简约的现代轻量级文本编辑器。A modern, lightweight text editor with a minimalist design.",
+    "homepage": "https://www.notepadsapp.com/",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/0x7c13/Notepads/blob/master/LICENSE.txt"
+    },
+    "url": "https://github.com/0x7c13/Notepads/releases/download/v1.5.6.0/Notepads_1.5.6.0_x86_x64_arm64.msixbundle",
+    "hash": "64e48c47ee39aa63616946e4d9f3d287d96b4650fc119eb8cbc73a1d58b36540",
+    "pre_install": [
+        "$path_installer=\"$dir\\Notepads_$($version)_x86_x64_arm64.msixbundle\"",
+        "Add-AppPackage -Path $path_installer",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_LocalAppData\\Packages\\19282JackieLiu.Notepads-Beta_echhpq9pdbte8\") @(\"$persist_dir\\19282JackieLiu.Notepads-Beta_echhpq9pdbte8\")",
+        "do_some_things"
+    ],
+    "post_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "handle_lang -CN {",
+        "   write_with_color \"`n<@Yellow>此应用的程序文件不在 Scoop 中。Scoop 只管理数据的持久化(persist)、安装、更新以及卸载操作`n\"",
+        "} -EN {",
+        "   write_with_color \"`n<@Yellow>The app's program files are not within Scoop.`nScoop only manages the persistence of data and operations for installing, updating, and uninstalling.`n\"",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "write_with_color (data_replace $json.stop_process)",
+        "Stop-Process -Name Notepads -Force -ErrorAction SilentlyContinue",
+        "remove_files @(\"$user_LocalAppData\\Packages\\19282JackieLiu.Notepads-Beta_echhpq9pdbte8\")",
+        "Get-AppxPackage -Name \"19282JackieLiu.Notepads-Beta\" | Remove-AppxPackage"
+    ],
+    "checkver": {
+        "github": "https://github.com/0x7c13/Notepads"
+    },
+    "autoupdate": {
+        "url": "https://github.com/0x7c13/Notepads/releases/download/v$version/Notepads_$version_x86_x64_arm64.msixbundle"
+    }
+}

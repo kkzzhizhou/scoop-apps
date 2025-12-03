@@ -1,0 +1,62 @@
+{
+    "version": "15.72.3",
+    "description": "Software for remote control, desktop sharing, online meetings, web conferencing and file transfer between computers.",
+    "homepage": "https://www.teamviewer.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.teamviewer.com/en/eula/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.teamviewer.com/download/version_15x/TeamViewer_Setup_x64.exe#/setup.exe",
+            "hash": "68c763d1bf14c4e36045b0215dbe79155300cfed22d474e891155ca7db476f82"
+        },
+        "32bit": {
+            "url": "https://dl.teamviewer.com/download/version_15x/TeamViewer_Setup.exe#/setup.exe",
+            "hash": "8367da38be7e42a101d589cb737a3a96ab707eeae0116c21c85ed0f39afb217f"
+        }
+    },
+    "installer": {
+        "script": [
+            "Start-Process -Wait \"$dir\\setup.exe\" -ArgumentList @('/S', '/norestart') -Verb RunAs | Out-Null",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "pre_uninstall": [
+        "$is_running = $null -ne $(Get-Process -Name 'teamviewer' -ErrorAction SilentlyContinue)",
+        "if ($is_running) {",
+        "    Write-Host \"`nTeamViewer is running, would you like to continue?\" -ForegroundColor Yellow",
+        "    $answer = Read-Host -Prompt \"Enter 'y' to continue, any other key to cancel\"",
+        "    if ('y' -eq $answer) {",
+        "        Write-Host \"Stopping process...\" -ForegroundColor Yellow -NoNewline",
+        "        Stop-Process -Name 'teamviewer' -ErrorAction Stop",
+        "        Start-Sleep -Milliseconds 250",
+        "    } else {",
+        "        Write-Host \"Uninstallation cancelled.\" -ForegroundColor Red",
+        "        break",
+        "    }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "$uninstall = \"$env:ProgramFiles\\TeamViewer\\uninstall.exe\"",
+            "if (-not (Test-Path $uninstall)) { $uninstall = \"${env:ProgramFiles(x86)}\\TeamViewer\\uninstall.exe\" }",
+            "Start-Process -Wait \"$uninstall\" -ArgumentList @('/S', '/norestart') -Verb RunAs | Out-Null"
+        ]
+    },
+    "checkver": {
+        "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.26 Safari/537.36",
+        "url": "https://www.teamviewer.com/en-us/download/portal/windows/",
+        "regex": "<span data-dl-version-label>([\\d.]+)<\\/span>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.teamviewer.com/download/version_$majorVersionx/TeamViewer_Setup_x64.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://dl.teamviewer.com/download/version_$majorVersionx/TeamViewer_Setup.exe#/setup.exe"
+            }
+        }
+    }
+}

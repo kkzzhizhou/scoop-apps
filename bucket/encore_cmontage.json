@@ -1,0 +1,42 @@
+{
+  "version": "1.52.1",
+  "description": "Encore is the end-to-end Backend Development Platform that lets you escape cloud complexity.",
+  "homepage": "https://github.com/encoredev/encore",
+  "license": "MPL-2.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://d2f391esomvqpi.cloudfront.net/encore-1.52.1-windows_amd64.tar.gz",
+      "hash": "871c295be72da682313bb75d413cc67dba9f1f1d0ff6da3ced33209bc44cc0c6"
+    }
+  },
+  "post_install": [
+    "mkdir -p \"$env:APPDATA\\encore\" -ErrorAction SilentlyContinue",
+    "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+    "  if (-not (Test-Path $runtimeCache)) { return }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}",
+    "foreach ($folder in @('encore')) {",
+    "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+    "}"
+  ],
+  "env_add_path": "bin",
+  "checkver": {
+    "url": "https://encore.dev/api/releases",
+    "regex": "\"([\\d.]+)\","
+  },
+  "autoupdate": {
+    "url": "https://d2f391esomvqpi.cloudfront.net/encore-$version-windows_amd64.tar.gz",
+    "hash": {
+      "mode": "download"
+    }
+  }
+}

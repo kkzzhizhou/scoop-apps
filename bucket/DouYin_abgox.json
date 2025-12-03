@@ -1,0 +1,43 @@
+{
+    "version": "6.0.0",
+    "description": "抖音，一个短视频平台。",
+    "homepage": "https://www.douyin.com/",
+    "license": "Unknown",
+    "url": "https://lf-douyin-pc-web.douyinstatic.com/obj/douyin-pc-web/douyin-pc-client/7044145585217083655/releases/152232119/6.0.0/win32-ia32/douyin-v6.0.0-win32-ia32-default.exe#/dl.zip",
+    "hash": "3a1a3daac8c88be5be911141240a3fde1ba1f880d7a442fde7da77f30482819b",
+    "shortcuts": [
+        [
+            "douyin.exe",
+            "抖音"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\" -Removal",
+        "persist_file -dir @(\"$user_AppData\\douyin\",\"$user_AppData\\douyin_widget\") @(\"$persist_dir\\douyin\",\"$persist_dir\\douyin_widget\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\douyin\",\"$user_AppData\\douyin_widget\",\"$user_LocalAppData\\app_shell_cache_6383\")"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'ByteDance/Douyin'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x86:$($dl_info.x86_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x86:(?<x86>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX86#/dl.zip",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/Douyin/$version/ByteDance.Douyin.installer.yaml",
+            "regex": "Architecture: x86[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}

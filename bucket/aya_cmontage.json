@@ -1,0 +1,44 @@
+{
+  "version": "1.14.2",
+  "description": "Android adb desktop app",
+  "homepage": "https://aya.liriliri.io/",
+  "license": {
+    "identifier": "AGPL-3.0 license",
+    "url": "https://github.com/liriliri/aya#AGPL-3.0-1-ov-file"
+  },
+  "url": "https://github.com/liriliri/aya/releases/download/v1.14.2/AYA-1.14.2-win-x64.exe#/dl.7z",
+  "hash": "e2f580ba4645a3593e8f055a894ae4633e3af8008b3755ee202a8e139b0c7a15",
+  "pre_install": [
+    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+    "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+  ],
+  "installer": {
+    "script": [
+      "# handle runtime cache",
+      "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+      "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\AYA\"",
+      "Remove-Module -Name AppsUtils"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+      "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\AYA\"",
+      "Remove-Module -Name AppsUtils"
+    ]
+  },
+  "bin": "AYA.exe",
+  "shortcuts": [
+    [
+      "AYA.exe",
+      "AYA"
+    ]
+  ],
+  "checkver": {
+    "url": "https://api.github.com/repos/liriliri/aya/releases",
+    "regex": "/releases/tag/v([\\d.]+)"
+  },
+  "autoupdate": {
+    "url": "https://github.com/liriliri/aya/releases/download/v$version/AYA-$version-win-x64.exe#/dl.7z"
+  }
+}

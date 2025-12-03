@@ -1,0 +1,47 @@
+{
+    "version": "5.3.0",
+    "description": "一个图片压缩程序 (jpg/png/webp/svg/gif/css/js/html/mp4/mov)，它可以转换不同格式的图片。A compression (jpg/png/webp/svg/gif/css/js/html/mp4/mov) App, it can convert different format pictures.",
+    "homepage": "https://arayofsunshine.dev/hummingbird",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/leibnizli/hummingbird/blob/master/LICENSE"
+    },
+    "url": "https://github.com/leibnizli/hummingbird/releases/download/v5.3.0/hummingbird-Setup-5.3.0.exe#/abgo_bucket_installer.exe",
+    "hash": "sha512:80bdce51d50ea2d02582e251e8766cb01cbbdacbd65b52025250ef460b919c7a456d03dbea53cbf5542a2db57a665133938a1103c17ab9b962db5675515422e5",
+    "shortcuts": [
+        [
+            "hummingbird.exe",
+            "hummingbird"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\abgo_bucket_installer.exe\"",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\hummingbird.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -dir @(\"$user_AppData\\hummingbird\") @(\"$persist_dir\\hummingbird\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "remove_files @(\"$user_AppData\\hummingbird\")",
+        "$ui_exe=\"$dir\\Uninstall hummingbird.exe\"",
+        "try{ & $ui_exe /S }catch{}",
+        "sleep_uninstall $ui_exe",
+        "remove_files @(\"$user_LocalAppData\\hummingbird-updater\")"
+    ],
+    "checkver": {
+        "github": "https://github.com/leibnizli/hummingbird"
+    },
+    "autoupdate": {
+        "url": "https://github.com/leibnizli/hummingbird/releases/download/v$version/hummingbird-Setup-$version.exe#/abgo_bucket_installer.exe",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+  "version": "2.1.15",
+  "description": "支持自建同步的anki版本",
+  "homepage": "https://apps.ankiweb.net",
+  "license": "AGPL-3.0-only",
+  "suggest": {
+    "vcredist": "extras/vcredist2008"
+  },
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/ankitects/anki/releases/download/2.1.15/anki-2.1.15-windows.exe#/dl.7z",
+      "hash": "5672638094c9b40ef6fa50236b4c4dcf938e028aeee79209dc0cda6ac4983b99"
+    },
+    "32bit": {
+      "url": "https://github.com/ankitects/anki/releases/download/2.1.15/anki-2.1.15-windows-alternate.exe#/dl.7z",
+      "hash": "C060BE50A97E9C77C5C56952DA14607675138A84984BA01406728B04FF9CA0AD"
+    }
+  },
+  "checkver": {
+    "url": "https://raw.githubusercontent.com/kkzzhizhou/scoop-zapps/master/versions/anki-with-sync.latest",
+    "regex": "([\\d.]+)"
+  },
+  "autoupdate": {
+    "64bit": {
+      "url": "https://github.com/ankitects/anki/releases/download/$version/anki-$version-windows.exe#/dl.7z",
+      "hash": "5672638094c9b40ef6fa50236b4c4dcf938e028aeee79209dc0cda6ac4983b99"
+    },
+    "32bit": {
+      "url": "https://github.com/ankitects/anki/releases/download/$version/anki-$version-windows-alternate.exe#/dl.7z",
+      "hash": "C060BE50A97E9C77C5C56952DA14607675138A84984BA01406728B04FF9CA0AD"
+    }
+  },
+  "pre_install": [
+    "@(",
+    "    '@echo off'",
+    "    'SET _allParams=\"%*\"'",
+    "    'IF /i %_allParams:-b =%==%_allParams% ('",
+    "    \"    start `\"anki`\" /D `\"%~dp0`\" `\"%~dp0anki.exe`\" -b `\"$persist_dir\\data`\" %*\"",
+    "    ') ELSE ('",
+    "    '    start \"anki\" /D \"%~dp0\" \"%~dp0anki.exe\" %*'",
+    "    ')'",
+    ") | Set-Content \"$dir\\anki.cmd\" -Encoding ASCII",
+    "Remove-Item \"$dir\\`$*\" -Recurse"
+  ],
+  "bin": "anki.cmd",
+  "shortcuts": [
+    [
+      "anki.cmd",
+      "Anki",
+      "",
+      "anki.exe"
+    ]
+  ],
+  "persist": "data"
+}

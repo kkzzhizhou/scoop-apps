@@ -1,0 +1,63 @@
+{
+    "version": "10.7.6.404",
+    "description": "A small, fast, and feature-rich PDF viewer/editor.",
+    "homepage": "https://www.pdf-xchange.com/product/pdf-xchange-editor",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.tracker-software.com/PDF_VE.pdf"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.pdf-xchange.com/downloads/PDFXEdit10_Portable_x64.zip",
+            "hash": "024a1958430470992f6729c88311a8174b979d808741641b4ac916fa6eac8dbf"
+        },
+        "32bit": {
+            "url": "https://www.pdf-xchange.com/downloads/PDFXEdit10_Portable_x86.zip",
+            "hash": "ad33c6bdeefaf9bd06f4ded187edc205ef162989ac888cfa8b62350207a7a6bf"
+        }
+    },
+    "pre_install": [
+        "# Hardlinks cannot work properly here, as this app would create a new file instead of writing directly.",
+        "'History.dat', 'Settings.dat' | ForEach-Object {",
+        "    if (Test-Path \"$persist_dir\\$_\") {",
+        "        Copy-Item \"$persist_dir\\$_\" \"$dir\\$_\" -Force -ErrorAction SilentlyContinue",
+        "    } else {",
+        "        New-Item \"$dir\\$_\" -ItemType File | Out-Null",
+        "    }",
+        "}"
+    ],
+    "bin": "PDFXEdit.exe",
+    "shortcuts": [
+        [
+            "PDFXEdit.exe",
+            "PDF-XChange Editor"
+        ]
+    ],
+    "persist": [
+        "History.dat",
+        "Settings.dat"
+    ],
+    "pre_uninstall": [
+        "# Hardlinks cannot work properly here, as this app would create a new file instead of writing directly.",
+        "ensure $persist_dir",
+        "'History.dat', 'Settings.dat' | ForEach-Object {",
+        "    if (Test-Path \"$dir\\$_\") {",
+        "        Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -Force -ErrorAction SilentlyContinue",
+        "    }",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://www.pdf-xchange.com/product/pdf-xchange-editor/history/download-text-file",
+        "regex": "Build ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.pdf-xchange.com/downloads/PDFXEdit10_Portable_x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.pdf-xchange.com/downloads/PDFXEdit10_Portable_x86.zip"
+            }
+        }
+    }
+}

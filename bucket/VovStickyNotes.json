@@ -1,0 +1,36 @@
+{
+    "version": "9.6",
+    "description": "创建数字贴纸和提醒事项。Creates digital stickers and reminders",
+    "homepage": "https://vovsoft.com/software/vov-sticky-notes/",
+    "license": "Shareware",
+    "url": "https://vovsoft.com/files/vov-sticky-notes.exe?v=9.6",
+    "hash": "fe9e5eb24b7e885de3539423d6b95567e4f8c275ea2e0d3b75b90ea45d563503",
+    "shortcuts": [
+        [
+            "sticky.exe",
+            "Vov Sticky Notes"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=\"$dir\\vov-sticky-notes.exe\"",
+        "& $path_installer /VerySilent /NoIcons /Dir=$dir",
+        "$core_exe=\"$dir\\sticky.exe\"",
+        "sleep_install $core_exe",
+        "persist_file -file @(\"$dir\\data.ini\") @(\"$persist_dir\\data.ini\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "$ui_exe=\"$dir\\unins000.exe\"",
+        "try{ & $ui_exe /VerySilent }catch{}",
+        "sleep_uninstall $ui_exe"
+    ],
+    "checkver": "Version:</b>\\s?([\\d\\.]+)",
+    "autoupdate": {
+        "url": "https://vovsoft.com/files/vov-sticky-notes.exe?v=$version"
+    }
+}

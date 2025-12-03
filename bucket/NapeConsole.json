@@ -1,0 +1,53 @@
+{
+    "version": "1.6.15",
+    "description": "A custom keyboard configuration manager for Nape Studio.",
+    "homepage": "https://www.nape.cc",
+    "license": "Unknown",
+    "depends": "Scoop4kariiin/Scoop4kariiinUtils",
+    "architecture": {
+        "64bit": {
+            "url": "https://d.lelelab.work/nape/newest.exe#/dl.7z",
+            "hash": "5dad3700e235c13dfc356965d4696f6aea040832efb892f7e723c6d277dbc897",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\NapeConsole\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+        ]
+    },
+    "shortcuts": [
+        [
+            "NapeConsole.exe",
+            "NapeConsole"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Dismount-ExternalRuntimeData -Target \"NapeConsole\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+        ]
+    },
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://d.lelelab.work/nape/newest.exe'",
+            "$dl = cache_path 'NapeConsole' 'unknown' $dl_url",
+            "Invoke-CachedDownload 'NapeConsole' 'unknown' $dl_url",
+            "$ver = (Get-Item $dl).VersionInfo.ProductVersion",
+            "$dl_url_7z = $json.autoupdate.url",
+            "$dl_7z = cache_path 'NapeConsole' $ver $dl_url_7z",
+            "Move-Item -Force $dl $dl_7z",
+            "$ver"
+        ],
+        "regex": "(\\S+)"
+    },
+    "autoupdate": {
+        "url": "https://d.lelelab.work/nape/newest.exe#/dl.7z"
+    }
+}

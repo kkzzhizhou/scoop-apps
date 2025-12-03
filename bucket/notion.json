@@ -1,0 +1,46 @@
+{
+    "version": "6.0.0",
+    "description": "Collaborative note taking",
+    "homepage": "https://www.notion.so/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.notion.so/Terms-and-Privacy-28ffdd083dc3473e9c2da6ec011b58ac"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://desktop-release.notion-static.com/Notion%20Setup%206.0.0.exe#/dl.7z",
+            "hash": "sha512:242bf54bed3e1163e7ff266e31e8d3e0a0746e5aa5aa0892fa818e31ca6b669014353c4cdbdcbcd7a6b9e24a3db6090e818b5627de6ba71252b89f5b46d1cc6b"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Recurse",
+        "# Disable auto-updates:",
+        "$yaml = \"$dir\\resources\\app-update.yml\"",
+        "$content = Get-Content $yaml | Foreach-Object {",
+        "  if ($_.StartsWith('url')) { \"$($_.Replace('url', '# url')) # Disabled by Scoop\" } else { $_ }",
+        "}",
+        "Set-Content $yaml -Value $content -Encoding ascii"
+    ],
+    "shortcuts": [
+        [
+            "Notion.exe",
+            "Notion"
+        ]
+    ],
+    "checkver": {
+        "url": "https://desktop-release.notion-static.com/latest.yml",
+        "regex": "version:\\s+([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://desktop-release.notion-static.com/Notion%20Setup%20$version.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

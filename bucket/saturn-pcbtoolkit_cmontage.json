@@ -1,0 +1,51 @@
+{
+  "version": "8.05",
+  "description": "The Saturn PCB Toolkit is the best freeware resource for PCB related calculations you can find.",
+  "homepage": "http://saturnpcb.com/pcb_toolkit.htm",
+  "license": "Trialware",
+  "notes": [
+    "Very simple but extensive PCB design aid. And it's free!",
+    "Includes a via current calculator, trace width calculator, bandwidth calculator, differential pair calculator, mechanical data, conductor impedance calculator",
+    "unit conversions, planar inductor calculator, thermal resistance calculator and more!",
+    "",
+    "Allow application to find run parameters by running '$dir\\install-pcbtoolkit.reg'",
+    "Before uninstalling PCB Toolkit, run '$dir\\uninstall-pcbtoolkit.reg'"
+  ],
+  "url": "https://www.saturnpcb.com/wp-content/Toolkit/Saturn_PCB_Toolkit_V8.05_Setup.exe#/setup.exe",
+  "hash": "7afa8fa591d91bd5f41d63b7ab7b0f892682a67cf58b782a275702883cab24bc",
+  "pre_install": [
+    "Invoke-ExternalCommand -FilePath \"$dir\\setup.exe\" -ArgumentList \"/extract $dir\" -RunAs | Out-Null",
+    "Get-Item \"$dir\\Saturn*.cab\" | Rename-Item -NewName '1.cab'",
+    "pushd $dir; 7z x 1.cab",
+    "Remove-Item \"$dir\\*.cab\"",
+    "Remove-Item \"$dir\\*.msi\"",
+    "Remove-Item \"$dir\\setup.exe\""
+  ],
+  "post_install": [
+    "",
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "$CUR_HOME = \"$dir\".Replace('/', '\\\\')",
+    "$escdir = $CUR_HOME -replace \"\\\\\",\"\\\\\"",
+    "(gc \"$bucketdir\\..\\scripts\\saturn-pcbtoolkit\\install-pcbtoolkit.reg\") | % {$_ -replace \"%CUR_HOME%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-pcbtoolkit.reg\"",
+    "cp \"$bucketdir\\..\\scripts\\saturn-pcbtoolkit\\uninstall-pcbtoolkit.reg\" \"$dir\"",
+    ""
+  ],
+  "bin": [
+    [
+      "PCBToolkitV8.05.exe",
+      "Saturn PCB Toolkit",
+      "favicon.ico"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "PCBToolkitV8.05.exe",
+      "Saturn PCB Toolkit",
+      "favicon.ico"
+    ]
+  ],
+  "persist": [
+    "data"
+  ]
+}

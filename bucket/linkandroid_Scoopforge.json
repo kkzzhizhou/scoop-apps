@@ -1,0 +1,62 @@
+{
+    "version": "1.0.0",
+    "description": "Easily Link Android and PC",
+    "homepage": "https://linkandroid.com/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/modstart-lib/linkandroid#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/modstart-lib/linkandroid/releases/download/v1.0.0/LinkAndroid-1.0.0-win-setup-x64.exe#/dl.7z",
+            "hash": "ed73cf8a060a4eb7414d56d1b559373f26acc8dda36d9d2aa0ed1dfe05562e7c",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/modstart-lib/linkandroid/releases/download/v1.0.0/LinkAndroid-1.0.0-win-setup-arm64.exe#/dl.7z",
+            "hash": "c96a86c51d802f67b2ef33b69ecbc9007c93202cfcc7b7543bc5b650ead3f645",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name extras-cn) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\linkandroid\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name extras-cn) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\linkandroid\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "LinkAndroid.exe",
+            "LinkAndroid"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/modstart-lib/linkandroid/releases/latest",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/modstart-lib/linkandroid/releases/download/v$version/LinkAndroid-$version-win-setup-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/modstart-lib/linkandroid/releases/download/v$version/LinkAndroid-$version-win-setup-arm64.exe#/dl.7z"
+            }
+        }
+    }
+}

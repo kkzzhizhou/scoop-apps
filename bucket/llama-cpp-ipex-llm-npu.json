@@ -1,0 +1,33 @@
+{
+    "homepage": "https://github.com/ipex-llm/ipex-llm",
+    "description": "IPEX-LLM (Intel Extension for PyTorch) nightly build with llama.cpp - NPU version",
+    "license": "MIT",
+    "version": "2.3.0b20250424",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ipex-llm/ipex-llm/releases/download/v2.3.0-nightly/llama-cpp-ipex-llm-2.3.0b20250424-win-npu.zip",
+            "hash": "3cc8d2c4bcf6ac65da03cf116bb3849bc0f7202666cf8dc27bf6639339534cfd"
+        }
+    },
+    "bin": "llama-cli-npu.exe",
+    "checkver": {
+        "script": [
+            "$Headers = @{ 'Accept'='application/vnd.github+json'; 'User-Agent'='Scoop'; 'X-GitHub-Api-Version'='2022-11-28' }",
+            "if ($env:GITHUB_TOKEN) { $Headers['Authorization'] = 'Bearer ' + $env:GITHUB_TOKEN }",
+            "$releases = Invoke-RestMethod -Headers $Headers -Uri 'https://api.github.com/repos/ipex-llm/ipex-llm/releases?per_page=100'",
+            "$nightly = $releases | Where-Object { -not $_.draft -and $_.tag_name -match '^v\\d+\\.\\d+\\.\\d+-nightly$' } | Sort-Object -Property {[datetime]$_.published_at} -Descending | Select-Object -First 1",
+            "$asset = $nightly.assets | Where-Object { $_.name -match '^llama-cpp-ipex-llm-(?<ver>\\d+\\.\\d+\\.\\d+b\\d+)-win-npu\\.zip$' } | Sort-Object -Property Name -Descending | Select-Object -First 1",
+            "if (-not $asset) { throw 'No matching asset found' }",
+            "Write-Output $asset.browser_download_url"
+        ],
+        "regex": "https://github\\.com/ipex-llm/ipex-llm/releases/download/([^/]+)/llama-cpp-ipex-llm-([\\d\\.]+b\\d+)-win\\-npu.zip",
+        "replace": "${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ipex-llm/ipex-llm/releases/download/$match1/llama-cpp-ipex-llm-$match2-win-npu.zip"
+            }
+        }
+    }
+}

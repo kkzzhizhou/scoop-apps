@@ -1,0 +1,44 @@
+{
+    "homepage": "https://chatboxai.app",
+    "version": "1.18.1",
+    "license": "GPL-3.0 license",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.chatboxai.app/releases/Chatbox-1.18.1-Setup.exe#/dl.7z",
+            "hash": "39811634a70c728f991be6061292bcbfd5d734f5069f317314604d5b373f0c92",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" | Out-Null"
+        }
+    },
+    "shortcuts": [
+        [
+            "Chatbox.exe",
+            "Chatbox"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "    ensure \"$persist_dir\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\data\")) {",
+        "    ensure \"$persist_dir\\data\" | Out-Null",
+        "}",
+        "New-Item $env:AppData\\xyz.chatboxapp.app -ItemType Junction -Target \"$persist_dir\\data\" | Out-Null"
+    ],
+    "pre_uninstall": [
+        "if (Test-Path \"$Env:AppData\\xyz.chatboxapp.app\\*\") {",
+        "    Remove-Item $env:APPDATA\\xyz.chatboxapp.app -Force -Recurse",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://chatboxai.app/en/help-center/changelog",
+        "regex": "<h2>v([\\d.]+) - [\\d.]+</h2>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.chatboxai.app/releases/Chatbox-$version-Setup.exe#/dl.7z"
+            }
+        }
+    }
+}

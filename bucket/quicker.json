@@ -1,0 +1,50 @@
+{
+    "version": "1.44.47.0",
+    "description": "指尖工具箱, Windows 效率工具",
+    "homepage": "https://getquicker.net",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.getquicker.net/_productfiles/202511/Quicker.x64.1.44.47.0.msi",
+            "hash": "cca2c296ea9025c9f5edadc38f0520c1b99c8c23e55e9e06e0471e87b78efb3b"
+        },
+        "32bit": {
+            "url": "https://download.getquicker.net/_productfiles/202511/Quicker.x86.1.44.47.0.msi",
+            "hash": "4d5efca073a994256ad2dc822b4e253e2829748fbc5d5eea37f6bd40609d6751"
+        }
+    },
+    "extract_dir": "Quicker",
+    "shortcuts": [
+        [
+            "Quicker.exe",
+            "Quicker"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "persist_file -dir @(\"$user_LocalAppData\\Quicker\",\"$user_Documents\\Quicker\") @(\"$persist_dir\\Quicker\",\"$persist_dir\\Quicker_Documents\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_Documents\\Quicker\",\"$user_LocalAppData\\Quicker\")"
+    ],
+    "checkver": {
+        "url": "https://getquicker.net/open/api/quicker/versionhistory",
+        "regex": "productfiles%2F([\\d]+)%2FQuicker\\.x64\\.([\\d.]+)\\.msi",
+        "replace": "$2"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.getquicker.net/_productfiles/$match1/Quicker.x64.$version.msi"
+            },
+            "32bit": {
+                "url": "https://download.getquicker.net/_productfiles/$match1/Quicker.x86.$version.msi"
+            }
+        }
+    }
+}

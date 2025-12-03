@@ -1,0 +1,62 @@
+{
+    "version": "2.10.0",
+    "description": "a composite font of Hack and GenJyuu-Gothic",
+    "license": {
+        "identifier": "OFL-1.1",
+        "url": "https://github.com/yuru7/HackGen/blob/master/LICENSE.txt"
+    },
+    "homepage": "https://github.com/yuru7/HackGen",
+    "url": "https://github.com/yuru7/HackGen/releases/download/v2.10.0/HackGen_NF_v2.10.0.zip",
+    "hash": "f8abd483d5edfad88a78ed511978f43c83b43c48e364aa29ebe4a68217474428",
+    "extract_dir": "HackGen_NF_v2.10.0",
+    "installer": {
+        "script": [
+            "$fontName = 'HackGenConsoleNFJ-(Regular|Bold)'",
+            "",
+            "if ($global -and !(is_admin)) { error \"Administrator rights are required to install $app.\"; return }",
+            "$fontInstallDir = if ($global) { (Join-Path $env:windir Fonts) } else { (Join-Path $env:LOCALAPPDATA Microsoft Windows Fonts) }",
+            "$registryRoot = if ($global) { \"HKLM:\" } else { \"HKCU:\" }",
+            "$registryBranch = (Join-Path SOFTWARE Microsoft 'Windows NT' CurrentVersion Fonts)",
+            "$registryKey = (Join-Path $registryRoot $registryBranch)",
+            "",
+            "Get-ChildItem $dir -Filter '*.ttf' `",
+            "| Where-Object { $_.Name -match $fontName } `",
+            "| ForEach-Object {",
+            "    $regName = $_.Name.Replace($_.Extension, ' (TrueType)')",
+            "    $value = if ($global) { $_.Name } else { (Join-Path $fontInstallDir $_.Name) }",
+            "    New-ItemProperty -Path $registryKey -Name $regName -Value $value -Force | Out-Null",
+            "    Copy-Item $_.FullName -Destination $fontInstallDir",
+            "}",
+            "",
+            "Get-ChildItem $dir -Filter '*.ttf' `",
+            "| Where-Object { $_.Name -notmatch $fontName } `",
+            "| ForEach-Object {",
+            "    Remove-Item $_",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$fontName = 'HackGenConsoleNFJ-(Regular|Bold)'",
+            "",
+            "if ($global -and !(is_admin)) { error \"Administrator rights are required to uninstall $app.\"; return }",
+            "$fontInstallDir = if ($global) { (Join-Path $env:windir Fonts) } else { (Join-Path $env:LOCALAPPDATA Microsoft Windows Fonts) }",
+            "$registryRoot = if ($global) { \"HKLM:\" } else { \"HKCU:\" }",
+            "$registryBranch = (Join-Path SOFTWARE Microsoft 'Windows NT' CurrentVersion Fonts)",
+            "$registryKey = (Join-Path $registryRoot $registryBranch)",
+            "",
+            "Get-ChildItem $dir -Filter '*.ttf' `",
+            "| Where-Object { $_.Name -match $fontName } `",
+            "| ForEach-Object {",
+            "    $regName = $_.Name.Replace($_.Extension, ' (TrueType)')",
+            "    Remove-ItemProperty -Path $registryKey -Name $regName -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item (Join-Path $fontInstallDir $_.Name) -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/yuru7/HackGen/releases/download/v$version/HackGen_NF_v$version.zip",
+        "extract_dir": "HackGen_NF_v$version"
+    }
+}

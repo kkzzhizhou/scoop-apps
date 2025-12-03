@@ -1,0 +1,57 @@
+{
+    "version": "15.2.1",
+    "description": "截屏 离线OCR 搜索翻译 以图搜图 贴图 录屏 滚动截屏 Screenshot OCR search translate search for picture paste the picture on the screen screen recorder",
+    "homepage": "https://esearch-app.netlify.app/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/xushengfeng/eSearch#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/xushengfeng/eSearch/releases/download/15.2.1/eSearch-15.2.1-win32-x64.exe#/dl.7z",
+            "hash": "169a39cd6b2ec18c1921872ff5ffddcfe3e253f21489ed5cb5cc982c2ddd85df",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/xushengfeng/eSearch/releases/download/15.2.1/eSearch-15.2.1-win32-arm64.exe#/dl.7z",
+            "hash": "09d3c56dcf3079e8cc7484576a3358b4a5528040d6ed8f649053c0bf175e7c0b",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\eSearch\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\eSearch\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "eSearch.exe",
+            "eSearch"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/xushengfeng/eSearch/releases/latest",
+        "jsonpath": "$.assets[*].browser_download_url",
+        "regex": "eSearch-([\\d.]+)-win32-x64\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/xushengfeng/eSearch/releases/download/$version/eSearch-$version-win32-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/xushengfeng/eSearch/releases/download/$version/eSearch-$version-win32-arm64.exe#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "version": "2.0.91.51",
+    "description": "GOG Galaxy. Gaming Client designed for a convenient purchasing, playing and updating games, as well as an online play between gaming platforms.",
+    "homepage": "https://www.gog.com/galaxy",
+    "license": "",
+    "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe#/setup.exe",
+    "hash": "826eef5ab19f127a77e79719a5af515d6a6c1ff6d4bf664dbf868a19e6d4287d",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"GalaxyClient\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$ProgramFilesX86 = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFilesX86\\GOG Galaxy\\GalaxyClient.exe\"",
+            "if((!(Test-Path \"$filepath\")) -or ((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" /VERYSILENT /SUPPRESSMSGBOXES /FORCECLOSEAPPLICATIONS /NORESTART /SP- | Out-Null",
+            "   Start-Sleep -Seconds 30",
+            "   if((Get-Command \"$filepath\").Version -lt [System.Version]\"$version\")",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "Remove-Item \"$dir\\setup.exe\" -Force"
+        ]
+    },
+    "post_install": [
+        "$programname = \"GOG GALAXY\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://remote-config.gog.com/components/webinstaller?component_version=2.0.0",
+        "regex": "\"version\":\"([\\d.]+)",
+        "reverse": true
+    },
+    "autoupdate": {
+        "url": "https://webinstallers.gog-statics.com/download/GOG_Galaxy_$majorVersion.$minorVersion.exe#/setup.exe"
+    }
+}

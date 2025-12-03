@@ -1,0 +1,54 @@
+{
+  "version": "5.0.3_29524",
+  "description": "上海安路信息科技股份有限公司 - 安路科技自主开发的FPGA集成开发环境",
+  "homepage": "http://www.anlogic.com/",
+  "license": "Trialware",
+  "#depends": [
+    ""
+  ],
+  "notes": [
+    "TangDynasty®(TD)软件是安路科技自主开发的FPGA集成开发环境，支持工业界标准的设计输入，包含完整的电路优化流程以及丰富的分析与调试工具，",
+    "并提供良好的第三方设计验证工具接口，为所有基于安路科技FPGA产品的应用设计提供有力支持。TD软件的研发一直秉持着内外兼修的理念，",
+    "内部核心算法引擎坚持自主研发，为安路FPGA结构量身打造；外部交互界面则以简洁可靠，操作便捷为基本设计原则，力争为所有用户提供最好的亲和度。"
+  ],
+  "url": "https://github.com/SayCV/gh-cdn-cvp/releases/download/v1.0.0/anlogic-td-5.0.3_29524.zip",
+  "hash": "a51b7f11575ec8ef5fcad43869b1a191c1ddf7386f7d36f716fa9425817ef11f",
+  "extract_dir": "",
+  "extract_to": "",
+  "post_install": [
+    "Remove-Item \"$dir\\installer\" -Recurse",
+    ""
+  ],
+  "installer": {
+    "script": [
+      "",
+      "$bucketdir = Find-BucketDirectory -Name $bucket",
+      "$file = (Get-Item \"$dir\\TD_*.msi\").FullName",
+      "'installer' | ForEach-Object { ensure \"$dir\\$_\" | Out-Null }",
+      "Expand-7zipArchive $file -DestinationPath \"$dir\\installer\"",
+      "Expand-MsiArchive $file -Removal",
+      "",
+      "cp \"$dir\\installer\\Icon.td.exe\" \"$dir\\bin\\td.icon\"",
+      "cp \"$dir\\installer\\Icon.td_commands_prompt.exe\" \"$dir\\bin\\td_commands_prompt.icon\"",
+      "",
+      "$EVAL_INST_PATH = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+      "$escdir = $EVAL_INST_PATH -replace \"\\\\\",\"\\\\\"",
+      "(gc \"$bucketdir\\..\\scripts\\anlogic-td\\install-context.reg.tpl\")   | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-context.reg\"",
+      "(gc \"$bucketdir\\..\\scripts\\anlogic-td\\uninstall-context.reg.tpl\") | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\uninstall-context.reg\"",
+      "#cp \"$bucketdir\\..\\scripts\\anlogic-td\\uninstall-context.reg\" \"$dir\"",
+      "",
+      "sudo regedit.exe /s \"$dir\\install-context.reg\"",
+      "",
+      ""
+    ]
+  },
+  "bin": "bin\\td_commands_prompt.exe",
+  "shortcuts": [
+    [
+      "bin\\td.exe",
+      "EDA/Anlogic TD v5.0.3",
+      "",
+      "bin\\td.icon"
+    ]
+  ]
+}

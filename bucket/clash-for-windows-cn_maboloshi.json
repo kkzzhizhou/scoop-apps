@@ -1,0 +1,52 @@
+{
+    "version": "0.20.39",
+    "description": "A Windows GUI based on Clash",
+    "homepage": "https://github.com/maboloshi/scoop-private/releases/tag/v1.0",
+    "license": "MIT",
+    "notes": [
+        "1. Integrated third-party Chinese language package.",
+        "2. Clash for Windows data are now saved into '$persist_dir' and persisted by Scoop."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/maboloshi/scoop-private/releases/download/v1.0/Clash.for.Windows-0.20.39-win.7z",
+                "https://github.com/maboloshi/scoop-private/releases/download/v1.0/Clash.for.Windows.0.20.39-app.7z"
+            ],
+            "hash": [
+                "88db22840497c067c073ab2415fff6fe71f633d64af2fca62c37859ffba1640c",
+                "30a229c392966415cf0b68da8c12dfcb31e3505813897a38623da41c560bf904"
+            ]
+        }
+    },
+    "extract_to": [
+        "",
+        "resources"
+    ],
+    "shortcuts": [
+        [
+            "Clash for Windows.exe",
+            "Clash for Windows",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\data\") -and (Test-Path \"$env:USERPROFILE\\.config\\clash\")) {",
+        "    info '[Portable Mode]: Copying user config data . . .'",
+        "    Copy-Item \"$env:USERPROFILE\\.config\\clash\\*\" \"$persist_dir\\data\" -Recurse",
+        "}",
+        "$runtimeCache = \"$env:APPDATA\\clash_win\"",
+        "$runtimeCachePersist = \"$persist_dir\\clash_win\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "post_uninstall": [
+        "$runtimeCache = \"$env:APPDATA\\clash_win\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "data"
+}

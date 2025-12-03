@@ -1,0 +1,62 @@
+{
+  "version": "2.0",
+  "description": "FilterLab® is an innovative software tool that simplifies active filter design.",
+  "homepage": "https://www.microchip.com/developmenttools/ProductDetails/filterlabdesignsoftware",
+  "license": "Freeware",
+  "depends": [
+    "SilentCMD"
+  ],
+  "notes": [
+    "FilterLab® is an innovative software tool that simplifies active filter design. ",
+    "Available at no cost, the FilterLab® active filter software design tool provides ",
+    "full schematic diagrams of the filter circuit with component values and displays the frequency response."
+  ],
+  "url": "https://ww1.microchip.com/downloads/en/DeviceDoc/FilterLab%202.0.exe#/setup.exe",
+  "hash": "17b0f0ecb6d0bd82fcaf83ee3a30bdd61e9a27c6ef5b1846d50f918be7b3719f",
+  "installer": {
+    "script": [
+      "#$null, $bucket = Get-Manifest($app)",
+      "$bucketdir = Find-BucketDirectory -Name $bucket",
+      "",
+      "$current_dir = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+      "",
+      "cp \"$bucketdir\\..\\bin\\extract-issetup.cmd\" \"$dir\"",
+      "",
+      "Start-Process 'silentcmd' -ArgumentList @(\"$dir\\extract-issetup.cmd\") -Verb RunAs -Wait | Out-Null",
+      "",
+      "Expand-MsiArchive \"$dir\\FilterLab 2.0.msi\" \"$dir\" -ExtractDir 'program files\\Microchip Technology'",
+      "Remove-Item \"$dir\\FilterLab 2.0.msi\"",
+      "",
+      "$FL_INSTALL_DIR = \"$current_dir\"",
+      "$escdir = $FL_INSTALL_DIR -replace \"\\\\\",\"\\\\\"",
+      "(gc \"$bucketdir\\..\\scripts\\microchip-filterlab\\install-filterlab.reg.templ\") | % {$_ -replace \"%FL_INSTALL_DIR%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-filterlab.reg\"",
+      "cp \"$bucketdir\\..\\scripts\\microchip-filterlab\\uninstall-filterlab.reg\" \"$dir\"",
+      "",
+      "sudo regedit.exe /s \"$dir\\install-filterlab.reg\"",
+      "",
+      ""
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "sudo regedit.exe /s \"$dir\\uninstall-filterlab.reg\"",
+      "",
+      ""
+    ]
+  },
+  "bin": [
+    [
+      "FilterLab\\FilterLab20.exe",
+      "Microchip FilterLab 2.0"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "FilterLab\\FilterLab20.exe",
+      "Microchip FilterLab 2.0"
+    ]
+  ],
+  "persist": [
+    "data"
+  ]
+}

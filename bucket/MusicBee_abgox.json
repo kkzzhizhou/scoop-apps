@@ -1,0 +1,47 @@
+{
+    "version": "3.6.9202",
+    "description": "音乐播放器，可轻松管理、查找和播放音乐、播客、网络广播电台等。The ultimate music player to easily manage, find, and play music, podcasts, web radio stations, etc",
+    "homepage": "https://getmusicbee.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://musicbee.fandom.com/wiki/FAQ#Are_there_any_limitations_on_using_MusicBee.3F"
+    },
+    "url": "https://files1.majorgeeks.com/c601058e48f35fd22890f6a312c95c31c29209cd/multimedia/MusicBeePortable_3_6.zip",
+    "hash": "aff35dc919b4a620847ca0c5269d1d75e93bf96bcabcbbdc0d058ce3e1d82c5d",
+    "bin": "MusicBee.exe",
+    "shortcuts": [
+        [
+            "MusicBee.exe",
+            "MusicBee"
+        ]
+    ],
+    "persist": [
+        "Library",
+        "AppData"
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$path_installer=(Get-ChildItem \"$dir\" 'MusicBee*.exe')[0].FullName",
+        "& $path_installer /S /D=$dir",
+        "$core_exe=\"$dir\\MusicBee.exe\"",
+        "sleep_install $core_exe",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "foreach ($user_folders in 'BBplugin', 'Equaliser', 'Plugins', 'Skins') {",
+        "   Copy-Item \"$dir\\$user_folders\\*\" \"$persist_dir\\$user_folders\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}",
+        "remove_files"
+    ],
+    "checkver": {
+        "url": "https://www.majorgeeks.com/mg/getmirror/musicbee_portable,1.html",
+        "regex": "MusicBee Portable (?<version>[\\d.]+)[\\s\\S]+https:[\\w.-/]+com/(?<hash>[\\w]+)/[\\w.-/]*Portable_(?<filenameversion>[\\w_]+)\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://files1.majorgeeks.com/$matchHash/multimedia/MusicBeePortable_$matchFilenameversion.zip"
+    }
+}

@@ -1,0 +1,88 @@
+{
+  "version": "0.11.5",
+  "description": "Vim-fork focused on extensibility and usability",
+  "homepage": "https://neovim.io/",
+  "license": {
+    "identifier": "Apache-2.0,Vim",
+    "url": "https://github.com/neovim/neovim/blob/master/LICENSE"
+  },
+  "suggest": {
+    "vcredist": "extras/vcredist2022"
+  },
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-win64.zip",
+      "hash": "718e731326e7759cf17bbbb33f38975707a2ac85642614686b818ef5fde38f48"
+    }
+  },
+  "extract_dir": "nvim-win64",
+  "installer": {
+    "script": [
+      "if (!(Test-Path \"$persist_dir\\nvim-config\")) {",
+      "    New-Item \"$persist_dir\\nvim-config\" -Type Directory -Force | Out-Null",
+      "}",
+      "if (!(Test-Path \"$persist_dir\\nvim-data\")) {",
+      "    New-Item \"$persist_dir\\nvim-data\" -Type Directory -Force | Out-Null",
+      "}",
+      "$runtimeConfig = \"$env:LOCALAPPDATA\\nvim\"",
+      "$runtimeConfigPersist = \"$persist_dir\\nvim-config\"",
+      "if (Test-Path $runtimeConfigPersist) {",
+      "    Remove-Item $runtimeConfig -Force -Recurse -ErrorAction SilentlyContinue",
+      "    New-Item -Type Junction -Path $runtimeConfig -Target $runtimeConfigPersist | Out-Null",
+      "} else {",
+      "    if (Test-Path $runtimeConfig) {",
+      "        Move-Item $runtimeConfig $runtimeConfigPersist -Force",
+      "        New-Item -Type Junction -Path $runtimeConfig -Target $runtimeConfigPersist | Out-Null",
+      "    }",
+      "}",
+      "$runtimeCache = \"$env:LOCALAPPDATA\\nvim-data\"",
+      "$runtimeCachePersist = \"$persist_dir\\nvim-data\"",
+      "if (Test-Path $runtimeCachePersist) {",
+      "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+      "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+      "} else {",
+      "    if (Test-Path $runtimeCache) {",
+      "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+      "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+      "    }",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "$runtimeConfig = \"$env:LOCALAPPDATA\\nvim\"",
+      "$runtimeConfigPersist = \"$persist_dir\\nvim-config\"",
+      "if (!(Test-Path $runtimeConfigPersist)) {",
+      "    Move-Item $runtimeConfig $runtimeConfigPersist -Force",
+      "} else {",
+      "    Remove-Item $runtimeConfig -Force -Recurse -ErrorAction SilentlyContinue",
+      "}",
+      "$runtimeCache = \"$env:LOCALAPPDATA\\nvim-data\"",
+      "$runtimeCachePersist = \"$persist_dir\\nvim-data\"",
+      "if (!(Test-Path $runtimeCachePersist)) {",
+      "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+      "} else {",
+      "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+      "}"
+    ]
+  },
+  "bin": "bin\\nvim.exe",
+  "persist": [
+    "nvim-config",
+    "nvim-data"
+  ],
+  "checkver": {
+    "url": "https://github.com/neovim/neovim/releases/latest",
+    "regex": "NVIM v([\\d.]+)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/neovim/neovim/releases/download/v$version/nvim-win64.zip"
+      }
+    },
+    "hash": {
+      "url": "$url.sha256sum"
+    }
+  }
+}

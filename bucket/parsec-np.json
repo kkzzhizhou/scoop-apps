@@ -1,0 +1,43 @@
+{
+    "version": "150-101a",
+    "description": "Remote desktop software",
+    "homepage": "https://parsec.app",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://unity.com/legal/parsec-additional-terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://builds.parsec.app/package/parsec-windows.exe#/setup.exe",
+            "hash": "f0edc12c9f612507371727af54993bb052c6e52857b3b025acbbd720d3ef724e"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "# Using Start-Process as a workaround because arguments with quotes does not work",
+        "Start-Process \"$dir\\setup.exe\" -ArgumentList @('/norun', '/nocleanuser', '/silent', '/vdd') -Wait -Verb RunAs | Out-Null",
+        "Remove-Item \"$dir\\setup.exe\""
+    ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'parsecd' -Force -ErrorAction SilentlyContinue",
+        "Stop-Process -Name 'pservice' -Force -ErrorAction SilentlyContinue"
+    ],
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process \"$Env:ProgramFiles\\Parsec\\uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
+            "while (Get-Process -Name 'Un_A' -ErrorAction SilentlyContinue) { Start-Sleep -Second 2 }"
+        ]
+    },
+    "checkver": {
+        "url": "https://parsec.app/changelog.xml",
+        "regex": "<parsec:build>([\\w-]+)</parsec:build>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://builds.parsec.app/package/parsec-windows.exe#/setup.exe"
+            }
+        }
+    }
+}

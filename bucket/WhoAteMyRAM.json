@@ -1,0 +1,49 @@
+{
+    "version": "1.0.20",
+    "description": "A command-line tool for memory usage statistics.",
+    "homepage": "https://github.com/AkariiinMKII/WhoAteMyRAM",
+    "license": "MIT",
+    "notes": [
+        "Run following command to import WhoAteMyRAM automatically in Powershell:",
+        "$dir\\add-profile-content.ps1",
+        "To disable auto-import, run following command:",
+        "$dir\\remove-profile-content.ps1"
+    ],
+    "depends": "Scoop4kariiin/Scoop4kariiinUtils",
+    "url": "https://github.com/AkariiinMKII/WhoAteMyRAM/archive/v1.0.20.zip",
+    "hash": "ec5d16b0879697d870d52fc4752f6b185493105cc068da6c994b1339ac40af6e",
+    "extract_dir": "WhoAteMyRAM-1.0.20",
+    "psmodule": {
+        "name": "WhoAteMyRAM"
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\LICENSE\", \"$dir\\README.md\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "Import-Module -Name $manifest.psmodule.name",
+        "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+        "New-ProfileModifier -Behavior ImportModule -PSModuleName $manifest.psmodule.name -AppDir $dir",
+        "New-ProfileModifier -Behavior RemoveModule -PSModuleName $manifest.psmodule.name -AppDir $dir",
+        "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+    ],
+    "pre_uninstall": [
+        "Remove-Module -Name $manifest.psmodule.name -ErrorAction SilentlyContinue",
+        "if ('uninstall' -eq $cmd) {",
+        "    $Scoop4kariiinUtilsPath = $(appdir Scoop4kariiinUtils $global)",
+        "    if (Test-Path $Scoop4kariiinUtilsPath) {",
+        "        Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+        "        Remove-ProfileContent -Content 'Import-Module WhoAteMyRAM'",
+        "        Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue",
+        "    } else {",
+        "        Write-Host \"Scoop4kariiinUtils not found, skipping...\" -ForegroundColor Yellow",
+        "        Write-Host \"Please edit PowerShell profile manually if you have enabled auto-import.\" -ForegroundColor Yellow",
+        "    }",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/AkariiinMKII/WhoAteMyRAM/tags",
+        "regex": "tags/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/AkariiinMKII/WhoAteMyRAM/archive/v$version.zip",
+        "extract_dir": "WhoAteMyRAM-$version"
+    }
+}

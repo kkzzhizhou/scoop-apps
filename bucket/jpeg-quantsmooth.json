@@ -1,0 +1,38 @@
+{
+    "version": "1.20230818",
+    "description": "JPEG artifacts removal based on quantization coefficients.",
+    "homepage": "https://github.com/ilyakurdyukov/jpeg-quantsmooth",
+    "license": "LPL-2.1-only",
+    "url": "https://github.com/ilyakurdyukov/jpeg-quantsmooth/releases/download/1.20230818/jpegqs_windows.zip",
+    "hash": "4363395fc111e7816f91242750d5d936406d3e40b99c4d79baf4be510d30fec9",
+    "pre_install": [
+        "$arch = if ($architecture -ceq '32bit') { '64' } else { '' }",
+        "'', '_gui' | ForEach-Object {",
+        "    Remove-Item \"$dir/jpegqs$_$arch.exe\"",
+        "    if ($arch -ceq '') { Rename-Item \"$dir/jpegqs64$_.exe\" \"jpegqs$_.exe\" }",
+        "}"
+    ],
+    "bin": "jpegqs.exe",
+    "shortcuts": [
+        [
+            "jpegqs_gui.exe",
+            "JPEG Quant Smooth GUI"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            ":releases foreach ($release in (Invoke-RestMethod https://api.github.com/repositories/232038116/releases)) {",
+            "   foreach ($asset in $release.assets) {",
+            "        if ($asset.name -ceq 'jpegqs_windows.zip') {",
+            "            $release.tag_name",
+            "            break releases",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "regex": "\\A([\\d.]+)\\Z"
+    },
+    "autoupdate": {
+        "url": "https://github.com/ilyakurdyukov/jpeg-quantsmooth/releases/download/$version/jpegqs_windows.zip"
+    }
+}

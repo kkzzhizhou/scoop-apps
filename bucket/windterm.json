@@ -1,36 +1,51 @@
 {
-    "version": "2.2.2",
+    "version": "2.7.0",
     "description": "SSH/Sftp/Shell/Telnet/Serial client",
     "homepage": "https://kingtoolbox.github.io/",
     "license": "Apache-2.0",
     "suggest": {
-        "vcredist2019": "extras/vcredist2019"
+        "vcredist": "extras/vcredist2022"
     },
-    "url": "https://github.com/kingToolbox/WindTerm/releases/download/2.2/WindTerm_2.2.2_Windows_Portable.zip",
-    "hash": "9107cab40f6b447d8da98e4a19359661bbe988c645baf455d759ebd4351cc8a8",
-    "extract_dir": "WindTerm_2.2.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kingToolbox/WindTerm/releases/download/2.7.0/WindTerm_2.7.0_Windows_Portable_x86_64.zip",
+            "hash": "b05c3c7371340ff1302967247ffcd3a3ba27b237f72010e9157086143c453e50"
+        },
+        "32bit": {
+            "url": "https://github.com/kingToolbox/WindTerm/releases/download/2.7.0/WindTerm_2.7.0_Windows_Portable_x86_32.zip",
+            "hash": "d04b2742c33773c0a0a5761889ca599ad5c443224dbc6198fe0e9e8de84f62c7"
+        }
+    },
+    "extract_dir": "WindTerm_2.7.0",
     "shortcuts": [
         [
             "WindTerm.exe",
             "WindTerm"
-        ],
-        [
-            "WindTerm_Win10_Conpty.exe",
-            "WindTerm for 19H1+"
         ]
     ],
-    "persist": [
-        "global",
-        "plugins",
-        "profiles",
-        "terminal"
+    "post_install": [
+        "info '[Portable Mode] Configuring profiles directory...'",
+        "'{ \"path\" : \".\" }' | Set-Content -Path \"$dir\\profiles.config\"",
+        "if (!(Test-Path \"$dir\\.wind\\profiles\") -and (Test-Path \"$persist_dir\\profiles\")) {",
+        "    info '[Portable Mode] Copying existing profiles...'",
+        "    Copy-Item \"$persist_dir\\profiles\" \"$dir\\.wind\" -Recurse",
+        "}"
     ],
+    "persist": ".wind",
     "checkver": {
-        "github": "https://github.com/kingToolbox/WindTerm",
+        "url": "https://api.github.com/repositories/214011414/releases/latest",
+        "jsonpath": "$..browser_download_url",
         "regex": "WindTerm_([\\d.]+)_Windows_Portable"
     },
     "autoupdate": {
-        "url": "https://github.com/kingToolbox/WindTerm/releases/download/$majorVersion.$minorVersion/WindTerm_$version_Windows_Portable.zip",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kingToolbox/WindTerm/releases/download/$version/WindTerm_$version_Windows_Portable_x86_64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/kingToolbox/WindTerm/releases/download/$version/WindTerm_$version_Windows_Portable_x86_32.zip"
+            }
+        },
         "extract_dir": "WindTerm_$version"
     }
 }

@@ -1,0 +1,44 @@
+{
+  "version": "2025.607.0",
+  "description": "A free-to-win rhythm game. Rhythm is just a click away!",
+  "homepage": "https://osu.ppy.sh/",
+  "license": "MIT",
+  "url": "https://github.com/ppy/osu/releases/download/2025.607.0/osulazer-2025.607.0-full.nupkg#/dl.7z",
+  "hash": "sha1:dc0e4cc9783ad1ab3d86b877831e4325119cc0d2",
+  "extract_dir": "lib\\app",
+  "pre_install": [
+    "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+    "  if (-not (Test-Path $runtimeCache)) { return }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}",
+    "foreach ($folder in @('osu')) {",
+    "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+    "}"
+  ],
+  "bin": "osu!.exe",
+  "shortcuts": [
+    [
+      "osu!.exe",
+      "osu! Lazer"
+    ]
+  ],
+  "checkver": {
+    "github": "https://github.com/ppy/osu"
+  },
+  "autoupdate": {
+    "url": "https://github.com/ppy/osu/releases/download/$version/osulazer-$version-full.nupkg#/dl.7z",
+    "hash": {
+      "url": "https://github.com/ppy/osu/releases/download/$version/RELEASES",
+      "regex": "$sha1 .*full.nupkg"
+    }
+  }
+}

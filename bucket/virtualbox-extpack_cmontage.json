@@ -1,0 +1,46 @@
+{
+  "version": "6.1.22",
+  "description": "Adds support for USB 2.0 and USB 3.0 devices, VirtualBox RDP, disk encryption, NVMe and PXE boot for Intel cards in Virtualbox.",
+  "homepage": "https://www.virtualbox.org/",
+  "depends": "virtualbox",
+  "license": {
+    "identifier": "GPL-2.0-only|Freeware",
+    "url": "https://www.virtualbox.org/wiki/VirtualBox_PUEL"
+  },
+  "notes": [
+    "The VirtualBox Extension Pack is only free for personal, educational or evaluation use.",
+    "A license must be purchased for enterprise use.",
+    "For more information, go here: https://www.virtualbox.org/wiki/Licensing_FAQ"
+  ],
+  "architecture": {
+    "64bit": {
+      "url": "https://download.virtualbox.org/virtualbox/6.1.22/Oracle_VM_VirtualBox_Extension_Pack-6.1.22.vbox-extpack#/Oracle_VM_VirtualBox_Extension_Pack-6.1.22.vbox-extpack",
+      "hash": "6d33d9cc1c5a8f8a2a70e5aaaa778a341322d2ba7eb34f7de420fb5f312b9e87"
+    }
+  },
+  "installer": {
+    "script": [
+      "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFiles\")",
+      "",
+      "$evalDir = \"$(appdir virtualbox $global)\\current\".Replace('/', '\\')",
+      "",
+      "#Start-Process -Wait -WindowStyle Hidden cmd.exe \"/c call echo y | `\"$ProgramFilesPath\\Oracle\\VirtualBox\\VBoxManage.exe`\" extpack install --replace `\"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack`\"\" -Verb RunAs",
+      "Start-Process -Wait -WindowStyle Hidden cmd.exe \"/c call echo y | `\"$evalDir\\VBoxManage.exe`\" extpack install --replace `\"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack`\"\" -Verb RunAs",
+      "Remove-Item \"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\""
+    ]
+  },
+  "checkver": {
+    "url": "https://www.virtualbox.org/wiki/Downloads",
+    "regex": "Oracle_VM_VirtualBox_Extension_Pack-(?<version>[\\d.]+).vbox-extpack"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://download.virtualbox.org/virtualbox/$version/Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack#/Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack"
+      }
+    },
+    "hash": {
+      "url": "https://www.virtualbox.org/download/hashes/$version/SHA256SUMS"
+    }
+  }
+}

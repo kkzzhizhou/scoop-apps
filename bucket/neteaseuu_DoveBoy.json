@@ -1,0 +1,43 @@
+{
+    "homepage": "https://uu.163.com/",
+    "description": "Game accelerator created by Netease Inc.",
+    "version": "5.67.0.5116",
+    "license": {
+        "identifier": "EULA",
+        "url": "https://uu.163.com/agreement.html"
+    },
+    "url": "https://uu.gdl.netease.com/5116/UU-5.67.0.exe#/dl.7z",
+    "hash": "5345d89d3aaf2fa0451643cd15da6eb50457f526404801176946532bcf9c8917",
+    "installer": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "uu_launcher.exe",
+            "网易UU"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://adl.netease.com/d/g/uu/c/gw?type=pc'",
+            "$response = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "Write-Output $response.Content"
+        ],
+        "regex": "pc_link = \"https://.*?.gdl.netease.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+).exe",
+        "replace": "${ver}.${build}"
+    },
+    "autoupdate": {
+        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$matchVer.exe#/dl.7z"
+    }
+}

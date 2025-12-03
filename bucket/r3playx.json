@@ -1,0 +1,49 @@
+{
+    "version": "2.7.6",
+    "description": "a music player forked from YesPlayMusic。高颜值的第三方网易云播放器，支持 Windows / macOS / Linux :electron/Docker:",
+    "homepage": "https://music.xtify.top/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/Sherlockouo/music#AGPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Sherlockouo/music/releases/download/2.7.6/R3PLAYX-2.7.6-win-x64-Setup.exe#/dl.7z",
+            "hash": "sha512:e42a66cefe6ed479440a9a6ffc9356ef41e79ee13b677c8ae3467279329e21697801bcde8f21d42c7b6707f63c1313a5d1b22b6ad220b185f2850dcde8833d7c"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" | Out-Null",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$R0\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\R3PLAYX\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\R3PLAYX\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
+    "shortcuts": [
+        [
+            "R3PLAYX.exe",
+            "R3PLAYX"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/Sherlockouo/music/releases",
+        "regex": "(?sm)browser_download_url.*?releases/download/([\\d.]+)/R3PLAYX-([\\d.]+)-win-x64-Setup.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Sherlockouo/music/releases/download/$version/R3PLAYX-$version-win-x64-Setup.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

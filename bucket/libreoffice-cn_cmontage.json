@@ -1,0 +1,91 @@
+{
+  "version": "25.2.4",
+  "description": "Powerful and free office suite, a successor to OpenOffice(.org).",
+  "homepage": "https://libreoffice.org/",
+  "license": "MPL-2.0",
+  "suggest": {
+    "vcredist": "extras/vcredist2022"
+  },
+  "notes": "If you are upgrading from portable version, you can migrate settings by copying \"$persist_dir\\Data\" to \"%AppData%\\LibreOffice\"",
+  "architecture": {
+    "64bit": {
+      "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/25.2.4/win/x86_64/LibreOffice_25.2.4_Win_x86-64.msi#/dl.msi_",
+      "hash": "a985d08e5311f0fdefbf6b0a599b60112d1fcd388d7ad34121e0be53d597b048"
+    },
+    "32bit": {
+      "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/25.2.4/win/x86/LibreOffice_25.2.4_Win_x86.msi#/dl.msi_",
+      "hash": "380bbdd36593d725aa288894f988accaf40cea8b932bff41998cea92a42a9036"
+    },
+    "arm64": {
+      "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/25.2.4/win/aarch64/LibreOffice_25.2.4_Win_aarch64.msi#/dl.msi_",
+      "hash": "71dd1564b666473951a6d2843af7989caf27e879855f4fdba84a6ae639515a19"
+    }
+  },
+  "pre_install": [
+    "# keeping files in 'LibreOffice' directory so that bundled font can work properly",
+    "ensure \"$dir\\LibreOffice\\share\\fonts\" | Out-Null",
+    "# usage: get_config ($name, $default). $default ==> set to what value if the value is empty (not being set before)",
+    "if (get_config USE_LESSMSI $false) {",
+    "    # if 'use_lessmsi' is true",
+    "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\" | Out-Null",
+    "    Move-Item \"$dir\\Fonts\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -Force",
+    "    Remove-Item \"$dir\\System*\" -Recurse -Force",
+    "} else {",
+    "    # if 'use_lessmsi' is false or not set",
+    "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\" | Out-Null",
+    "    Expand-MsiArchive \"$dir\\dl.msi_\" \"$dir\\LibreOffice\\share\\fonts\\truetype\" -ExtractDir 'Fonts' | Out-Null",
+    "    Remove-Item \"$dir\\LibreOffice\\Fonts\", \"$dir\\LibreOffice\\System*\" -Recurse -Force",
+    "}",
+    "Remove-Item \"$dir\\dl.msi_\""
+  ],
+  "shortcuts": [
+    [
+      "LibreOffice\\program\\soffice.exe",
+      "LibreOffice\\LibreOffice"
+    ],
+    [
+      "LibreOffice\\program\\sbase.exe",
+      "LibreOffice\\LibreOffice Base"
+    ],
+    [
+      "LibreOffice\\program\\scalc.exe",
+      "LibreOffice\\LibreOffice Calc"
+    ],
+    [
+      "LibreOffice\\program\\sdraw.exe",
+      "LibreOffice\\LibreOffice Draw"
+    ],
+    [
+      "LibreOffice\\program\\simpress.exe",
+      "LibreOffice\\LibreOffice Impress"
+    ],
+    [
+      "LibreOffice\\program\\smath.exe",
+      "LibreOffice\\LibreOffice Math"
+    ],
+    [
+      "LibreOffice\\program\\swriter.exe",
+      "LibreOffice\\LibreOffice Writer"
+    ]
+  ],
+  "checkver": {
+    "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/",
+    "regex": "([\\d.]+)/"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/$version/win/x86_64/LibreOffice_$version_Win_x86-64.msi#/dl.msi_"
+      },
+      "32bit": {
+        "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/$version/win/x86/LibreOffice_$version_Win_x86.msi#/dl.msi_"
+      },
+      "arm64": {
+        "url": "https://mirrors.ustc.edu.cn/libreoffice/libreoffice/stable/$version/win/aarch64/LibreOffice_$version_Win_aarch64.msi#/dl.msi_"
+      }
+    },
+    "hash": {
+      "url": "$url.sha256"
+    }
+  }
+}

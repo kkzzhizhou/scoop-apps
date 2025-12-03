@@ -1,0 +1,29 @@
+{
+    "version": "0.34.5",
+    "description": "Zero-runtime-dependency package acting as bridge between Node projects and their package managers",
+    "homepage": "https://github.com/nodejs/corepack",
+    "license": "MIT",
+    "suggest": {
+        "nodejs": "main/nodejs"
+    },
+    "url": "https://github.com/nodejs/corepack/releases/download/v0.34.5/corepack.tgz",
+    "hash": "b922e4676a74ecd9b5b82b45339a7514ca65e750b9ef2d5309f1454b7a5d326f",
+    "extract_dir": "package",
+    "env_add_path": "shims/nodewin",
+    "post_install": [
+        "Get-ChildItem \"$dir/shims/nodewin\" | ForEach-Object {",
+        "    (Get-Content $_.FullName).Replace($(",
+        "        if ($_.Name -like '*.cmd') {",
+        "            '%~dp0\\node_modules\\corepack'",
+        "        }",
+        "        else {",
+        "            '$basedir/node_modules/corepack'",
+        "        }",
+        "    ), $dir) | Set-Content $_.FullName.Replace('\\', '/')",
+        "}"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/nodejs/corepack/releases/download/v$version/corepack.tgz"
+    }
+}

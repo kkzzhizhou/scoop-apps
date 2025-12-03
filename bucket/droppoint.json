@@ -1,0 +1,46 @@
+{
+    "version": "1.2.1",
+    "description": "Make drag-and-drop easier using DropPoint. Drag content without having to open side-by-side windows",
+    "homepage": "https://droppoint.netlify.app/",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/GameGodS3/DropPoint/releases/download/v1.2.1/DropPoint-Setup-1.2.1.exe#/dl.7z",
+            "hash": "008fc8d76a57a9777d23e946834862da4d515aa99adca55d0691ccb9aa30bd28",
+            "pre_install": [
+                "if (Test-Path \"$env:AppData\\DropPoint\") {",
+                "    info '[Persistent data]: Copying user data...'",
+                "    ensure \"$dir\\User Data\" | Out-Null",
+                "    Copy-Item \"$env:AppData\\DropPoint\\*\" \"$dir\\User Data\\\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "    Remove-Item \"$env:AppData\\DropPoint\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "}",
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal"
+            ],
+            "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Unin*\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        }
+    },
+    "bin": [
+        [
+            "DropPoint.exe",
+            "DropPoint"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "DropPoint.exe",
+            "DropPoint",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "github": "https://github.com/GameGodS3/DropPoint"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/GameGodS3/DropPoint/releases/download/v$version/DropPoint-Setup-$version.exe#/dl.7z"
+            }
+        }
+    }
+}

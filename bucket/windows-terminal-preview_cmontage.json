@@ -1,0 +1,48 @@
+{
+  "version": "1.7.572.0",
+  "description": "The new Windows Terminal, and the original Windows console host - all in the same place!",
+  "homepage": "https://github.com/microsoft/terminal",
+  "license": "MIT",
+  "suggest": {
+    "vcredist": "extras/vcredist2019"
+  },
+  "changelog": "https://github.com/microsoft/terminal/releases/tag/v1.7.572.0",
+  "pre_download": "Assert-WindowsMinimalVersion '10.0.18362'",
+  "url": "https://github.com/microsoft/terminal/releases/download/v1.7.572.0/Microsoft.WindowsTerminalPreview_1.7.572.0_8wekyb3d8bbwe.msixbundle#/dl.7z",
+  "hash": "7830d7a2268cab38e249941c1eb374479479e10e6f66d1c65d157f3f59f9c210",
+  "architecture": {
+    "64bit": {
+      "pre_install": "Get-ChildItem $dir -Exclude '*x64.msix' | Remove-Item -Force -Recurse"
+    },
+    "32bit": {
+      "pre_install": "Get-ChildItem $dir -Exclude '*x86.msix' | Remove-Item -Force -Recurse"
+    }
+  },
+  "installer": {
+    "script": [
+      "(Get-ChildItem $dir '*.msix').FullName | Expand-7zipArchive -DestinationPath $dir -Removal",
+      "Get-ChildItem \"$dir\\ProfileIcons\" '*.png' | Rename-Item -NewName { $_.Name.Replace('%7B', '{').Replace('%7D', '}') }"
+    ]
+  },
+  "bin": [
+    "wt.exe",
+    [
+      "wt.exe",
+      "wt-preview"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "WindowsTerminal.exe",
+      "Windows Terminal Preview"
+    ]
+  ],
+  "checkver": {
+    "url": "https://github.com/microsoft/terminal/releases",
+    "regex": "WindowsTerminalPreview_([\\d.]+)_8wekyb3d8bbwe\\.msixbundle"
+  },
+  "autoupdate": {
+    "changelog": "https://github.com/microsoft/terminal/releases/tag/v$version",
+    "url": "https://github.com/microsoft/terminal/releases/download/v$version/Microsoft.WindowsTerminalPreview_$version_8wekyb3d8bbwe.msixbundle#/dl.7z"
+  }
+}

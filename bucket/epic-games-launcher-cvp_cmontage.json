@@ -1,0 +1,47 @@
+{
+  "version": "13.0.3",
+  "description": "Epic Games Launcher. Allow players to purchase, install and keep their games up to date",
+  "homepage": "https://www.epicgames.com/store/en-US/",
+  "license": "Freemium",
+  "url": "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.0.0.msi#/setup.msi_",
+  "hash": "0aeca6b283679678ad79d0400ed76936b0e943dc7a04996fac17d306b2763e99",
+  "pre_download": "Assert-Administrator",
+  "pre_install": [
+    "$processname = \"EpicGamesLauncher\"",
+    "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+    "if ($process) {",
+    "   $process.CloseMainWindow()",
+    "   Start-Sleep -Seconds 5",
+    "   if (!$process.HasExited) {",
+    "       Start-Sleep -Seconds 25",
+    "       $process | Stop-Process -Force",
+    "   }",
+    "}"
+  ],
+  "installer": {
+    "script": [
+      "$programname = \"Epic Games Launcher*\"",
+      "$installpath = \"$dir\\setup.msi_\"",
+      "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+      "$filepath = \"$ProgramFiles\\Epic Games\\Launcher\\Portal\\Binaries\\Win64\\EpicGamesLauncher.exe\"",
+      "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+      "{",
+      "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+      "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+      "   {",
+      "       exit 1",
+      "   }",
+      "}",
+      "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+    ]
+  },
+  "post_install": [
+    "$programname = \"Epic Games Launcher\"",
+    "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+    "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}"
+  ],
+  "checkver": {
+    "url": "https://m.majorgeeks.com/files/details/epic_games_store_launcher.html",
+    "regex": "Epic Games Store Launcher ([\\d.]+)"
+  }
+}

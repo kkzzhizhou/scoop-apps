@@ -1,0 +1,72 @@
+{
+    "version": "2.18.0.1",
+    "description": "Windows Shell Interface to Git based on TortoiseSVN.",
+    "homepage": "https://tortoisegit.org/",
+    "license": {
+        "identifier": "GPL-2.0-only"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://download.tortoisegit.org/tgit/2.18.0.0/TortoiseGit-2.18.0.1-64bit.msi",
+            "hash": "cbf7d52aa0ecca665521e14d8d1a4b6cda52a4bc13de45f49084e15571c77410"
+        },
+        "32bit": {
+            "url": "https://download.tortoisegit.org/tgit/2.18.0.0/TortoiseGit-2.18.0.1-32bit.msi",
+            "hash": "851cfeffbf2fe0c522eaed6b88b2695cccb4555161f8afa0a77f17902fd6a9a3"
+        },
+        "arm64": {
+            "url": "https://download.tortoisegit.org/tgit/2.18.0.0/TortoiseGit-2.18.0.1-arm64.msi",
+            "hash": "d6cc582bb7cdcf57e662861639be8b4d02ed5f75627b04ae2caaea4c7d40658b"
+        }
+    },
+    "extract_dir": "Program Files\\TortoiseGit",
+    "post_install": [
+        "$path = 'HKCU:\\Software\\TortoiseGit'",
+        "if (!(Test-path \"$path\")) {",
+        "    New-Item $path | Out-Null",
+        "    New-ItemProperty -Path $path -Name 'VersionCheck' -PropertyType DWord -Value 0 -Force | Out-Null",
+        "    New-ItemProperty -Path $path -Name 'MsysGit' -PropertyType String -Value \"$env:GIT_INSTALL_ROOT\\bin\" -Force | Out-Null",
+        "}"
+    ],
+    "bin": [
+        "bin\\TortoiseGitUDiff.exe",
+        "bin\\TortoiseGitPlink.exe"
+    ],
+    "shortcuts": [
+        [
+            "bin\\TortoiseGitMerge.exe",
+            "TortoiseGit\\TortoiseGit Merge"
+        ],
+        [
+            "bin\\TortoiseGitBlame.exe",
+            "TortoiseGit\\TortoiseGit Blame"
+        ],
+        [
+            "bin\\TortoiseGitIDiff.exe",
+            "TortoiseGit\\TortoiseGit Diff"
+        ],
+        [
+            "bin\\TortoiseGitProc.exe",
+            "TortoiseGit\\TortoiseGit Settings",
+            "/command:settings"
+        ]
+    ],
+    "checkver": {
+        "url": "https://tortoisegit.org/download/",
+        "regex": "<a href=//download.tortoisegit.org/tgit/(?<version>[\\d\\.]+)/TortoiseGit-(?<patch>[\\d\\.]+)-32bit.msi",
+        "replace": "${patch}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.tortoisegit.org/tgit/$matchVersion/TortoiseGit-$matchPatch-64bit.msi"
+            },
+            "32bit": {
+                "url": "https://download.tortoisegit.org/tgit/$matchVersion/TortoiseGit-$matchPatch-32bit.msi"
+            },
+            "arm64": {
+                "url": "https://download.tortoisegit.org/tgit/$matchVersion/TortoiseGit-$matchPatch-arm64.msi"
+            }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{
+  "version": "9.2",
+  "description": "USB Network Gate - USB to Ethernet Connector",
+  "homepage": "https://www.eltima.com/products/usb-over-ethernet/",
+  "license": {
+    "identifier": "Shareware",
+    "url": "https://wiki.eltima.com/software-licenses/software-licenses.html"
+  },
+  "depends": [
+    "sudo",
+    "innounp"
+  ],
+  "notes": [
+    "",
+    "usb-network-gate",
+    ""
+  ],
+  "url": "https://cdn.electronic.us/products/usb-over-ethernet/windows/download/usb_network_gate.exe#/setup.exe",
+  "hash": "1b8277f98a52778b48e882ced05b3898bfaac7e33b89482f2a71571bdc93d1d5",
+  "#innosetup": true,
+  "post_install": [
+    "",
+    "#'u2ec.log' | Test-Persistence",
+    "",
+    "$params = @{",
+    "    Name = \"U2EC_service\"",
+    "    BinaryPathName = \"$dir\\UsbService64.exe\"",
+    "#    DependsOn = \"NetLogon\"",
+    "    DisplayName = \"USB to Ethernet Connector Service CVP\"",
+    "    StartupType = \"Automatic\"",
+    "    Description = \"U2EC_service.\"",
+    "}",
+    "sudo New-Service @params",
+    "sudo Start-Service \"U2EC_service\"",
+    "",
+    "#netsh firewall set allowedprogram \"$dir\\UsbService64.exe\" U2EC_service enable",
+    "sudo netsh advfirewall firewall add rule name=u2ec_service dir=in action=allow program=\"$dir\\UsbService64.exe\" enable=yes",
+    "",
+    "#netsh firewall set allowedprogram \"$dir\\UsbConfig.exe\" U2EC_gui enable",
+    "sudo netsh advfirewall firewall add rule name=u2ec_gui dir=in action=allow program=\"$dir\\UsbConfig.exe\" enable=yes",
+    "",
+    "sudo New-Item \"HKLM:\\Software\\Electronic Team\\USB Network Gate\" | Out-Null",
+    "sudo New-ItemProperty -Path \"HKLM:\\Software\\WOW6432Node\\Electronic Team\\USB Network Gate\" -Name \"u2ec_log\" -Value \"$dir\\u2ec.log\" -ErrorAction Ignore | Out-Null",
+    "sudo New-Item \"HKCU:\\Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\usb4rdp\" | Out-Null",
+    "sudo New-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\usb4rdp\" -Name \"Name\" -Value \"$dir\\usb4rdp64.dll\" -ErrorAction Ignore | Out-Null",
+    "",
+    ""
+  ],
+  "installer": {
+    "script": [
+      "$file = \"$dir\\$fname\"",
+      "Expand-InnoArchive $file -ExtractDir '{code_GetPathCitrix}' -DestinationPath \"$dir\"",
+      "Expand-InnoArchive $file -Removal",
+      "",
+      "Copy-Item \"$dir\\drv\\NT6\\*\" \"$dir\\drv\\NT10\" -Force",
+      "Remove-Item \"$dir\\drv\\NT6\" -Recurse -Force",
+      "",
+      "Copy-Item \"$dir\\drv\\NT6x64\\*\" \"$dir\\drv\\NT10x64\" -Force",
+      "Remove-Item \"$dir\\drv\\NT6x64\" -Recurse -Force",
+      "",
+      ""
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "",
+      "sudo cmd.exe /c sc stop \"U2EC_service\"",
+      "sudo cmd.exe /c sc delete \"U2EC_service\"",
+      "",
+      "sudo Remove-Item \"HKLM:\\Software\\WOW6432Node\\Electronic Team\\USB Network Gate\" -Recurse -Force",
+      "sudo Remove-Item \"HKCU:\\Software\\Microsoft\\Terminal Server Client\\Default\\AddIns\\usb4rdp\" -Recurse -Force",
+      "",
+      ""
+    ]
+  },
+  "shortcuts": [
+    [
+      "UsbConfig.exe",
+      "USB Network Gate"
+    ]
+  ]
+}

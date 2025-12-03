@@ -1,0 +1,104 @@
+{
+  "version": "3.11",
+  "description": "Leading edge design software for Lattice FPGA families. ",
+  "homepage": "https://www.latticesemi.com/",
+  "license": "Trialware",
+  "#depends": [
+    ""
+  ],
+  "notes": [
+    "Upgrade your design process with an easy-to-use interface, superior design exploration, ",
+    "optimized design flow, Tcl scripting, and more.",
+    "p00 | main",
+    "p01 | active-hdl",
+    "p02 | cae_library",
+    "p03 | docs | examples",
+    "p04 | ispfpga",
+    "p05 | synpbase",
+    "",
+    "Please install drivers in ",
+    ""
+  ],
+  "url": [
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p00.7z",
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p01.7z",
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p02.7z",
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p03.7z",
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p04.7z",
+    "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-win64-p05.7z"
+  ],
+  "hash": [
+    "b85de17b81f99cecf2ba5252dd493255d89dd1dd243cd2747687e34d9672e081",
+    "89e9507eb9400d6710da4becdeeed5c9f4f5838937579c77d8482d26f5a772af",
+    "6e068707f982567e27e618076ffb1aaab2db8d2041515c4c2caa76f1af4c2649",
+    "2e7019c102a10f9c3b3705268b8c9e63577e803b4c6ba14bac9653530a4d9e03",
+    "333501fe04d4c53158f018cdfc16e99888a382b239f9259ae69271b9f3bfbc05",
+    "7ae3149027bba0be935fd2aa42ccf99638fff244ad8b6cad579a3028bfd05acf"
+  ],
+  "pre_install": [
+    "$inst = Join-Path $dir 'Programs'",
+    "ensure $inst | Out-Null",
+    "",
+    "Move-Item -Path \"$dir\\*\" -Destination \"$inst\" -Exclude 'Programs' -ErrorAction Ignore",
+    "",
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "'data', 'scripts' | ForEach-Object { ensure \"$dir\\$_\" | Out-Null }",
+    "",
+    "Write-Host \"S2. Creating scripts...\" -ForegroundColor DarkCyan",
+    "$ifile = \"$bucketdir\\..\\scripts\\lattice-diamond311\\scripts_lattice_diamond.cmd.templ\"",
+    "$ofile = \"$dir\\scripts\\lattice_diamond.cmd\"",
+    "$cont = (Get-Content \"$ifile\") -replace '@SCRIPT_NAME@', \"lattice_diamond\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER_RELDIR@', \"Programs/bin/nt64\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER_ICON@', \"pnwrap.ico\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER@', \"pnwrap\"",
+    "$cont = $cont -replace '%SCRIPT_RUNNER_ARG%', \"\"",
+    "$cont = $cont -replace '@SCRIPT_LNKNAME@', \"Lattice Diamond 3.11 CVP\"",
+    "Set-Content \"$ofile\" ($cont -join \"`r`n\") -Encoding ASCII",
+    "",
+    "$ifile = \"$bucketdir\\..\\scripts\\lattice-diamond311\\scripts_lattice_diamond_console.cmd.templ\"",
+    "$ofile = \"$dir\\scripts\\lattice_diamond_console.cmd\"",
+    "$cont = (Get-Content \"$ifile\") -replace '@SCRIPT_NAME@', \"lattice_diamond\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER_RELDIR@', \"Programs/bin/nt64\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER_ICON@', \"pnwrap.ico\"",
+    "$cont = $cont -replace '@SCRIPT_RUNNER@', \"pnmainc\"",
+    "$cont = $cont -replace '%SCRIPT_RUNNER_ARG%', \"\"",
+    "$cont = $cont -replace '@SCRIPT_LNKNAME@', \"Lattice Diamond 3.11 CVP\"",
+    "Set-Content \"$ofile\" ($cont -join \"`r`n\") -Encoding ASCII",
+    "",
+    "$TOOL_INST_PATH = \"$dir\".Replace('/', '\\\\')",
+    "$escdir = $TOOL_INST_PATH -replace \"\\\\\",\"\\\\\"",
+    "(gc \"$bucketdir\\..\\scripts\\lattice-diamond311\\install-context.reg.templ\") | % {$_ -replace \"%TOOL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-context.reg\"",
+    "cp \"$bucketdir\\..\\scripts\\lattice-diamond311\\uninstall-context.reg\" \"$dir\"",
+    ""
+  ],
+  "post_install": [
+    "",
+    "$inst = Join-Path $dir 'Programs'",
+    "ensure $inst | Out-Null",
+    "",
+    "cmd.exe /c mklink /d \"$(shortcut_folder $false)\\EDA\\Lattice Diamond 3.11 CVP Drivers\" \"$dir\\Programs\\data\\vmdata\\drivers\"",
+    "",
+    ""
+  ],
+  "bin": "scripts\\lattice_diamond_console.cmd",
+  "shortcuts": [
+    [
+      "scripts\\lattice_diamond.cmd",
+      "EDA\\Lattice Diamond 3.11 CVP",
+      "",
+      "Programs/bin/nt64/pnwrap.ico"
+    ]
+  ],
+  "persist": [
+    "data",
+    "home"
+  ],
+  "checkver": {
+    "url": "https://github.com/SayCV/gh-cdn-eda/releases",
+    "regex": "lattice-diamond311-win64-([\\d.]+).7z<"
+  },
+  "autoupdate": {
+    "url": "https://github.com/SayCV/gh-cdn-eda/releases/download/v1.0.0/lattice-diamond311-$version.7z"
+  }
+}

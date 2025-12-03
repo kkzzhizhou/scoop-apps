@@ -1,0 +1,57 @@
+{
+    "version": "6.10.3",
+    "description": "The IDE for competitive programming (beta)",
+    "homepage": "https://github.com/cpeditor/cpeditor",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cpeditor/cpeditor/releases/download/6.10.3/cpeditor-6.10.3-windows-x64-portable.zip",
+            "hash": "f1dc0aa68388b4b4ce40e9434679eb37ffd6b2367807762e9cc62b150d0faa73"
+        }
+    },
+    "installer": {
+        "script": [
+            "function CreateFile([String] $file, [String] $content = $null) {",
+            "    if (-not (Test-Path \"$persist_dir\\$file\")) {",
+            "        Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
+            "        Set-Content \"$dir\\$file\" $content",
+            "    }",
+            "}",
+            "CreateFile 'cp_editor_session.json'",
+            "CreateFile 'cp_editor_settings.ini'"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "function BackupFile([String] $file) {",
+            "    Copy-Item \"$dir\\$file\" \"$persist_dir\" -Force",
+            "}",
+            "BackupFile 'cp_editor_session.json'",
+            "BackupFile 'cp_editor_settings.ini'"
+        ]
+    },
+    "shortcuts": [
+        [
+            "cpeditor.exe",
+            "CP Editor (beta)"
+        ]
+    ],
+    "persist": [
+        "cp_editor_session.json",
+        "cp_editor_settings.ini"
+    ],
+    "checkver": {
+        "url": "https://github.com/cpeditor/cpeditor/releases",
+        "regex": "/releases/tag/(?:v|V)?([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cpeditor/cpeditor/releases/download/$version/cpeditor-$version-windows-x64-portable.zip"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/cpeditor/cpeditor/releases/download/$version/cpeditor-$version-sha256-checksums.txt"
+        }
+    }
+}

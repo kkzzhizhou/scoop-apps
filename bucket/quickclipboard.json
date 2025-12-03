@@ -1,0 +1,52 @@
+{
+    "version": "0.0.6",
+    "description": "QuickClipboard 是一款为 Windows 设计的高效剪贴板管理工具，支持文本、图片与文件的历史记录管理，并配备多种便捷操作方式，让剪贴板使用更加流畅与智能。",
+    "homepage": "https://github.com/mosheng1/QuickClipboard",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/mosheng1/QuickClipboard#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mosheng1/QuickClipboard/releases/download/v0.0.6/QuickClipboard_0.0.6_x64-setup.exe#/dl.7z",
+            "hash": "b45dca85a1496e6323a5d4960f9e4c5b7fabfc668517198d41da9351b1172a24",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\quickclipboard\" -Target \"$env:LOCALAPPDATA\\quickclipboard\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\com.quickclipboard.app\" -Target \"$env:LOCALAPPDATA\\com.quickclipboard.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\quickclipboard\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.quickclipboard.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "QuickClipboard.exe",
+    "shortcuts": [
+        [
+            "QuickClipboard.exe",
+            "QuickClipboard"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/mosheng1/QuickClipboard/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/QuickClipboard"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mosheng1/QuickClipboard/releases/download/v$version/QuickClipboard_$version_x64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}

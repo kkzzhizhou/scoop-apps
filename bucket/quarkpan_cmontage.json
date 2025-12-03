@@ -1,0 +1,57 @@
+{
+  "version": "3.23.2",
+  "description": "夸克网盘",
+  "homepage": "https://pan.quark.cn/",
+  "license": "Proprietary",
+  "url": "https://pdds.quark.cn/download/stfile/yy65y8z68yz4y282i/QuarkCloudDrive_v3.23.2_release_(Build2384776-20250822102933).exe",
+  "hash": "4c04168ec7b259b16fadf99daae1af61f938e28d85e52ac567328d481c234776",
+  "innosetup": true,
+  "shortcuts": [
+    [
+      "QuarkCloudDrive.exe",
+      "QuarkCloudDrive"
+    ]
+  ],
+  "pre_install": [
+    "Move-Item -Force -Path \"$dir\\app-$version\\*\" -Destination \"$dir\"",
+    "Remove-Item -Force -Recurse -Path \"$dir\\app-$version\""
+  ],
+  "installer": {
+    "script": [
+      "Ensure \"$persist_dir\" | Out-Null",
+      "$quarkData1 = \"$env:APPDATA\\quark-cloud-drive\"",
+      "$quarkData2 = \"$env:APPDATA\\Quark\"",
+      "foreach ($path in @($quarkData1, $quarkData2)) {",
+      "    if (Test-Path $path) {",
+      "        $linkType = (Get-Item -Path $path -ErrorAction SilentlyContinue).LinkType",
+      "        if ($linkType -eq 'Junction') {",
+      "            Remove-Item -Path $path -Force",
+      "        } else {",
+      "            Get-ChildItem -Path $path -Force | Move-Item -Destination \"$persist_dir\\$(Split-Path $path -Leaf)\" -Force",
+      "            Remove-Item -Path $path -Force -Recurse",
+      "        }",
+      "    }",
+      "    $targetPersist = \"$persist_dir\\$(Split-Path $path -Leaf)\"",
+      "    if (!(Test-Path $targetPersist)) {",
+      "        New-Item -ItemType Directory -Path $targetPersist -Force | Out-Null",
+      "    }",
+      "    New-Item -Path $path -ItemType Junction -Target $targetPersist | Out-Null",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "Remove-Item \"$env:APPDATA\\quark-cloud-drive\" -Recurse -Force -ErrorAction SilentlyContinue",
+      "Remove-Item \"$env:APPDATA\\Quark\" -Recurse -Force -ErrorAction SilentlyContinue"
+    ]
+  },
+  "checkver": {
+    "url": "https://pan.quark.cn/api/client_version",
+    "jsonpath": "$.data.clouddrive_backup_packages[1].winInstallerUrl",
+    "re": "pdds.quark.cn/download/stfile/(?<release>\\w+)/QuarkCloudDrive_v(?<version>[\\d.]+)_release_\\(Build(?<build>\\d+)-(?<timestamp>\\d+)\\).exe",
+    "replace": "${version}"
+  },
+  "autoupdate": {
+    "url": "https://pdds.quark.cn/download/stfile/$matchRelease/QuarkCloudDrive_v$matchVersion_release_(Build$matchBuild-$matchTimestamp).exe"
+  }
+}

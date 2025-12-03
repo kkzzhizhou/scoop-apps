@@ -1,0 +1,83 @@
+{
+    "version": "39.5",
+    "homepage": "https://bitbucket.org/neelabo/neeview/",
+    "description": "An image viewer that allows you to browse images in a folder like a book.",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://bitbucket.org/neelabo/neeview/downloads/NeeView39.5-x64.zip",
+            "hash": "5117abdb7b5c3537680ff7f8fd652dc32577c81c697e1daea93c0cbfb775be80",
+            "extract_dir": "NeeView39.5-x64"
+        },
+        "32bit": {
+            "url": "https://bitbucket.org/neelabo/neeview/downloads/NeeView39.5-x86.zip",
+            "hash": "2994cde545f503717f1d4bd116e7c044c479f4f23ee56b4b12ab61727e150c36",
+            "extract_dir": "NeeView39.5-x86"
+        }
+    },
+    "bin": "NeeView.exe",
+    "shortcuts": [
+        [
+            "NeeView.exe",
+            "NeeView",
+            "--setting=\"$persist_dir\\UserSetting.json\""
+        ]
+    ],
+    "post_install": [
+        "# We need to run this app once when this is the first time to install,",
+        "# because it creates files to be persisted after first run.",
+        "",
+        "$script:firstInstall = $False",
+        "'Bookmark.json', 'History.json', 'UserSetting.json' | ForEach-Object {",
+        "    # If no persist data exist, scoop creates folders instead of json files.",
+        "    # If we found them, then now is the first time to install.",
+        "    if (Test-Path -Path (Join-Path $persist_dir $_) -PathType Container) {",
+        "        Remove-Item -Path (Join-Path $persist_dir $_)",
+        "        # Call cmd because junctions cannot be deleted by Remove-Item",
+        "        cmd /c \"rmdir /s /q $(Join-Path $dir $_)\"",
+        "        $script:firstInstall = $True",
+        "    }",
+        "}",
+        "",
+        "if ($firstInstall) {",
+        "    Start-Process -FilePath (Join-Path $dir NeeView.exe)",
+        "    # Wait until the app is launched",
+        "    while ( 0 -eq (Get-Process -Name NeeView -ErrorAction SilentlyContinue).Count ) {",
+        "        Start-Sleep -Milliseconds 200",
+        "    }",
+        "    $appPid = (Get-Process -Name NeeView).ID",
+        "    # FInd a better way to detect the app is fully launched",
+        "    Start-Sleep -Seconds 5",
+        "    # taskkill 'gracefully' stops a process as if the user clicks x button,",
+        "    # however Stop-Process does not",
+        "    taskkill /PID $appPid | Out-Null",
+        "    # Wait until the app exits",
+        "    Wait-Process -Id $appPid",
+        "",
+        "    cmd /c \"rmdir /s /q $(Join-Path $dir Playlists)\"",
+        "    persist_data $manifest $original_dir $persist_dir",
+        "    Copy-Item -Path (Join-Path $dir UserSetting.json) -Destination $persist_dir",
+        "}"
+    ],
+    "persist": [
+        "Playlists",
+        "Bookmark.json",
+        "History.json"
+    ],
+    "checkver": {
+        "url": "https://bitbucket.org/neelabo/neeview/wiki/ChangeLog",
+        "regex": "<h2 [^>]+>([\\d.]+)</h2>"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://bitbucket.org/neelabo/neeview/downloads/NeeView$version-x64.zip",
+                "extract_dir": "NeeView$version-x64"
+            },
+            "32bit": {
+                "url": "https://bitbucket.org/neelabo/neeview/downloads/NeeView$version-x86.zip",
+                "extract_dir": "NeeView$version-x86"
+            }
+        }
+    }
+}

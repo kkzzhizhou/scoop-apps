@@ -1,0 +1,78 @@
+{
+    "version": "1980-d339f1fa",
+    "description": "Nintendo NES and Famicom emulator",
+    "homepage": "http://www.fceux.com",
+    "license": {
+        "url": "https://github.com/TASEmulators/fceux/blob/master/COPYING",
+        "identifier": "GPL-2.0"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/c4jq97a46p70f88l/artifacts/fceux-win64.zip",
+            "hash": "14cda4035ce19c8075991cc269cfc87ca92756fa65918cdb452ecc9fd850f81d",
+            "bin": [
+                [
+                    "fceux64.exe",
+                    "fceux-dev"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "fceux64.exe",
+                    "FCEUX (dev)"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/2m2nl5xdt4f223jc/artifacts/fceux-win32.zip",
+            "hash": "fb4695ae9c041438c5801330ef418f419e6e71321bfdfbd95a17682910821ed5",
+            "bin": [
+                [
+                    "fceux.exe",
+                    "fceux-dev"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "fceux.exe",
+                    "FCEUX (dev)"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\fceux.cfg\")) {",
+        "    New-Item \"$dir\\fceux.cfg\" -Type File | Out-Null",
+        "}"
+    ],
+    "persist": [
+        "cheats",
+        "fcs",
+        "movies",
+        "sav",
+        "snaps",
+        "fceux.cfg"
+    ],
+    "checkver": {
+        "url": "https://ci.appveyor.com/api/projects/zeromus/fceux",
+        "script": [
+            "$job32 = json_path $page $.build.jobs[0].jobId",
+            "$job64 = json_path $page $.build.jobs[1].jobId",
+            "$build = json_path $page $.build.buildNumber",
+            "$commit = json_path $page $.build.commitId",
+            "Write-Output \"$job32 $job64 $build $commit\""
+        ],
+        "regex": "(?<job32>[\\w]{16}) (?<job64>[\\w]{16}) (?<build>[\\d]+) (?<commit>[a-f0-9]{8})",
+        "replace": "${build}-${commit}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob64/artifacts/fceux-win64.zip"
+            },
+            "32bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob32/artifacts/fceux-win32.zip"
+            }
+        }
+    }
+}

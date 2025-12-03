@@ -1,0 +1,87 @@
+{
+    "version": "24.09",
+    "description": "具有高压缩比的多格式文件归档器。A multi-format file archiver with high compression ratios.",
+    "homepage": "https://www.7-zip.org/",
+    "license": {
+        "identifier": "GNU Lesser General Public License v3.0",
+        "url": "https://github.com/sparanoid/7z/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://www.7-zip.org/a/7z2409-x64.msi",
+            "hash": "ec6af1ea0367d16dde6639a89a080a524cebc4d4bedfe00ed0cac4b865a918d8",
+            "extract_dir": "Files\\7-Zip"
+        },
+        "32bit": {
+            "url": "https://www.7-zip.org/a/7z2409.msi",
+            "hash": "c7f182dad21eebfce02f141d6a01f847d1e194c4d6aa29998d9305388553cf6a",
+            "extract_dir": "Files\\7-Zip"
+        },
+        "arm64": {
+            "url": "https://www.7-zip.org/a/7z2409-arm64.exe",
+            "hash": "bc7b3a18f218f4916e1c4996751468f96e46eb7e97e91e8c1553d74793037f1a",
+            "pre_install": [
+                "$7zr = Join-Path $env:TMP '7zr.exe'",
+                "Invoke-WebRequest https://www.7-zip.org/a/7zr.exe -OutFile $7zr",
+                "Invoke-ExternalCommand $7zr @('x', \"$dir\\$fname\", \"-o$dir\", '-y') | Out-Null",
+                "Remove-Item \"$dir\\Uninstall.exe\", \"$dir\\*-arm64.exe\", $7zr"
+            ]
+        }
+    },
+    "bin": [
+        "7z.exe",
+        "7zFM.exe",
+        "7zG.exe"
+    ],
+    "shortcuts": [
+        [
+            "7zFM.exe",
+            "7zip"
+        ]
+    ],
+    "pre_install": [
+        "$7zip_root = \"$dir\".Replace('\\', '\\\\')",
+        "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
+        "    $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\7-zip\\$_\"",
+        "    $content = $content.Replace('$7zip_root', $7zip_root)",
+        "    if ($global) {",
+        "       $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "    }",
+        "    Set-Content \"$dir\\$_\" $content -Encoding Ascii",
+        "}",
+        "Write-Host (handle_lang {'正在添加 7zip 右键菜单...'} {'Adding 7zip context menu...'}) -f Yellow",
+        "reg import \"$dir\\install-context.reg\"",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process $false",
+        "Write-Host \"\"",
+        "confirm (handle_lang {\"卸载暂停。`n该应用的卸载需要关闭所有的文件资源管理器(explorer.exe)。`n请确定你在文件资源管理器中的所有工作已经完成且已经保存。`n然后按下 Enter(回车键) 继续卸载，或者按下其他任意键取消本次卸载。\"} {\"Uninstall paused.`nThe uninstall of this app requires closing all File Explorer(explorer.exe).`nPlease make sure that all your work in File Explorer has been completed and saved.`nPress Enter to continue or other key to cancel the uninstall.\"})",
+        "Write-Host (handle_lang {'正在移除 7zip 右键菜单...'} {'Removing 7zip context menu...'}) -f Yellow",
+        "reg import \"$dir\\uninstall-context.reg\"",
+        "Stop-Process -Name \"explorer\" -Force",
+        "Start-Process explorer.exe",
+        "remove_files"
+    ],
+    "checkver": {
+        "url": "https://www.7-zip.org/download.html",
+        "regex": "Download 7-Zip ([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion-x64.msi"
+            },
+            "32bit": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion.msi"
+            },
+            "arm64": {
+                "url": "https://www.7-zip.org/a/7z$cleanVersion-arm64.exe"
+            }
+        }
+    }
+}

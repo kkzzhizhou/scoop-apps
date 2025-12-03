@@ -1,0 +1,48 @@
+{
+    "##": "Download URL https://www.bluestacks.com/download.html",
+    "version": "5.13.200.1028",
+    "description": "BlueStacks 5. Android emulator.",
+    "homepage": "https://www.bluestacks.com",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.bluestacks.com/tw/terms-and-privacy.html"
+    },
+    "changelog": "https://support.bluestacks.com/hc/en-us/sections/360012290292-Release-Notes",
+    "url": "https://cloud.bluestacks.com/api/getdownloadnow?platform=win&win_version=5#/setup.exe",
+    "hash": "d96d4767376191859f5738ced9e0c65e85497f34949d3e598bb34b98e04c9542",
+    "pre_download": "Assert-Administrator",
+    "pre_install": [
+        "$processname = \"HD-Player\"",
+        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
+        "if ($process) {",
+        "   $process.CloseMainWindow()",
+        "   Start-Sleep -Seconds 5",
+        "   if (!$process.HasExited) {",
+        "       Start-Sleep -Seconds 25",
+        "       $process | Stop-Process -Force",
+        "   }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$programname = \"BlueStacks 5*\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
+            "$filepath = \"$ProgramFiles\\BlueStacks_nxt\\HD-MultiInstanceManager.exe\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   &\"$dir\\setup.exe\" -s | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.exe\") { Remove-Item \"$dir\\setup.exe\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$programname = \"BlueStacks 5\"",
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\$programname.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname.lnk\" -Force}",
+        "if (Test-Path \"$CommonDesktopPath\\$programname Multi-Instance Manager.lnk\") {Remove-Item \"$CommonDesktopPath\\$programname Multi-Instance Manager.lnk\" -Force}"
+    ]
+}

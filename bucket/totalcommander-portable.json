@@ -1,0 +1,84 @@
+{
+    "version": "11.56",
+    "description": "Total Commander is a Shareware file manager for Windows® 95/98/ME/NT/2000/XP/Vista/7/8/8.1/10, and Windows® 3.1.",
+    "homepage": "https://www.ghisler.com",
+    "license": "Shareware",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.totalcommander.ch/1156/tcmd1156x64.exe",
+            "hash": "22230671f4a7d8e7dec3c300923726ba24dc1937117ad34a1a7bda973bb8cd34",
+            "bin": [
+                [
+                    "TOTALCMD64.EXE",
+                    "tc"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "TOTALCMD64.EXE",
+                    "Total Commander"
+                ]
+            ]
+        },
+        "32bit": {
+            "url": "https://www.totalcommander.ch/1156/tcmd1156x32.exe",
+            "hash": "0ea41843274d886974d2f591539b08c8b139da5996b20bab375f308dc7b2d960",
+            "bin": [
+                [
+                    "TOTALCMD.EXE",
+                    "tc"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "TOTALCMD.EXE",
+                    "Total Commander"
+                ]
+            ]
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\$fname\" \"$dir\\_tmp\"",
+        "Expand-7zipArchive \"$dir\\_tmp\\INSTALL.CAB\" \"$dir\" -Removal",
+        "Move-Item \"$dir\\e\\*\" \"$dir\"",
+        "Remove-Item -Recurse \"$dir\\d\", \"$dir\\e\", \"$dir\\_tmp\", \"$dir\\$fname\"",
+        "\"[Configuration]`r`nUseIniInProgramDir=7`r`nAlternateUserIni=wincmd_user.ini\" | Out-File -Encoding ASCII \"$dir\\wincmd.ini\"",
+        "ForEach ($emptyFile in $manifest.persist | Where-Object { $_ -ne 'plugins' }) {New-Item \"$dir\\$emptyFile\" -ItemType file -ErrorAction SilentlyContinue | Out-Null}"
+    ],
+    "persist": [
+        "plugins",
+        "language",
+        "no.bar",
+        "default.bar",
+        "default.br2",
+        "vertical.bar",
+        "vertical.br2",
+        "system.bar",
+        "system.br2",
+        "usercmd.ini",
+        "wcx_ftp.ini",
+        "wincmd.ini",
+        "wincmd.key",
+        "wincmd_user.ini",
+        "wincmd_history.ini",
+        "wincmd_plugins.ini",
+        "contplug.ini",
+        "fsplugin.ini",
+        "lsplugin.ini",
+        "pkplugin.ini"
+    ],
+    "checkver": {
+        "url": "https://www.ghisler.com/download.htm",
+        "regex": "Download\\s+version\\s+([\\w.]+) of Total Commander"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.totalcommander.ch/$cleanVersion/tcmd$cleanVersionx64.exe"
+            },
+            "32bit": {
+                "url": "https://www.totalcommander.ch/$cleanVersion/tcmd$cleanVersionx32.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "version": "4.2.5-512-g6b168aff3",
+    "description": "A free single-player dungeon exploration Roguelike (Pre-release)",
+    "homepage": "https://rephial.org/",
+    "license": "GPL-2.0",
+    "notes": "Configuration files cannot be persisted, but will be retained during the update",
+    "url": "https://github.com/angband/angband/releases/download/4.2.5-512-g6b168aff3/Angband-4.2.5-512-g6b168aff3-win.zip",
+    "hash": "fb8469971263e2c44201d10656d3bc8a49b179da88fad21c399b9cf322c10793",
+    "extract_dir": "angband-4.2.5-512-g6b168aff3",
+    "post_install": [
+        "'angband.INI' | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$_.bak\")) {",
+        "        New-Item -ItemType File \"$dir\\$_\" | Out-Null",
+        "    } else {",
+        "        Copy-Item \"$persist_dir\\$_.bak\" \"$dir\\$_\" -Force",
+        "    }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "angband.exe",
+            "Angband\\Angband (Pre-release)"
+        ],
+        [
+            "docs\\index.html",
+            "Angband\\Angband Manual (Pre-release)"
+        ]
+    ],
+    "persist": "lib\\user",
+    "uninstaller": {
+        "script": [
+            "'angband.INI' | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$persist_dir\\$_.bak\" -Force",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/angband/angband/releases",
+        "jsonpath": "$[?(@.prerelease == true)].tag_name"
+    },
+    "autoupdate": {
+        "url": "https://github.com/angband/angband/releases/download/$version/Angband-$version-win.zip",
+        "extract_dir": "angband-$version"
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "version": "1.1.11-20251128-feb9f2f",
+    "description": "A lightweight, cross-platform remote desktop software with support for Web Client access | 一款支持 Web 客户端访问的轻量级跨平台远程桌面软件。",
+    "homepage": "https://www.crossdesk.cn/",
+    "license": {
+        "identifier": "LGPL-3.0 license",
+        "url": "https://github.com/kunkundi/crossdesk#LGPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kunkundi/crossdesk/releases/download/v1.1.11-20251128-feb9f2f/crossdesk-win-x64-v1.1.11-20251128-feb9f2f.exe#/dl.7z",
+            "hash": "c16efb0ef5efb63619785db0061e9316459ca45da2edfef3193b9bc0f3b47726",
+            "pre_install": [
+                "Move-Item \"$dir\\`$APPDATA\\CrossDesk\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\*.ico\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\CrossDesk\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\CrossDesk\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "crossdesk.exe",
+    "shortcuts": [
+        [
+            "crossdesk.exe",
+            "CrossDesk"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/kunkundi/crossdesk/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)/crossdesk-win"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kunkundi/crossdesk/releases/download/v$version/crossdesk-win-x64-v$version.exe#/dl.7z"
+            }
+        }
+    }
+}

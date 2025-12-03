@@ -1,0 +1,54 @@
+{
+    "version": "0.16.0",
+    "description": "Game Launcher for miHoYo/hoyoverse.",
+    "homepage": "https://github.com/Scighost/Starward",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/Scighost/Starward/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Scighost/Starward/releases/download/0.16.0/Starward_Portable_0.16.0_x64.7z",
+            "hash": "ad62b4a402f73f705aecc574a55bbd2a47d74b133c3a6f1823be8a589f06d6d5"
+        },
+        "arm64": {
+            "url": "https://github.com/Scighost/Starward/releases/download/0.16.0/Starward_Portable_0.16.0_arm64.7z",
+            "hash": "00167eb16154d212643852befba56303c048eed1ef8c11ae69578802cb783762"
+        }
+    },
+    "checkver": {
+        "script": [
+            "$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/Scighost/Starward/releases'",
+            "$latest = $rel_info | Sort-Object {$_.published_at} | Select-Object -last 1",
+            "$latest_x64 = $latest.assets | Where-Object {$_.name.EndsWith('x64.7z')} | Select-Object -first 1",
+            "$latest_arm64 = $latest.assets | Where-Object {$_.name.EndsWith('arm64.7z')} | Select-Object -first 1",
+            "Write-Output $latest.tag_name $latest_x64.digest $latest_arm64.digest"
+        ],
+        "regex": "(?<version>[\\d.]+(?:-[\\w\\-\\d\\.]+)?)\\s(?<x64hash>[^\\s]+)?\\s(?<armhash>[^\\s]+)?"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Scighost/Starward/releases/download/$version/Starward_Portable_$version_x64.7z",
+                "hash": "$matchX64hash"
+            },
+            "arm64": {
+                "url": "https://github.com/Scighost/Starward/releases/download/$version/Starward_Portable_$version_arm64.7z",
+                "hash": "$matchArmhash"
+            }
+        }
+    },
+    "extract_dir": "Starward",
+    "shortcuts": [
+        [
+            "Starward.exe",
+            "Starward"
+        ]
+    ],
+    "pre_install": "If (-not (Test-Path $dir\\config.ini)) {\"UserDataFolder=$dir\\data\" | Out-File $dir\\config.ini}",
+    "persist": [
+        "data",
+        "config.ini"
+    ],
+    "notes": "Setup wizard would be skipped because of preset value of user data by pre-install scripts."
+}

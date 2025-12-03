@@ -1,0 +1,81 @@
+{
+  "homepage": "https://sunlogin.oray.com/",
+  "description": "向日葵远程控制软件",
+  "version": "12.5.1.44969",
+  "architecture": {
+    "64bit": {
+      "url": "https://dl-cdn.oray.com/sunlogin/windows/SunloginClient_12.5.1.44969_x64.exe#/SunloginClient.exe",
+      "hash": "c2474c983b153fb9fd1bf39de03c24232b46dadfb24af39e9ab4e113f3c1b8d7",
+      "shortcuts": [
+        [
+          "SunloginClient.exe",
+          "向日葵客户端"
+        ]
+      ]
+    },
+    "32bit": {
+      "url": "https://dl-cdn.oray.com/sunlogin/windows/SunloginClient_12.5.1.44969.exe#/SunloginClient.exe",
+      "hash": "",
+      "shortcuts": [
+        [
+          "SunloginClient.exe",
+          "向日葵客户端"
+        ]
+      ]
+    }
+  },
+  "pre_install": [
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "",
+    "$EVAL_INST_PATH = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+    "$EVAL_INST_PATH = \"$dir\".Replace('/', '\\\\')",
+    "$escdir = $EVAL_INST_PATH -replace \"\\\\\",\"\\\\\"",
+    "(gc \"$bucketdir\\..\\scripts\\sunloginclient\\install-eval.reg.templ\") | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-eval.reg\"",
+    "cp \"$bucketdir\\..\\scripts\\sunloginclient\\uninstall-eval.reg\" \"$dir\"",
+    "",
+    "sudo regedit.exe /s \"$dir\\install-eval.reg\"",
+    "",
+    ""
+  ],
+  "post_install": [
+    "if (Test-Path \"HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient\"){",
+    "   New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient' -Name ${version}_IsRunSeted -Value 1 | Out-Null",
+    "}",
+    ""
+  ],
+  "installer": {
+    "script": [
+      "if (Test-Path \"HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient\"){",
+      "   Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient' -Name *_IsRunSeted -Force -ErrorAction SilentlyContinue",
+      "}",
+      ""
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "$uninst = \"$dir\\SunloginClient\\SunloginClient.exe\"",
+      "if (Test-Path $uninst) {",
+      "#   $uninst --mod=uninstall",
+      "}",
+      "if (Test-Path \"HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient\"){",
+      "   Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Oray\\SunLogin\\SunloginClient' -Name *_IsRunSeted -Force -ErrorAction SilentlyContinue",
+      "}",
+      ""
+    ]
+  },
+  "checkver": {
+    "url": "https://pc.qq.com/detail/0/detail_26760.html",
+    "regex": "detail-install-normal.*href=[^\\d]+_([\\d.]+)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://dl-cdn.oray.com/sunlogin/windows/SunloginClient_$version_x64.exe#/SunloginClient.exe"
+      },
+      "32bit": {
+        "url": "https://dl-cdn.oray.com/sunlogin/windows/SunloginClient_$version.exe#/SunloginClient.exe"
+      }
+    }
+  }
+}

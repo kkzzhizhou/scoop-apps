@@ -1,0 +1,82 @@
+{
+  "version": "8.1.4",
+  "description": "A free source code editor and Notepad replacement that supports several languages.",
+  "homepage": "https://notepad-plus-plus.org",
+  "license": "GPL-2.0-only",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.1.4/npp.8.1.4.portable.x64.zip",
+      "hash": "6e618a4cded6140c22f54c7f6d48d11c7375aaf57c0ca372d79d45b13c8cdd7e"
+    },
+    "32bit": {
+      "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.1.4/npp.8.1.4.portable.zip",
+      "hash": "c53e75862592e4effdfba445e33f306f0ae1e8114276e4aef7fdf98ec0620e60"
+    },
+    "arm64": {
+      "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.1.4/npp.8.1.4.portable.arm64.zip",
+      "hash": "bac4fd615944abf04f3eb56b05cd0497dcb3d78956fd64db1ad7f7b3715e2204"
+    }
+  },
+  "pre_install": [
+    "try { Get-Command 'Test-Persistence' -ErrorAction 'Stop' | Out-Null } catch { error 'Shovel flavour of scoop is required'; exit 258 }",
+    "Test-Persistence 'session.xml', 'userDefineLang.xml'"
+  ],
+  "post_install": [
+    "$bucketdir = Find-BucketDirectory -Name $bucket",
+    "",
+    "$EVAL_INST_PATH = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+    "$escdir = $EVAL_INST_PATH -replace \"\\\\\",\"\\\\\"",
+    "$escdir = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+    "",
+    "$EVAL_INST_PATH = if (get_config NO_JUNCTIONS) { $dir } else { \"$(appdir $app $global)\\current\".Replace('/', '\\') }",
+    "$escdir = $EVAL_INST_PATH -replace \"\\\\\",\"\\\\\"",
+    "(gc \"$bucketdir\\..\\scripts\\npp\\install-context.reg.templ\") | % {$_ -replace \"%EVAL_INST_PATH%\",\"$escdir\"} | out-file -enc oem \"$dir\\install-context.reg\"",
+    "cp \"$bucketdir\\..\\scripts\\npp\\uninstall-context.reg\" \"$dir\"",
+    "",
+    "#sudo regedit.exe /s \"$dir\\install-context.reg\"",
+    "",
+    ""
+  ],
+  "bin": [
+    "notepad++.exe",
+    [
+      "notepad++.exe",
+      "npp"
+    ]
+  ],
+  "shortcuts": [
+    [
+      "notepad++.exe",
+      "Notepad++"
+    ]
+  ],
+  "persist": [
+    "backup",
+    "cloud",
+    "plugins",
+    "themes",
+    "userDefineLangs",
+    "config.xml",
+    "session.xml",
+    "userDefineLang.xml"
+  ],
+  "checkver": {
+    "github": "https://github.com/notepad-plus-plus/notepad-plus-plus"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.x64.zip"
+      },
+      "32bit": {
+        "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.zip"
+      },
+      "arm64": {
+        "url": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v$version/npp.$version.portable.arm64.zip"
+      }
+    },
+    "hash": {
+      "url": "$baseurl/npp.$version.checksums.sha256"
+    }
+  }
+}

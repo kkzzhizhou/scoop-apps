@@ -1,0 +1,57 @@
+{
+    "version": "1.85.1",
+    "description": "Network monitoring floating window software on Windows. It can display the current network speed, CPU and memory usage. It also supports being embedded into the taskbar, theme changing and traffic statistics. (Lite version, which does not contain GPU, Hard Disk or temperature monitoring. Administrator privilege is not required)",
+    "homepage": "https://github.com/zhongyang219/TrafficMonitor/blob/master/README_en-us.md",
+    "license": "MIT",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V1.85.1/TrafficMonitor_V1.85.1_x64_Lite.zip",
+            "hash": "7805ea17336faffe51346e0f4e8dc9d487cc1b8c80499cc1a6312a28ccac3dc1"
+        },
+        "32bit": {
+            "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V1.85.1/TrafficMonitor_V1.85.1_x86_Lite.zip",
+            "hash": "2fe48cb49324de6210136a75d09df855c5a26deb466c62fb17a268bf5b928e62"
+        }
+    },
+    "extract_dir": "TrafficMonitor",
+    "pre_install": [
+        "    # Portable migration",
+        "if (!(Test-Path \"$persist_dir\") -and (Test-Path \"$env:APPDATA\\TrafficMonitor\\config.ini\")) {",
+        "    ensure \"$persist_dir\" | Out-Null",
+        "    Copy-Item -Recurse \"$env:APPDATA\\TrafficMonitor\\*\" \"$persist_dir\"",
+        "    Rename-Item \"$env:APPDATA\\TrafficMonitor\" 'TrafficMonitor.old'",
+        "}",
+        "",
+        "if (!(Test-Path \"$persist_dir\\config.ini\")) { Set-Content \"$dir\\config.ini\" @('[general]', 'check_update_when_start = false') -Encoding Ascii }",
+        "if (!(Test-Path \"$persist_dir\\global_cfg.ini\")) { Set-Content \"$dir\\global_cfg.ini\" @('[config]', 'portable_mode = true') -Encoding Ascii }",
+        "if (!(Test-Path \"$persist_dir\\history_traffic.dat\")) { New-Item \"$dir\\history_traffic.dat\" | Out-Null }"
+    ],
+    "shortcuts": [
+        [
+            "TrafficMonitor.exe",
+            "TrafficMonitor (Lite)"
+        ]
+    ],
+    "persist": [
+        "config.ini",
+        "global_cfg.ini",
+        "history_traffic.dat",
+        "plugins"
+    ],
+    "checkver": {
+        "github": "https://github.com/zhongyang219/TrafficMonitor"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V$version/TrafficMonitor_V$version_x64_Lite.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/zhongyang219/TrafficMonitor/releases/download/V$version/TrafficMonitor_V$version_x86_Lite.zip"
+            }
+        }
+    }
+}

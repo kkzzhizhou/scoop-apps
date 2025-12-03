@@ -1,0 +1,61 @@
+{
+  "version": "1.8.19",
+  "description": "A full-featured download manager.",
+  "homepage": "https://motrix.app",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/agalwood/Motrix/releases/download/v1.8.19/Motrix-1.8.19-win.zip",
+      "hash": "5238865630e99dc4981bcc6082ba2b8221c4a543f35b41c0205a34984fd8f3b5"
+    },
+    "32bit": {
+      "url": "https://github.com/agalwood/Motrix/releases/download/v1.8.19/Motrix-1.8.19-ia32-win.zip",
+      "hash": "8681dab159209553f3cbdc75b1b5b9ad1f49d35c9e910dc747f6a56591cbcff9"
+    }
+  },
+  "post_install": [
+    "mkdir $env:APPDATA\\Motrix -ErrorAction SilentlyContinue",
+    "function Create-Junction { param ([string]$runtimeCache, [string]$runtimeCachePersist)",
+    "  if (-not (Test-Path $runtimeCache)) { return }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache -ErrorAction SilentlyContinue",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}",
+    "foreach ($folder in @('Motrix')) {",
+    "  Create-Junction -runtimeCache \"$env:USERPROFILE\\$folder\" -runtimeCachePersist \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:LOCALAPPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\LOCALAPPDATA\\$folder\"",
+    "  Create-Junction -runtimeCache \"$env:APPDATA\\$folder\" -runtimeCachePersist \"$persist_dir\\APPDATA\\$folder\"",
+    "}"
+  ],
+  "bin": [
+    "Motrix.exe"
+  ],
+  "shortcuts": [
+    [
+      "Motrix.exe",
+      "Motrix"
+    ]
+  ],
+  "checkver": {
+    "github": "https://github.com/agalwood/Motrix"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-$version-win.zip"
+      },
+      "32bit": {
+        "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-$version-ia32-win.zip"
+      }
+    },
+    "hash": {
+      "url": "$baseurl/latest.yml",
+      "regex": "sha512:\\s+$base64"
+    }
+  }
+}

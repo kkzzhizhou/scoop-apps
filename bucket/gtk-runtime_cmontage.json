@@ -1,0 +1,36 @@
+{
+  "homepage": "https://pidgin.im/",
+  "version": "2.13.0",
+  "description": "GTK Runtime primarily for use with Pidgin",
+  "url": "https://sourceforge.net/projects/pidgin/files/GTK%2B for Windows/2.16.6.3/gtk-runtime-2.16.6.3.zip",
+  "hash": "D173B43DEBD38FDEA1A4B74CFC0A43F8C062394188BE35202187F2C299B7BF5A",
+  "extract_dir": "Gtk",
+  "installer": {
+    "script": [
+      "[void](Remove-Item $dir\\manifest -Recurse)",
+      "$localeList = Get-ChildItem $dir\\share\\locale -Directory -Name",
+      "$localeList | ForEach-Object -Begin {$i = 1} {\"$i.) $_\" ; $i += 1 }",
+      "$selectedLocale = Read-Host -Prompt 'Select a locale (input a number)'",
+      "$locale = $localeList[$selectedLocale - 1]",
+      "[void](Remove-Item $dir\\share\\locale\\* -Exclude $locale -Recurse)",
+      "[void](New-Item -Type File $dir\\gtk-theme.ps1)",
+      "'$d = \"$env:SCOOP\\apps\\gtk-runtime\\current\";' >> $dir\\gtk-theme.ps1",
+      "'$tsp = \"$d\\share\\themes\";' >> $dir\\gtk-theme.ps1",
+      "'$ts = gci $tsp;' >> $dir\\gtk-theme.ps1",
+      "'$ts | ForEach-Object -Begin {$i = 1} {\"$i.) $_\" ; $i += 1 };' >> $dir\\gtk-theme.ps1",
+      "'$selection = Read-Host -Prompt \"Select a theme (input a number)\";' >> $dir\\gtk-theme.ps1",
+      "'$theme = $ts[$selection - 1];' >> $dir\\gtk-theme.ps1",
+      "'Copy-Item $tsp\\$theme\\gtk-2.0\\gtkrc $d\\etc\\gtk-2.0\\gtkrc;' >> $dir\\gtk-theme.ps1"
+    ]
+  },
+  "persist": [
+    "share/themes",
+    "etc/gtk-2.0/gtkrc"
+  ],
+  "bin": [
+    "gtk-theme.ps1"
+  ],
+  "env_add_path": [
+    "bin"
+  ]
+}

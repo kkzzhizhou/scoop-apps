@@ -1,0 +1,70 @@
+{
+  "version": "1.3.6",
+  "description": "Remix IDE desktop",
+  "homepage": "https://github.com/ethereum/remix-desktop",
+  "license": "Unknown",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/ethereum/remix-desktop/releases/download/v1.3.6/Remix-IDE-Setup-1.3.6.exe#/dl.7z",
+      "hash": "sha512:ce2c51e15bb19553b224e10b32fb76a4d0b0015a14dc0c57505adc831f81e61f1d6312946745ed94cd0633133b60e1477bbf55f76662d20537b54b128454b455"
+    }
+  },
+  "pre_install": [
+    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+    "Remove-Item -Recurse -Force \"$dir\\`$PLUGINSDIR\"",
+    "foreach ($folder in @('remix-ide', '.remix-ipfsnode', '.cache_remix_ide')) {",
+    "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+    "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+    "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+    "  } else {",
+    "    if (Test-Path \"$env:APPDATA\\$folder\") {",
+    "      $runtimeCache = \"$env:APPDATA\\$folder\"",
+    "      $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+    "    } else {continue}",
+    "  }",
+    "  if (Test-Path $runtimeCachePersist) {",
+    "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  } else {",
+    "    mkdir $runtimeCache",
+    "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+    "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+    "  }",
+    "}"
+  ],
+  "uninstaller": {
+    "script": [
+      "foreach ($folder in @('remix-ide', '.remix-ipfsnode', '.cache_remix_ide')) {",
+      "  if (Test-Path \"$env:USERPROFILE\\$folder\") {",
+      "    $runtimeCache = \"$env:USERPROFILE\\$folder\"",
+      "    $runtimeCachePersist = \"$persist_dir\\USERPROFILE\\$folder\"",
+      "  } else {",
+      "    if (Test-Path \"$env:APPDATA\\$folder\") {",
+      "      $runtimeCache = \"$env:APPDATA\\$folder\"",
+      "      $runtimeCachePersist = \"$persist_dir\\APPDATA\\$folder\"",
+      "    } else {continue}",
+      "  }",
+      "  if (!(Test-Path $runtimeCachePersist)) { Move-Item $runtimeCache $runtimeCachePersist -Force -ErrorAction SilentlyContinue }",
+      "  else { Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue }",
+      "}"
+    ]
+  },
+  "bin": "Remix IDE.exe",
+  "shortcuts": [
+    [
+      "Remix IDE.exe",
+      "Remix IDE"
+    ]
+  ],
+  "checkver": {
+    "github": "https://github.com/ethereum/remix-desktop"
+  },
+  "autoupdate": {
+    "url": "https://github.com/ethereum/remix-desktop/releases/download/v$version/Remix-IDE-Setup-$version.exe#/dl.7z",
+    "hash": {
+      "url": "$baseurl/latest.yml",
+      "mode": "extract",
+      "regex": "sha512:\\s+$base64"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+    "version": "1.4.1.1030",
+    "description": "Locate files and folders by name instantly.",
+    "homepage": "https://www.voidtools.com",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.x64.zip",
+            "hash": "c1a1bf4e2b87addb5ce662c3835cee8cfc2738396906b3544d589502d54a08be"
+        },
+        "32bit": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.x86.zip",
+            "hash": "c29380b7d87eff859808072555c8387528a8631b17ba0f9a0c66685704efba60"
+        },
+        "arm64": {
+            "url": "https://www.voidtools.com/Everything-1.4.1.1030.ARM64.zip",
+            "hash": "3f5c7fc440102b99c2d3cd8afc2ccca67f0b948d3288ec795fed6f680f677545"
+        }
+    },
+    "installer": {
+        "script": "& \"$dir\\Everything.exe\" -install-service"
+    },
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { & \"$dir\\Everything.exe\" -install-config null }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
+    ],
+    "uninstaller": {
+        "script": [
+            "& \"$dir\\Everything.exe\" -uninstall-service",
+            "Get-ChildItem \"$dir\\*\" -Include 'Everything.ini', 'Bookmarks.csv', 'Filters.csv', 'Run History.csv', 'Search History.csv', 'debug.log', 'Errorlog.txt', 'Logs', 'HTTP Server'| Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+        ]
+    },
+    "bin": "Everything.exe",
+    "shortcuts": [
+        [
+            "Everything.exe",
+            "Everything"
+        ]
+    ],
+    "persist": [
+        "Everything.ini",
+        "Bookmarks.csv",
+        "Filters.csv",
+        "Run History.csv",
+        "Search History.csv",
+        "debug.log",
+        "Errorlog.txt",
+        "Logs",
+        "HTTP Server"
+    ],
+    "checkver": "Download Everything ([\\d.]+)",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x64.zip"
+            },
+            "32bit": {
+                "url": "https://www.voidtools.com/Everything-$version.x86.zip"
+            },
+            "arm64": {
+                "url": "https://www.voidtools.com/Everything-$version.ARM64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Everything-$version.sha256"
+        }
+    }
+}

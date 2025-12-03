@@ -1,0 +1,56 @@
+{
+  "version": "3.1.16.204365",
+  "description": "网易云音乐客户端",
+  "homepage": "https://music.163.com/",
+  "license": {
+    "identifier": "EULA",
+    "url": "https://music.163.com/html/web2/service.html"
+  },
+  "architecture": {
+    "64bit": {
+      "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_3.1.16.204365_64.exe#/dl.7z",
+      "hash": "2e203755b0dbe402fd9d56e078a38dade1026e692b271587ec2e65a1a8a75daf"
+    },
+    "32bit": {
+      "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_3.1.16.204365_32.exe#/dl.7z",
+      "hash": "cfbfecf64984adadc111c5d7a6ec206d940f9302c40e25c064c1121e7a81332e"
+    }
+  },
+  "installer": {
+    "script": [
+      "Get-ChildItem \"$dir\\redist_packages\" | Move-Item -Destination \"$dir\" -Force",
+      "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+      "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
+      "Remove-Module -Name DoradoUtils"
+    ]
+  },
+  "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\redist_packages\" -Force -Recurse",
+  "uninstaller": {
+    "script": [
+      "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+      "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Netease\\CloudMusic\"",
+      "Remove-Module -Name DoradoUtils"
+    ]
+  },
+  "shortcuts": [
+    [
+      "cloudmusic.exe",
+      "网易云音乐"
+    ]
+  ],
+  "checkver": {
+    "url": "https://music.163.com/api/appcustomconfig/get",
+    "jsonpath": "$.data.web-new-download.pc64.downloadUrl",
+    "regex": "NeteaseCloudMusic_Music_official_([\\d.]+)_64.exe"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_$version_64.exe#/dl.7z"
+      },
+      "32bit": {
+        "url": "https://d1.music.126.net/dmusic/NeteaseCloudMusic_Music_official_$version_32.exe#/dl.7z"
+      }
+    }
+  }
+}

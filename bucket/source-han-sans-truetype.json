@@ -1,0 +1,41 @@
+{
+    "version": "2.002.1",
+    "description": "Source Han Sans font by Adobe (TrueType)",
+    "homepage": "https://github.com/be5invis/source-han-sans-ttf",
+    "license": "OFL-1.1",
+    "notes": "You may need to restart the system to use recently installed fonts.",
+    "depends": "sudo",
+    "url": "https://github.com/be5invis/source-han-sans-ttf/releases/download/v2.002.1/source-han-sans-ttc-2.002.1.7z",
+    "hash": "1a8081108d6747c87468944290b580ccb905b8f94e526dab8e342e5003278b25",
+    "installer": {
+        "script": [
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "function LinkFile([String] $file, [String] $source = $file) {",
+            "    Write-Host \"Creating hardlink for $file\"",
+            "    New-Item -Force -ItemType HardLink -Path $path -Name $file -Target \"$dir\\$source\" | Out-Null",
+            "}",
+            "Get-ChildItem $dir -Filter \"*.ttc\" | ForEach-Object {",
+            "    New-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value \"$path\\$($_.Name)\" -Force | Out-Null",
+            "    LinkFile $_.Name",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to uninstall $app.\"",
+            "    exit 1",
+            "}",
+            "Stop-Service FontCache",
+            "$path = \"$env:LOCALAPPDATA\\Microsoft\\Windows\\Fonts\"",
+            "Get-ChildItem $dir -Filter \"*.ttc\" | ForEach-Object {",
+            "    Remove-ItemProperty -Path 'HKCU:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force | Out-Null",
+            "    sudo Remove-Item \"$path\\$($_.Name)\"",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/be5invis/source-han-sans-ttf/releases/download/v$version/source-han-sans-ttc-$version.7z"
+    }
+}

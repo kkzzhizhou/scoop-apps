@@ -1,0 +1,67 @@
+{
+  "version": "10.24.0",
+  "description": "A fast and disk space efficient Node package manager.",
+  "homepage": "https://pnpm.io/",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/pnpm/pnpm/releases/download/v10.24.0/pnpm-win-x64.exe#/pnpm.exe",
+      "hash": "e966e249a55c5d56d5d1844d220861b801c892148e763c66e95dadb9bd257d3f"
+    }
+  },
+  "notes": [
+    "Notice: ",
+    "cache-dir: $persist_dir\\.pnpm-cache",
+    "store-dir: $persist_dir\\.pnpm-store",
+    "global-dir: $dir\\.pnpm-global",
+    "global-bin-dir: $dir\\.pnpm-global\\.bin",
+    "state-dir: $persist_dir\\.pnpm-state"
+  ],
+  "post_install": [
+    "pnpm config set store-dir $persist_dir\\.pnpm-store",
+    "pnpm config set cache-dir $persist_dir\\.pnpm-cache",
+    "pnpm config set global-dir $dir\\.pnpm-global",
+    "pnpm config set global-bin-dir $dir\\.pnpm-global\\.bin",
+    "pnpm config set state-dir $persist_dir\\.pnpm-state",
+    "pnpm config set cache-dir $persist_dir\\.pnpm-cache"
+  ],
+  "post_uninstall": [
+    "$pnpm_config_dir = \"$env:LOCALAPPDATA\\pnpm\"",
+    "if (Test-Path $pnpm_config_dir) {",
+    "    Remove-Item -Recurse -Force $pnpm_config_dir",
+    "}"
+  ],
+  "env_add_path": ".pnpm-global\\.bin",
+  "persist": ".pnpm-global",
+  "bin": [
+    "pnpm.exe",
+    [
+      "pnpm.exe",
+      "pnpx",
+      "dlx"
+    ]
+  ],
+  "checkver": {
+    "script": [
+      "# Using checkver script to check through all release tags",
+      "$auth = Get-GitHubToken",
+      "$head = @{}",
+      "if($auth) { $head.add('authorization', \"Bearer $auth\") }",
+      "$url = 'https://api.github.com/repositories/50565430/releases'",
+      "$latest_ver = [Version]::new(0,0,0,0) # note: Powershell 5 does not support casting 'int' or 'float' to 'System.Version'",
+      "$releases = $(Invoke-WebRequest -Headers $head $url).Content | ConvertFrom-Json",
+      "$releases | ForEach-Object {",
+      "    if (!($_.tag_name -match '([\\d.]+)')) { return }",
+      "    if ($_.prerelease) { return }",
+      "    $ver = [Version]::new($matches[1])",
+      "    if ($ver -gt $latest_ver) { $latest_ver = $ver }",
+      "}",
+      "if ($latest_ver -eq [Version]::new(0,0,0,0)) { error \"Could not match version string in '$url'\"; continue }",
+      "Write-Output $latest_ver"
+    ],
+    "regex": "([\\d.]+)"
+  },
+  "autoupdate": {
+    "url": "https://github.com/pnpm/pnpm/releases/download/v$version/pnpm-win-x64.exe#/pnpm.exe"
+  }
+}

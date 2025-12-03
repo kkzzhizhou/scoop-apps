@@ -1,0 +1,46 @@
+{
+    "homepage": "https://y.qq.com/",
+    "description": "The official QQ Music client",
+    "version": "21.92",
+    "license": "Proprietary",
+    "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_2192.exe&sign=1-d6866199d19e35c8a07c9faf1eca71659cb525d1a0fd7063015a2fce964162bc-68d8e14c#/dl.7z",
+    "hash": "f6c6d0d41b886590d8a840033b249a1d86d63bf01173a5dc8071790cac092f07",
+    "installer": {
+        "script": [
+            "# simulate instok check",
+            "$helperScript = $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/qqmusic/instok)",
+            "Copy-Item -Path $helperScript -Destination $dir",
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\QQMusic\"",
+            "Remove-Module -Name DoradoUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "QQMusic.exe",
+            "QQ音乐"
+        ]
+    ],
+    "persist": "Plugins",
+    "checkver": {
+        "script": [
+            "$api = 'https://u6.y.qq.com/cgi-bin/musicu.fcg'",
+            "$body = '{\"comm\":{\"ct\":\"19\",\"cv\":\"2022\",\"tmeAppID\":\"qqmusic\"},\"platform.uniteUpdate.UniteUpdateSvr.QueryUpdate\":{\"method\":\"QueryUpdate\",\"module\":\"platform.uniteUpdate.UniteUpdateSvr\",\"param\":{\"chid\":\"1001\",\"osVer\":1}}}'",
+            "$Response = (Invoke-RestMethod $api -Method POST -Body $body) | ConvertTo-Json -Compress",
+            "return $Response"
+        ],
+        "regex": "QQMusic_Setup_(?<version>(?<major>\\d{2})(?<minor>\\d{2})).exe",
+        "replace": "${major}.${minor}"
+    },
+    "autoupdate": {
+        "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_$cleanVersion.exe&sign=1-d6866199d19e35c8a07c9faf1eca71659cb525d1a0fd7063015a2fce964162bc-68d8e14c#/dl.7z"
+    }
+}

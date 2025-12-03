@@ -1,0 +1,51 @@
+{
+    "version": "0.4.2",
+    "description": "腾讯会议摸鱼工具。语音转文字，实时字幕，会议语音识别，歌词字幕展示，识别历史记录查看",
+    "homepage": "https://github.com/jxlpzqc/TMSpeech",
+    "license": "MIT License",
+    "url": "https://github.com/jxlpzqc/TMSpeech/releases/download/v0.4.2/TMSpeech.win-x64.zip",
+    "hash": "0c974c083eb829cdb91ef428177f617528d09bc6a6a4d467fa7516cd0a29b5e4",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "if (!(Test-Path $persist_dir)) {",
+            "    New-Item $persist_dir -Type Directory -Force | Out-Null",
+            "}",
+            "$runtimeCache = \"$env:HOMEPATH\\Documents\\TMSpeechLogs\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (Test-Path $runtimeCachePersist) {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "    New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "} else {",
+            "    if (Test-Path $runtimeCache) {",
+            "        Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "        New-Item -Type Junction -Path $runtimeCache -Target $runtimeCachePersist | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtimeCache = \"$env:HOMEPATH\\Documents\\TMSpeechLogs\"",
+            "$runtimeCachePersist = \"$persist_dir\\appdata\"",
+            "if (!(Test-Path $runtimeCachePersist)) {",
+            "    Move-Item $runtimeCache $runtimeCachePersist -Force",
+            "} else {",
+            "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "shortcuts": [
+        [
+            "TMSpeech.exe",
+            "TMSpeech"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/jxlpzqc/TMSpeech/releases",
+        "regex": "v([\\d\\w-.]+)</h2>"
+    },
+    "autoupdate": {
+        "url": "https://github.com/jxlpzqc/TMSpeech/releases/download/v$version/TMSpeech.win-x64.zip"
+    }
+}

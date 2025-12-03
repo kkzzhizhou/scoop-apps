@@ -1,0 +1,53 @@
+{
+    "version": "1.0.4",
+    "description": "一款可以压缩图片的桌面端应用(图片压缩工具)，只在本地运行。不限大小、不限数量。安全、快速、高质量。",
+    "homepage": "https://github.com/freeany/LocalSqueeze",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/freeany/LocalSqueeze/releases/download/v1.0.4/LocalSqueeze-Setup.exe#/dl.7z",
+            "hash": "b57f4089d633ea9170fae205dedaab91303de7f3b3f089baafaffb05cd3bb623",
+            "pre_install": [
+                "Get-Item \"$dir\\LocalSqueeze*.nupkg\" | Rename-Item -NewName 'LocalSqueeze.nupkg'",
+                "Expand-7zipArchive \"$dir\\LocalSqueeze.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
+                "Remove-Item \"$dir\\background.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\setupIcon.ico\", \"$dir\\Update.exe\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\LocalSqueeze\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\LocalSqueeze\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "LocalSqueeze.exe",
+    "shortcuts": [
+        [
+            "LocalSqueeze.exe",
+            "LocalSqueeze"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/freeany/LocalSqueeze/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/freeany/LocalSqueeze/releases/download/v$version/LocalSqueeze-Setup.exe#/dl.7z"
+            }
+        }
+    }
+}

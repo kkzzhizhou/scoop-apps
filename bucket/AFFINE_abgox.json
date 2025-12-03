@@ -1,0 +1,45 @@
+{
+    "version": "0.21.6",
+    "description": "下一代知识库，集规划、分类和创建于一体。隐私第一、开源、可定制、随时可用。A next-gen knowledge base that brings planning, sorting and creating all together. Privacy first, open-source, customizable and ready to use.",
+    "homepage": "https://affine.pro",
+    "license": {
+        "identifier": "Unknown",
+        "url": "https://github.com/toeverything/AFFiNE/blob/canary/LICENSE"
+    },
+    "url": "https://github.com/toeverything/AFFiNE/releases/download/v0.21.6/affine-0.21.6-stable-windows-x64.exe#/dl.7z",
+    "hash": "sha512:c8c2724509a0e2b8a8350a489d8f850f053a2bef7497336b900158ac063f23226a1d7c151442146ead090e4d23b015dea2f7922ae02620de0f44a9fdda88389e",
+    "shortcuts": [
+        [
+            "app\\AFFiNE.exe",
+            "AFFiNE"
+        ]
+    ],
+    "pre_install": [
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "$filter=(Get-ChildItem $dir | Where-Object {$_.Name -like \"*.nupkg\" })[0]",
+        "Rename-Item $filter.FullName \"affine_installer.zip\" -Force",
+        "Expand-Archive \"$dir\\affine_installer.zip\" \"$dir\\temp\"",
+        "Copy-Item \"$dir\\temp\\lib\\net45\" \"$dir\\app\" -Recurse -Force",
+        "remove_file \"$dir\\temp\"",
+        "remove_file \"$dir\\affine_installer.zip\"",
+        "persist_file -dir @(\"$user_AppData\\AFFiNE\") @(\"$persist_dir\\AFFiNE\")",
+        "handle_app_lnk",
+        "do_some_things"
+    ],
+    "pre_uninstall": [
+        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "stop_process",
+        "remove_files @(\"$user_AppData\\AFFiNE\")"
+    ],
+    "checkver": {
+        "github": "https://github.com/toeverything/AFFiNE"
+    },
+    "autoupdate": {
+        "url": "https://github.com/toeverything/AFFiNE/releases/download/v$version/affine-$version-stable-windows-x64.exe#/dl.7z",
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

@@ -1,0 +1,65 @@
+{
+  "version": "7.0.3.4309",
+  "description": "The easiest way to create, edit, convert and sign PDF documents on Windows",
+  "homepage": "http://www.ypojie.com/7196.html",
+  "license": {
+    "identifier": "ShareWare"
+  },
+  "notes": "It's better to run with administrator privilleges.(use 'sudo scoop install xxx')",
+  "url": [
+    "https://list.nb.gl/OD_scoop/apt-cdn/PDFelement/7.0.3.4309/pdfelement-pro_full-7.0.3.4309.exe#/install.exe",
+    "https://list.nb.gl/OD_scoop/apt-cdn/PDFelement/7.0.3.4309/PEStudio.PDFElement.Base.dll#/base.dll",
+    "https://list.nb.gl/OD_scoop/apt-cdn/PDFelement/7.0.3.4309/pdfelement7-ocrv12.exe#/ocr.exe"
+  ],
+  "hash": [
+    "a9be927a8a0639ecad44ccecdbf454a7b56e1e40c223e025c42d8d9f9adb6458",
+    "48aba879be487d58b6d3f53215e28d3fc135ef665121047a76a6c097045bc456",
+    "fd3292348856a9839771420dbec8706d819bd7e949e47199cf7b8f11ca347ad0"
+  ],
+  "installer": {
+    "script": [
+      "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+      "    abort \"ERROR: uninstall require UAC. Please try again.\"",
+      "}",
+      "Write-Host \"S1. install main program 'PDFelement'\" -ForegroundColor DarkCyan",
+      "Start-Process $dir\\install.exe -ArgumentList \"/VERYSILENT\",\"/SUPPRESSMSGBOXES\",\"/DIR=`\"$dir`\"\" -Wait -Verb RunAs",
+      "",
+      "Write-Host \"S2. install OCR components'\" -ForegroundColor DarkCyan",
+      "Start-Process $dir\\ocr.exe -ArgumentList \"/VERYSILENT\",\"/SUPPRESSMSGBOXES\" -Wait",
+      "",
+      "Write-Host \"S3. A little surprise\" -ForegroundColor DarkCyan",
+      "if(Test-Path \"$dir\\base.dll\") {",
+      "    if (!(Test-Path \"$dir\\PEStudio.PDFElement.Base.dll\") ) {",
+      "        Rename-Item -Path \"$dir\\base.dll\" -NewName \"PEStudio.PDFElement.Base.dll\"",
+      "    }else {",
+      "        Remove-Item \"$dir\\PEStudio.PDFElement.Base.dll\" -Recurse -Force",
+      "        Rename-Item -Path \"$dir\\base.dll\" -NewName \"PEStudio.PDFElement.Base.dll\"",
+      "    }",
+      "}else {",
+      "    Write-Host \"Oh-no! the gift is missing! 〒▽〒\" -ForegroundColor Red",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] \"Administrator\")){",
+      "    abort \"ERROR: uninstall require UAC. Please try again.\"",
+      "}",
+      "Write-Host \"S1. run uninstaller\" -ForegroundColor DarkCyan",
+      "Start-Process $dir\\unins000.exe -ArgumentList \"/VERYSILENT\",\"/SUPPRESSMSGBOXES\",\"/NOCANCEL\" -Wait -Verb RunAs",
+      "",
+      "Write-Host \"S2. I often helped uninstallers do the cleaning. ¯\\_(ツ)_/¯\" -ForegroundColor DarkGreen",
+      "Remove-Item $env:APPDATA\\Wondershare -Recurse -Force",
+      "Remove-Item $env:LOCALAPPDATA\\Wondershare -Recurse -Force",
+      "if(Test-Path \"$env:ProgramData\\Wondershare\") {",
+      "Remove-Item $env:ProgramData\\Wondershare -Recurse -Force }",
+      "Remove-Item HKCU:\\Software\\Wondershare -Recurse -Force",
+      "Remove-ItemProperty HKCU:\\Printers\\ConvertUserDevModesCount \"Wondershare PDFelement\"",
+      "Remove-ItemProperty HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run\\ \"Wondershare Helper Compact.exe\"",
+      "Remove-ItemProperty HKLM:\\SOFTWARE\\RegisteredApplications \"Wondershare PDFelement 7 Pro\"",
+      "Remove-Item \"HKLM:\\SOFTWARE\\WOW6432Node\\PEPrinter\\Wondershare PDFelement Monitor\" -Force -Recurse",
+      "Remove-Item \"HKLM:\\SOFTWARE\\WOW6432Node\\Wondershare\" -Force -Recurse"
+    ]
+  },
+  "checkver": "v([\\d.]+)"
+}

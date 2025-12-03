@@ -1,0 +1,56 @@
+{
+    "version": "1.5.9",
+    "description": "A Powershell port of bash/unix screenfetch.",
+    "homepage": "https://github.com/AkariiinMKII/Windows-screenFetch",
+    "license": "GPL-3.0-only",
+    "notes": [
+        "Run following command to import Windows-screenFetch automatically in Powershell:",
+        "$dir\\add-profile-content.ps1",
+        "To disable auto-import, run following command:",
+        "$dir\\remove-profile-content.ps1"
+    ],
+    "depends": "Scoop4kariiin/Scoop4kariiinUtils",
+    "url": "https://github.com/AkariiinMKII/Windows-screenFetch/archive/v1.5.9.zip",
+    "hash": "2a41eb23d24e42227da4752362fd70be514ce30915bd7cd5275ee08da0c1716c",
+    "extract_dir": "Windows-screenFetch-1.5.9",
+    "psmodule": {
+        "name": "Windows-screenFetch"
+    },
+    "pre_install": [
+        "$CheckAltInstall = $(appdir Windows-screenFetch-alt $global)",
+        "if (Test-Path $CheckAltInstall) {",
+        "    Write-Host \"Found conflict version, uninstalling...\" -ForegroundColor Yellow",
+        "    scoop uninstall Windows-screenFetch-alt",
+        "}"
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\LICENSE\", \"$dir\\README.md\", \"$dir\\.screenshots\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "Import-Module -Name $manifest.psmodule.name",
+        "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+        "New-ProfileModifier -Behavior ImportModule -PSModuleName $manifest.psmodule.name -AppDir $dir",
+        "New-ProfileModifier -Behavior RemoveModule -PSModuleName $manifest.psmodule.name -AppDir $dir",
+        "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+    ],
+    "pre_uninstall": [
+        "Remove-Module -Name $manifest.psmodule.name -ErrorAction SilentlyContinue",
+        "if ('uninstall' -eq $cmd) {",
+        "    $Scoop4kariiinUtilsPath = $(appdir Scoop4kariiinUtils $global)",
+        "    if (Test-Path $Scoop4kariiinUtilsPath) {",
+        "        Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+        "        Remove-ProfileContent -Content 'Import-Module Windows-screenFetch'",
+        "        Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue",
+        "    } else {",
+        "        Write-Host \"Scoop4kariiinUtils not found, skipping...\" -ForegroundColor Yellow",
+        "        Write-Host \"Please edit PowerShell profile manually if you have enabled auto-import.\" -ForegroundColor Yellow",
+        "    }",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/AkariiinMKII/Windows-screenFetch/tags",
+        "regex": "tags/v([\\d.]+)\""
+    },
+    "autoupdate": {
+        "url": "https://github.com/AkariiinMKII/Windows-screenFetch/archive/v$version.zip",
+        "extract_dir": "Windows-screenFetch-$version"
+    }
+}

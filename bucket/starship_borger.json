@@ -1,0 +1,90 @@
+{
+    "version": "2.0.0",
+    "description": "A PC port of Starfox 64",
+    "homepage": "https://github.com/HarbourMasters/Starship",
+    "license": "Unlicense",
+    "notes": [
+        "ATTENTION: Starship requires specific n64 rom(s) of Starfox 64 to function.",
+        "Place the rom(s) in $persist_dir.",
+        "Learn more at https://github.com/HarbourMasters/Starship?tab=readme-ov-file#quick-start"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/HarbourMasters/Starship/releases/download/v2.0.0/Starship-Barnard-Alfa-Windows.zip",
+            "hash": "42444eeccda0406cb40826ebce0b6f7a46338a9dc25c8e9d9a536807d504ae6a"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\starship.cfg.json\")) {",
+        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\starship.cfg.json\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\default.sav\")) {",
+        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\default.sav\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\imgui.ini\")) {",
+        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\imgui.ini\" | Out-Null",
+        "}"
+    ],
+    "post_install": [
+        "'starship.cfg.json' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
+        "   } else {",
+        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}",
+        "'default.sav' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
+        "   } else {",
+        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}",
+        "'imgui.ini' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
+        "   } else {",
+        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
+        "}"
+    ],
+    "bin": "starship.exe",
+    "shortcuts": [
+        [
+            "starship.exe",
+            "Starship [win][mk64]"
+        ]
+    ],
+    "persist": [
+        "mods",
+        "Save",
+        "starship.cfg.json",
+        "default.sav",
+        "imgui.ini"
+    ],
+    "uninstaller": {
+        "script": [
+            "'starship.cfg.json' | ForEach-Object {",
+            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "}",
+            "'default.sav' | ForEach-Object {",
+            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "}",
+            "'imgui.ini' | ForEach-Object {",
+            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/HarbourMasters/Starship",
+        "regex": "https://github.com/HarbourMasters/Starship/releases/download/v(?<version>([\\d\\.]+))/Starship-(?<majorName>(\\w+))-(?<minorName>(\\w+))-Windows.zip",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/HarbourMasters/Starship/releases/download/$version/Starship-$matchMajorname-$matchMinorname-Windows.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,53 @@
+{
+    "version": "1.5.3",
+    "description": "一款开源简洁高颜值的酷狗第三方客户端 An open-source, concise, and aesthetically pleasing third-party client for KuGou that supports Windows / macOS / Linux",
+    "homepage": "https://moejue.cn/",
+    "license": {
+        "identifier": "GPL-2.0 license",
+        "url": "https://github.com/iAJue/MoeKoeMusic#GPL-2.0-1-ov-file"
+    },
+    "url": "https://github.com/iAJue/MoeKoeMusic/releases/download/v1.5.3/MoeKoe_Music_Setup_v1.5.3.exe#/dl.7z",
+    "hash": "a0a5e5866a748f49a3c6beb3f9d9ab95afc27f63e5bdc70eaf9e26aba792653a",
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "32bit": {
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\" -Target \"$env:APPDATA\\moekoemusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\moekoemusic\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "MoeKoe Music.exe",
+            "MoeKoe Music"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/iAJue/MoeKoeMusic/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/iAJue/MoeKoeMusic/releases/download/v$version/MoeKoe_Music_Setup_v$version.exe#/dl.7z"
+    }
+}
