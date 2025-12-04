@@ -6,31 +6,41 @@
     },
     "description": "[优酷] - 优酷视频客户端",
     "homepage": "https://www.youku.com",
-    "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_9.2.68.1001.exe#/dl.7z",
-    "hash": "2d454885f07dcb8473976dd14a504eb6b12e4856fceea0e00f3e67daa5c931c2",
-    "bin": [
-        [
-            "YoukuDesktop.exe",
-            "youku"
+    "architecture": {
+        "64bit": {
+            "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_9.2.68.1001.exe#/dl.7z",
+            "hash": "2d454885f07dcb8473976dd14a504eb6b12e4856fceea0e00f3e67daa5c931c2"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Unins*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku\" -Target \"$env:APPDATA\\youku\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku-app\" -Target \"$env:APPDATA\\youku-app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku-electron\" -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
         ]
-    ],
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "shortcuts": [
         [
-            "YoukuDesktop.exe",
+            "YOUKU.exe",
             "优酷"
-        ],
-        [
-            "uninstall.exe",
-            "卸载优酷"
         ]
     ],
-    "post_install": [
-        "Remove-Item \"$dir\\`$APPDATA\" -Force -Recurse",
-        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
-    ],
     "checkver": {
-        "url": "https://youku.com/product/index",
-        "regex": "youkuclient_setup_([\\d.]+)\\.exe"
+        "url": "https://www.youku.com/ku/product/index",
+        "regex": "V([\\d.]+)"
     },
     "autoupdate": {
         "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_$version.exe#/dl.7z",

@@ -4,7 +4,7 @@
     "version": "5.1.0.31016",
     "license": {
         "identifier": "Shareware",
-        "url": "https://www.scootersoftware.com/home?zz=kb_licensev5"
+        "url": "https://www.scootersoftware.com/kb/licensev5"
     },
     "url": "https://github.com/maboloshi/scoop-private/releases/download/v1.0/BeyondCompare-v5.1.0.31016.7z",
     "hash": "0b4b2fabf18c28bfaf5769feccadf08f91d081e9390a9014798868d0c0558b9d",
@@ -20,20 +20,31 @@
         "        Set-Content -Path \"$dir\\$_\" $content -Encoding Unicode",
         "    }",
         "}",
+        "# 安装传统和 win11 型式右键菜单",
         "reg import \"$dir\\install-context.reg\"",
         "if ($global) {",
-        "    Add-AppxPackage -Path \"$dir\\BCShellEx.msix\" -AllUsers | Out-Null",
+        "    Add-AppxPackage -Path \"$dir\\BCShellEx.msix\" -AllUsers -ErrorAction SilentlyContinue",
         "} else {",
-        "    Add-AppxPackage -Path \"$dir\\BCShellEx.msix\" | Out-Null",
-        "}"
+        "    Add-AppxPackage -Path \"$dir\\BCShellEx.msix\" -ErrorAction SilentlyContinue",
+        "}",
+        "# 恢复数据",
+        "ensure \"$persist_dir\" | Out-Null",
+        "Copy-Item -Path \"$persist_dir\\*\" -Destination \"$dir\" -Force -ErrorAction SilentlyContinue"
     ],
     "pre_uninstall": [
         "if ($cmd -eq 'uninstall') { ",
+        "    # 卸载传统和 win11 型式右键菜单",
         "    reg import \"$dir\\uninstall-context.reg\"",
         "    if ($global) {",
         "        Get-AppxPackage -Name 'ScooterSoftware.BeyondCompare.5.ShellExt' -AllUsers | Remove-AppxPackage -AllUsers | Out-Null",
         "    } else {",
         "        Get-AppxPackage -Name 'ScooterSoftware.BeyondCompare.5.ShellExt' | Remove-AppxPackage | Out-Null",
+        "    }",
+        "}",
+        "# 备份数据",
+        "'BC5Key.txt', 'BC*.xml'| ForEach-Object {",
+        "    if (Test-Path \"$dir\\$_\") {",
+        "        Copy-Item \"$dir\\$_\" \"$persist_dir\\$_\" -Force -ErrorAction SilentlyContinue",
         "    }",
         "}"
     ],

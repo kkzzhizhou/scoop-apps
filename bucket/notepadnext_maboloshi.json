@@ -1,0 +1,41 @@
+{
+    "version": "0.12",
+    "description": "A cross-platform reimplementation of Notepad++",
+    "homepage": "https://github.com/dail8859/NotepadNext",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/dail8859/NotepadNext/releases/download/v0.12/NotepadNext-v0.12-win64.zip",
+            "hash": "f1b15378a249ab73f36a0e44486f75029dce6506c6ab3f96885de9bfe9adeb62"
+        }
+    },
+    "shortcuts": [
+        [
+            "NotepadNext.exe",
+            "Notepad Next"
+        ]
+    ],
+    "post_install": [
+        "# 数据迁移",
+        "$source = \"$env:APPDATA\\NotepadNext\"",
+        "$target = ensure \"$persist_dir\"",
+        "if (Test-Path \"$source\") {",
+        "    Copy-Item -Path \"$source\\*\" -Destination \"$target\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "    Remove-Item -Path \"$source\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$source = \"$env:APPDATA\\NotepadNext\"",
+        "Remove-Item -Path $source -Force -ErrorAction SilentlyContinue"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/dail8859/NotepadNext/releases/download/v$version/NotepadNext-v$version-win64.zip"
+            }
+        }
+    }
+}
