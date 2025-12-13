@@ -1,0 +1,51 @@
+{
+    "version": "1.12.6",
+    "description": "A decentralised, encrypted chat & collaboration powered by matrix.org",
+    "homepage": "https://element.io",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://packages.riot.im/desktop/update/win32/x64/element-desktop-1.12.6-full.nupkg",
+            "hash": "sha1:0a7cc5ecd1b013d7be27a8d65dd1bd6580bb0f61"
+        }
+    },
+    "extract_dir": "lib\\net45",
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\Element\"",
+        "$persistPath = \"$persist_dir\\Element\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistPath)) {",
+        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+    ],
+    "bin": [
+        "Element.exe",
+        [
+            "Element.exe",
+            "element-desktop"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Element.exe",
+            "Element"
+        ]
+    ],
+    "checkver": {
+        "url": "https://packages.riot.im/desktop/update/win32/x64/RELEASES",
+        "regex": "desktop-([\\d.]+)-full\\."
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://packages.riot.im/desktop/update/win32/x64/element-desktop-$version-full.nupkg"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/RELEASES"
+        }
+    }
+}

@@ -1,0 +1,78 @@
+{
+    "homepage": "https://pot-app.com/",
+    "description": "A cross-platform translation software",
+    "license": "GPL-3.0-only",
+    "version": "3.0.7",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pot-app/pot-desktop/releases/download/3.0.7/pot_3.0.7_x64-setup.exe#/dl.7z",
+            "hash": "0a6ac5309bfc41234d58cf6615a779c66d167d3a0da5542a0de2ea118fc6bc56"
+        },
+        "32bit": {
+            "url": "https://github.com/pot-app/pot-desktop/releases/download/3.0.7/pot_3.0.7_x86-setup.exe#/dl.7z",
+            "hash": "ff9b69bea285ca60b9f0075a740dc022f9baf873221b14e2c20a960502f09761"
+        },
+        "arm64": {
+            "url": "https://github.com/pot-app/pot-desktop/releases/download/3.0.7/pot_3.0.7_arm64-setup.exe#/dl.7z",
+            "hash": "fd478816fa62c137bc0c187a09b82aa37c52b8ccbd441ef715e87c02a45dbc0e"
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "Rename-Item -Path \"$dir\\`$TEMP\" -NewName \"redist\"",
+        "$appDataPath = \"$env:APPDATA\\com.pot-app.desktop\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\com.pot-app.desktop\"",
+        "$persistLocal = \"$persist_dir\\Local\"",
+        "$persistRoaming = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistRoaming)) {",
+        "    New-Item -Path $persistRoaming -ItemType Directory | Out-Null",
+        "}",
+        "if (-Not (Test-Path $persistLocal)) {",
+        "    New-Item -Path $persistLocal -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target $persistRoaming | Out-Null",
+        "New-Item -ItemType Junction -Path \"$appLocalDataPath\" -Target $persistLocal | Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "pot.exe",
+            "Pot"
+        ]
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\com.pot-app.desktop\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\com.pot-app.desktop\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/pot-app/pot-desktop"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/pot-app/pot-desktop/releases/download/$version/pot_$version_x64-setup.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/pot-app/pot-desktop/releases/download/$version/pot_$version_x86-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/pot-app/pot-desktop/releases/download/$version/pot_$version_arm64-setup.exe#/dl.7z"
+            }
+        }
+    },
+    "notes": [
+        "You may need to install Edge WebView2 Runtime to use Pot.",
+        "A installer of Edge WebView2 Runtime is available under the 'redist' folder of the Pot installation directory."
+    ]
+}

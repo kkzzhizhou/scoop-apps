@@ -1,0 +1,74 @@
+{
+    "version": "0.9.95",
+    "description": "An open-source ebook reader designed for immersive and deep reading experiences",
+    "homepage": "https://readest.com/",
+    "license": {
+        "identifier": "AGPL-3.0-or-later",
+        "url": "https://github.com/readest/readest/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/readest/readest/releases/download/v0.9.95/Readest_0.9.95_x64-setup.exe#/dl.7z",
+            "hash": "29308c4e7248e25564c611abca004ee6754dceccbc91f87ef186a8c4fc826d27"
+        },
+        "arm64": {
+            "url": "https://github.com/readest/readest/releases/download/v0.9.95/Readest_0.9.95_arm64-setup.exe#/dl.7z",
+            "hash": "e0b6b265fc438f3c1179056d5ed1176a31f7c04d61f65df98418510ef7ee145a"
+        }
+    },
+    "shortcuts": [
+        [
+            "readest.exe",
+            "Readest"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "Rename-Item -Path \"$dir\\`$TEMP\" -NewName \"redist\"",
+        "$appDataPath = \"$env:APPDATA\\com.bilingify.readest\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+        "$persistLocal = \"$persist_dir\\Local\"",
+        "$persistRoaming = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistRoaming)) {",
+        "    New-Item -Path $persistRoaming -ItemType Directory | Out-Null",
+        "}",
+        "if (-Not (Test-Path $persistLocal)) {",
+        "    New-Item -Path $persistLocal -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target $persistRoaming | Out-Null",
+        "New-Item -ItemType Junction -Path \"$appLocalDataPath\" -Target $persistLocal | Out-Null"
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\com.bilingify.readest\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\com.bilingify.readest\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/readest/readest"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/readest/readest/releases/download/v$version/Readest_$version_x64-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/readest/readest/releases/download/v$version/Readest_$version_arm64-setup.exe#/dl.7z"
+            }
+        }
+    },
+    "notes": [
+        "You may need to install Edge WebView2 Runtime to use Readest.",
+        "A installer of Edge WebView2 Runtime is available under the 'redist' folder of the Pot installation directory."
+    ]
+}

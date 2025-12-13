@@ -1,0 +1,65 @@
+{
+    "version": "3.4.2",
+    "description": "SiYuan is a privacy-first, self-hosted, fully open source personal knowledge management software, supports fine-grained block-level reference, and Markdown WYSIWYG.",
+    "homepage": "https://b3log.org/siyuan",
+    "license": "AGPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/appdev/siyuan-unlock/releases/download/v3.4.2/siyuan-unlock-v3.4.2-win.exe#/dl.7z",
+            "hash": "22eab16ae15cd8d818dfef10bd9f1ec190f11374669cdb736817ce1573fdb04e",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "siyuan.exe",
+            "SiYuan Note"
+        ]
+    ],
+    "post_install": [
+        "$appConfigPath = \"$env:USERPROFILE\\.config\\siyuan\"",
+        "$appDataPath = \"$env:APPDATA\\SiYuan-Electron\"",
+        "$persistConfig = \"$persist_dir\\Config\"",
+        "$persistRoaming = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appConfigPath) {",
+        "    Remove-Item $appConfigPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistRoaming)) {",
+        "    New-Item -Path $persistRoaming -ItemType Directory | Out-Null",
+        "}",
+        "if (-Not (Test-Path $persistConfig)) {",
+        "    New-Item -Path $persistConfig -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appConfigPath\" -Target $persistConfig | Out-Null",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target $persistRoaming | Out-Null"
+    ],
+    "post_uninstall": [
+        "$appConfigPath = \"$env:USERPROFILE\\.config\\siyuan\"",
+        "$appDataPath = \"$env:APPDATA\\SiYuan-Electron\"",
+        "if (Test-Path $appConfigPath) {",
+        "    Remove-Item $appConfigPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/appdev/siyuan-unlock"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/appdev/siyuan-unlock/releases/download/v$version/siyuan-unlock-v$version-win.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

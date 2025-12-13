@@ -1,0 +1,61 @@
+{
+    "version": "7.82.0",
+    "description": "A cross-platform encrypted messaging service.",
+    "homepage": "https://signal.org",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://updates.signal.org/desktop/signal-desktop-win-x64-7.82.0.exe#/dl.7z",
+            "hash": "sha512:b26364e5439146d9700c93fad3933c9b7cf0e5f28ca088ea7ec5251f6c2554253332face2016e69049263506d2124e4f4dfd01ad9f3946d8cc6d852055223074",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        },
+        "arm64": {
+            "url": "https://updates.signal.org/desktop/signal-desktop-win-arm64-7.82.0.exe#/dl.7z",
+            "hash": "sha512:57e9e1fa31a5a446d476853b687c99b6c3e7cccd4baec31c6317a23425dd4a0af1c18b97b9c52eb5637bd3fc3af6cfc68322c49be0febec29cfd5af92716a7d5",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\""
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*.exe\" -Recurse -Force",
+        "$appDataPath = \"$env:APPDATA\\Signal\"",
+        "$persistPath = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistPath)) {",
+        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "Signal.exe",
+            "Signal"
+        ]
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\Signal\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://updates.signal.org/desktop/latest.yml",
+        "regex": "version:\\s([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://updates.signal.org/desktop/signal-desktop-win-x64-$version.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://updates.signal.org/desktop/signal-desktop-win-arm64-$version.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "$basename\\s+sha512:\\s$base64"
+        }
+    },
+    "notes": "You are suggested to disable \"Automatically download upates\" in Signal->Settings->General and use scoop to manage updates."
+}
