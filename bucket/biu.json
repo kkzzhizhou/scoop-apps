@@ -1,0 +1,64 @@
+{
+    "version": "1.6.0-beta.9",
+    "description": "Bilibili音乐播放器",
+    "homepage": "https://github.com/wood3n/biu",
+    "license": {
+        "identifier": "PolyForm Noncommercial License 1.0.0",
+        "url": "https://github.com/wood3n/biu?tab=License-1-ov-file#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/wood3n/biu/releases/download/v1.6.0-beta.9/Biu-1.6.0-beta.9-win-setup-x64.exe#/dl.7z",
+            "hash": "d85350efd404d598d5598bf65002b4dedea7e785a75250df7339b747e93d3062",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/wood3n/biu/releases/download/v1.6.0-beta.9/Biu-1.6.0-beta.9-win-setup-arm64.exe#/dl.7z",
+            "hash": "e1b0cb5f735874f57fd44a4736786ace91235b9b61752c7007404768edb89f34",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Biu\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Biu\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Biu.exe",
+    "shortcuts": [
+        [
+            "Biu.exe",
+            "Biu"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/wood3n/biu/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/wood3n/biu/releases/download/v$version/Biu-$version-win-setup-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/wood3n/biu/releases/download/v$version/Biu-$version-win-setup-arm64.exe#/dl.7z"
+            }
+        }
+    }
+}
