@@ -1,0 +1,33 @@
+{
+    "version": "1.85",
+    "homepage": "https://npcap.com/",
+    "description": "A packet capture (and sending) library for Microsoft Windows.",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://github.com/nmap/npcap/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://npcap.com/dist/npcap-1.85.exe#/npcap_setup.exe",
+            "hash": "4038de8dfdd254d21ebc3269c21f138695a07de2d2fbe57181ce4c0da87531c7"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\npcap_setup.exe\" -Wait -Verb 'RunAs'",
+        "Remove-Item \"$dir\\npcap_setup.exe\""
+    ],
+    "pre_uninstall": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$env:ProgramFiles\\Npcap\\uninstall.exe\" -Wait -Verb 'RunAs' -Args '/S'",
+        "Remove-Item  \"$env:ProgramFiles\\Npcap\" -Recurse -Force"
+    ],
+    "checkver": "Npcap\\s([\\d.]+)\\s",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://npcap.com/dist/npcap-$version.exe#/npcap_setup.exe"
+            }
+        }
+    }
+}
