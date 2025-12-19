@@ -1,0 +1,46 @@
+{
+    "version": "0.10.3",
+    "description": "Versatile command-line toolkit for downloading audio, video, podcasts, pdf and more 多功能命令行下载工具，支持音频、视频、播客、 pdf等各种内容",
+    "homepage": "https://vget.io/",
+    "license": {
+        "identifier": "Copyright 2025 Yumin",
+        "url": "https://github.com/guiyumin/vget#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/guiyumin/vget/releases/download/v0.10.3/vget-windows-amd64.zip",
+            "hash": "54b9e3f73f25f2bf1c10a56fcef3ba687e16c10149e39529edf0753e42c9c677"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\vget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\vget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "vget.exe",
+    "checkver": {
+        "url": "https://api.github.com/repos/guiyumin/vget/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/guiyumin/vget/releases/download/v$version/vget-windows-amd64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/checksums.txt"
+        }
+    }
+}
