@@ -1,0 +1,76 @@
+{
+    "version": "1.4.1",
+    "description": "Lightweight, simple and open source QQNT plugin loader.",
+    "homepage": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/1.4.1/LiteLoaderQQNT.zip",
+            "hash": "3b2d9b7214bdfef16d5007b1f277a9f70688785ba11fc03ef091aa8214cdc343"
+        }
+    },
+    "env_set": {
+        "LITELOADERQQNT_PROFILE": "$persist_dir"
+    },
+    "post_install": [
+        "$qqpath = Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\WOW6432Node\\Tencent\\QQNT' -Name 'Install'",
+        "if (-not (Test-Path $qqpath)) {",
+        "  Write-Host '未找到 QQNT 安装目录，无法自动安装 LiteLoaderQQNT 插件加载器'",
+        "  return",
+        "}",
+        "$apppath = Join-Path $qqpath 'resources/app'",
+        "$versionpath = Join-Path $qqpath 'versions'",
+        "if (Test-Path $versionpath) {",
+        "  $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1 | Split-Path -leaf",
+        "  $apppath = Join-Path (Join-Path $versionpath $version) '/resources/app'",
+        "}",
+        "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
+        "$loader = \"require(String.raw``{0}``)\" -f $dir",
+        "if (-not (Test-Path $loaderpath)) {",
+        "  Write-Host '未找到 LiteLoaderQQNT 插件加载器，正在创建...'",
+        "  New-Item -Path $loaderpath -ItemType File -Force",
+        "}",
+        "Set-Content -Path $loaderpath -Value $loader -Force",
+        "if (Test-Path (Join-Path $apppath 'package.json')) {",
+        "  $package = Get-Content -Path (Join-Path $apppath 'package.json') -Raw | ConvertFrom-Json",
+        "  $package.main = './app_launcher/llqqnt.js'",
+        "  if (Test-Path (Join-Path $apppath 'package_org.json')) {",
+        "    Remove-Item -Path (Join-Path $apppath 'package_org.json') -Force",
+        "  }",
+        "  Rename-Item -Path (Join-Path $apppath 'package.json') -NewName package_org.json -Force",
+        "  Set-Content -Path (Join-Path $apppath 'package.json') -Value ($package | ConvertTo-Json -Depth 10) -Force",
+        "}",
+        "Write-Host 'LiteLoaderQQNT 插件加载器已安装完成'"
+    ],
+    "post_uninstall": [
+        "$qqpath = Get-ItemPropertyValue -Path 'HKLM:\\SOFTWARE\\WOW6432Node\\Tencent\\QQNT' -Name 'Install'",
+        "if (-not (Test-Path $qqpath)) {",
+        "  Write-Host '未找到 QQNT 安装目录，无法自动安装 LiteLoaderQQNT 插件加载器'",
+        "  return",
+        "}",
+        "if (Test-Path (Join-Path $qqpath 'dbghelp.dll')) {",
+        "  Remove-Item (Join-Path $qqpath 'dbghelp.dll') -Force",
+        "}",
+        "$apppath = Join-Path $qqpath 'resources/app'",
+        "$versionpath = Join-Path $qqpath 'versions'",
+        "if (Test-Path $versionpath) {",
+        "  $version = Get-ChildItem -Directory $versionpath | Sort-Object -Property Name -Descending | Select-Object -First 1 | Split-Path -leaf",
+        "  $apppath = Join-Path (Join-Path $versionpath $version) '/resources/app'",
+        "}",
+        "$loaderpath = Join-Path $apppath 'app_launcher/llqqnt.js'",
+        "Remove-Item $loaderpath -Force",
+        "if ((Test-Path (Join-Path $apppath 'package.json')) -and (Test-Path (Join-Path $apppath 'package_org.json'))) {",
+        "  Remove-Item -Path (Join-Path $apppath 'package.json') -Force",
+        "  Rename-Item -Path (Join-Path $apppath 'package_org.json') -NewName package.json -Force",
+        "}",
+        "Write-Host 'LiteLoaderQQNT 插件加载器已卸载完成'"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/LiteLoaderQQNT/LiteLoaderQQNT/releases/download/$version/LiteLoaderQQNT.zip"
+            }
+        }
+    }
+}
