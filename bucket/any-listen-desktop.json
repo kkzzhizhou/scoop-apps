@@ -1,0 +1,72 @@
+{
+    "version": "0.3.0",
+    "description": "A cross-platform private music playback service",
+    "homepage": "https://github.com/any-listen/any-listen",
+    "license": {
+        "identifier": "Custom License based on AGPL v3.0",
+        "url": "https://github.com/any-listen/any-listen#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v0.3.0/any-listen-0.3.0-x64-Setup.exe#/dl.7z",
+            "hash": "23e3a96f0391ab26e2e6f863b2ff0b3132cf0ce5c2eaa25a6055545ba1ecaad8",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v0.3.0/any-listen-0.3.0-arm64-Setup.exe#/dl.7z",
+            "hash": "5a21cb36af6308f59330bd026acc01b521356e93c0bb7573940e8cd7d1c9ad53",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\any-listen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\any-listen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "any-listen.exe",
+            "AnyListen"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "any-listen.exe",
+            "AnyListen"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/any-listen/any-listen-desktop/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "any-listen-([\\d.]+)-x64-Setup\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v$version/any-listen-$version-x64-Setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v$version/any-listen-$version-arm64-Setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

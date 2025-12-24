@@ -1,0 +1,64 @@
+{
+    "version": "0.3.0",
+    "description": "A cross-platform private music playback service",
+    "homepage": "https://github.com/any-listen/any-listen",
+    "license": {
+        "identifier": "Custom License based on AGPL v3.0",
+        "url": "https://github.com/any-listen/any-listen#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v0.3.0/any-listen-0.3.0-win7_x64-green.7z",
+            "hash": "5ccdabfe74c6c3d33da03747700fe48b6869c0acd42374514ac570e22bacf09d"
+        },
+        "32bit": {
+            "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v0.3.0/any-listen-0.3.0-win7_x86-green.7z",
+            "hash": "727bb70188caedc733f1cd500c7e2aa6c482f3b060df6d130ebb4f981d8cfaac"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\any-listen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\any-listen\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "any-listen.exe",
+            "AnyListen"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "any-listen.exe",
+            "AnyListen"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/any-listen/any-listen-desktop/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "any-listen-([\\d.]+)-win7_x64-green\\.7z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v$version/any-listen-$version-win7_x64-green.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/any-listen/any-listen-desktop/releases/download/v$version/any-listen-$version-win7_x86-green.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

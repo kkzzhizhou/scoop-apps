@@ -1,0 +1,52 @@
+{
+    "version": "143.0.7499.110",
+    "description": "Cromite a Bromite fork with ad blocking and privacy enhancements; take back your browser!",
+    "homepage": "https://www.cromite.org/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/uazo/cromite#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/uazo/cromite/releases/download/v143.0.7499.110-8e844cf64f8159a72f158eb33e2f09b19f7d115a/chrome-win.zip",
+            "hash": "10bf0350c208c3379f055828d3d44fe43f2b136a4d8381d9dc3a2e37a334af82"
+        }
+    },
+    "extract_dir": "chrome-win",
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\Cromite\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data...'",
+        "    Copy-Item \"$env:LocalAppData\\Cromite\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
+    ],
+    "env_set": {
+        "CHROME_EXECUTABLE": "$dir\\chrome.exe"
+    },
+    "bin": [
+        [
+            "chrome.exe",
+            "Cromite",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "chrome.exe",
+            "Cromite",
+            "--user-data-dir=\"$dir\\User Data\""
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "url": "https://api.github.com/repos/uazo/cromite/tags",
+        "jsonpath": "$[*].name",
+        "regex": "v([\\d.]+)-(?<commit>[0-9a-z]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/uazo/cromite/releases/download/v$version-$matchCommit/chrome-win.zip"
+            }
+        }
+    }
+}

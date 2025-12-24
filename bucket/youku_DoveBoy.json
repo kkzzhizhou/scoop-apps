@@ -1,0 +1,51 @@
+{
+    "##": "优酷",
+    "version": "9.2.67.1001",
+    "license": {
+        "identifier": "Copyright © 2019 优酷"
+    },
+    "description": "[优酷] - 优酷视频客户端",
+    "homepage": "https://www.youku.com",
+    "architecture": {
+        "64bit": {
+            "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_9.2.67.1001.exe#/dl.7z",
+            "hash": "2dd8a329675db5cf3343288946fd100c4c9cf1b6c502faec176bdbe5bc011422"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Unins*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku\" -Target \"$env:APPDATA\\youku\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku-app\" -Target \"$env:APPDATA\\youku-app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\youku-electron\" -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\youku-electron\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "YOUKU.exe",
+            "优酷"
+        ]
+    ],
+    "checkver": {
+        "url": "https://www.youku.com/ku/product/index",
+        "regex": "V([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://pcclient.download.youku.com/iku-win-release/youkuclient_setup_$version.exe#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
