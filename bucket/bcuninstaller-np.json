@@ -1,0 +1,42 @@
+{
+    "version": "5.9.0",
+    "description": "Bulk program uninstaller with advanced automation",
+    "homepage": "https://www.bcuninstaller.com/",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Klocman/Bulk-Crap-Uninstaller/releases/download/v5.9/BCUninstaller_5.9.0_setup.exe",
+            "hash": "7b788fc6ba19da1521e51f9dd6098f2cc3eda347bcefc43dd26e7421efdf52f9"
+        }
+    },
+    "innosetup": true,
+    "depends": "Versions/windowsdesktop-runtime",
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "Copy-Item \"$persist_dir\\BCUninstaller.settings\" \"$dir\" -ErrorAction 'SilentlyContinue'"
+    ],
+    "uninstaller": {
+        "script": "Copy-Item \"$dir\\BCUninstaller.settings\" \"$persist_dir\" -ErrorAction 'SilentlyContinue' -Force"
+    },
+    "bin": [
+        "BCUninstaller.exe"
+    ],
+    "shortcuts": [
+        [
+            "BCUninstaller.exe",
+            "BC Uninstaller"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repositories/64677873/releases/latest",
+        "jsonpath": "$..browser_download_url",
+        "regex": "download/v(?<tag>[\\d.]+)/BCUninstaller_([\\d.]+)_setup.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Klocman/Bulk-Crap-Uninstaller/releases/download/v$matchTag/BCUninstaller_$version_setup.exe"
+            }
+        }
+    }
+}
