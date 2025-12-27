@@ -76,7 +76,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - kidonng/sushi
 - ACooper81/scoop-apps
 - KNOXDEV/wsl
-- TLDRO/scoop-security
+- tldro/scoop-security
 - cderv/r-bucket
 - echoiron/echo-scoop
 - ScoopInstaller/PHP
@@ -111,6 +111,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aliesbelik/poldi
 - ygguorun/scoop-bucket
 - asimov-platform/scoop-bucket
+- Small-Ku/turbo-bucket
 - brian6932/dank-scoop
 - batkiz/backit
 - ChungZH/peach
@@ -118,12 +119,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Velgus/Scoop-Portapps
 - AStupidBear/scoop-bear
 - SayCV/scoop-cvp
-- Small-Ku/turbo-bucket
-- Darkatse/Scoop-Darkatse
-- TianXiaTech/scoop-txt
-- starise/Scoop-Confetti
 - seumsc/scoop-seu
+- TianXiaTech/scoop-txt
 - Weidows-projects/scoop-3rd
+- Darkatse/Scoop-Darkatse
+- starise/Scoop-Confetti
 - iquiw/scoop-bucket
 - 42wim/scoop-bucket
 - Scoopforge/Extras-Plus
@@ -150,9 +150,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - yuusakuri/scoop-bucket
 - MCOfficer/scoop-bucket
 - AntonOks/scoop-aoks
-- younger-1/scoop-it
 - ShuguangSun/sgs-scoop-bucket
 - Rinkerbel/scooped
+- younger-1/scoop-it
 - windedge/ladle-bucket
 - maboloshi/scoop-private
 - The-Simples/scoop-minecraft
