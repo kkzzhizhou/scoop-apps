@@ -1,0 +1,71 @@
+{
+    "version": "8.0.0069",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://xshell.com/docs/ver8_free_eula.pdf"
+    },
+    "description": "The Industry's Most Powerful SSH Client",
+    "homepage": "https://xshell.com/free-for-home-school/",
+    "depends": "isx",
+    "url": "https://cdn.netsarang.net/3e435107/Xshell-8.0.0069p.exe#/installer.exe",
+    "hash": "b9bf7568360d641cc9620604ad851e6f3ecc3763dc4abb285a608ec08f485bf1",
+    "persist": "data",
+    "installer": {
+        "script": [
+            "# Require Administrator rights",
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "New-Item -Type Directory -Path \"$dir\\TEMP\" -Force | Out-Null",
+            "Move-Item \"$dir\\installer.exe\" \"$dir\\TEMP\\installer.exe\" -Force",
+            "Invoke-ExternalCommand ((Get-Command 'isx' -CommandType Application).Source) -ArgumentList \"$dir\\TEMP\\installer.exe\" -LogPath \"$dir\\TEMP\\isx.log\" | Out-Null",
+            "Expand-MsiArchive \"$dir\\TEMP\\installer_u\\Xshell 8.msi\" \"$dir\\TEMP\\extracted\"",
+            "Move-Item \"$dir\\TEMP\\extracted\\program files\\NetSarang\\Xshell 8\\*\" \"$dir\" -Force",
+            "Remove-Item -Path \"$dir\\TEMP\" -Recurse -Force",
+            "Remove-Item \"$dir\\LiveUpdate.dat\" -Force",
+            "Remove-Item \"$dir\\LiveUpdate.exe\" -Force",
+            "Remove-Item \"$dir\\nsregister.exe\" -Force",
+            "reg.exe add \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xshell\\8\" /v \"Version\" /t REG_SZ /d \"8.0.0066\" /f",
+            "reg.exe add \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xshell\\8\" /v \"Path\" /t REG_SZ /d \"$dir\" /f",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xshell\\8\\License\" /v \"SubmitTime\" /t REG_DWORD /d \"2145888000\" /f",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xshell\\8\\Personal\" /v \"Notified\" /t REG_DWORD /d \"1\" /f",
+            "reg.exe add \"HKCU\\SOFTWARE\\NetSarang\\Xshell\\8\\LiveUpdate\" /v \"EnableLiveUpdate\" /t REG_DWORD /d \"0\" /f",
+            "reg.exe add \"HKLM\\SOFTWARE\\NetSarang\\Xshell\\8\" /v \"MagicCode\" /t REG_BINARY /d \"0b58da690bc91ef18518f1d686c1f47ce80709000b00\" /f /reg:32"
+        ]
+    },
+    "post_install": [
+        "$configdir = \"$env:USERPROFILE\\Documents\\NetSarang Computer\\8\\Xshell\"",
+        "if (Test-Path $configdir) {",
+        "   if ((Get-Item $configdir).Attributes -band [System.IO.FileAttributes]::ReparsePoint) {",
+        "       # just delete symlink",
+        "       Remove-Item -Path $configdir",
+        "   } else {",
+        "       # backup to data folder",
+        "       Copy-Item -Recurse -Path $configdir/* $dir/data/ ",
+        "       # delete original dir",
+        "       Remove-Item -Path $configdir -Recurse -Force",
+        "   } }",
+        "New-Item -Force -ItemType SymbolicLink -Path $configdir -Value $dir/data"
+    ],
+    "shortcuts": [
+        [
+            "Xshell.exe",
+            "Xshell 8",
+            "",
+            "XshellIcon.ico"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "# Require Administrator rights",
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "reg.exe delete \"HKCU\\SOFTWARE\\NetSarang\\Xshell\\8\" /f",
+            "reg.exe delete \"HKLM\\SOFTWARE\\NetSarang\\Xshell\\8\" /f *>$null",
+            "reg.exe delete \"HKLM\\SOFTWARE\\WOW6432Node\\NetSarang\\Xshell\\8\" /f *>$null"
+        ]
+    },
+    "checkver": {
+        "regex": "https://cdn.netsarang.net/(?<hash>[^/]+)/Xshell-([\\d.]+)p.exe"
+    },
+    "autoupdate": {
+        "url": "https://cdn.netsarang.net/$matchHash/Xshell-$versionp.exe#/installer.exe"
+    }
+}
