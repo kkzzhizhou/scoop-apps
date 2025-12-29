@@ -1,12 +1,12 @@
 {
-  "version": "ab4d2a7f3",
+  "version": "c5f35b071",
   "description": "Nintendo Switch Emulator",
   "homepage": "https://github.com/Zephyron-Dev/Citron-CI",
   "license": "GPL-3.0",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-ab4d2a7f3-x64.zip",
-      "hash": "155e99f70ee51cc2cb84b4a34ba4a3c312cd57e5393851b5fcaa3babbea5cf70"
+      "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-c5f35b071-x64.zip",
+      "hash": "fe55911934e6b864f91ea467a5bec16af51a2376a573c40fc7401b443fbd35e1"
     }
   },
   "pre_install": [
@@ -51,6 +51,8 @@
       "foreach ($rel in $candidates) {",
       "  # 1) asset filename pattern: Citron-windows-nightly-<sha>-x64.zip (prefer exact built sha)",
       "  if ($rel.assets) { foreach ($a in $rel.assets) { if ($a.name -match 'Citron-windows-nightly-([a-f0-9]{7,40})-x64.zip') { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 } } }",
+      "  # Skip if not Windows release",
+      "  if ($rel.tag_name -and $rel.tag_name -notlike '*windows*') { continue }",
       "  # 2) release name may include a hex blob",
       "  if ($rel.name -and ($rel.name -match '([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
       "  # 3) release body often contains 'Citron Upstream Commit: <sha>'",
@@ -59,9 +61,9 @@
       "# Fallback: try the single 'nightly-windows' release if present",
       "try { $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases/tags/nightly-windows' -Headers $hdr -UseBasicParsing -ErrorAction Stop } catch { $rel = $null }",
       "if ($rel) {",
-      "  if ($rel.body -and ($rel.body -match 'Citron Upstream Commit:\\s*([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha.Substring(0,7)); exit 0 }",
-      "  if ($rel.name -and ($rel.name -match '([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha.Substring(0,7)); exit 0 }",
-      "  if ($rel.assets) { foreach ($a in $rel.assets) { if ($a.name -match 'Citron-windows-nightly-([a-f0-9]{7,40})-x64.zip') { $sha = $matches[1]; Write-Output ('citron: ' + $sha.Substring(0,7)); exit 0 } } }",
+      "  if ($rel.assets) { foreach ($a in $rel.assets) { if ($a.name -match 'Citron-windows-nightly-([a-f0-9]{7,40})-x64.zip') { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 } } }",
+      "  if ($rel.body -and ($rel.body -match 'Citron Upstream Commit:\\s*([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
+      "  if ($rel.name -and ($rel.name -match '([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
       "}",
       "Write-Error 'could not find nightly commit in releases'"
     ]
