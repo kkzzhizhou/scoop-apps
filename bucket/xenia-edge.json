@@ -1,0 +1,68 @@
+{
+    "version": "20251230040120-9da9a73",
+    "description": "Xbox 360 Emulator Research Project (xenia-canary fork)",
+    "homepage": "https://github.com/has207/xenia-edge/",
+    "license": {
+        "identifier": "BSD-3-Clause",
+        "url": "https://github.com/has207/xenia-edge/blob/edge/LICENSE"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/has207/xenia-edge/releases/download/9da9a73/xenia_edge_windows.zip",
+            "hash": "e853d35a8c55fdf0d92647efa1e39ff97d9ac2bd16446a2f165ff360d5482434"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\Xenia\") {",
+        "       Write-Host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\Xenia\" -Recurse",
+        "   } else {",
+        "       New-Item \"$dir\\recent.toml\" -ItemType File | Out-Null",
+        "       New-Item \"$dir\\xenia-edge.config.toml\" -ItemType File | Out-Null",
+        "   }",
+        "}"
+    ],
+    "post_install": "New-Item \"$dir\\portable.txt\" -ItemType File | Out-Null",
+    "bin": "xenia_edge.exe",
+    "shortcuts": [
+        [
+            "xenia_edge.exe",
+            "Xenia Edge"
+        ]
+    ],
+    "persist": [
+        "cache",
+        "cache_host",
+        "config",
+        "content",
+        "patches",
+        "screenshots",
+        "recent.toml",
+        "xenia-edge.config.toml"
+    ],
+    "checkver": {
+        "url": "https://github.com/has207/xenia-edge/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$entry = ($xml.feed.entry | Sort-Object -Descending { $_.updated })[0]",
+            "$updated = $entry.updated",
+            "$commit = ($entry.link.href -split '/')[-1]",
+            "Write-Output \"$updated $commit\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/has207/xenia-edge/releases/download/$matchCommit/xenia_edge_windows.zip"
+            }
+        }
+    }
+}
