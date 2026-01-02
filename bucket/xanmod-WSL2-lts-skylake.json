@@ -1,33 +1,22 @@
 {
     "homepage": "https://github.com/Locietta/xanmod-kernel-WSL2",
     "license": "GPL-2.0",
-    "extract_dir": "",
-    "bin": "",
-    "notes": "The manifest is from https://github.com/Locietta/sniffer",
     "post_install": [
-        "#########################################",
-        "# set `.wslconfig` to use custom kernel #",
-        "#########################################",
-        "$ini = Add-Type -memberDefinition @\"",
-        "[DllImport(\"Kernel32\")]",
-        "public static extern long WritePrivateProfileString (string section, string key, string val, string filePath);",
-        "\"@ -passthru -name CustomWSL2ProfileInstall -UsingNamespace System.Text",
-        "$kernel_path=\"$dir\\bzImage-skylake\" -replace \"\\\\\", \"\\\\\" # double all back-slashess",
-        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $kernel_path, \"$env:USERPROFILE\\.wslconfig\")"
+        ". $bucketsdir\\$bucket\\scripts\\IniFile.ps1",
+        "$kernel_path=\"$original_dir\\bzImage-skylake\" -replace \"\\\\\", \"\\\\\" # double all back-slashess",
+        "$null = [IniFile]::WritePrivateProfileString(\"wsl2\", \"kernel\", $kernel_path, \"$env:USERPROFILE\\.wslconfig\")"
     ],
     "post_uninstall": [
-        "##########################################",
-        "# recover `.wslconfig` to default kernel #",
-        "##########################################",
-        "$ini = Add-Type -memberDefinition @\"",
-        "[DllImport(\"Kernel32\")]",
-        "public static extern long WritePrivateProfileString (string section, string key, string val, string filePath);",
-        "\"@ -passthru -name CustomWSL2ProfileUninstall -UsingNamespace System.Text",
-        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $null, \"$env:USERPROFILE\\.wslconfig\")"
+        ". $bucketsdir\\$($install.bucket)\\scripts\\IniFile.ps1",
+        "$null = [IniFile]::WritePrivateProfileString(\"wsl2\", \"kernel\", $null, \"$env:USERPROFILE\\.wslconfig\")"
     ],
-    "version": "6.6.32-1.1",
-    "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/6.6.32-locietta-WSL2-xanmod1.1-lts/bzImage-skylake",
-    "hash": "850bdf800d48dacec113a383ce6b228490a3afc39f715099681475b92d599365",
+    "notes": "To get modules support, please install sniffer/xanmod-WSL2-addons-lts-skylake.",
+    "suggest": {
+        "modules": "sniffer/xanmod-WSL2-addons-lts-skylake"
+    },
+    "version": "6.12.63-1.1",
+    "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/6.12.63-locietta-WSL2-xanmod1.1-lts/bzImage-skylake",
+    "hash": "ca51ba1aa71dbf7b5f5cfe63b1a0899e11b8b0446c094dcd00625e213a8ad4c4",
     "checkver": {
         "script": [
             "$LATEST = ((curl.exe -sL -H \"Authorization: Bearer $(Get-GitHubToken)\" https://api.github.com/repos/Locietta/xanmod-kernel-WSL2/tags?per_page=60 | ConvertFrom-Json).name | Select-String 'lts')[0]",
@@ -37,9 +26,6 @@
         "replace": "${1}-${2}"
     },
     "autoupdate": {
-        "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod-lts/bzImage-skylake",
-        "hash": {
-            "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod-lts/bzImage-skylake.sha256"
-        }
+        "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod-lts/bzImage-skylake"
     }
 }
