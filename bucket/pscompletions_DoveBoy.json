@@ -12,11 +12,25 @@
     ],
     "url": "https://cdn.powershellgallery.com/packages/pscompletions.6.3.0.nupkg",
     "hash": "8b646c88e3026aaf74980277a184084bdb48fd1d433a25d7ec58a04eda91bf03",
-    "pre_install": "Remove-Item \"$dir\\_rels\", \"$dir\\package\", \"$dir\\*Content*.xml\" -Recurse",
+    "pre_install": [
+        "Remove-Item \"$dir\\_rels\", \"$dir\\package\", \"$dir\\*Content*.xml\" -Recurse",
+        "if (-not (Test-Path -Path \"$persist_dir\\data.json\")) {",
+        "    '{}' | Out-File -FilePath \"$dir\\data.json\" -Encoding utf8 -Force",
+        "}"
+    ],
+    "post_install": [
+        "if (Test-Path \"$dir\\completions.original\") {",
+        "    Copy-Item -Path \"$dir\\completions.original\\*\" -Destination \"$dir\\completions\" -Force -Recurse",
+        "    Remove-Item \"$dir\\completions.original\" -Force -Recurse | Out-Null",
+        "}"
+    ],
     "psmodule": {
         "name": "PSCompletions"
     },
-    "persist": "completions",
+    "persist": [
+        "completions",
+        "data.json"
+    ],
     "checkver": {
         "url": "https://www.powershellgallery.com/packages/PSCompletions",
         "regex": "<h2>([\\d.]+)</h2>"
