@@ -1,26 +1,43 @@
 {
-    "version": "3.0.0-beta.7",
+    "version": "3.0.0-beta.8",
     "description": "🎉 一个简约的音乐播放器，支持逐字歌词，下载歌曲，展示评论区，音乐云盘及歌单管理，音乐频谱，移动端基础适配 | A minimalist music player",
     "homepage": "https://github.com/imsyy/SPlayer",
     "license": {
         "identifier": "AGPL-3.0 license",
         "url": "https://github.com/imsyy/SPlayer#AGPL-3.0-1-ov-file"
     },
-    "url": "https://github.com/imsyy/SPlayer/releases/download/v3.0.0-beta.7/SPlayer-3.0.0-beta.7-x64-setup.exe#/dl.7z",
-    "hash": "sha512:6a193ff92316ccbc5620888a8500a1d1b1a90ba9157cd904cf9b875694a6c15d77186da85f92737b43b65ff4299e11795995f4c44e5f9440a73f132f67c5242a",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
-    ],
+    "url": "https://github.com/imsyy/SPlayer/releases/download/v3.0.0-beta.8.2025/SPlayer-3.0.0-beta.8-setup.exe#/dl.7z",
+    "hash": "sha512:1ecd42f3189f1f73276d1d727bcd76b905bf23c8678eb968163d22c0cfa3e6737ba2b1e1a58edb1780a3b6640019d69982da9d4b36d4b10d774c91e1ecaed6c6",
+    "architecture": {
+        "64bit": {
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+            ]
+        }
+    },
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
-            "New-Item \"$env:APPDATA\\splayer\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\splayer\"",
+            "Remove-Module -Name AppsUtils"
         ]
     },
     "uninstaller": {
-        "script": "Remove-Item \"$env:APPDATA\\splayer\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\splayer\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
+    "bin": "SPlayer.exe",
     "shortcuts": [
         [
             "SPlayer.exe",
@@ -29,10 +46,10 @@
     ],
     "checkver": {
         "url": "https://api.github.com/repos/imsyy/SPlayer/releases",
-        "regex": "/releases/tag/v([\\d.]+-[\\w.]+)"
+        "regex": "/releases/download/v(?<tag>[\\d.]+-[\\w.]+)/SPlayer-([\\d.]+-[\\w.]+)-setup\\.exe"
     },
     "autoupdate": {
-        "url": "https://github.com/imsyy/SPlayer/releases/download/v$version/SPlayer-$version-x64-setup.exe#/dl.7z",
+        "url": "https://github.com/imsyy/SPlayer/releases/download/v$matchTag/SPlayer-$version-setup.exe#/dl.7z",
         "hash": {
             "url": "$baseurl/latest.yml",
             "regex": "(?sm)$basename.*?sha512:\\s+$base64"

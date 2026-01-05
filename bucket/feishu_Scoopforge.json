@@ -25,21 +25,32 @@
     ],
     "checkver": {
         "url": "https://feishu.cn/api/downloads",
-        "jp": "$.versions.Windows.download_link",
-        "regex": "/(?<id>[\\d\\w]+)/Feishu-(?<arch>[\\d\\w]+)-([\\d\\.]+)\\-signed\\.exe"
+        "script": [
+            "$release = $page | ConvertFrom-Json",
+            "$version = $release.versions.Windows.version_number -replace 'Windows@', ''",
+            "$id_list = @($release.versions.Windows.download_link, $release.versions.Windows_x64.download_link) | ForEach-Object {",
+            "    if ($_ -match '(?<=/)\\w+(?=/Feishu-win32)') { $Matches[0] } ",
+            "}",
+            "Write-Output \"$version, $($id_list -join ', ')\""
+        ],
+        "regex": "V([\\d.]+), (?<id32>\\w+), (?<id64>\\w+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId/Feishu-win32_x64-$version-signed.exe#/dl.7z"
+                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId64/Feishu-win32_x64-$version-signed.exe#/dl.7z",
+                "hash": {
+                    "url": "https://feishu.cn/api/downloads",
+                    "jsonpath": "$.versions.Windows_x64.hash"
+                }
             },
             "32bit": {
-                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId/Feishu-win32_ia32-$version-signed.exe#/dl.7z"
+                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId32/Feishu-win32_ia32-$version-signed.exe#/dl.7z",
+                "hash": {
+                    "url": "https://feishu.cn/api/downloads",
+                    "jsonpath": "$.versions.Windows.hash"
+                }
             }
-        },
-        "hash": {
-            "url": "https://feishu.cn/api/downloads",
-            "jp": "$.versions.Windows.hash"
         }
     },
     "notes": "Runtime data are stored in '%APPDATA%\\LarkShell', and are not persisted by Scoop."
