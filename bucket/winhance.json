@@ -1,18 +1,34 @@
 {
-    "version": "25.12.12",
-    "description": "Application designed to optimize and customize your Windows experience",
+    "version": "26.01.12",
+    "description": "Application designed to optimize, customize and enhance your Windows experience.",
     "homepage": "https://winhance.net/",
-    "license": "CC-BY-4.0",
-    "suggest": {
-        "windowsdesktop-runtime": "extras/windowsdesktop-runtime"
+    "license": {
+        "identifier": "CC BY-NC-SA 4.0",
+        "url": "https://github.com/memstechtips/Winhance#License-1-ov-file"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/memstechtips/Winhance/releases/download/v25.12.12/Winhance.Installer.exe",
-            "hash": "4d88e47d06b2233fe973e5928c7f664aff54c9a278ad5451c07f08f53a249f82"
+            "url": "https://github.com/memstechtips/Winhance/releases/download/v26.01.12/Winhance.Installer.exe",
+            "hash": "fa401ed8f1003d74870446ce37577381e02fadeb00e9e5e9772e22cca2e11dc5"
         }
     },
     "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Winhance\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Winhance\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Winhance.exe",
     "shortcuts": [
         [
             "Winhance.exe",
@@ -20,7 +36,9 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/memstechtips/Winhance"
+        "url": "https://api.github.com/repos/memstechtips/Winhance/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/Winhance.Installer\\.exe"
     },
     "autoupdate": {
         "architecture": {
