@@ -1,0 +1,49 @@
+{
+    "##": "Checkver URL https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+    "version": "143.0.3650.139",
+    "description": "Microsoft Edge. The chromium based Microsoft Edge browser.",
+    "homepage": "https://www.microsoft.com/en-us/edge/business",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.microsoft.com/en-us/servicesagreement/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/bb161c65-c060-4e98-a125-5e412c0b3364/MicrosoftEdgeEnterpriseX64.msi",
+            "hash": "DC00269CCB23E9C0747DF74461804ED4AC6E590F74040E3C4F92949F36AD8631"
+        },
+        "32bit": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/f08d624c-3621-4784-8cce-1ec9a8476922/MicrosoftEdgeEnterpriseX86.msi",
+            "hash": "FCB6E8AC1280378310BDCFBCFAB7F78FE61EC4690C680157967E12AF6477213D"
+        },
+        "arm64": {
+            "url": "https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/184f99ab-46b3-404f-a717-8cfd10d5cee9/MicrosoftEdgeEnterpriseARM64.msi",
+            "hash": "360BD159350587A05462FF3EE75224E6219F75C5CD7E6B6FB78DD464B29151F8"
+        }
+    },
+    "installer": {
+        "script": [
+            "$programname = \"Microsoft Edge*\"",
+            "$installpath = \"$dir\\setup.msi_\"",
+            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFilesX86\")",
+            "$filepath = \"$ProgramFiles\\Microsoft\\Edge\\Application\\$version\\msedge.dll\"",
+            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "{",
+            "   Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\setup.msi_\", '/qn') -RunAs | Out-Null",
+            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
+            "   {",
+            "       exit 1",
+            "   }",
+            "}",
+            "if (Test-Path -Path \"$dir\\setup.msi_\") { Remove-Item \"$dir\\setup.msi_\" -Force }"
+        ]
+    },
+    "post_install": [
+        "$CommonDesktopPath = [Environment]::GetFolderPath(\"CommonDesktopDirectory\")",
+        "if (Test-Path \"$CommonDesktopPath\\Microsoft Edge.lnk\") {Remove-Item \"$CommonDesktopPath\\Microsoft Edge.lnk\" -Force}"
+    ],
+    "checkver": {
+        "url": "https://docs.microsoft.com/en-us/deployedge/microsoft-edge-relnote-stable-channel",
+        "regex": ">Version ([\\d.]+)"
+    }
+}
