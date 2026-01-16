@@ -43,7 +43,8 @@ function Invoke-ExternalCommand2 {
     if ($LogPath) {
         if ($FilePath -match '^msiexec(.exe)?$') {
             $ArgumentList += "/lwe `"$LogPath`""
-        } else {
+        }
+        else {
             $redirectToLogFile = $true
             $Process.StartInfo.RedirectStandardOutput = $true
             $Process.StartInfo.RedirectStandardError = $true
@@ -60,12 +61,14 @@ function Invoke-ExternalCommand2 {
     if ($ArgumentList.Length -gt 0) {
         if ($FilePath -match '^((cmd|cscript|wscript|msiexec)(\.exe)?|.*\.(bat|cmd|js|vbs|wsf))$') {
             $Process.StartInfo.Arguments = $ArgumentList -join ' '
-        } elseif ($Process.StartInfo.PSObject.Properties.Name -contains 'ArgumentList') {
+        }
+        elseif ($Process.StartInfo.PSObject.Properties.Name -contains 'ArgumentList') {
             # ArgumentList is supported in PowerShell 6.1 and later (built on .NET Core 2.1+)
             # ref-1: https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo.argumentlist?view=net-6.0
             # ref-2: https://docs.microsoft.com/en-us/powershell/scripting/whats-new/differences-from-windows-powershell?view=powershell-7.2#net-framework-vs-net-core
             $ArgumentList | ForEach-Object { $Process.StartInfo.ArgumentList.Add($_) }
-        } else {
+        }
+        else {
             # escape arguments manually in lower versions, refer to https://docs.microsoft.com/en-us/previous-versions/17w5ykft(v=vs.85)
             $escapedArgs = $ArgumentList | ForEach-Object {
                 # escape N consecutive backslash(es), which are followed by a double quote, to 2N consecutive ones
@@ -83,7 +86,8 @@ function Invoke-ExternalCommand2 {
     }
     try {
         [void]$Process.Start()
-    } catch {
+    }
+    catch {
         if ($Activity) {
             Write-Host 'error.' -ForegroundColor DarkRed
         }
@@ -108,7 +112,8 @@ function Invoke-ExternalCommand2 {
             }
             Write-Host $ContinueExitCodes[$Process.ExitCode] -ForegroundColor DarkYellow
             return $true
-        } else {
+        }
+        else {
             if ($Activity) {
                 Write-Host 'error.' -ForegroundColor DarkRed
             }
@@ -135,20 +140,21 @@ function Out-UTF8File {
     process {
         if ($Append) {
             [System.IO.File]::AppendAllText($FilePath, $InputObject)
-        } else {
+        }
+        else {
             if (!$NoNewLine) {
                 # Ref: https://stackoverflow.com/questions/5596982
                 # Performance Note: `WriteAllLines` throttles memory usage while
                 # `WriteAllText` needs to keep the complete string in memory.
                 [System.IO.File]::WriteAllLines($FilePath, $InputObject)
-            } else {
+            }
+            else {
                 # However `WriteAllText` does not add ending newline.
                 [System.IO.File]::WriteAllText($FilePath, $InputObject)
             }
         }
     }
 }
-
 function Mount-ExternalRuntimeData {
     <#
     .SYNOPSIS
@@ -170,7 +176,8 @@ function Mount-ExternalRuntimeData {
 
     if (Test-Path $Source) {
         Remove-Item $Target -Force -Recurse -ErrorAction SilentlyContinue
-    } else {
+    }
+    else {
         New-Item -ItemType Directory $Source -Force | Out-Null
         if (Test-Path $Target) {
             Get-ChildItem $Target | Move-Item -Destination $Source -Force
