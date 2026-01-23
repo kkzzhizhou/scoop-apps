@@ -1,0 +1,49 @@
+{
+    "version": "3.20.2",
+    "description": "Desktop App for downloading Videos and Audios from hundreds of sites",
+    "homepage": "https://aandrew-me.github.io/ytDownloader/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/aandrew-me/ytDownloader#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v3.20.2/YTDownloader_Win.zip",
+            "hash": "b2bc9f25f13781cc34a5b2bb69c69271996909578b46009025c3d465d198a183"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\ytdownloader\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\ytdownloader\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "YTDownloader.exe",
+    "shortcuts": [
+        [
+            "YTDownloader.exe",
+            "YTDownloader"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/aandrew-me/ytDownloader/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/YTDownloader_Win"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v$version/YTDownloader_Win.zip"
+            }
+        }
+    }
+}
