@@ -1,39 +1,52 @@
 {
-    "homepage": "https://eden-emu.dev",
-    "version": "0.0.4-rc3",
-    "description": "Nintendo Switch Emulator, a fork of Yuzu",
+    "version": "0.1.0",
+    "description": "Open source Nintendo Switch emulator (forked from yuzu)",
+    "homepage": "https://eden-emu.dev/",
     "license": {
-        "identifier": "GPL-3.0",
-        "url": "https://git.eden-emu.dev/eden-emu/eden/src/branch/master/LICENSE.txt"
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://git.eden-emu.dev/eden-emu/eden/raw/branch/master/LICENSE.txt"
     },
-    "suggest": {
-        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/eden-emulator/Releases/releases/download/v0.1.0/Eden-Windows-v0.1.0-amd64-msvc-standard.zip",
+            "hash": "06173be9d02dbc3ddcdd846cea22d41d89438d3cdbdf42d287d6d81c8ef0c321"
+        },
+        "arm64": {
+            "url": "https://github.com/eden-emulator/Releases/releases/download/v0.1.0/Eden-Windows-v0.1.0-mingw-arm64-clang-standard.zip",
+            "hash": "5ca1ea573e42254f09466ef0f67a1b4f5b2c840d3716bc2be02d69772d64b8f7"
+        }
     },
-    "url": "https://github.com/eden-emulator/Releases/releases/download/v0.0.4-rc3/Eden-Windows-v0.0.4-rc3-amd64-msvc-standard.zip",
-    "hash": "9294a2b7fd60acc485f20cf7be4d3f10a2b8c95bdae78f17fde9b9c78b296818",
-    "extract_dir": "pack",
-    "pre_install": "mkdir $dir/user | Out-Null",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\eden\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\eden\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\eden\" -Recurse",
+        "   }",
+        "}"
+    ],
     "bin": "eden.exe",
     "shortcuts": [
         [
             "eden.exe",
-            "Nintendo Switch"
+            "Eden"
         ]
     ],
     "persist": "user",
     "checkver": {
-        "url": "https://api.github.com/repos/eden-emulator/Releases/releases",
-        "jsonpath": {
-            "version": "$.[0].name",
-            "download": "$.[0].assets[?(@.name =~ /Windows.+amd64-msvc/i)].browser_download_url"
-        },
-        "regex": "Eden v([\\d\\.\\-rc]+)"
+        "github": "https://github.com/eden-emulator/Releases/",
+        "regex": "v([\\d]+(?:\\.[\\d]+)+(?:-[A-Za-z\\d.-]+)?)"
     },
     "autoupdate": {
-        "url": "$matchDownload",
-        "hash": {
-            "url": "https://api.github.com/repos/eden-emulator/Releases/releases",
-            "jsonpath": "$.[0].assets[?(@.name =~ /Windows.+am64-msvc/i)].digest"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/eden-emulator/Releases/releases/download/v$version/Eden-Windows-v$version-amd64-msvc-standard.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/eden-emulator/Releases/releases/download/v$version/Eden-Windows-v$version-mingw-arm64-clang-standard.zip"
+            }
         }
     }
 }

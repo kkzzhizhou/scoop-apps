@@ -1,0 +1,51 @@
+{
+    "version": "1.21.0",
+    "description": "A simple mdict dictionary with Android/Windows/Linux support",
+    "homepage": "https://mumulhl.eu.org/Ciyue/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/mumu-lhl/Ciyue#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mumu-lhl/Ciyue/releases/download/v1.21.0/ciyue-windows.zip",
+            "hash": "544253fd4eb9633053973c6f2600dd6d3c8a038138cb22b06ae0045f233bd683"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Mumulhl\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\Mumulhl\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Mumulhl\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Mumulhl\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "ciyue.exe",
+    "shortcuts": [
+        [
+            "ciyue.exe",
+            "Ciyue"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/mumu-lhl/Ciyue/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mumu-lhl/Ciyue/releases/download/v$version/ciyue-windows.zip"
+            }
+        }
+    }
+}
