@@ -1,0 +1,29 @@
+{
+    "version": "3.17",
+    "description": "Copy your files faster and more securely.",
+    "homepage": "https://www.codesector.com/teracopy",
+    "license": "Freeware",
+    "url": "https://www.codesector.com/files/teracopy.exe",
+    "hash": "ac03db52bb68a013d3a8bf4db703ec11976fa1d0aa557eb988e3f926a26656cf",
+    "checkver": {
+        "url": "https://www.codesector.com/downloads",
+        "regex": "(?s)TeraCopy ([\\d.]+)</td>\\s+<td>Windows"
+    },
+    "pre_install": [
+        "Invoke-ExternalCommand -FilePath \"$dir\\teracopy.exe\" -ArgumentList '/extract', \"$dir\" -Quiet",
+        "$expDir = Get-ChildItem -LiteralPath \"$dir\" -Directory | Select-Object -First 1 -ExpandProperty FullName",
+        "Rename-Item -NewName 'teracopy' -LiteralPath \"$expDir\"",
+        "Remove-Item -LiteralPath \"$dir\\teracopy.exe\"",
+        "New-Item -Path \"$dir\\teracopy\\options.ini\" -ItemType File | Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "teracopy\\TeraCopy.exe",
+            "TeraCopy"
+        ]
+    ],
+    "persist": "teracopy\\options.ini",
+    "autoupdate": {
+        "url": "https://www.codesector.com/files/teracopy.exe"
+    }
+}

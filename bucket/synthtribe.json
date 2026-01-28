@@ -1,0 +1,37 @@
+{
+    "$schema": "https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/schema.json",
+    "##": "checkver: Returned quoted columns are title,url,subGroup",
+    "version": "3.0.1",
+    "description": "Control Behringer's synthesizers and do firmware updates.",
+    "homepage": "https://www.behringer.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://community.musictribe.com/terms-of-use"
+    },
+    "url": "https://cdn.mediavalet.com/aunsw/musictribe/MtVIv8hJOU6VUtceoG2oXg/zrsKmTO_9k6ZX9fWsKVjkw/Original/SYNTHTRIBE_V3.0.1.zip",
+    "hash": "b77950734fe0edd67de5ee712ee02b1c77acd2934f3d60e6da5823ae4317db2a",
+    "shortcuts": [
+        [
+            "SYNTHTRIBE_V3.0.1.exe",
+            "SYNTHTRIBE"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://www.behringer.com/.rest/musictribe/v1/products/media-library?brandName=behringer&modelCode=0704-AAC'",
+            "$json = $(Invoke-WebRequest -Headers $head $url).Content | ConvertFrom-Json",
+            "$list = ($json | Where-Object title -eq 'Software').list",
+            "$list | Where-Object subGroup -eq 'Windows' | ConvertTo-Csv -NoHeader"
+        ],
+        "regex": "\\\"https://(?<url>.+/SYNTHTRIBE_V(?<version>\\d+\\.\\d+\\.\\d+).+)\\\","
+    },
+    "autoupdate": {
+        "url": "https://$matchUrl",
+        "shortcuts": [
+            [
+                "SYNTHTRIBE_V$version.exe",
+                "SYNTHTRIBE"
+            ]
+        ]
+    }
+}
