@@ -1,0 +1,58 @@
+{
+    "version": "5144efe",
+    "description": "Xbox (Original) Emulator",
+    "homepage": "https://cxbx-reloaded.co.uk/",
+    "license": {
+        "identifier": "GPL-2.0",
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/blob/master/COPYING"
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-5144efe/CxbxReloaded-Release.zip",
+            "hash": "7c03b9408314edc195869cf223c504d9a78e74d8bc5974518b3b97bb6ef30087"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Cxbx-Reloaded\") {",
+        "       Write-Host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Cxbx-Reloaded\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       (Get-Content -Path \"$persist_dir\\settings.ini\").Replace(\"DataStorageToggle = 0x0\", \"DataStorageToggle = 0x1\") | Set-Content -Path \"$persist_dir\\settings.ini\"",
+        "       Remove-Item -Path \"$env:APPDATA\\Cxbx-Reloaded\" -Recurse -Force",
+        "   } else {",
+        "       New-Item \"$dir\\EEPROM.bin\" -ItemType File | Out-Null",
+        "       New-item \"$dir\\settings.ini\" -ItemType File | Out-Null",
+        "   }",
+        "}"
+    ],
+    "bin": "cxbx.exe",
+    "shortcuts": [
+        [
+            "cxbx.exe",
+            "Cxbx-Reloaded"
+        ]
+    ],
+    "persist": [
+        "EmuDisk",
+        "EmuMediaBoard",
+        "EmuMu",
+        "SymbolCache",
+        "EEPROM.bin",
+        "settings.ini"
+    ],
+    "checkver": {
+        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases.atom",
+        "regex": "CI-([a-f\\d]+)."
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$version/CxbxReloaded-Release.zip"
+            }
+        }
+    }
+}
