@@ -1,46 +1,35 @@
 {
-    "version": "2.5.0",
-    "description": "「类脑式」知识管理笔记与写作。\"Brain-like\" Knowledge Management Notes.",
-    "homepage": "https://lattics.zineapi.com/",
-    "license": "Unknown",
-    "url": "https://media.zine.la/Lattics/2.5/Lattics_win_installer_x64_2.5.0.exe.zip",
-    "hash": "79976f91792e7e719b598589914ddb41389458a1035835e30d7b17efe61f00d8",
+    "homepage": "https://lattics.com/",
+    "description": "A Knowledge Management Notes",
+    "license": "freeware",
+    "version": "1.20.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://mid.zineapi.com/to/get-lattics/win-installer-x64",
+            "hash": "8e4b146599ff056b3e91aa3cd049610f3a3f6e0816dcca2770fe4ec8fdf94613"
+        }
+    },
+    "installer": {
+        "script": [
+            "$file = (Get-ChildItem \"$dir\" 'win-installer-x64' | Select-Object -First 1).FullName",
+            "Expand-7ZipArchive \"$file\" \"$dir\\\" -Removal",
+            "$file = (Get-ChildItem \"$dir\" 'Lattics_*.exe' | Select-Object -First 1).FullName",
+            "Expand-7ZipArchive \"$file\" \"$dir\\\" -Removal",
+            "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$PLUGINSDIR\",\"$dir\\`$R0\"  -Force -Recurse"
+        ]
+    },
     "shortcuts": [
         [
             "Lattics.exe",
             "Lattics"
         ]
     ],
-    "pre_install": [
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "$filter=Get-ChildItem $dir | Where-Object {$_.Name -like \"*.exe\" }",
-        "Rename-Item $filter[0].FullName \"_installer_.7z\"",
-        "Expand-7zipArchive \"$dir\\_installer_.7z\" \"$dir\" -ExtractDir '$PLUGINSDIR' -Removal",
-        "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal",
-        "persist_file -dir @(\"$user_AppData\\Lattics\") @(\"$persist_dir\\Lattics\")",
-        "handle_app_lnk",
-        "do_some_things"
-    ],
-    "pre_uninstall": [
-        "$bucket = (Get-Content \"$dir\\install.json\" | ConvertFrom-Json).bucket",
-        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
-        "stop_process",
-        "remove_files @(\"$user_AppData\\Lattics\",\"$user_LocalAppData\\lattics-updater\")"
-    ],
-    "checkver": {
-        "script": [
-            ". \"$pwd\\bin\\utils.ps1\"",
-            "$dl_info = get_installer_info 'AuraMarker/Lattics'",
-            "\"ver:$($dl_info.PackageVersion);\"",
-            "\"x64:$($dl_info.x64_zip.InstallerUrl);\""
-        ],
-        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
-    },
     "autoupdate": {
-        "url": "$matchX64",
-        "hash": {
-            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/a/AuraMarker/Lattics/$version/AuraMarker.Lattics.installer.yaml",
-            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        "architecture": {
+            "64bit": {
+                "url": "https://mid.zineapi.com/to/get-lattics/win-installer-x64"
+            }
         }
     }
 }

@@ -1,24 +1,21 @@
 {
-    "homepage": "https://www.xmind.cn/",
-    "version": "2021.07.14",
-    "description": "XMind 是一个全功能的思维导图和头脑风暴软件，为激发灵感和创意而生。作为一款有效提升工作和生活效率的生产力工具，受到全球百千万用户的青睐。",
+    "version": "26.02.02052",
+    "description": "A full-featured mind mapping and brainstorming tool",
+    "homepage": "https://xmind.app/",
+    "license": {
+        "identifier": "Shareware",
+        "url": "https://xmind.app/terms/"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://www.xmind.cn/zen/download/win64/#/dl.7z",
-            "hash": "bf12e68c04b7cc013e4a94dd60d383fe4b746d300be7bbc04e0921d394b2a32c",
+            "url": "https://dl3.xmind.net/Xmind-for-Windows-x64bit-26.02.02052-202601211810.exe#/dl.7z",
+            "hash": "c270c7fb22cca3031dd7dfe1d52d07689c7a958432001506eed4cad457a972e2",
             "installer": {
                 "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
             }
-        },
-        "32bit": {
-            "url": "https://www.xmind.cn/zen/download/win32/#/dl.7z",
-            "hash": "b413e376231f95ba20586185eedf7cb2cf7810246bae800b7f9c522363042a9d",
-            "installer": {
-                "script": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
-            }
         }
     },
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse",
+    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse",
     "shortcuts": [
         [
             "XMind.exe",
@@ -26,16 +23,19 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.xmind.cn/xmind2020/release-notes/",
-        "re": "<h5.*?>([\\d.]+)<"
+        "script": [
+            "$url = 'https://www.xmind.app/zen/download/win64'",
+            "$request = [System.Net.HttpWebRequest]::Create($url)",
+            "$request.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36'",
+            "$response = $request.GetResponse()",
+            "Write-Output $response.ResponseUri.AbsoluteUri"
+        ],
+        "regex": "Xmind-for-Windows-x64bit-([\\d.]+)-(?<dt>\\d{12})\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://www.xmind.cn/zen/download/win64/#/dl.7z"
-            },
-            "32bit": {
-                "url": "https://www.xmind.cn/zen/download/win32/#/dl.7z"
+                "url": "https://dl3.xmind.net/Xmind-for-Windows-x64bit-$version-$matchDt.exe#/dl.7z"
             }
         }
     }

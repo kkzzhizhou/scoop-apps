@@ -1,23 +1,32 @@
 {
     "version": "3.25.113.0",
-    "description": "An enhanced clipboard manager",
-    "homepage": "https://ditto-cp.sourceforge.io",
-    "license": "GPL-3.0-only",
+    "description": "A Windows clipboard enhancement utility that extends the standard clipboard by storing copied items for later reuse, with support for multiple data types including text, images, HTML, and custom formats.",
+    "homepage": "https://sabrogden.github.io/Ditto/",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/sabrogden/Ditto/blob/HEAD/LICENSE"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/sabrogden/Ditto/releases/download/3.25.113.0/DittoSetup_3_25_113_0.exe",
+            "url": "https://github.com/sabrogden/Ditto/releases/download/3.25.113.0/DittoSetup_3_25_113_0.exe#/setup.exe",
             "hash": "fc354f1e9b9d2984099d4da93b4c569866dfe9bf1f590c1313e85e07f41224d3"
         }
     },
-    "innosetup": true,
-    "pre_install": [
-        "$file = 'Ditto.Settings'",
-        "if (!(Test-Path \"$persist_dir\\$file\")) {",
-            "Write-Host 'File' $file 'does not exists. Creating.' -f Yellow",
-            "$CONT = @('[Ditto]', 'DBPath3=Ditto.db')",
-            "Set-Content \"$dir\\$file\" ($CONT -join \"`r`n\") -Encoding Ascii",
-        "}"
-    ],
+    "installer": {
+        "args": [
+            "/VERYSILENT",
+            "/DIR=$dir",
+            "/NORESTART"
+        ]
+    },
+    "post_install": "Remove-Item -Recurse \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Ditto\"",
+    "uninstaller": {
+        "file": "unins000.exe",
+        "args": [
+            "/VERYSILENT",
+            "/NORESTART"
+        ]
+    },
     "bin": "Ditto.exe",
     "shortcuts": [
         [
@@ -25,21 +34,13 @@
             "Ditto"
         ]
     ],
-    "persist": [
-        "Ditto.db",
-        "Ditto.Settings"
-    ],
     "checkver": {
         "github": "https://github.com/sabrogden/Ditto"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/sabrogden/Ditto/releases/download/$version/DittoSetup_$underscoreVersion.exe",
-                "hash": {
-                    "url": "https://github.com/sabrogden/Ditto/releases/expanded_assets/$version",
-                    "regex": "DittoSetup_(?<version>[\\d_]+).+exe.+([a-f0-9]{64})"
-                }
+                "url": "https://github.com/sabrogden/Ditto/releases/download/$version/DittoSetup_$underscoreVersion.exe#/setup.exe"
             }
         }
     }
