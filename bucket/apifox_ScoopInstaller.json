@@ -1,0 +1,43 @@
+{
+    "version": "2.8.4",
+    "description": "All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
+    "homepage": "https://apifox.com",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://file-assets.apifox.com/download/2.8.4/Apifox-2.8.4.exe#/dl.7z",
+            "hash": "sha512:a5fe53421df87ee95130980a9d010d75945f61d3a6595a8e56fc4706bfec10b42b0c8079b12e17c2a496728803fd1a88f1a78f568c10629bbee26f72ad1de6e1"
+        }
+    },
+    "pre_install": [
+        "Get-Item \"$dir\\`$PLUGINSDIR\\app*.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
+    ],
+    "shortcuts": [
+        [
+            "Apifox.exe",
+            "Apifox",
+            "--user-data-dir=\"$dir\\UserData\""
+        ]
+    ],
+    "persist": "UserData",
+    "pre_uninstall": [
+        "Stop-Process -Name 'ApifoxAppAgent' -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 1500"
+    ],
+    "checkver": {
+        "url": "https://docs.apifox.com/changelog.md",
+        "regex": "## ([\\d.]+)(?=\\s)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://file-assets.apifox.com/download/$version/Apifox-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512: $base64"
+                }
+            }
+        }
+    }
+}
