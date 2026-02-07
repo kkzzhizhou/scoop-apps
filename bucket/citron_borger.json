@@ -1,0 +1,78 @@
+{
+  "version": "18a9a4fc9",
+  "description": "Nintendo Switch Emulator",
+  "homepage": "https://github.com/Zephyron-Dev/Citron-CI",
+  "license": "GPL-3.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-18a9a4fc9-x64.zip",
+      "hash": "b749258cfd4fcad7ce5179ff5712d97a22699b2afbda46ef7f242d187bd5e94b"
+    }
+  },
+  "pre_install": [
+    "",
+    "# Ensure user folder exists",
+    "if (-not (Test-Path \"$dir\\user\")) {",
+    "New-Item -ItemType Directory -Path \"$dir\\user\" -Force | Out-Null",
+    "}",
+    "$appDataPath = $env:APPDATA",
+    "$documentsPath = [Environment]::GetFolderPath('MyDocuments')",
+    "",
+    "# Migrate application data from common locations",
+    "$appDataPath, $documentsPath | ForEach-Object {",
+    "$path = if ($_ -eq $appDataPath) { \"$appDataPath\\citron\" } else { \"$documentsPath\\citron\" }",
+    "if (Test-Path $path) {",
+    "$items = Get-ChildItem -Path $path -Force",
+    "if ($items) {",
+    "Write-Host \"Migrating data from $path\"",
+    "$items | Copy-Item -Destination \"$dir\\portable_data\" -Recurse -Force -ErrorAction SilentlyContinue",
+    "}",
+    "}",
+    "}"
+  ],
+  "bin": "citron.exe",
+  "shortcuts": [
+    [
+      "citron.exe",
+      "Nintendo Switch [switch][citron]"
+    ]
+  ],
+  "persist": "user",
+  "checkver": {
+    "regex": "^citron:\\s*(?<commit>[a-f0-9]{7,40})",
+    "replace": "${commit}",
+    "script": [
+      "# Scan releases for nightly builds and pick the newest built commit",
+      "$api = 'https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases?per_page=50'",
+      "$hdr = @{ 'User-Agent' = 'Mozilla/5.0' }",
+      "try { $rels = Invoke-RestMethod -Uri $api -Headers $hdr -UseBasicParsing -ErrorAction Stop } catch { Write-Error 'api-failed'; exit 1 }",
+      "# Prefer releases with tag/name containing 'nightly', newest first",
+      "$candidates = $rels | Where-Object { ($_.tag_name -and $_.tag_name -like 'nightly*') -or ($_.name -and $_.name -match '(?i)nightly') } | Sort-Object -Property published_at -Descending",
+      "foreach ($rel in $candidates) {",
+      "  # 1) asset filename pattern: Citron-windows-nightly-<sha>-x64.zip (prefer exact built sha)",
+      "  if ($rel.assets) { foreach ($a in $rel.assets) { if ($a.name -match 'Citron-windows-nightly-([a-f0-9]{7,40})-x64.zip') { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 } } }",
+      "  # Skip if not Windows release",
+      "  if ($rel.tag_name -and $rel.tag_name -notlike '*windows*') { continue }",
+      "  # 2) release name may include a hex blob",
+      "  if ($rel.name -and ($rel.name -match '([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
+      "  # 3) release body often contains 'Citron Upstream Commit: <sha>'",
+      "  if ($rel.body -and ($rel.body -match 'Citron Upstream Commit:\\s*([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
+      "}",
+      "# Fallback: try the single 'nightly-windows' release if present",
+      "try { $rel = Invoke-RestMethod -Uri 'https://api.github.com/repos/Zephyron-Dev/Citron-CI/releases/tags/nightly-windows' -Headers $hdr -UseBasicParsing -ErrorAction Stop } catch { $rel = $null }",
+      "if ($rel) {",
+      "  if ($rel.assets) { foreach ($a in $rel.assets) { if ($a.name -match 'Citron-windows-nightly-([a-f0-9]{7,40})-x64.zip') { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 } } }",
+      "  if ($rel.body -and ($rel.body -match 'Citron Upstream Commit:\\s*([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
+      "  if ($rel.name -and ($rel.name -match '([a-f0-9]{7,40})')) { $sha = $matches[1]; Write-Output ('citron: ' + $sha); exit 0 }",
+      "}",
+      "Write-Error 'could not find nightly commit in releases'"
+    ]
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/Zephyron-Dev/Citron-CI/releases/download/nightly-windows/Citron-windows-nightly-$version-x64.zip"
+      }
+    }
+  }
+}

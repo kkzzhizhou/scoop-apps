@@ -1,0 +1,45 @@
+{
+    "homepage": "https://github.com/karlstav/cava/releases",
+    "version": "0.10.7",
+    "description": "Cross-platform Audio Visualizer",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/karlstav/cava/blob/master/LICENSE"
+    },
+    "url": "https://github.com/karlstav/cava/releases/download/0.10.7/cava_win_x64_install.msi",
+    "hash": "sha256:f18d8badde2a5b6df0fc790ee6a05dabab74a7d2f237b6d832496c01d9b0c590",
+    "extract_dir": "LocalApp/cava",
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/user Directory",
+        "create $dir/user/config File"
+    ],
+    "bin": [
+        [
+            "cava.exe",
+            "cava",
+            "--config $dir/user/config"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "url": "https://api.github.com/repos/karlstav/cava/releases",
+        "jsonpath": {
+            "version": "$.[0].name",
+            "download": "$.[0].assets[?(@.name =~ /win_x64/i)].browser_download_url"
+        },
+        "regex": "CAVA-([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "url": "$matchDownload",
+        "hash": {
+            "url": "https://api.github.com/repos/karlstav/cava/releases",
+            "jsonpath": "$.[0].assets[?(@.name =~ /win_x64/i)].digest"
+        }
+    }
+}
