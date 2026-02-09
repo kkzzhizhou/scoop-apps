@@ -6,18 +6,18 @@
     "architecture": {
         "64bit": {
             "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4/EqualizerAPO64-1.4.exe#/setup.exe",
-            "hash": "sha1:e2bae283dcf46815df41577eb1c1d3d60e0169ed"
+            "hash": "77374fb48cda6e8739732672bbe6fed90e2e4a0ceed0a4e460f193135485fe50"
         },
         "32bit": {
             "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4/EqualizerAPO32-1.4.exe#/setup.exe",
-            "hash": "sha1:222ac63cdc5a0fe81e3a2f6749b2b0e0eac64305"
+            "hash": "7da45cad07048eaaecd4fb2edcb7f534bef6035c63e3e20a6878816cf729ba4d"
         }
     },
     "installer": {
         "script": [
             "if (!(is_admin)) {",
             "    error \"Administrator rights are required to install $app.\"",
-            "    break",
+            "    exit 1",
             "}",
             "",
             "Start-Job {",
@@ -29,12 +29,12 @@
             "    $configurator_process | ForEach-Object { Stop-Process -Id $_.Id }",
             "} | Out-Null",
             "",
-            "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
+            "Invoke-ExternalCommand \"$dir\\setup.exe\" -ArgumentList '/S' | Out-Null",
             "Remove-Item \"$dir\\setup.exe\""
         ]
     },
     "uninstaller": {
-        "script": "Start-Process \"$Env:ProgramFiles\\EqualizerAPO\\Uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null"
+        "script": "Invoke-ExternalCommand \"$([Environment]::GetFolderPath('programfiles'))\\EqualizerAPO\\Uninstall.exe\" -ArgumentList '/S' -RunAs | Out-Null"
     },
     "checkver": {
         "url": "https://sourceforge.net/projects/equalizerapo/files/",
