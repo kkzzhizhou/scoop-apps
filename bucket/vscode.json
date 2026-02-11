@@ -1,5 +1,5 @@
 {
-    "version": "1.110.0",
+    "version": "1.109.2",
     "description": "Lightweight but powerful source code editor",
     "homepage": "https://code.visualstudio.com/",
     "license": {
@@ -14,12 +14,24 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/d565dc148b81abc304b2d6b57d7880c09f85b2c8/VSCode-win32-x64-1.110.0.zip",
-            "hash": "10d4919100f063e0228c3e93460250c2490f02a7b080cf216a46e0efcc08f391"
+            "url": [
+                "https://update.code.visualstudio.com/1.109.2/win32-x64-archive/stable#/dl.7z",
+                "https://raw.githubusercontent.com/Weidows-projects/scoop-3rd/main/scripts/register.zip"
+            ],
+            "hash": [
+                "cba3d45e0b365b26dfb401249e086bf14ae8ee29bc94f47a64c270cc0f3079cb",
+                "A6B668AD01150935B9B4FC44F03AE540CC0750551B809D83B9E6535AF237E844"
+            ]
         },
         "arm64": {
-            "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/d565dc148b81abc304b2d6b57d7880c09f85b2c8/VSCode-win32-arm64-1.110.0.zip",
-            "hash": "8f9fef4c98419ab2108d900f8199b408d35af5b93abfae794b9359bf7997b021"
+            "url": [
+                "https://update.code.visualstudio.com/1.109.2/win32-arm64-archive/stable#/dl.7z",
+                "https://raw.githubusercontent.com/Weidows-projects/scoop-3rd/main/scripts/register.zip"
+            ],
+            "hash": [
+                "d7cdcf7fe0ec475ebd67ca9d390d6d84915e9d372c0c222f2c5ae0ff58270962",
+                "A6B668AD01150935B9B4FC44F03AE540CC0750551B809D83B9E6535AF237E844"
+            ]
         }
     },
     "env_add_path": "bin",
@@ -33,8 +45,8 @@
         "$dirpath = \"$dir\".Replace('\\', '\\\\')",
         "$exepath = \"$dir\\Code.exe\".Replace('\\', '\\\\')",
         "'install-associations', 'uninstall-associations', 'install-context', 'uninstall-context' | ForEach-Object {",
-        "  if (Test-Path \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\") {",
-        "    $content = Get-Content \"$bucketsdir\\extras\\scripts\\vscode\\$_.reg\"",
+        "  if (Test-Path \"$dir\\$_.reg\") {",
+        "    $content = Get-Content \"$dir\\$_.reg\"",
         "    $content = $content.Replace('$codedir', $dirpath)",
         "    $content = $content.Replace('$code', $exepath)",
         "    if ($global) {",
@@ -63,20 +75,19 @@
     "persist": "data",
     "checkver": {
         "url": "https://code.visualstudio.com/sha?build=stable",
-        "regex": "version\":\"(?<Code>[\\d\\w]+)\",\"productVersion\":\"(?<version>[\\d.]+)",
-        "replace": "${version}"
+        "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].name"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/$matchCode/VSCode-win32-x64-$version.zip",
+                "url": "https://update.code.visualstudio.com/$version/win32-x64-archive/stable#/dl.7z",
                 "hash": {
                     "url": "https://code.visualstudio.com/sha?build=stable",
                     "jsonpath": "$.products[?(@.platform.os == 'win32-x64-archive')].sha256hash"
                 }
             },
             "arm64": {
-                "url": "https://vscode.download.prss.microsoft.com/dbazure/download/stable/$matchCode/VSCode-win32-arm64-$version.zip",
+                "url": "https://update.code.visualstudio.com/$version/win32-arm64-archive/stable#/dl.7z",
                 "hash": {
                     "url": "https://code.visualstudio.com/sha?build=stable",
                     "jsonpath": "$.products[?(@.platform.os == 'win32-arm64-archive')].sha256hash"
