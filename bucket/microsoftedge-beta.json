@@ -1,20 +1,16 @@
 {
-    "homepage": "https://www.microsoft.com/en-us/edge",
+    "version": "145.0.3800.53",
     "description": "The chromium based Microsoft Edge browser (Beta Channel)",
-    "version": "145.0.3800.47",
+    "homepage": "https://www.microsoft.com/en-us/edge",
     "license": "Freeware",
     "architecture": {
         "64bit": {
-            "url": "https://dorado-api.deno.dev/edge?arch=64&channel=beta&version=145.0.3800.47&dl#/MicrosoftEdge-145.0.3800.47-x64.7z",
-            "hash": "02b5ffa877bd419260cd1870d36a91cf84592632bb94bd61623673780db870b2"
-        },
-        "32bit": {
-            "url": "https://dorado-api.deno.dev/edge?arch=86&channel=beta&version=145.0.3800.47&dl#/MicrosoftEdge-145.0.3800.47-x86.7z",
-            "hash": "7bcdf910e0e32ffa9a5a43baea66419913e04dd998f0731c47e89db764b365c7"
+            "url": "https://dorado-api.deno.dev/edge?arch=64&channel=beta&version=145.0.3800.53&dl#/MicrosoftEdge-145.0.3800.53-x64.7z",
+            "hash": "ce73dc7207aa4b00b283b795f530d2204a721d3f12e0b1b84e7d7f6602d916df"
         },
         "arm64": {
-            "url": "https://dorado-api.deno.dev/edge?arch=arm64&channel=beta&version=145.0.3800.47&dl#/MicrosoftEdge-145.0.3800.47-arm64.7z",
-            "hash": "1874f89ebdc8184e255d7af24ad760d601a550c4fc93635a0a0306c1d3963789"
+            "url": "https://dorado-api.deno.dev/edge?arch=arm64&channel=beta&version=145.0.3800.53&dl#/MicrosoftEdge-145.0.3800.53-arm64.7z",
+            "hash": "c7ecb6c4dd91334241c957c257fe0724b2263be48d5ada5c13036866cb907115"
         }
     },
     "installer": {
@@ -23,9 +19,25 @@
     "shortcuts": [
         [
             "msedge.exe",
-            "Microsoft Edge Beta"
+            "Microsoft Edge Beta",
+            "--force-device-scale-factor=1.5"
         ]
     ],
+    "post_install": [
+        "$runtimeCache = \"$env:LocalAppData\\Microsoft\\Edge Beta\\User Data\"",
+        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "post_uninstall": [
+        "$runtimeCache = \"$env:LocalAppData\\Microsoft\\Edge Beta\\User Data\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "User Data",
     "checkver": {
         "url": "https://dorado-api.deno.dev/edge?arch=64&channel=beta",
         "jsonpath": "$.Version"
@@ -36,13 +48,6 @@
                 "url": "https://dorado-api.deno.dev/edge?arch=64&channel=beta&version=$version&dl#/MicrosoftEdge-$version-x64.7z",
                 "hash": {
                     "url": "https://dorado-api.deno.dev/edge?arch=64&channel=beta&version=$version",
-                    "jsonpath": "$.Hashes.Sha256"
-                }
-            },
-            "32bit": {
-                "url": "https://dorado-api.deno.dev/edge?arch=86&channel=beta&version=$version&dl#/MicrosoftEdge-$version-x86.7z",
-                "hash": {
-                    "url": "https://dorado-api.deno.dev/edge?arch=86&channel=beta&version=$version",
                     "jsonpath": "$.Hashes.Sha256"
                 }
             },

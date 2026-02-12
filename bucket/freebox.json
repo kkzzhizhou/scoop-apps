@@ -1,0 +1,54 @@
+{
+    "version": "1.6.0",
+    "description": "TVBox电脑版/姊妹软件，致力于TVBox功能和生态的跨平台扩展",
+    "homepage": "https://github.com/kknifer7/FreeBox",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/kknifer7/FreeBox#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kknifer7/FreeBox/releases/download/v1.6.0/FreeBox_1.6.0.msi",
+            "hash": "a55257f47aa8d3bca8e3158a9109480d19f9ef8030a0a2820da3942c53e0709d"
+        }
+    },
+    "innosetup": true,
+    "pre_install": [
+        "Copy-Item \"$dir\\FreeBox\\*\" \"$dir\" -Force -Recurse",
+        "Remove-Item \"$dir\\FreeBox\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\FreeBox\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\FreeBox\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "FreeBox.exe",
+    "shortcuts": [
+        [
+            "FreeBox.exe",
+            "FreeBox"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/kknifer7/FreeBox/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kknifer7/FreeBox/releases/download/v$version/FreeBox_$version.msi"
+            }
+        }
+    }
+}
