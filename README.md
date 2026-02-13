@@ -103,8 +103,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - naderi/scoop-bucket
 - kengwang/scoop-ctftools-bucket
 - noql-net/scoop
-- ygguorun/scoop-bucket
 - WinApps-share/WinApps-bucket
+- ygguorun/scoop-bucket
 - brian6932/dank-scoop
 - aliesbelik/poldi
 - asimov-platform/scoop-bucket
@@ -114,9 +114,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Weidows-projects/scoop-3rd
 - Velgus/Scoop-Portapps
 - seumsc/scoop-seu
-- iquiw/scoop-bucket
 - TianXiaTech/scoop-txt
 - starise/Scoop-Confetti
+- iquiw/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - 42wim/scoop-bucket
 - jfut/scoop-jfut
@@ -125,8 +125,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Scoopforge/Extras-Plus
 - starise/Scoop-Gaming
 - mo-san/scoop-bucket
-- AkariiinMKII/Scoop4kariiin
 - cc713/ownscoop
+- AkariiinMKII/Scoop4kariiin
 - rivy/scoop-bucket
 - natecohen/scoop-av
 - HUMORCE/nuke
@@ -140,11 +140,11 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - littleli/Scoop-AtariEmulators
 - AntonOks/scoop-aoks
 - ShuguangSun/sgs-scoop-bucket
-- Locietta/sniffer
-- younger-1/scoop-it
-- windedge/ladle-bucket
 - jcwillox/scoop-bucket
 - maboloshi/scoop-private
+- windedge/ladle-bucket
+- Locietta/sniffer
+- younger-1/scoop-it
 - milnak/scoop-bucket
 - Rinkerbel/scooped
 - The-Simples/scoop-minecraft
