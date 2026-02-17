@@ -1,0 +1,49 @@
+{
+    "version": "0.55.2",
+    "description": "A pluggable multi-language version manager.",
+    "homepage": "https://moonrepo.dev/proto",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/moonrepo/proto/releases/download/v0.55.2/proto_cli-x86_64-pc-windows-msvc.zip",
+            "hash": "3ecaabda22946f5636bf16581a162a60809392c30caa3629edf826e4b051972f"
+        }
+    },
+    "pre_install": "ensure \"$dir\\bin\"",
+    "installer": {
+        "script": "Get-ChildItem \"$dir\\*\" -File | ForEach-Object { Move-Item $_.FullName -Destination \"$dir\\bin\" }"
+    },
+    "post_install": [
+        "    Get-ChildItem \"$dir\\tools\" -Directory | ForEach-Object {",
+        "        $tool = $_.Name",
+        "        Get-ChildItem $_.FullName -Directory | ForEach-Object {",
+        "            $version = $_.Name",
+        "            if ($version -match '^\\d+(?:\\.|$)') {",
+        "                & \"$dir\\bin\\proto.exe\" install $tool $version --no-build | Out-Null",
+        "            }",
+        "        }",
+        "    }"
+    ],
+    "env_add_path": [
+        "shims",
+        "bin"
+    ],
+    "env_set": {
+        "PROTO_HOME": "$dir"
+    },
+    "persist": [
+        "cache",
+        "plugins",
+        "tools"
+    ],
+    "checkver": {
+        "github": "https://github.com/moonrepo/proto"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/moonrepo/proto/releases/download/v$version/proto_cli-x86_64-pc-windows-msvc.zip"
+            }
+        }
+    }
+}
