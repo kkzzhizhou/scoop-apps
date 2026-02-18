@@ -1,0 +1,67 @@
+{
+  "version": "26.1.0-0",
+  "description": "A conda-forge distribution",
+  "homepage": "https://github.com/conda-forge/miniforge",
+  "license": "BSD-3-Clause",
+  "notes": [
+    "From 4.6.0, conda has built the support for Cmd, Powershell or other shells.",
+    "Use \"conda init powershell\" or \"conda init __your_favorite_shell__\""
+  ],
+  "architecture": {
+    "64bit": {
+      "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/conda-forge/miniforge/LatestRelease/Miniforge3-26.1.0-0-Windows-x86_64.exe",
+      "hash": "0ad64473c20a8649be9313f64ee898f4b23a35a7a25ea9998a751c542e5e3840"
+    }
+  },
+  "pre_install": [
+    "if ($dir -match ' ') { error 'The installation directory cannot include a space'; break}"
+  ],
+  "installer": {
+    "script": [
+      "Move-Item \"$dir\\$fname\" \"$dir\\..\\$fname\"",
+      "Start-Process -Wait \"$dir\\..\\$fname\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', \"/D=$dir\")",
+      "Remove-Item \"$dir\\..\\$fname\"",
+      "if (!(Test-Path \"$dir\\miniforge3_prompts.bat\")) {",
+      "  New-Item -Path \"$dir\\miniforge3_prompts.bat\" -ItemType File | Out-Null",
+      "  $shortscont = \"`\"$env:windir\\system32\\cmd.exe`\" `\"/K`\" `\"$dir\\Scripts\\activate.bat`\" `\"$dir`\"\"",
+      "  $shortscont | Set-Content \"$dir\\miniforge3_prompts.bat\"",
+      "}"
+    ]
+  },
+  "uninstaller": {
+    "script": [
+      "Start-Process -Wait \"$dir\\Uninstall-Mambaforge.exe\" -ArgumentList '/S'",
+      "# Workaround for 'envs' being deleted by the uninstaller. This does not affect persist.",
+      "New-Item \"$dir\\envs\" -ItemType Directory | Out-Null"
+    ]
+  },
+  "shortcuts": [
+    [
+      "$dir\\miniforge3_prompts.bat",
+      "Miniforge Prompt"
+    ]
+  ],
+  "bin": [
+    [
+      "miniforge3_prompts.bat",
+      "Miniforge Prompt"
+    ],
+    "condabin\\conda.bat",
+    "condabin\\mamba.bat"
+  ],
+  "persist": "envs",
+  "checkver": {
+    "github": "https://github.com/conda-forge/miniforge",
+    "regex": "tag/([\\d.-]+)"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/conda-forge/miniforge/LatestRelease/Miniforge3-$version-Windows-x86_64.exe",
+        "hash": {
+          "url": "$url.sha256"
+        }
+      }
+    }
+  }
+}
