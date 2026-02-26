@@ -1,19 +1,30 @@
 {
-    "version": "20240203-110809-5046fc22-alt-icons",
-    "description": "GPU-accelerated terminal emulator (Mikker-Black alternative icon build)",
-    "homepage": "https://github.com/ocodo/wezterm-alt-windows-icon-builds",
+    "version": "20240203-110809-5046fc22",
+    "description": "GPU-accelerated terminal emulator",
+    "homepage": "https://github.com/wez/wezterm",
     "license": "Apache-2.0",
     "notes": [
-        "This is one of the alternative icons build created by @ocodo",
-        "The icon is created by @mikker",
-        "You can find other builds that apply different icon in the repo"
+        "Add Open with Wezterm as a context menu option by running:",
+        "reg import \"$dir\\install-context.reg\""
     ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/ocodo/wezterm-alt-windows-icon-builds/releases/download/20240203-110809-5046fc22-alt-icons/WezTerm-windows-Mikker-Black-20240203-110809-5046fc22.zip",
-            "hash": "730431d9b0dba7c1f4d6b64f2128897b66f2c88533d88d932e29d5c0fc8fe7fe"
+            "url": "https://github.com/wez/wezterm/releases/download/20240203-110809-5046fc22/WezTerm-windows-20240203-110809-5046fc22.zip",
+            "hash": "57e5d03b585303d81e8b8e96d1230362852eb39aca92b3b29c7a42cfb82f9ac4"
         }
     },
+    "extract_dir": "WezTerm-windows-20240203-110809-5046fc22",
+    "post_install": [
+        "$weztermPath = \"$dir\\wezterm-gui.exe\".Replace('\\', '\\\\')",
+        "'install-context', 'uninstall-context' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\$app\\$_.reg\") {",
+        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\$app\\$_.reg\"",
+        "        $content = $content.Replace('$weztermPath', $weztermPath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
     "bin": [
         "wezterm.exe",
         "wezterm-gui.exe"
@@ -21,19 +32,20 @@
     "shortcuts": [
         [
             "wezterm-gui.exe",
-            "Wezterm (Mikker-Black)"
+            "Wezterm"
         ]
     ],
     "checkver": {
-        "github": "https://github.com/ocodo/wezterm-alt-windows-icon-builds",
-        "regex": "tag/(([\\w-]+)-alt-icons)"
+        "github": "https://github.com/wez/wezterm",
+        "regex": "WezTerm-windows-([\\w-]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/ocodo/wezterm-alt-windows-icon-builds/releases/download/$version/WezTerm-windows-Mikker-Black-$match1.zip"
+                "url": "https://github.com/wez/wezterm/releases/download/$version/WezTerm-windows-$version.zip"
             }
         },
+        "extract_dir": "WezTerm-windows-$version",
         "hash": {
             "url": "$url.sha256"
         }
