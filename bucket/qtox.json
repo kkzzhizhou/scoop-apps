@@ -1,33 +1,29 @@
 {
-    "version": "1.17.6",
+    "version": "1.18.4",
     "description": "Chat, voice, video, and file transfer IM client using the encrypted peer-to-peer Tox protocol.",
     "homepage": "https://qtox.github.io/",
     "license": "GPL-3.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/qTox/qTox/releases/download/v1.17.6/setup-qtox-x86_64-release.exe#/dl.7z",
-            "hash": "f1cd7cda26c2fdae4a924ddde34af44b2247d5e8561f7dafdfed75ef6632e40c"
+            "url": "https://github.com/TokTok/qTox/releases/download/v1.18.4/setup-qtox-x86_64-release.exe#/dl.7z",
+            "hash": "b110727816db6828e87a42a3bd566fccc22a13bac9efb84da0053bb0d3ce383f"
         },
         "32bit": {
-            "url": "https://github.com/qTox/qTox/releases/download/v1.17.6/setup-qtox-i686-release.exe#/dl.7z",
-            "hash": "e969755b9a50522c49938d809218d3b55f3a9c62de50a62d537f33b2d7eda9a2"
+            "url": "https://github.com/TokTok/qTox/releases/download/v1.18.4/setup-qtox-i686-release.exe#/dl.7z",
+            "hash": "e74317d315aac6bd3a20df2a69897641ef68b14ca078ec58fefd3ce385838878"
         }
     },
+    "pre_install": [
+        "$qtoxCfg = \"$persist_dir\\qtox.ini\"",
+        "$profile = \"$persist_dir\\profile.tox\"",
+        "if (-not (Test-Path $qtoxCfg)) {",
+        "  Set-Content -Value \"[Advanced]`nmakeToxPortable=true\" $qtoxCfg",
+        "}",
+        "if (-not (Test-Path $profile)) {",
+        "  Set-Content -Value \"dummy replace me\" $profile",
+        "}"
+    ],
     "extract_dir": "bin",
-    "installer": {
-        "script": [
-            "if (!(Test-Path \"$persist_dir\\qtox.ini\")) {",
-            "    Set-Content \"$dir\\qtox.ini\" @('[Advanced]', 'makeToxPortable=true', '[%General]', 'checkUpdates=false') -Encoding ASCII -Force",
-            "    if (Test-Path \"$env:AppData\\tox\") {",
-            "        Copy-Item \"$env:AppData\\tox\\*\" \"$dir\" -Recurse -Exclude '*qtox.ini' -ErrorAction SilentlyContinue",
-            "    }",
-            "} else { Move-Item \"$persist_dir\\*\" \"$dir\" -Include '*.ini', '*.db', '*.tox' }"
-        ]
-    },
-    "uninstaller": {
-        "script": "Move-Item \"$dir\\*\" \"$persist_dir\" -Include '*.ini', '*.db', '*.tox'"
-    },
-    "persist": "avatars",
     "bin": "qtox.exe",
     "shortcuts": [
         [
@@ -35,16 +31,31 @@
             "qTox"
         ]
     ],
+    "persist": [
+        "profile.tox",
+        "profile.ini",
+        "profile.db",
+        "avatars",
+        "emoticons",
+        "downloads",
+        "qtox.ini"
+    ],
+    "notes": [
+        "Your username is 'profile' to keep things portable.",
+        "Replace 'persist/qtox/profile.tox' with your own.",
+        "profile.tox, profile.db and profile.ini configuration must be placed in the persist/qtox",
+        "directory before starting. These can only be gotten from a previous installation of qtox."
+    ],
     "checkver": {
-        "github": "https://github.com/qTox/qTox"
+        "github": "https://github.com/TokTok/qTox"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/qTox/qTox/releases/download/v$version/setup-qtox-x86_64-release.exe#/dl.7z"
+                "url": "https://github.com/TokTok/qTox/releases/download/v$version/setup-qtox-x86_64-release.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://github.com/qTox/qTox/releases/download/v$version/setup-qtox-i686-release.exe#/dl.7z"
+                "url": "https://github.com/TokTok/qTox/releases/download/v$version/setup-qtox-i686-release.exe#/dl.7z"
             }
         }
     }
