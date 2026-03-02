@@ -1,53 +1,37 @@
 {
     "version": "0.10.32",
-    "description": "The AI IDE for prototype to production",
+    "description": "An agentic IDE developed by AWS for structured, spec-driven AI development from prototype to production.",
     "homepage": "https://kiro.dev",
-    "license": "Proprietary",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://kiro.dev/license/"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://prod.download.desktop.kiro.dev/releases/stable/win32-x64/signed/0.10.32/kiro-ide-0.10.32-stable-win32-x64.exe",
-            "hash": "f071dce4e215ac1f6f6d01e7b497eb45f079e59555d8885f0b56b066440a48f4"
+            "url": "https://prod.download.desktop.kiro.dev/releases/stable/win32-x64/signed/0.10.32/kiro-ide-0.10.32-stable-win32-x64.zip",
+            "hash": "0b2342521ef73d588f1ae98573010cd83242cd3a70c48151050f9ba9049ec871"
         }
     },
-    "post_install": [
-        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.kiro\\extensions\")) {",
-        "    info '[Portable Mode] Copying extensions...'",
-        "    Copy-Item \"$env:USERPROFILE\\.kiro\\extensions\" \"$dir\\data\" -Recurse",
-        "}",
-        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\Kiro\")) {",
-        "    info '[Portable Mode] Copying user data...'",
-        "    Copy-Item \"$env:AppData\\Kiro\" \"$dir\\data\\user-data\" -Recurse",
-        "}",
-        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
-        "if ((Test-Path \"$extensions_file\")) {",
-        "    info 'Adjusting path in extensions file...'",
-        "    (Get-Content \"$extensions_file\") -replace '(?<=kiro(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
-        "}"
-    ],
     "bin": [
         [
             "bin\\kiro.cmd",
-            "kiro",
-            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+            "kiro"
         ]
     ],
     "shortcuts": [
         [
             "Kiro.exe",
-            "Kiro",
-            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+            "Kiro"
         ]
     ],
-    "persist": "data",
     "checkver": {
         "url": "https://prod.download.desktop.kiro.dev/stable/metadata-win32-x64-user-stable.json",
-        "regex": "\"version\":\"(?<version>[\\d.]+)\".*?\"url\":\"(?<url>[^\"].*)\"",
-        "replace": "${version}"
+        "jsonpath": "$.currentRelease"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "$matchUrl"
+                "url": "https://prod.download.desktop.kiro.dev/releases/stable/win32-x64/signed/$version/kiro-ide-$version-stable-win32-x64.zip"
             }
         }
     }
