@@ -1,5 +1,5 @@
 {
-    "version": "8.2.0-1-py314",
+    "version": "8.2.1-1-py314-1772730910",
     "description": "A command-line utility that pipes video streams from various services into a video player.",
     "homepage": "https://streamlink.github.io/",
     "license": "BSD-2-Clause",
@@ -17,26 +17,28 @@
     "architecture": {
         "64bit": {
             "url": [
-                "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-8.2.0-1-py314-x86_64.zip.zip",
+                "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-8.2.1-1-py314-x86_64.zip.zip",
                 "https://raw.githubusercontent.com/2bc4/streamlink-ttvlol/master/twitch.py"
             ],
             "hash": [
-                "baa61cbf7ac06cfb22bdbe702cd907e05c4e24b9d64ac67da170d8b73d33ef12",
-                "62e4a1c044181025c9f4c9c7e4b1d6efdafeec0f1ed779047c55d530de1e24b7"
-            ]
+                "a1a161bae379757724b77a36cad2ce3c407517b625a94d7899306f5755be8a71",
+                "e811ad63bc94de0db54eeff533448d059b3d6d4ccfecf8230b4473e3d2d9aa01"
+            ],
+            "extract_dir": "streamlink-8.2.1-1-py314-x86_64"
         }
     },
     "pre_install": [
-        "Expand-7zipArchive \"$dir/streamlink-$version-*.zip\" \"$dir\" -Removal",
+        "$streamlink_ver = $version.Substring(0, $version.LastIndexOf('-'))",
         "$python = try { $null = (py.exe -0p | Select-Object -First 1) -cmatch '\\S+\\Z'; $Matches[0] } catch {}",
-        "$null = $version -cmatch '-py(\\d)(\\d{1,2})\\Z'",
+        "$null = $streamlink_ver -cmatch '-py(\\d)(\\d{1,2})\\Z'",
         "$paths = 'bin', 'pkgs'",
         "if ($python -and ($ver = try { [Version]((py.exe -V) -Replace '[^\\d.]') } catch {}) -lt [Version]\"$($Matches[1]).$([byte]$Matches[2] + 1).0\" -and $ver -ge [Version]\"$($Matches[1]).$($Matches[2]).0\") {",
+        "    Remove-Item -Recurse \"$dir/Python\"",
         "    $null = New-Item -ItemType Junction -Path \"$dir/Python\" -Target (Split-Path $python)",
         "}",
         "else { $paths += 'Python' }",
-        "$paths | ForEach-Object { Move-Item \"$dir/streamlink-$version-*/$_\" \"$dir\" }",
-        "Remove-Item -Recurse \"$dir/streamlink-$version-*\"",
+        "$paths | ForEach-Object { Move-Item \"$dir/streamlink-$streamlink_ver-*/$_\" \"$dir\" }",
+        "Remove-Item -Recurse \"$dir/streamlink-$streamlink_ver-*\"",
         "Move-Item -Force \"$dir/twitch.py\" \"$dir/pkgs/streamlink/plugins\"",
         "$session = (Get-ChildItem \"$dir/pkgs/streamlink/session/session.py\").FullName",
         "(Get-Content -Raw $session).Replace('plugins_lazy: bool = True', 'plugins_lazy: bool = False') | Set-Content $session",
@@ -60,18 +62,24 @@
         "script": [
             "try {",
             "    $id = (Invoke-RestMethod 'https://api.github.com/repositories/472790314/actions/workflows/main.yml/runs?branch=master&status=success&per_page=1' -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })).workflow_runs[0].id",
-            "    (Invoke-RestMethod \"https://api.github.com/repositories/472790314/actions/runs/$id/artifacts?per_page=1\" -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })).artifacts[0].name",
+            "    (Invoke-RestMethod \"https://api.github.com/repositories/472790314/actions/runs/$id/artifacts?per_page=1\" -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })).artifacts[0].name,",
+            "    (Get-Date (Invoke-RestMethod 'https://api.github.com/repositories/574440793/commits?path=twitch.py&per_page=1' -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} }))[0].commit.committer.date -UFormat %s) -join ' '",
             "}",
             "catch {",
             "    ''",
             "}"
         ],
-        "regex": "\\Astreamlink-([^h-z]+-py\\d+)"
+        "regex": "\\Astreamlink-([^h-z]+-py\\d+)\\S+ (\\d+)\\Z",
+        "replace": "$1-$2"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-$version-x86_64.zip.zip"
+                "url": [
+                    "https://nightly.link/streamlink/windows-builds/workflows/main/master/streamlink-$match1-x86_64.zip.zip",
+                    "https://raw.githubusercontent.com/2bc4/streamlink-ttvlol/master/twitch.py"
+                ],
+                "extract_dir": "streamlink-$match1-x86_64"
             }
         }
     }

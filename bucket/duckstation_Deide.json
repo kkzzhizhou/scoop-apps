@@ -1,15 +1,15 @@
 {
     "homepage": "https://www.duckstation.org/",
-    "version": "0.1-10819",
+    "version": "0.1-10861",
     "description": "Sony Playstation emulator",
     "license": {
-        "identifier": "GPL-3.0-only",
+        "identifier": "CC-BY-NC-ND-4.0",
         "url": "https://github.com/stenzek/duckstation/blob/master/LICENSE"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/stenzek/duckstation/releases/download/v0.1-10819/duckstation-windows-x64-release.zip",
-            "hash": "2e5ebcef2193df688ed26b01ae25dde0154961fceb322e35cff005a7696929e0",
+            "url": "https://github.com/stenzek/duckstation/releases/download/v0.1-10861/duckstation-windows-x64-release.zip",
+            "hash": "262ac290c9ec6887b22627c3680c90449de3b27ae8ec6df2221891eb6d549a08",
             "bin": [
                 [
                     "duckstation-qt-x64-ReleaseLTCG.exe",
@@ -24,18 +24,22 @@
             ]
         }
     },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
     "pre_install": [
-        "function create($path, $type, $content) {",
+        "function create($Path, $Type, $Content) {",
         "   if (-not (Test-Path \"$path\")) {",
-        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       New-Item \"$path\" -ItemType $type -Value ($content -join \"`n\") -Force | Out-Null",
         "       Write-Output \"Creating $path...\"",
         "   }",
         "}",
         "$settings = \"$dir\\settings.ini\"",
         "$portable = \"$dir\\portable.txt\"",
-        "create $settings File",
-        "create $portable File"
+        "create $settings -Type File -Content ('[Main]', 'SettingsVersion = 3', \"`n`n[AutoUpdater]\", 'CheckAtStartup = false')",
+        "create $portable -Type File"
     ],
+    "pre_uninstall": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
     "persist": [
         "portable.txt",
         "settings.ini",
@@ -43,14 +47,18 @@
         "cache",
         "cheats",
         "covers",
-        "dump",
+        "gameicons",
         "gamesettings",
         "inputprofiles",
         "memcards",
+        "patches",
+        "resources",
         "savestates",
         "screenshots",
         "shaders",
-        "textures"
+        "subchannels",
+        "textures",
+        "videos"
     ],
     "checkver": {
         "url": "https://api.github.com/repos/stenzek/duckstation/releases",
