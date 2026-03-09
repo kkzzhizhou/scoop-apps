@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/brian6932/Scoop/64bit-v2-v3-v4/schema.json",
-    "version": "20260307-429fdcf",
+    "version": "20260308-1772975408-9bb5a0b",
     "description": "Video player based on MPlayer/mplayer2 (builds by zhongfly)",
     "homepage": "https://mpv.io",
     "license": "LGPL-2.1-or-later,GPL-2.0-or-later",
@@ -13,16 +13,16 @@
     },
     "architecture": {
         "arm64": {
-            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-07-429fdcf/mpv-aarch64-20260307-git-429fdcf.7z",
-            "hash": "6447f53ef227bb610dc3dcfbc1a1fa0823b0a599436b244716eac340818734d1"
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-08-9bb5a0b/mpv-aarch64-20260308-git-9bb5a0b.7z",
+            "hash": "0ce9548176034be28d3805f59f7f3485bac89324bf8a92e6c8b50d151c682ef9"
         },
         "64bit-v3": {
-            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-07-429fdcf/mpv-x86_64-v3-20260307-git-429fdcf.7z",
-            "hash": "b5e02f13ecd6527804d14a9b0d4d84dd496796a7f6923e5fdd5060808980c1c0"
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-08-9bb5a0b/mpv-x86_64-v3-20260308-git-9bb5a0b.7z",
+            "hash": "aea174111ab828c892fb86bd2bb9ff01399adafcdeaac321e66301d28f1f3776"
         },
         "64bit": {
-            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-07-429fdcf/mpv-x86_64-20260307-git-429fdcf.7z",
-            "hash": "2342f57208d4a5ec5da6d149c6eae7757446517a7be71195a5ea6cfc9decf54e"
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-03-08-9bb5a0b/mpv-x86_64-20260308-git-9bb5a0b.7z",
+            "hash": "d9a88ac9637a468cb81284f9fc06ba168856d2b037993c2c6d7742c6a22be8c3"
         }
     },
     "pre_install": "Remove-Item \"$dir/updater.bat\"",
@@ -38,10 +38,17 @@
         "MPV_HOME": "$dir\\portable_config"
     },
     "checkver": {
-        "url": "https://api.github.com/repositories/412382551/releases/latest",
-        "jsonpath": "$.tag_name",
-        "regex": "\\A(\\d+)-(\\d{2})-(\\d{2})(-[a-f\\d]+)\\Z",
-        "replace": "${1}${2}${3}${4}"
+        "script": [
+            "try {",
+            "    $api = Invoke-RestMethod https://api.github.com/repositories/412382551/releases/latest -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })",
+            "    $api.tag_name, (Get-Date $api.updated_at -UFormat %s) -join ' '",
+            "}",
+            "catch {",
+            "    ''",
+            "}"
+        ],
+        "regex": "\\A(\\d+)-(\\d{2})-(\\d{2})(-[a-f\\d]+) (\\d+)\\Z",
+        "replace": "${1}${2}${3}-${5}${4}"
     },
     "autoupdate": {
         "architecture": {
