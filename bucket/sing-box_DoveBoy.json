@@ -6,6 +6,11 @@
         "identifier": "GPLv3 or later",
         "url": "https://github.com/SagerNet/sing-box/blob/main/LICENSE"
     },
+    "notes": [
+        "If you want to use TUN mode, please run sing-box with administrator privileges.",
+        "Your configuration and cache files are persisted in '$persist_dir'.",
+        "You can run with a directory of configs using: 'sing-box run -C $persist_dir\\config.d'"
+    ],
     "architecture": {
         "64bit": {
             "url": "https://github.com/SagerNet/sing-box/releases/download/v1.13.2/sing-box-1.13.2-windows-amd64.zip",
@@ -23,8 +28,21 @@
             "hash": "b279440c2e64f6db77c1be55c1590f5fa5a0cd7ff61e13e94dc8a5ac810e9ee2"
         }
     },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) { New-Item -Path \"$persist_dir\" -ItemType Directory | Out-Null }",
+        "if (!(Test-Path \"$persist_dir\\config.json\")) {",
+        "   $utf8NoBom = New-Object System.Text.UTF8Encoding($false)",
+        "   [System.IO.File]::WriteAllText(\"$persist_dir\\config.json\", \"{}`n\", $utf8NoBom)",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\cache.db\")) { New-Item -Path \"$persist_dir\\cache.db\" -ItemType File | Out-Null }"
+    ],
     "bin": "sing-box.exe",
-    "persist": "config",
+    "persist": [
+        "config",
+        "config.d",
+        "config.json",
+        "cache.db"
+    ],
     "checkver": {
         "url": "https://api.github.com/repos/SagerNet/sing-box/releases/latest",
         "regex": "/releases/tag/v([\\d.]+)"
