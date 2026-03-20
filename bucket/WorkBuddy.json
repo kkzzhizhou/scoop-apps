@@ -1,0 +1,43 @@
+{
+    "version": "4.6.1",
+    "description": "An AI-native desktop Agent WorkBench",
+    "homepage": "https://www.codebuddy.cn/work/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://acc-1258344699.cos.accelerate.myqcloud.com/workbuddy/saas/win32-x64-user/WorkBuddy-win32-x64-user-4.6.1.23163629-13ad5c0862-000d5f39.exe",
+            "hash": "6af0a5c0b60b726fbb94d73e3b377be899630a5662ddf857935c0a8280465bca",
+            "extract_dir": "{code_GetDestDir}"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.workbuddy\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.workbuddy\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\WorkBuddy\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\WorkBuddy\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=workbuddy(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin/workbuddy.cmd",
+            "workbuddy"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "WorkBuddy.exe",
+            "WorkBuddy",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "persist": "data"
+}
