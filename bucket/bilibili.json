@@ -1,33 +1,32 @@
 {
     "version": "1.17.6",
-    "description": "Bilibili(bilibili.com) Official Client.",
-    "homepage": "https://app.bilibili.com",
+    "description": "Bilibili Windows client.",
+    "homepage": "https://www.bilibili.com",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://www.bilibili.com/blackboard/protocal/privacy-pc-desktop.html"
+        "url": "https://www.bilibili.com/protocal/licence.html"
     },
     "architecture": {
         "64bit": {
-            "url": "https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe#/dl.7z",
-            "hash": "sha512:ff980dad91e5f816722c5b670d862da6e685bd35dcfc7a39adf685638daeb7c866db6f671c3c5e705ad21910e72c56f823a9db7011107af0a8c91dc49e93cc06",
-            "pre_install": [
-                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse"
-            ]
+            "url": "https://dl.hdslb.com/mobile/pack/bili_win/23743424/public/bilibili-setup-v1.17.6.exe#/dl.7z",
+            "hash": "sha512:a5f500836f7f07c27a8e07b6d31d99f67fe7f44dc8a3db9fa932b7c75d73d990d498035269ce68d549c2c4c184b7b792fc92b2bb0acd8cce1adb21f06e12b081",
+            "extract_dir": "$PLUGINSDIR"
         }
     },
     "installer": {
         "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\bilibili\"",
-            "Remove-Module -Name AppsUtils"
+            "Remove-Item \"$dir\\*\" -Exclude 'app-64.7z' -Force -Recurse",
+            "Expand-7zipArchive \"$dir\\app-64.7z\" \"$dir\" -Removal",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\UserData\" -Target \"$env:APPDATA\\bilibili\"",
+            "Remove-Module -Name DoradoUtils"
         ]
     },
     "uninstaller": {
         "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
             "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\bilibili\"",
-            "Remove-Module -Name AppsUtils"
+            "Remove-Module -Name DoradoUtils"
         ]
     },
     "shortcuts": [
@@ -37,16 +36,30 @@
         ]
     ],
     "checkver": {
-        "url": "http://api.bilibili.com/x/elec-frontend/update/latest.yml",
-        "regex": "bilibili-setup-v([\\d\\.]+)\\.exe"
+        "script": [
+            "$url = 'https://api.bilibili.com/x/elec-frontend/update/latest.yml'",
+            "$cont = Invoke-RestMethod $url",
+            "$r = 'version:\\s*([\\d.]+)'",
+            "if (!($cont -match $r)) { Write-Error \"Could not match $r in $url\"; continue }",
+            "$ver = $matches[1]",
+            "$assetUrl = \"https://api.bilibili.com/x/elec-frontend/update/bilibili-setup-v$ver.exe.blockmap\"",
+            "$assetReq = [System.Net.HttpWebRequest]::Create($assetUrl)",
+            "$assetReq.Headers.Add('appversion', '0.0.0')",
+            "$assetCont = $assetReq.GetResponse().ResponseUri.AbsoluteUri",
+            "$r = 'win/([\\d]+)/public'",
+            "if (!($assetCont -match $r)) { Write-Error \"Could not match $r in $url\"; continue }",
+            "$code = $matches[1]",
+            "Write-Output $ver $code"
+        ],
+        "regex": "([\\d.]+) (?<code>[\\w.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dl.hdslb.com/mobile/fixed/bili_win/bili_win-install.exe#/dl.7z",
+                "url": "https://dl.hdslb.com/mobile/pack/bili_win/$matchCode/public/bilibili-setup-v$version.exe#/dl.7z",
                 "hash": {
-                    "url": "http://api.bilibili.com/x/elec-frontend/update/latest.yml",
-                    "regex": "sha512: ([\\w\\d+\\/=]{24,88})"
+                    "url": "https://dl.hdslb.com/mobile/pack/bili_win/$matchCode/public/latest.yml",
+                    "regex": "sha512:\\s+$base64"
                 }
             }
         }
