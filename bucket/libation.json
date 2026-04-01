@@ -1,0 +1,46 @@
+{
+    "version": "13.3.2",
+    "description": "Audible audiobook manager",
+    "homepage": "https://github.com/rmcrackan/Libation/",
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/rmcrackan/Libation/releases/download/v13.3.2/Libation.13.3.2-windows-chardonnay-x64.zip",
+            "hash": "dfc85a0e0ef94aeb0a55d1ec569a86cd1228145e8e286bb25db291b468cb5cc8"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) { New-Item \"$persist_dir\" -ItemType Directory | Out-Null }",
+        "if (!(Test-Path \"$persist_dir\\Temp\")) { New-Item \"$persist_dir\\Temp\" -ItemType Directory | Out-Null }",
+        "$scriptsDir = \"$bucketsdir\\404NetworkError\\scripts\"",
+        "Get-ChildItem \"$scriptsDir\\libation\\*.json\" | ForEach-Object {",
+        "    if (!(Test-Path \"$persist_dir\\$($_.Name)\"))",
+        "    {",
+        "        New-Item \"$persist_dir\\$($_.Name)\" -ItemType File | Out-Null",
+        "        $content = Get-Content $_",
+        "        $content = $content.Replace('REPLACE_HERE', $persist_dir)",
+        "        $content = $content.Replace('\\', '\\\\')",
+        "        Set-Content \"$persist_dir\\$($_.Name)\" $content -Encoding 'utf8' -Force",
+        "    }",
+        "}"
+    ],
+    "bin": "LibationCli.exe",
+    "shortcuts": [
+        [
+            "Libation.exe",
+            "Libation"
+        ]
+    ],
+    "persist": [
+        "appsettings.json",
+        "Settings.json"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/rmcrackan/Libation/releases/download/v$version/Libation.$version-windows-chardonnay-x64.zip"
+            }
+        }
+    }
+}

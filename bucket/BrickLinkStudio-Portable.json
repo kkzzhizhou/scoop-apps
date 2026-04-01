@@ -1,14 +1,17 @@
 {
-    "version": "2.25.10",
+    "version": "2.26.3_1",
     "description": "BrickLink Studio. Studio is a desktop application that allows users to build LEGO models using virtual parts.",
     "homepage": "https://www.bricklink.com/v3/studio/download.page",
     "license": "Unknown",
-    "changelog": "https://www.bricklink.com/v3/studio/download.page#changelog",
     "innosetup": true,
     "architecture": {
         "64bit": {
-            "url": "https://s3.amazonaws.com/blstudio/Studio2.0/Studio+2.0.exe#/dl.7z",
-            "hash": "9270596c5675acf3762c1488fc6b212c657654c31ce89fa16b172cce7722c992"
+            "url": "https://studio.download.bricklink.info/Studio2.0/Archive/2.26.3_1/Studio+2.0.exe",
+            "hash": "f81e990910d09888b1710ebcf8264cae2a6327850aa21aac1d357bed48a51eb5"
+        },
+        "32bit": {
+            "url": "https://studio.download.bricklink.info/Studio2.0/Archive/2.26.3_1/Studio+2.0_32.exe",
+            "hash": "74602da392214d7afa0569102d54fb6b687d119a3135c6ae1864048aaf807bf5"
         }
     },
     "bin": "Studio.exe",
@@ -19,14 +22,22 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.bricklink.com/v3/studio/download.page",
-        "regex": "\"strVersion\":\"([\\d.]+)",
+        "script": [
+            "$cont = $(Invoke-WebRequest('https://www.bricklink.com/v3/studio/download.page')).Content",
+            "if(!($cont -match 'blapp\\.models\\.set\\( (.*) \\);')) { continue }",
+            "Write-Output $matches[1]"
+        ],
+        "jsonpath": "$.[?(@.name == 'changeLog')].data[*].strVersion",
+        "regex": "([\\d._]+)",
         "reverse": true
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://s3.amazonaws.com/blstudio/Studio$majorVersion.0/Studio+$majorVersion.0.exe#/dl.7z"
+                "url": "https://studio.download.bricklink.info/Studio$majorVersion.0/Archive/$version/Studio+$majorVersion.0.exe"
+            },
+            "32bit": {
+                "url": "https://studio.download.bricklink.info/Studio$majorVersion.0/Archive/$version/Studio+$majorVersion.0_32.exe"
             }
         }
     }
