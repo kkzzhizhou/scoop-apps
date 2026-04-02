@@ -1,5 +1,5 @@
 {
-    "version": "565.90",
+    "version": "595.97",
     "description": "Display driver for Nvidia graphics cards",
     "homepage": "https://www.nvidia.com",
     "license": {
@@ -9,39 +9,50 @@
     "suggest": {
         "GeForce Experience": "gaming/nvidia-geforce-experience"
     },
-    "url": "https://us.download.nvidia.com/Windows/565.90/565.90-desktop-win10-win11-64bit-international-dch-whql.exe#/dl.7z",
-    "hash": "d949951140f09fdf107c7f9f0c1b2a6cf5ebcbf9d817e9407992a3d3ee6b1d6b",
+    "url": "https://us.download.nvidia.com/Windows/595.97/595.97-desktop-win10-win11-64bit-international-dch-whql.exe#/dl.7z",
+    "hash": "979ed00fea181c786f608967377d6d83ac82e6368275994a4182ec79d97b3122",
     "extract_to": "_FullPackage",
     "pre_install": [
         "$srcdir = \"$dir\\_FullPackage\"",
         "Move-Item ($srcdir + \"\\Display.Driver\") -Destination \"$dir\" | Out-Null",
-        "Move-Item ($srcdir + \"\\Display.Optimus\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NvContainer\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NvCpl\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NvApp\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NvApp.MessageBus\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\NVI2\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NVPCF\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\PhysX\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\NvDLISR\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\HDAudio\") -Destination \"$dir\" | Out-Null",
+        "Move-Item ($srcdir + \"\\PPC\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\EULA.txt\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\ListDevices.txt\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\setup.cfg\") -Destination \"$dir\" | Out-Null",
         "Move-Item ($srcdir + \"\\setup.exe\") -Destination \"$dir\" | Out-Null",
-        "New-Item \"$dir\\GFExperience\" -Type Directory | Out-Null",
-        "Move-Item ($srcdir + \"\\GFExperience\\PrivacyPolicy\") -Destination \"$dir\\GFExperience\" | Out-Null",
-        "Move-Item ($srcdir + \"\\GFExperience\\EULA.html\") -Destination \"$dir\\GFExperience\" | Out-Null",
-        "Move-Item ($srcdir + \"\\GFExperience\\FunctionalConsent_*\") -Destination \"$dir\\GFExperience\" | Out-Null",
         "Remove-Item $srcdir -Recurse -Force | Out-Null"
     ],
     "post_install": "Remove-Item \"$dir\\*\" -Recurse -Force | Out-Null",
+    "notes": [
+        "The following components are excluded from this driver package:",
+        "  NvTelemetry    - NVIDIA usage telemetry",
+        "  NvBackend      - GeForce Experience integration backend",
+        "  ShadowPlay     - Instant replay / gameplay recording (Alt+Z)",
+        "  FrameViewSDK   - Framerate and latency benchmarking",
+        "  NvVAD          - NVIDIA virtual audio device (streaming)",
+        "  MSVCRT         - Bundled VC++ redistributable (install extras/vcredist2022 if needed)",
+        "",
+        "To remove this driver, use Display Driver Uninstaller: 'scoop install ddu'"
+    ],
     "installer": {
         "file": "setup.exe",
-        "args": [
-            "/s",
-            "/noreboot"
-        ]
+        "args": ["/s", "/noreboot"]
     },
     "uninstaller": {
-        "script": "Write-Host \"To remove this driver, please use Display Driver Uninstaller: 'scoop install ddu'\" -ForegroundColor Magenta"
+        "script": "Write-Host 'To remove this driver, use Display Driver Uninstaller: ''scoop install ddu'' ' -ForegroundColor Magenta"
     },
     "checkver": {
-        "url": "https://community.chocolatey.org/packages/nvidia-display-driver",
-        "regex": "NVidia Display Driver ([\\d.]+)"
+        "url": "https://gfwsl.geforce.com/services_toolkit/services/com/nvidia/services/AjaxDriverService.php?func=DriverManualLookup&psid=98&pfid=942&osID=57&languageCode=1033&beta=0&isWHQL=1&dltype=-1&dch=1&upCRD=0&sort1=0&numberOfResults=1",
+        "regex": "\"Version\"\\s?:\\s?\"([\\d.]+)\""
     },
     "autoupdate": {
         "url": "https://us.download.nvidia.com/Windows/$version/$version-desktop-win10-win11-64bit-international-dch-whql.exe#/dl.7z"

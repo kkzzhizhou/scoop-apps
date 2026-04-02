@@ -1,0 +1,65 @@
+{
+  "version": "4rc2",
+  "homepage": "http://www.codesector.com/teracopy",
+  "license": "free for home users",
+  "url": "https://www.codesector.com/files/teracopy4rc2.exe#/setup.exe",
+  "hash": "caa72a4a123a3495478c1c7178bd41575b88087230a007d3bee5db71189bc3c4",
+
+  "pre_install": [
+    "# Create a temporary extraction folder",
+    "$tmp = Join-Path $dir 'tmp_extract'",
+    "New-Item -ItemType Directory -Force -Path $tmp | Out-Null",
+
+    "# Run setup.exe /extract into temp folder and wait for it to finish",
+    "$proc = Start-Process -FilePath \"$dir\\setup.exe\" -ArgumentList \"/extract `\"$tmp`\" /silent\" -Wait -PassThru",
+
+    "# Detect the random subdirectory inside the temp folder",
+    "$subdir = Get-ChildItem -Directory -Path $tmp | Select-Object -First 1",
+
+    "if ($subdir) {",
+    "    Write-Host \"Flattening files from $($subdir.FullName) into $dir\"",
+    "    Get-ChildItem -Path $subdir.FullName -Recurse -Force | ForEach-Object {",
+    "        $target = Join-Path $dir ($_.FullName.Substring($subdir.FullName.Length + 1))",
+    "        if ($_.PSIsContainer) { New-Item -ItemType Directory -Force -Path $target | Out-Null }",
+    "        else { Move-Item -Path $_.FullName -Destination $target -Force }",
+    "    }",
+    "    Remove-Item -Recurse -Force $subdir.FullName",
+    "}",
+
+    "# Short pause to release file locks, then remove the temporary extraction folder",
+    "Start-Sleep -Milliseconds 500",
+    "Remove-Item -Recurse -Force $tmp",
+
+    "# Remove the original setup.exe in $dir",
+    "$setupExe = Join-Path $dir \"setup.exe\"",
+    "if (Test-Path $setupExe) { Remove-Item -Force $setupExe }",
+
+    "# Remove all MSI files in $dir",
+    "Get-ChildItem -Path $dir -Filter *.msi -Force | Remove-Item -Force",
+
+    "# Create Options.ini if it doesn't exist",
+    "if(!(Test-Path \"$dir/Options.ini\")) { Add-Content \"$dir/Options.ini\" $null }"
+  ],
+
+  "architecture": {
+    "64bit": {
+      "bin": "TeraCopy.exe",
+      "shortcuts": [["TeraCopy.exe", "TeraCopy"]]
+    },
+    "32bit": {
+      "bin": "Win32\\TeraCopy.exe",
+      "shortcuts": [["Win32\\TeraCopy.exe", "TeraCopy"]]
+    }
+  },
+
+  "persist": "Options.ini",
+
+  "checkver": {
+    "url": "https://www.codesector.com/downloads",
+    "regex": "/files/teracopy(4.+?)\\.exe"
+  },
+
+  "autoupdate": {
+    "url": "https://www.codesector.com/files/teracopy$version.exe#/setup.exe"
+  }
+}
