@@ -1,21 +1,33 @@
 {
-    "version": "145.1.7632.3200",
+    "version": "145.2.7632.4589",
     "description": "The AI browser that acts as a personal assistant",
     "homepage": "https://perplexity.ai/comet",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://perplexity.ai/rest/browser/download?platform=win_x64&channel=stable#/dl.7z",
-            "hash": "f2c3c519c349291d9106693034883f7c74b7f26c42c88637de8c17a426106dc8"
+            "url": "https://perplexity.ai/rest/browser/download?platform=win_x64&channel=stable#/updater.exe",
+            "hash": "60ae3d233f2ee6ac183c62231608677e22ae461c65e9c4706dfa6a77503a5ec1"
         },
         "arm64": {
-            "url": "https://perplexity.ai/rest/browser/download?platform=win_arm64&channel=stable#/dl.7z",
-            "hash": "81bdd16d1a41c66d64c6aa032bab3a6bc608a719994fda12972a6d4ac0006b49"
+            "url": "https://perplexity.ai/rest/browser/download?platform=win_arm64&channel=stable#/updater.exe",
+            "hash": "c530caa3b408e56e8a3fd255bb2ea0d6a4662a05823e8e551eb7f2c59b10a691"
         }
     },
+    "extract_dir": "",
     "pre_install": [
-        "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -DestinationPath \"$dir\" -Removal",
-        "Remove-Item \"$dir\\chrome.exe\" -Force -Recurse"
+        "7z x \"$dir\\updater.exe\" -o\"$dir\\updater\" -y",
+        "$packed = Get-ChildItem \"$dir\\updater\" -Recurse -Include *.7z | Select-Object -First 1",
+        "if (-not $packed) { throw 'No embedded .7z archive found' }",
+        "7z x \"$($packed.FullName)\" -o\"$dir\\inner\" -y",
+        "$mini = Get-ChildItem \"$dir\\inner\" -Recurse -Filter mini_installer.exe | Select-Object -First 1",
+        "if (-not $mini) { throw 'mini_installer.exe not found' }",
+        "7z x \"$($mini.FullName)\" -o\"$dir\\mini\" -y",
+        "Expand-7zipArchive \"$dir\\mini\\chrome.7z\" -ExtractDir 'Chrome-bin' -DestinationPath \"$dir\" -Removal",
+        "Remove-Item \"$dir\\chrome.exe\" -Force -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\updater\",\"$dir\\inner\",\"$dir\\mini\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\updater.exe\",\"$dir\\updater.bin\",\"$dir\\updater.7z\" -Force -ErrorAction SilentlyContinue"
     ],
     "bin": [
         [
@@ -40,10 +52,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://perplexity.ai/rest/browser/download?platform=win_x64&channel=stable#/dl.7z"
+                "url": "https://perplexity.ai/rest/browser/download?platform=win_x64&channel=stable#/updater.exe"
             },
             "arm64": {
-                "url": "https://perplexity.ai/rest/browser/download?platform=win_arm64&channel=stable#/dl.7z"
+                "url": "https://perplexity.ai/rest/browser/download?platform=win_arm64&channel=stable#/updater.exe"
             }
         }
     }
