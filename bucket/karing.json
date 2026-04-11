@@ -1,31 +1,49 @@
 {
-    "version": "1.2.16.1912",
-    "description": "A proxy utility with routing rule support for clash/sing-box.",
-    "homepage": "https://karing.app/en/",
+    "version": "1.2.17.2000",
+    "description": "Simple & Powerful proxy utility, Support routing rules for clash/sing-box",
+    "homepage": "https://karing.app/",
     "license": {
-        "identifier": "GPL-3.0-or-later",
-        "url": "https://github.com/KaringX/karing/blob/main/LICENSE.md"
+        "identifier": "Copyright (C) 2024 by nebula",
+        "url": "https://github.com/KaringX/karing?tab=License-1-ov-file#License-1-ov-file"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/KaringX/karing/releases/download/v1.2.16.1912/karing_1.2.16.1912_windows_x64.zip",
-            "hash": "c663821b9fd021b98378ed4dc226e788ba5a68c6a754acf672f1cf9df4a17b62"
+            "url": "https://github.com/KaringX/karing/releases/download/v1.2.17.2000/karing_1.2.17.2000_windows_x64.exe",
+            "hash": "e4a74b305a10778a9bf2b3d059de67910b4285b53545ef243c0241dd5b0849fa"
         }
     },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\karing\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\karing\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "karing.exe",
     "shortcuts": [
         [
             "karing.exe",
             "karing"
         ]
     ],
-    "persist": "profiles",
     "checkver": {
-        "github": "https://github.com/KaringX/karing"
+        "url": "https://api.github.com/repos/KaringX/karing/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/karing_([\\d.]+)_windows"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/KaringX/karing/releases/download/v$version/karing_$version_windows_x64.zip"
+                "url": "https://github.com/KaringX/karing/releases/download/v$version/karing_$version_windows_x64.exe"
             }
         }
     }

@@ -1,34 +1,55 @@
 {
-    "version": "5.4.0",
-    "description": "一站式在线弹幕追番平台：全自动 BT + 在线多数据源聚合，离线缓存，Bangumi 收藏同步，弹幕云过滤 ...",
-    "homepage": "https://myani.org/",
-    "license": "GPL-3.0-only",
+    "version": "5.4.2",
+    "description": "集找番、追番、看番的一站式弹幕追番平台，云收藏同步 (Bangumi)，离线缓存，BitTorrent，弹幕云过滤。100% Kotlin/Compose Multiplatform",
+    "homepage": "https://animeko.org/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/open-ani/animeko#AGPL-3.0-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/open-ani/ani/releases/download/v5.4.0/ani-5.4.0-windows-x86_64.zip",
-            "hash": "9f4df595d6b1548654b4b78acf2b292efe2250ece82c9a356f6c0e2cf53a0bcc",
-            "extract_dir": "Ani"
+            "url": "https://github.com/open-ani/animeko/releases/download/v5.4.2/ani-5.4.2-windows-x86_64.zip",
+            "hash": "sha1:6422187db4184ac1224d518b616fe6466585673b"
         }
     },
+    "extract_dir": "Ani",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Him188\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Him188\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Ani.exe",
     "shortcuts": [
         [
             "Ani.exe",
             "Ani"
         ]
     ],
-    "persist": [
-        "null",
-        "PowerShell 7.4.5"
-    ],
     "checkver": {
-        "github": "https://github.com/open-ani/animeko"
+        "url": "https://api.github.com/repos/open-ani/animeko/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
     },
     "autoupdate": {
-        "url": "https://github.com/open-ani/ani/releases/download/v$version/ani-$version-windows-x86_64.zip",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/open-ani/animeko/releases/download/v$version/ani-$version-windows-x86_64.zip"
+            }
+        },
         "hash": {
-            "mode": "extract",
-            "url": "https://github.com/open-ani/animeko/releases/expanded_assets/v$version",
-            "regex": "ani-$version-windows-x86_64\\.zip.*?sha256:$sha256"
+            "url": "$url.sha1"
         }
     }
 }
