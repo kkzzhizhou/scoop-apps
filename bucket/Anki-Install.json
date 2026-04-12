@@ -1,0 +1,54 @@
+{
+    "version": "25.09",
+    "description": "A smart spaced repetition flashcard program.",
+    "homepage": "https://apps.ankiweb.net",
+    "license": {
+        "identifier": "AGPL-3.0-or-later",
+        "url": "https://github.com/ankitects/anki/blob/HEAD/LICENSE"
+    },
+    "changelog": "https://github.com/ankitects/anki/releases",
+    "suggest": {
+        "vcredist": "extras/vcredist2008"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ankitects/anki/releases/download/25.09/anki-launcher-25.09-windows.exe#/installer.exe",
+            "hash": "398f690a8208bd381dc2d4220720a82f6d2249c1fd1b38f46a90db356cb7c69e"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process -Wait \"$dir\\installer.exe\" -ArgumentList @('/S', \"/D=$dir\") -Verb RunAs | Out-Null",
+            "Remove-Item \"$([Environment]::GetFolderPath('commonstartmenu'))\\Programs\\Anki.lnk\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process -Wait \"$dir\\uninstall.exe\" -ArgumentList '/S' -Verb RunAs | Out-Null"
+        ]
+    },
+    "bin": "anki.exe",
+    "shortcuts": [
+        [
+            "anki.exe",
+            "Anki"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repositories/7270538/releases",
+        "jsonpath": "$[?(@.prerelease == false)].assets[?(@.name =~ /windows/i)].browser_download_url",
+        "regex": "(?i)download/([\\d.]+)/anki-launcher-[\\d.]+-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ankitects/anki/releases/download/$version/anki-launcher-$version-windows.exe#/installer.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/anki-launcher-$version-checksums.txt"
+        }
+    }
+}

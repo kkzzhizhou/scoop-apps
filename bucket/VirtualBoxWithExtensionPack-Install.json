@@ -1,65 +1,118 @@
 {
-    "version": "7.2.6",
+    "version": "7.2.6a-172322",
     "description": "Powerful x86 and AMD64/Intel64 virtualization product for enterprise as well as home use.",
-    "homepage": "https://www.virtualbox.org/",
+    "homepage": "https://www.virtualbox.org",
     "license": {
-        "identifier": "GPL-2.0-only|Freeware",
-        "url": "https://www.virtualbox.org/wiki/VirtualBox_PUEL"
+        "identifier": "Freeware|GPL-3.0-only",
+        "url": "https://www.virtualbox.org/wiki/Licensing_FAQ"
     },
     "changelog": "https://www.virtualbox.org/wiki/Changelog",
+    "notes": [
+        "The VirtualBox Extension Pack is free only for personal, educational, or evaluation use.",
+        "Enterprise use requires the purchase of a valid commercial license.",
+        "For detailed licensing information, refer to: https://www.virtualbox.org/wiki/Licensing_FAQ.",
+        "",
+        "Guest Additions are located at: \"$env:ProgramW6432\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso\"."
+    ],
+    "depends": "extras/vcredist2022",
+    "url": [
+        "https://download.virtualbox.org/virtualbox/7.2.6/VirtualBox-7.2.6a-172322-Win.exe#/setup.exe",
+        "https://download.virtualbox.org/virtualbox/7.2.6/Oracle_VirtualBox_Extension_Pack-7.2.6.vbox-extpack"
+    ],
+    "hash": [
+        "15c18780b9a76ff6d5a2dbfe016992e0aea631bf25ffc05a11080bb0ed49a690",
+        "d46449366b23417a626439785f23f7eaf06bfbfd2cb030713e1abfa5b03d4205"
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://download.virtualbox.org/virtualbox/7.2.6/VirtualBox-7.2.6-172322-Win.exe#/VBoxSetup.exe",
-            "hash": "5194a1695d1b4c07d129e2b1e2088adc3dd2f1f0f73699004375d6dfdfa60fd7"
+            "pre_install": "if (-not (is_admin)) { abort \"`n[ERROR]  $app requires admin rights to $cmd.\" }"
+        },
+        "arm64": {
+            "pre_install": "if (-not (is_admin)) { abort \"`n[ERROR]  $app requires admin rights to $cmd.\" }"
         }
     },
-    "pre_download": "Assert-Administrator",
-    "pre_install": [
-        "$processname = \"virtualbox\"",
-        "$process = Get-Process $processname -ErrorAction SilentlyContinue",
-        "if ($process) {",
-        "   $process.CloseMainWindow()",
-        "   Start-Sleep -Seconds 5",
-        "   if (!$process.HasExited) {",
-        "       Start-Sleep -Seconds 25",
-        "       $process | Stop-Process -Force",
-        "   }",
-        "}"
-    ],
     "installer": {
         "script": [
-            "$programname = \"Oracle VM VirtualBox $version\"",
-            "$ProgramFiles = [Environment]::GetFolderPath(\"ProgramFiles\")",
-            "$filepath = \"$ProgramFiles\\Oracle\\VirtualBox\\VirtualBox.exe\"",
-            "if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
-            "{",
-            "   Start-Process -Wait -WindowStyle Hidden cmd \"/c call `\"$dir\\VBoxSetup.exe`\" --msiparams VBOX_START=0 VBOX_INSTALLDESKTOPSHORTCUT=0 VBOX_INSTALLQUICKLAUNCHSHORTCUT=0 REBOOT=ReallySuppress --silent\" -Verb RunAs",
-            "   if(((Test-Path -Path $filepath -PathType Leaf) -eq $false) -or ((Get-Command $filepath).Version -lt [System.Version]\"$version\"))",
-            "   {",
-            "       exit 1",
-            "   }",
+            "$extract_params = @('-extract', '-path', \"$dir\\tmp\", '-silent')",
+            "$extract_status = Invoke-ExternalCommand -FilePath \"$dir\\setup.exe\" -ArgumentList $extract_params -Quiet",
+            "if (-not $extract_status) { abort \"`nExtraction Failed: Unable to unpack '$dir\\setup.exe'.\" }",
+            "$installer_regex = if ($architecture -eq 'arm64') { 'arm' } else { '^(?!.+arm)' }",
+            "$installer_file = Get-ChildItem -Path \"$dir\\tmp\" -Filter '*.msi' -File |",
+            "        Where-Object { $_.BaseName -match $installer_regex } | Select-Object -ExpandProperty FullName -First 1",
+            "if (-not $installer_file) { abort \"`nDeployment Failed: MSI package not found in extraction buffer.\" }",
+            "$install_args = @(",
+            "    '/i', $installer_file, '/qn', '/norestart'",
+            "    'VBOX_START=0', 'VBOX_INSTALLDESKTOPSHORTCUT=0', 'VBOX_INSTALLQUICKLAUNCHSHORTCUT=0', 'VBOX_INSTALLSTARTMENUENTRIES=0'",
+            ")",
+            "$deploy_status = Invoke-ExternalCommand -FilePath 'msiexec.exe' -ArgumentList $install_args -LogPath \"$dir\\tmp\\install.log\"",
+            "if (-not $deploy_status) {",
+            "    Select-String -Path \"$dir\\tmp\\install.log\" -Pattern 'MSI\\s*\\(.*' | ForEach-Object { warn \"Log Trace: $($_.Line)\" }",
+            "    abort \"Installation Failed: Exit code indicates a deployment failure.`nReference Log: '$dir\\tmp\\install.log'.\"",
             "}",
-            "if (Test-Path -Path \"$dir\\VBoxSetup.exe\") { Remove-Item \"$dir\\VBoxSetup.exe\" -Force }",
-            "$url = \"https://download.virtualbox.org/virtualbox/$version/Oracle_VirtualBox_Extension_Pack-$version.vbox-extpack\"",
-            "$destination = \"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\"",
-            "(New-Object System.Net.WebClient).DownloadFile($url, $destination)",
-            "$ProgramFilesPath = [Environment]::GetFolderPath(\"ProgramFiles\")",
-            "Start-Process -Wait -WindowStyle Hidden cmd \"/c call echo y | `\"$ProgramFilesPath\\Oracle\\VirtualBox\\VBoxManage.exe`\" extpack install --replace `\"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack`\"\" -Verb RunAs",
-            "Remove-Item \"$dir\\Oracle_VM_VirtualBox_Extension_Pack-$version.vbox-extpack\""
+            "$extension_file = Get-ChildItem -Path $dir -Filter '*.vbox-extpack' | Select-Object -ExpandProperty FullName -First 1",
+            "$extract_args = @('-xzf', \"`\"$extension_file`\"\", '-C', \"`\"$dir\\tmp`\"\", './ExtPack-license.txt')",
+            "Start-Process -FilePath 'tar.exe' -ArgumentList $extract_args -WindowStyle Hidden -Wait",
+            "$license_file = Get-ChildItem -Path \"$dir\\tmp\" -Filter '*license.txt' | Select-Object -ExpandProperty FullName -First 1",
+            "if (-not $license_file) { abort \"`nDeployment Failed: License not found in extraction buffer.\" }",
+            "$license_file_hash = Get-FileHash -Path $license_file -Algorithm SHA256 | ForEach-Object -MemberName Hash",
+            "$progress_params = @{",
+            "    LogPath = \"$dir\\tmp\\install-extension.log\"",
+            "    FilePath = \"$env:ProgramW6432\\Oracle\\VirtualBox\\VBoxManage.exe\"",
+            "    ArgumentList = @('extpack', 'install', \"--accept-license=$license_file_hash\", \"`\"$extension_file`\"\")",
+            "}",
+            "$extension_status = Invoke-ExternalCommand @progress_params -Activity \"`nInstalling Oracle VirtualBox Extension Pack...\"",
+            "if (-not $extension_status) { abort \"Installation Failed: Process did not complete.`nReference Log: '$dir\\tmp\\install-extension.log'.\" }",
+            "@(\"$dir\\tmp\") + $fname.ForEach({ \"$dir\\$_\" }) | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
         ]
     },
+    "post_install": [
+        "$install_dir = \"$env:ProgramW6432\\Oracle\\VirtualBox\"",
+        "if (-not (Test-Path -Path \"$install_dir\\*\")) { abort \"`nInstallation Failed: The directory '$install_dir' is missing or empty.\" }",
+        "Get-ChildItem -Path $install_dir -Filter '*.exe' -File | ForEach-Object {",
+        "   Write-Output \"Creating shim '$($_.BaseName)'.\"",
+        "   shim $_.FullName $global $_.BaseName $null",
+        "}",
+        "startmenu_shortcut \"$install_dir\\VirtualBox.exe\" 'VirtualBox' $null $null $global"
+    ],
+    "pre_uninstall": "if (-not (is_admin)) { abort \"`n[ERROR] $app requires admin rights to $cmd\" }",
+    "uninstaller": {
+        "script": [
+            "$install_dir = \"$env:ProgramW6432\\Oracle\\VirtualBox\"",
+            "Get-ChildItem -Path $install_dir -Filter '*.exe' -File | ForEach-Object {",
+            "    rm_shim $_.BaseName \"$(shimdir $global)\"",
+            "}",
+            "$progress_params = @{",
+            "    FilePath = \"$install_dir\\VBoxManage.exe\"",
+            "    ArgumentList = @('extpack', 'uninstall', 'Oracle VirtualBox Extension Pack')",
+            "}",
+            "$extension_status = Invoke-ExternalCommand @progress_params -Activity 'Uninstalling Oracle VirtualBox Extension Pack...'",
+            "if (-not $extension_status) { abort 'Uninstallation Failed: Oracle VirtualBox Extension Pack uninstallation was not successful.' }",
+            "$registry_path = 'HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*'",
+            "$product_id = Get-ItemProperty -Path $registry_path | Where-Object { $_.DisplayName -like '*Oracle VirtualBox*' } |",
+            "        Select-Object -ExpandProperty PSChildName -First 1",
+            "if (-not $product_id) { abort \"Uninstallation Failed: Could not locate the product identity for Oracle VirtualBox.\" }",
+            "$removal_args = @('/x', $product_id, '/qn', '/norestart')",
+            "$removal_status = Invoke-ExternalCommand -FilePath 'msiexec.exe' -ArgumentList $removal_args -LogPath \"$dir\\uninstall.log\"",
+            "if(-not $removal_status) { abort \"Uninstallation Failed: Process did not complete.`nReference Log: '$dir\\uninstall.log'.\" }",
+            "Remove-Item -Path \"$dir\\*.log\", \"$install_dir\\ExtensionPacks\" -Recurse -Force -ErrorAction SilentlyContinue"
+        ]
+    },
+    "post_uninstall": [
+        "$shortcut_file = Get-AbsolutePath -Path \"$(shortcut_folder $global)\\VirtualBox.lnk\"",
+        "Write-Output \"`nRemoving shortcut '$(friendly_path $shortcut_file)'...\"",
+        "Remove-Item -LiteralPath $shortcut_file -Force -ErrorAction SilentlyContinue"
+    ],
     "checkver": {
         "url": "https://www.virtualbox.org/wiki/Downloads",
-        "regex": "VirtualBox-(?<version>[\\d.]+)-(?<revision>[\\d]+)-Win.exe"
+        "regex": "VirtualBox-([\\w.-]+)-Win.exe"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://download.virtualbox.org/virtualbox/$version/VirtualBox-$version-$matchRevision-Win.exe#/VBoxSetup.exe"
-            }
-        },
+        "url": [
+            "https://download.virtualbox.org/virtualbox/$matchHead/VirtualBox-$version-Win.exe#/setup.exe",
+            "https://download.virtualbox.org/virtualbox/$matchHead/Oracle_VirtualBox_Extension_Pack-$matchHead.vbox-extpack"
+        ],
         "hash": {
-            "url": "https://www.virtualbox.org/download/hashes/$version/SHA256SUMS"
+            "url": "https://download.virtualbox.org/virtualbox/$matchHead/SHA256SUMS"
         }
     }
 }
