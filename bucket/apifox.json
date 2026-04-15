@@ -1,17 +1,12 @@
 {
-    "version": "2.8.22",
-    "description": "Apifox 是 API 文档、API 调试、API Mock、API 自动化测试一体化协作平台，定位 Postman + Swagger + Mock + JMeter。",
+    "version": "2.8.24",
+    "description": "All-in-one collaboration platform for API documentation, API debugging, API Mock and API test automation.",
     "homepage": "https://apifox.com",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/apifox.json",
     "license": "Freeware",
     "architecture": {
-        "32bit": {
-            "url": "https://file-assets.apifox.com/download/2.8.22/Apifox-windows-x86-2.8.22.exe#/dl.7z",
-            "hash": "477517cc6f486fcdc9167afd84d93b49591533c44d6e9167b4f0e956b974152a"
-        },
         "64bit": {
-            "url": "https://file-assets.apifox.com/download/2.8.22/Apifox-2.8.22.exe#/dl.7z",
-            "hash": "0c600c44337ea9b23bd818ee32e8f0571dc2a5ce162a2e98ab541d922c194286"
+            "url": "https://file-assets.apifox.com/download/2.8.24/Apifox-2.8.24.exe#/dl.7z",
+            "hash": "sha512:a4fc45107d11c63748147e710c80072da08f630a748378e4d2b9b7c22430d50bfb9ec72851bc38a43b310632c79f189439ea5854286017c4ecff8844c28349b6"
         }
     },
     "pre_install": [
@@ -26,17 +21,22 @@
         ]
     ],
     "persist": "UserData",
+    "pre_uninstall": [
+        "Stop-Process -Name 'ApifoxAppAgent' -Force -ErrorAction SilentlyContinue",
+        "Start-Sleep -Milliseconds 1500"
+    ],
     "checkver": {
-        "url": "https://api.apifox.cn/api/v1/configs/client-updates/2.7.29/win64/latest.yml?",
-        "regex": "version:\\s*([\\d.]+)"
+        "url": "https://docs.apifox.com/changelog.md",
+        "regex": "## ([\\d.]+)(?=\\s)"
     },
     "autoupdate": {
         "architecture": {
-            "32bit": {
-                "url": "https://file-assets.apifox.com/download/$version/Apifox-windows-x86-$version.exe#/dl.7z"
-            },
             "64bit": {
-                "url": "https://file-assets.apifox.com/download/$version/Apifox-$version.exe#/dl.7z"
+                "url": "https://file-assets.apifox.com/download/$version/Apifox-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512: $base64"
+                }
             }
         }
     }
