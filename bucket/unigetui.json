@@ -1,43 +1,43 @@
 {
-    "version": "2026.1.4",
-    "description": "GUI for the most common CLI package managers, such as WinGet, Scoop, Chocolatey, Pip, Npm, .NET Tool, PowerShell Gallery and more.",
+    "version": "2026.1.5",
+    "description": "UniGetUI: The Graphical Interface for your package managers. Could be terribly described as a package manager manager to manage your package managers",
     "homepage": "https://devolutions.net/unigetui/",
-    "license": "MIT",
-    "suggest": {
-        "scoop-search": "main/scoop-search"
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/Devolutions/UniGetUI#MIT-1-ov-file"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/Devolutions/UniGetUI/releases/download/v2026.1.4/UniGetUI.x64.zip",
-            "hash": "2a596bbd9065298c0c8b4e4bc2c44e363534e1494b591a80f597119c61049e98"
-        },
-        "arm64": {
-            "url": "https://github.com/Devolutions/UniGetUI/releases/download/v2026.1.4/UniGetUI.arm64.zip",
-            "hash": "3f2280936b64e5b12f0f3d20d566f761ed807b71dbe5bd25e2bd772c97c22ca0"
-        }
-    },
-    "pre_install": "Set-Content -Value $null -Path \"$dir\\ForceUniGetUIPortable\"",
+    "url": "https://github.com/Devolutions/UniGetUI/releases/download/v2026.1.5/UniGetUI.Installer.exe",
+    "hash": "f7b0e1158644bcf94f4c9302f9454af300df1ccc188d98c6d1a9673d3afceb00",
+    "innosetup": true,
+    "pre_install": [
+        "$Files = [string[]](",
+        "    [System.IO.Path]::Combine($dir,'ForceUniGetUIPortable')",
+        ")",
+        "$Files.ForEach{",
+        "    if (-not [System.IO.File]::Exists($_)) {",
+        "        $null = [System.IO.File]::Create($_)",
+        "    }",
+        "}"
+    ],
     "shortcuts": [
         [
             "UniGetUI.exe",
             "UniGetUI"
         ]
     ],
-    "persist": "Settings",
+    "persist": [
+        "ForceUniGetUIPortable",
+        "Settings"
+    ],
     "checkver": {
-        "github": "https://github.com/Devolutions/UniGetUI"
+        "url": "https://api.github.com/repos/Devolutions/UniGetUI/releases",
+        "regex": "/releases/tag/v([\\d.]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/Devolutions/UniGetUI/releases/download/v$version/UniGetUI.x64.zip"
-            },
-            "arm64": {
-                "url": "https://github.com/Devolutions/UniGetUI/releases/download/v$version/UniGetUI.arm64.zip"
-            }
-        },
+        "url": "https://github.com/Devolutions/UniGetUI/releases/download/v$version/UniGetUI.Installer.exe",
         "hash": {
-            "url": "$baseurl/checksums.txt"
+            "url": "https://github.com/Devolutions/UniGetUI/releases/tag/$version",
+            "regex": "sha256: <code>$sha256</code>"
         }
     }
 }
