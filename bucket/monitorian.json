@@ -1,38 +1,32 @@
 {
-    "version": "4.13.0",
-    "homepage": "https://github.com/emoacht/Monitorian",
-    "description": "A Windows desktop tool to adjust the brightness of multiple monitors with ease.",
+    "homepage": "https://github.com/emoacht/monitorian",
+    "description": "A Windows desktop tool to adjust the brightness of multiple monitors with ease",
     "license": "MIT",
-    "url": "https://github.com/emoacht/Monitorian/releases/download/4.13.0-Installer/MonitorianInstaller4130.zip",
-    "hash": "73029da1613dec199ab79aa1b0ce6e77db40379edc4c380904799ace1cdefddc",
-    "pre_install": "Expand-MsiArchive \"$dir\\Monitorian.Installer.msi\" $dir -ExtractDir 'PFiles\\Monitorian' -Removal",
-    "post_install": [
-        "$appData = \"$env:LocalAppData\\Monitorian\"",
-        "ensure \"$persist_dir\" | Out-Null",
-        "if (Test-Path \"$appData\") {",
-        "    Copy-Item -Path \"$appData\\*\" -Destination \"$persist_dir\" -Force -ErrorAction SilentlyContinue",
-        "    Remove-Item -Path \"$appData\" -Force -Recurse -ErrorAction SilentlyContinue",
-        "}",
-        "New-DirectoryJunction \"$appData\" \"$persist_dir\" | Out-Null"
+    "version": "4.14.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/emoacht/Monitorian/releases/download/4.14.0-Installer/MonitorianInstaller3140.zip",
+            "hash": "1abb7cc7e0d62960355b461ebc44ca86946ea95fa9a4f31499fe1d19667ef7e1"
+        }
+    },
+    "pre_install": [
+        "Expand-MsiArchive \"$dir\\Monitorian.Installer.msi\"  \"$dir\\temp\"",
+        "Move-Item \"$dir\\temp\\PFiles\\Monitorian\\*\" -Destination \"$dir\"",
+        "Remove-Item \"$dir\\Monitorian.Installer.msi\""
     ],
-    "bin": "Monitorian.exe",
     "shortcuts": [
         [
             "Monitorian.exe",
             "Monitorian"
         ]
     ],
-    "pre_uninstall": [
-        "$rkey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'",
-        "if ($cmd -eq 'uninstall') {",
-        "    Remove-ItemProperty $rkey -Name 'Monitorian' -ErrorAction SilentlyContinue",
-        "}"
-    ],
-    "checkver": {
-        "github": "https://github.com/emoacht/Monitorian",
-        "regex": "([\\d.]+)-Installer"
-    },
+    "notes": ".NET Framework 4.8 is required.",
+    "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/emoacht/Monitorian/releases/download/$version-Installer/MonitorianInstaller$cleanVersion.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/emoacht/Monitorian/releases/download/$version-Installer/MonitorianInstaller$cleanVersion.zip"
+            }
+        }
     }
 }
