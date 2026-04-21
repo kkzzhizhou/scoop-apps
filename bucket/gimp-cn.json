@@ -1,58 +1,55 @@
 {
     "version": "3.2.4",
     "description": "GNU Image Manipulation Program",
-    "homepage": "https://gimp.org",
+    "homepage": "https://www.gimp.org",
     "license": "GPL-3.0-only",
     "url": "https://mirrors.ustc.edu.cn/gimp/v3.2/windows/gimp-3.2.4-setup.exe",
     "hash": "ec31d757dd82831d201ffcf47ffeac4175df739e0c02d5122e89aeeadfb988cc",
     "innosetup": true,
     "installer": {
         "script": [
-            "$scriptver = $version -split '[-.]'",
-            "$shortver = $scriptver[0] + '.' + $scriptver[1]",
             "Push-Location \"$dir\"",
             "Get-ChildItem -Filter '*.debug' -Recurse | Remove-Item -Recurse",
-            "$file64 = Get-ChildItem -Recurse -Filter '*,?.*' | Where-Object {",
-            "   $_.Name -match '^(.*?),[12]\\.(.*?)$' -and",
-            "   (-not (Test-Path (Join-Path $_.Directory.FullName \"$($matches[1]),3.$($matches[2])\"))) -and",
-            "   $matches[1] -ne 'libhwy'",
-            "}",
-            "$file64 | Rename-Item -NewName { $_.name -Replace ',2', ',3' }",
-            "$file64 | Rename-Item -NewName { $_.name -Replace ',1', ',2' }",
-            "if ($architecture -eq '32bit') {",
-            "   Get-ChildItem -Filter '*,1*' -Recurse | Rename-Item -NewName { $_.name -Replace ',1', '' }",
+            "if ($architecture -eq '64bit') {",
+            "   Rename-Item 'lib\\gimp\\2.0\\plug-ins\\twain\\twain,3.exe' 'twain.exe'",
+            "   Remove-Item 'lib\\gimp\\2.0\\plug-ins\\twain\\twain,1.exe'",
+            "   Get-ChildItem -Filter '*,1*' -Recurse | Rename-Item -NewName { $_.name -Replace ',\\d','' }",
+            "   Get-ChildItem -Filter '*,*' -Recurse | Remove-Item",
             "} else {",
-            "   # 'twain.exe' is for 'gimp32on64' which is not included.",
-            "   Remove-Item \"lib\\gimp\\$shortver\\plug-ins\\twain\" -Recurse -Force",
-            "   if ($architecture -eq '64bit') {",
-            "       Get-ChildItem -Filter '*,2*' -Recurse | Rename-Item -NewName { $_.name -Replace ',2', '' }",
-            "   } else {",
-            "       Get-ChildItem -Filter '*,3*' -Recurse | Rename-Item -NewName { $_.name -Replace ',3', '' }",
-            "   }",
+            "   Rename-Item 'lib\\gimp\\2.0\\plug-ins\\twain\\twain,1.exe' 'twain.exe'",
+            "   Remove-Item 'lib\\gimp\\2.0\\plug-ins\\twain\\twain,3.exe'",
+            "   Get-ChildItem -Filter '*,1*' -Recurse | Remove-Item",
+            "   Get-ChildItem -Filter '*,*' -Recurse | Rename-Item -NewName { $_.name -Replace ',\\d','' }",
             "}",
-            "Get-ChildItem -Filter '*,*' -Recurse | Remove-Item",
-            "Pop-Location"
+            "$pyenv = Get-Content 'lib\\gimp\\2.0\\environ\\pygimp.env' -Raw",
+            "$pyenv + '__COMPAT_LAYER=HIGHDPIAWARE' | Set-Content 'lib\\gimp\\2.0\\environ\\pygimp.env'",
+            "$pyint = Get-Content 'lib\\gimp\\2.0\\interpreters\\pygimp.interp' -Raw",
+            "$pyint = $pyint -Replace '(python|python2)=(.*)', \"`$1=$dir\\bin\\pythonw.exe\"",
+            "$pyint = $pyint -Replace 'py::python2', 'py::python'",
+            "$pyint | Set-Content 'lib\\gimp\\2.0\\interpreters\\pygimp.interp'",
+            "Pop-Location",
+            "Copy-Item \"$bucketsdir\\extras\\scripts\\gimp\\default.env\" \"$dir\\lib\\gimp\\2.0\\environ\\\" | Out-Null"
         ]
     },
     "bin": [
-        "bin\\gimp-console-3.2.exe",
+        "bin\\gimp-console-2.10.exe",
         [
-            "bin\\gimp-console-3.2.exe",
+            "bin\\gimp-console-2.10.exe",
             "gimp-console"
         ],
         [
-            "bin\\gimp-console-3.2.exe",
+            "bin\\gimp-console-2.10.exe",
             "gimp"
         ],
-        "bin\\gimptool-3.2.exe",
+        "bin\\gimptool-2.0.exe",
         [
-            "bin\\gimptool-3.2.exe",
+            "bin\\gimptool-2.0.exe",
             "gimptool"
         ]
     ],
     "shortcuts": [
         [
-            "bin\\gimp-3.2.exe",
+            "bin\\gimp-2.10.exe",
             "GIMP"
         ]
     ],
@@ -65,28 +62,6 @@
         "url": "https://mirrors.ustc.edu.cn/gimp/v$majorVersion.$minorVersion/windows/gimp-$matchHead-setup$matchTail.exe",
         "hash": {
             "url": "$baseurl/SHA256SUMS"
-        },
-        "bin": [
-            "bin\\gimp-console-$majorVersion.$minorVersion.exe",
-            [
-                "bin\\gimp-console-$majorVersion.$minorVersion.exe",
-                "gimp-console"
-            ],
-            [
-                "bin\\gimp-console-$majorVersion.$minorVersion.exe",
-                "gimp"
-            ],
-            "bin\\gimptool-$majorVersion.$minorVersion.exe",
-            [
-                "bin\\gimptool-$majorVersion.$minorVersion.exe",
-                "gimptool"
-            ]
-        ],
-        "shortcuts": [
-            [
-                "bin\\gimp-$majorVersion.$minorVersion.exe",
-                "GIMP"
-            ]
-        ]
+        }
     }
 }
