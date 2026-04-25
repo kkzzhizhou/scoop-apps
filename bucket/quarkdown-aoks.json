@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "description": "A modern Markdown-based typesetting system",
+  "homepage": "https://github.com/iamgio/quarkdown",
+  "license": "GPL-3.0",
+  "depends": [
+    "java/openjdk17",
+    "nodejs-lts"
+  ],
+  "url": "https://github.com/iamgio/quarkdown/releases/download/v2.0.0/quarkdown.zip",
+  "hash": "a070c57d3e05551c4031048c24fc7003e3d4cc052f71adc92bbdb002b0c5d8f1",
+  "extract_dir": "quarkdown",
+  "bin": "bin\\quarkdown.bat",
+  "post_install": [
+    "npm install puppeteer --prefix \"$dir\\lib\"",
+    "Get-ChildItem -Path \"$dir\\lib\"",
+    "Remove-Item -Path \"$dir\\bin\\quarkdown\" -Force -ErrorAction SilentlyContinue",
+    "Move-Item -Path \"$dir\\bin\\quarkdown.bat\" -Destination \"$dir\\bin\\_quarkdown.bat\"",
+    "Set-Content -Path \"$dir\\bin\\quarkdown.bat\" -Value @(",
+    "  '@echo off',",
+    "  'set APPS_DIR=%~dp0..\\..\\..',",
+    "  'set JAVA_HOME=%APPS_DIR%\\openjdk17\\current',",
+    "  'set PATH=%APPS_DIR%\\nodejs-lts\\current;%PATH%',",
+    "  'set QD_NPM_PREFIX=%~dp0..\\lib',",
+    "  '\"%~dp0_quarkdown\" %*'",
+    ")"
+  ]
+}
