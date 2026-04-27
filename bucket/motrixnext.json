@@ -1,8 +1,11 @@
 {
     "version": "3.8.4",
-    "description": "Tauri版本的Motrix下载器",
-    "homepage": "https://github.com/AnInsomniacy/motrix-next",
-    "license": "MIT",
+    "description": "A full-featured download manager — rebuilt from the ground up",
+    "homepage": "https://motrix-next.pages.dev/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/AnInsomniacy/motrix-next#MIT-1-ov-file"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/AnInsomniacy/motrix-next/releases/download/v3.8.4/MotrixNext_3.8.4_x64-setup.exe#/dl.7z",
@@ -13,14 +16,41 @@
             "hash": "95a4fe2f0f984e55c7a9f6ea08523f0214bdcae7101e3a4a885d07c237a66461"
         }
     },
+    "pre_install": "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.motrix.next\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.motrix.next\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.motrix.next\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.motrix.next\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "motrix-next.exe",
+            "MotrixNext"
+        ]
+    ],
     "shortcuts": [
         [
             "motrix-next.exe",
             "MotrixNext"
         ]
     ],
-    "persist": "binaries\\aria2.conf",
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/AnInsomniacy/motrix-next/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/MotrixNext_([\\d.]+)_x64-setup"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {

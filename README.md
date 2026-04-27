@@ -103,9 +103,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - naderi/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - Small-Ku/turbo-bucket
-- kengwang/scoop-ctftools-bucket
-- WinApps-share/WinApps-bucket
 - noql-net/scoop
+- WinApps-share/WinApps-bucket
+- kengwang/scoop-ctftools-bucket
 - brian6932/dank-scoop
 - ygguorun/scoop-bucket
 - aliesbelik/poldi
@@ -115,9 +115,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Weidows-projects/scoop-3rd
 - Scoopforge/Extras-Plus
 - Velgus/Scoop-Portapps
-- TianXiaTech/scoop-txt
 - starise/Scoop-Confetti
 - seumsc/scoop-seu
+- TianXiaTech/scoop-txt
 - iquiw/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - ChungZH/peach
@@ -146,9 +146,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Rinkerbel/scooped
 - Locietta/sniffer
 - ShuguangSun/sgs-scoop-bucket
+- windedge/ladle-bucket
 - 404NetworkError/scoop-bucket
 - milnak/scoop-bucket
-- windedge/ladle-bucket
 - jcwillox/scoop-python
 - younger-1/scoop-it
 - jcwillox/scoop-bucket
