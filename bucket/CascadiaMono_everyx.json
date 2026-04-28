@@ -1,0 +1,31 @@
+{
+    "version": "2106.17",
+    "license": "OFL-1.1",
+    "homepage": "https://github.com/microsoft/cascadia-code",
+    "url": "https://github.com/microsoft/cascadia-code/releases/download/v2106.17/CascadiaCode-2106.17.zip#/CascadiaCode.zip",
+    "hash": "22c030fec5e5c516580fd6e24b385c935baae2f6c110024aeba20240d533a68a",
+    "checkver": "github",
+    "depends": "sudo",
+    "autoupdate": {
+        "url": "https://github.com/microsoft/cascadia-code/releases/download/v$version/CascadiaCode-$version.zip#/CascadiaCode.zip"
+    },
+    "extract_dir": "CascadiaCode/ttf",
+    "installer": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop install $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'CascadiaMono.ttf' -Recurse | ForEach-Object {",
+            "  New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Value $_.Name -Force | Out-Null",
+            "  Copy-Item $_.FullName -destination \"$env:windir\\Fonts\"",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if(!(is_admin)) { error \"Admin rights are required, please run 'sudo scoop uninstall $app'\"; exit 1 }",
+            "Get-ChildItem $dir -filter 'CascadiaMono.ttf' | ForEach-Object {",
+            "  Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts' -Name $_.Name.Replace($_.Extension, ' (TrueType)') -Force -ErrorAction SilentlyContinue",
+            "  Remove-Item \"$env:windir\\Fonts\\$($_.Name)\" -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "homepage": "https://www.rizonesoft.com/downloads/notepad3/",
+    "description": "Notepad like text editor based on the Scintilla source code. Notepad3 based on code from Notepad2 and MiniPath on code from metapath.",
+    "version": "5.21.227.1",
+    "checkver": {
+        "url": "https://www.rizonesoft.com/downloads/notepad3/",
+        "re": "href=\"(?<url>\\S*)\".*\\s*Notepad3_(?<version>[\\d.]+).zip",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "url": "$matchUrl#/$version.zip"
+    },
+    "url": [
+        "https://www.rizonesoft.com/download/3943/#/5.21.227.1.zip",
+        "https://raw.githubusercontent.com/everyx/scoop-bucket/master/scripts/notepad-install-replace.reg",
+        "https://raw.githubusercontent.com/everyx/scoop-bucket/master/scripts/notepad-uninstall.reg"
+    ],
+    "hash": [
+        "d8a788bdec2f60a70b9b56ce26c21e9b3dc5e5b04b0a172cc1305a06cd9477b1",
+        "306bf331581183459a4fe241c1b046ee393866155c4a69f0d4a9dcf4903af634",
+        "6a3ba3f05705b0d326892d2553a4658826e7e3cc1d96b5b1c39346c2de962ef6"
+    ],
+    "architecture": {
+        "64bit": {
+            "pre_install": "Expand-Archive -LiteralPath $(\"$dir\\Notepad3_{0}_x64.zip\" -f $version) -DestinationPath $dir"
+        },
+        "32bit": {
+            "pre_install": "Expand-Archive -LiteralPath $(\"$dir\\Notepad3_{0}_x86.zip\" -f $version) -DestinationPath $dir"
+        }
+    },
+    "post_install": [
+        "Remove-Item *.zip",
+        "$notepad3path = \"$dir\\Notepad3.exe\".Replace('\\', '\\\\')",
+        "$content = Get-Content \"$dir\\notepad-install-replace.reg\"",
+        "$content = $content.Replace('$notepad3', $notepad3path)",
+        "",
+        "$content | Set-Content -Path \"$dir\\notepad-install-replace.reg\"",
+        "$title    = 'Tips'",
+        "$question = 'Replace system default notepad with notepd3 now?'",
+        "$choices = New-Object Collections.ObjectModel.Collection[Management.Automation.Host.ChoiceDescription]",
+        "$choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&Yes'))",
+        "$choices.Add((New-Object Management.Automation.Host.ChoiceDescription -ArgumentList '&No'))",
+        "$decision = $Host.UI.PromptForChoice($title, $question, $choices, 1)",
+        "if ($decision -eq 0) {",
+        "   regedit /s $dir\\notepad-install-replace.reg",
+        "} else {",
+        "   write-host",
+        "   write-host You can run this command below when needed this:",
+        "   write-host $dir\\notepad-install.reg",
+        "}"
+    ],
+    "notes": [
+        "Please run below command before uninstall if you confirmed replce system default notepad:",
+        "$dir\\notepad-uninstall.reg"
+    ],
+    "bin": "Notepad3.exe",
+    "shortcuts": [
+        [
+            "Notepad3.exe",
+            "Notepad3"
+        ]
+    ]
+}
