@@ -1,0 +1,60 @@
+{
+    "version": "nightly",
+    "description": "GPU-accelerated terminal emulator (nightly builds)",
+    "homepage": "https://github.com/wez/wezterm",
+    "license": "Apache-2.0",
+    "notes": [
+        "Add \"Open with Wezterm\" as a context menu option by running:",
+        "reg import \"$dir\\install-context.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/wez/wezterm/releases/download/nightly/WezTerm-windows-nightly.zip"
+        }
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/wezterm.lua File"
+    ],
+    "installer": {
+        "script": [
+            "$foldername = (Get-Item $dir\\WezTerm-windows-*).Name",
+            "Move-Item $dir\\$foldername\\* $dir",
+            "Remove-Item $dir\\$foldername"
+        ]
+    },
+    "post_install": [
+        "$weztermPath = \"$dir\\wezterm-gui.exe\".Replace('\\', '\\\\')",
+        "$bucketName = (scoop bucket list | Where-Object Source -Match 'deide-bucket').Name",
+        "'install-context', 'uninstall-context' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucketName\\scripts\\$app\\$_.reg\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucketName\\scripts\\$app\\$_.reg\"",
+        "        $content = $content.Replace('$weztermPath', $weztermPath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
+    "bin": [
+        "wezterm.exe",
+        "wezterm-gui.exe"
+    ],
+    "shortcuts": [
+        [
+            "wezterm-gui.exe",
+            "WezTerm"
+        ]
+    ],
+    "persist": [
+        "wezterm.lua",
+        "user"
+    ],
+    "uninstaller": {
+        "script": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" *> $null }"
+    }
+}
