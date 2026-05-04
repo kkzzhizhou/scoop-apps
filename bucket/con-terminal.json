@@ -1,0 +1,51 @@
+{
+    "version": "0.1.0-beta.57",
+    "description": "The Native Terminal Emulator with a builtin AI Harness",
+    "homepage": "https://con.nowledge.co/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/nowledge-co/con-terminal/releases/download/v0.1.0-beta.57/con-0.1.0-beta.57-windows-x86_64.zip",
+            "hash": "14741fe5cd6ce81ad0bb0c3744e14dd35b58c0802d3393863fa16cbe165d58f5"
+        }
+    },
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\con-terminal\"",
+        "$persistPath = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistPath)) {",
+        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+    ],
+    "bin": [
+        [
+            "con-app.exe",
+            "con-app"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "con-app.exe",
+            "Con"
+        ]
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\con-terminal\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/nowledge-co/con-terminal"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/nowledge-co/con-terminal/releases/download/v$version/con-$version-windows-x86_64.zip"
+            }
+        }
+    }
+}

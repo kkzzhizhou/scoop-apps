@@ -1,9 +1,12 @@
 {
     "version": "26.3.2-0",
-    "description": "A conda-forge distribution",
+    "description": "Community-driven minimalistic conda installer using the conda-forge channel as default.",
     "homepage": "https://github.com/conda-forge/miniforge",
     "license": "BSD-3-Clause",
     "notes": [
+        "* Known issue:",
+        "  - The App may fail to install when 'Long Paths' are not enabled, Check it by executing `scoop checkup`. (#11570)",
+        "------",
         "From 4.6.0, conda has built the support for Cmd, Powershell or other shells.",
         "Use \"conda init powershell\" or \"conda init __your_favorite_shell__\""
     ],
@@ -16,6 +19,7 @@
     "pre_install": "if ($dir -match ' ') { error 'The installation directory cannot include a space'; break}",
     "installer": {
         "script": [
+            "# Move the installer to the upper directory to avoid 'The installation directory is not empty' error",
             "Move-Item \"$dir\\$fname\" \"$dir\\..\\$fname\"",
             "Start-Process -Wait \"$dir\\..\\$fname\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', \"/D=$dir\")",
             "Remove-Item \"$dir\\..\\$fname\"",
@@ -24,13 +28,6 @@
             "  $shortscont = \"`\"$env:windir\\system32\\cmd.exe`\" `\"/K`\" `\"$dir\\Scripts\\activate.bat`\" `\"$dir`\"\"",
             "  $shortscont | Set-Content \"$dir\\miniforge3_prompts.bat\"",
             "}"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Start-Process -Wait \"$dir\\Uninstall-Mambaforge.exe\" -ArgumentList '/S'",
-            "# Workaround for 'envs' being deleted by the uninstaller. This does not affect persist.",
-            "New-Item \"$dir\\envs\" -ItemType Directory | Out-Null"
         ]
     },
     "shortcuts": [
@@ -43,11 +40,18 @@
         [
             "miniforge3_prompts.bat",
             "Miniforge Prompt"
-        ],
-        "condabin\\conda.bat",
-        "condabin\\mamba.bat"
+        ]
     ],
     "persist": "envs",
+    "uninstaller": {
+        "script": [
+            "# Workaround for https://github.com/ScoopInstaller/Scoop/issues/4075",
+            "# Remove junction point before executing the uninstaller, otherwise all envs will be removed by the uninstaller.",
+            "Invoke-ExternalCommand cmd -ArgumentList @('/c', 'rmdir', '/s', '/q', \"`\"$dir\\envs`\"\") | Out-Null",
+            "Start-Process -Wait \"$dir\\Uninstall-Miniforge3.exe\" -ArgumentList '/S'",
+            "New-Item \"$dir\\envs\" -ItemType Directory | Out-Null"
+        ]
+    },
     "checkver": {
         "github": "https://github.com/conda-forge/miniforge",
         "regex": "tag/([\\d.-]+)"
