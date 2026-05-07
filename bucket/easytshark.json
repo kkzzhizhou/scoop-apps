@@ -1,0 +1,65 @@
+{
+    "version": "1.0.2",
+    "description": "Professional network traffic analysis tool",
+    "homepage": "https://www.easytshark.com/",
+    "license": {
+        "identifier": "Proprietary"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/xuanyuanzhifeng/easytshark-release/releases/download/v1.0.2/easytshark_1.0.2_20251123100349_setup.exe#/dl.7z",
+            "hash": "84ae1e1a0a69e092cd2c9841006b85332aa1426cb22ebc0844007bbf3c1b2bc7"
+        }
+    },
+    "shortcuts": [
+        [
+            "easytshark.exe",
+            "EasyTshark"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/easytshark",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "notes": [
+        "EasyTshark 依赖本机已安装的 Wireshark/TShark（>= 4.2），首次使用前请确保已正确安装并配置环境变量。"
+    ],
+    "checkver": {
+        "url": "https://github.com/xuanyuanzhifeng/easytshark-release/releases/latest",
+        "script": [
+            "$releasePage = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "$versionMatch = [regex]::Match($releasePage.Content, '/xuanyuanzhifeng/easytshark-release/releases/tag/v(?<version>\\d+\\.\\d+\\.\\d+)')",
+            "if (-not $versionMatch.Success) {",
+            "  throw 'Failed to locate the latest EasyTshark release tag.'",
+            "}",
+            "$version = $versionMatch.Groups['version'].Value",
+            "$assetsUrl = 'https://github.com/xuanyuanzhifeng/easytshark-release/releases/expanded_assets/v' + $version",
+            "$assetsPage = Invoke-WebRequest -Uri $assetsUrl -UseBasicParsing",
+            "$assetPattern = 'href=\"(?<path>/xuanyuanzhifeng/easytshark-release/releases/download/v' + [regex]::Escape($version) + '/easytshark_[^\"]+_setup\\.exe)\"'",
+            "$assetMatch = [regex]::Match($assetsPage.Content, $assetPattern)",
+            "if (-not $assetMatch.Success) {",
+            "  throw 'Failed to locate EasyTshark Windows setup asset.'",
+            "}",
+            "$assetUrl = 'https://github.com' + $assetMatch.Groups['path'].Value",
+            "Write-Output ($assetUrl + '|' + $version)"
+        ],
+        "regex": "^(?<url>.+)\\|(?<version>[0-9]+\\.[0-9]+\\.[0-9]+)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,66 @@
+{
+    "version": "0.3.0",
+    "description": "支持 OpenClaw 一键安装、飞书集成与本地执行的桌面 AI 助手。",
+    "homepage": "https://autoglm.zhipuai.cn/autoclaw/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://autoglm.aminer.cn/autoclaw/updates/autoclaw-0.3.0-setup.exe#/dl.7z",
+            "hash": "sha512:be0bca161c92dcbe4d62276cfb668c809b8682497ed910f3029f82106a9c0380c57a617257551b6a14e8a8cde0885375443c0fcffcba54da9dd85648b93648fc",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -ErrorAction SilentlyContinue"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "AutoClaw.exe",
+            "AutoClaw"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-state",
+                "source": "UserProfile/.openclaw-autoclaw",
+                "target": "$persist_dir/home/openclaw-autoclaw",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/AutoClaw",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/autoclaw-updater",
+                "target": "$persist_dir/local/autoclaw-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "url": "https://autoglm.aminer.cn/autoclaw/updates/latest.yml",
+        "regex": "version:\\s*([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://autoglm.aminer.cn/autoclaw/updates/autoclaw-$version-setup.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

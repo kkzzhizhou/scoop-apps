@@ -1,34 +1,30 @@
 {
-    "version": "145.2.7632.5936",
+    "version": "147.0.7727.1860",
     "description": "The AI browser that acts as a personal assistant",
     "homepage": "https://perplexity.ai/comet",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
             "url": "https://perplexity.ai/rest/browser/download?platform=win_x64&channel=stable#/updater.exe",
-            "hash": "99ce4e8dec49087f62ad3e157ea5345e03cd2b7e0fd29990dc312a8ab247d32b"
+            "hash": "56a895bb34a78e9e713953e0009dee1e3fd8b57b0637199efe8cb6474a0b1d6a"
         },
         "arm64": {
             "url": "https://perplexity.ai/rest/browser/download?platform=win_arm64&channel=stable#/updater.exe",
-            "hash": "1ca64db86be414d86f27ba580884b496509fab48001a9c5654636bd1b6b5717c"
+            "hash": "0e4a5ca171cd760fe41dcdef876076b6199fa8cf7b773968b59c96fcda979e28"
         }
     },
     "extract_dir": "",
     "pre_install": [
         "$log = \"$dir\\install.log\"",
         "$ProgressPreference = 'SilentlyContinue'",
-
         "7z x \"$dir\\updater.exe\" -o\"$dir\\updater\" -y -bd *> $log",
         "$packed = Get-ChildItem \"$dir\\updater\" -Recurse -Include *.7z | Select-Object -First 1",
         "if (-not $packed) { throw 'No embedded .7z archive found' }",
-
         "7z x \"$($packed.FullName)\" -o\"$dir\\inner\" -y -bd *> $log",
         "$mini = Get-ChildItem \"$dir\\inner\" -Recurse -Filter mini_installer.exe | Select-Object -First 1",
         "if (-not $mini) { throw 'mini_installer.exe not found' }",
-
         "7z x \"$($mini.FullName)\" -o\"$dir\\mini\" -y -bd *> $log",
         "Expand-7zipArchive \"$dir\\mini\\chrome.7z\" -ExtractDir 'Chrome-bin' -DestinationPath \"$dir\" -Removal",
-
         "Remove-Item \"$dir\\chrome.exe\" -Force -ErrorAction SilentlyContinue"
     ],
     "post_install": [

@@ -1,0 +1,97 @@
+{
+    "version": "2.64.0.635",
+    "description": "Tencent Yuanbao desktop client powered by Hunyuan and DeepSeek models",
+    "homepage": "https://yuanbao.tencent.com/evt/dl",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://privacy.qq.com/document/preview/eb9be56572ab4886b6ca124e72abf413"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn-hybrid-prod.hunyuan.tencent.com/Desktop/business/channels/yuanbao_7001_x64.exe#/dl.7z",
+            "hash": "c93ae164712a37d3eecfdf6c02d94208c299abc18258a72234c34bbf09094069"
+        }
+    },
+    "installer": {
+        "script": [
+            "$appArchive = Get-ChildItem \"$dir\\install*.7z\" | Select-Object -First 1",
+            "if (-not $appArchive) { throw 'Yuanbao app archive not found in installer package.' }",
+            "Expand-7zipArchive $appArchive.FullName \"$dir\" -Removal",
+            "@('$PLUGINSDIR', '$WINDIR', 'Yuanbao_new.exe', 'plugin_compress.ini') | ForEach-Object {",
+            "    $path = Join-Path $dir $_",
+            "    if (Test-Path $path) { Remove-Item $path -Recurse -Force }",
+            "}"
+        ]
+    },
+    "bin": "yuanbao.exe",
+    "shortcuts": [
+        [
+            "yuanbao.exe",
+            "Tencent Yuanbao"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/Tencent/yuanbao",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "local",
+                "source": "LocalAppData/com.tencent.yuanbao",
+                "target": "$persist_dir/local",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "url": "https://yuanbao.tencent.com/evt/dl",
+        "script": [
+            "$page = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "$bundleUrlMatch = [regex]::Match($page.Content, 'https://cdn-bot\\.hunyuan\\.tencent\\.com/evt/dl/index\\.[a-z0-9]+\\.js')",
+            "if (-not $bundleUrlMatch.Success) { throw 'Unable to locate Yuanbao download page bundle URL.' }",
+            "$bundle = (Invoke-WebRequest -Uri $bundleUrlMatch.Value -UseBasicParsing).Content",
+            "$pcChannelMatch = [regex]::Match($bundle, 'default:\\{[^}]{0,200}pc:\"(?<pc>\\d+)\"')",
+            "if (-not $pcChannelMatch.Success) { throw 'Unable to parse default PC channel from Yuanbao bundle.' }",
+            "$pcChannel = $pcChannelMatch.Groups['pc'].Value",
+            "$pcUrlTemplateMatch = [regex]::Match($bundle, '(?<prefix>https://cdn-hybrid-prod\\.hunyuan\\.tencent\\.com/Desktop/business/channels/yuanbao_)\"\\.concat\\(t,\"(?<suffix>_x64\\.exe)\"\\)')",
+            "if (-not $pcUrlTemplateMatch.Success) { throw 'Unable to parse PC download URL template from Yuanbao bundle.' }",
+            "$downloadUrl = $pcUrlTemplateMatch.Groups['prefix'].Value + $pcChannel + $pcUrlTemplateMatch.Groups['suffix'].Value",
+            "$pkgSchemaMatch = [regex]::Match($bundle, 'schemaid=(?<schema>yuanbao_evt_dl_pkg_ch_info_(?:prod|test))&schemakey=(?<key>[0-9a-f]+)')",
+            "if ($pkgSchemaMatch.Success) {",
+            "    $pkgSchemaUrl = 'https://cache.wuji.qq.com/x/api/wuji_cache/object?appid=yuanbao_evt&schemaid=' + $pkgSchemaMatch.Groups['schema'].Value + '&schemakey=' + $pkgSchemaMatch.Groups['key'].Value + '&page=1&size=500'",
+            "    $pkgSchema = Invoke-WebRequest -Uri $pkgSchemaUrl -UseBasicParsing | ConvertFrom-Json",
+            "    $override = $pkgSchema.data | Where-Object { $_.device -eq 'pc' -and $_.pkg_ch_id -eq $pcChannel } | Select-Object -First 1",
+            "    if ($override -and $override.page_config) {",
+            "        $pageConfig = $override.page_config | ConvertFrom-Json",
+            "        if ($pageConfig.winDownloadLink) { $downloadUrl = $pageConfig.winDownloadLink }",
+            "    }",
+            "}",
+            "$tmpFile = Join-Path $env:TEMP ('yuanbao_' + [guid]::NewGuid().ToString() + '.exe')",
+            "try {",
+            "    Invoke-WebRequest -Uri $downloadUrl -UseBasicParsing -OutFile $tmpFile",
+            "    $version = (Get-Item $tmpFile).VersionInfo.FileVersion",
+            "    if (-not $version) { throw 'Unable to read Yuanbao version from installer metadata.' }",
+            "    Write-Output ($downloadUrl + '|' + $version)",
+            "}",
+            "finally {",
+            "    if (Test-Path $tmpFile) { Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue }",
+            "}"
+        ],
+        "regex": "^(?<url>.+)\\|(?<version>[\\d.]+)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,0 +1,130 @@
+{
+    "version": "1.5.6",
+    "description": "AI 可编程工作流平台 - 基于 VSCode 的工作流 IDE",
+    "homepage": "https://oomol.com/zh-CN/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://oomol.com/zh-CN/terms/"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://static.oomol.com/release/stable/win32/x64/OOMOL Studio-1.5.6-2026-04-21.10.exe",
+            "hash": "0ad38599ea753dde604bfe851ef14c24cf5dd5f18b7683bda093e3cf4104a981"
+        }
+    },
+    "innosetup": true,
+    "extract_dir": "{code_GetDestDir}",
+    "shortcuts": [
+        [
+            "OOMOL Studio.exe",
+            "OOMOL Studio"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-config",
+                "source": "UserProfile/.oomol-studio-data",
+                "target": "$persist_dir/home/config",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "home-state",
+                "source": "UserProfile/.oomol-studio",
+                "target": "$persist_dir/home/state",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/OOMOL Studio",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "programs",
+                "source": "LocalAppData/Programs/oomol",
+                "target": "$persist_dir/programs",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "pre_install": [
+        "$dynamicExe = Join-Path $dir '{code_GetExeBasename}'",
+        "$mainExe = Join-Path $dir 'OOMOL Studio.exe'",
+        "if ((Test-Path $dynamicExe) -and -not (Test-Path $mainExe)) {",
+        "  info 'Normalizing executable name from dynamic Inno placeholder...'",
+        "  Rename-Item $dynamicExe 'OOMOL Studio.exe'",
+        "}",
+        "$dynamicVisualManifest = Join-Path $dir '{code_GetVisualElementsManifest}'",
+        "$visualManifest = Join-Path $dir 'OOMOL Studio.VisualElementsManifest.xml'",
+        "if ((Test-Path $dynamicVisualManifest) -and -not (Test-Path $visualManifest)) {",
+        "  info 'Normalizing VisualElements manifest name from dynamic Inno placeholder...'",
+        "  Rename-Item $dynamicVisualManifest 'OOMOL Studio.VisualElementsManifest.xml'",
+        "}",
+        "$appResourcesDirs = @()",
+        "if (Test-Path $dir) {",
+        "  $appResourcesDirs = Get-ChildItem -Path $dir -Directory -Recurse | Where-Object { $_.FullName -match '[\\\\/]resources[\\\\/]app$' }",
+        "}",
+        "foreach ($appResourcesDir in $appResourcesDirs) {",
+        "  $productJson = Join-Path $appResourcesDir.FullName 'product.json'",
+        "  $duplicateProductJsons = Get-ChildItem -Path $appResourcesDir.FullName -Filter 'product,*.json' -File | Sort-Object { [int]([regex]::Match($_.BaseName, ',(\\d+)$').Groups[1].Value) }",
+        "  if ((-not (Test-Path $productJson)) -and $duplicateProductJsons.Count) {",
+        "    info 'Normalizing duplicate product.json extracted from Inno package...'",
+        "    $productCandidate = $duplicateProductJsons[-1]",
+        "    Rename-Item -LiteralPath $productCandidate.FullName -NewName 'product.json'",
+        "    foreach ($staleProductJson in $duplicateProductJsons | Select-Object -SkipLast 1) {",
+        "      Remove-Item -LiteralPath $staleProductJson.FullName -Force",
+        "    }",
+        "  }",
+        "}"
+    ],
+    "post_install": [
+        "$homeConfig = Join-Path $persist_dir 'home\\config'",
+        "$homeState = Join-Path $persist_dir 'home\\state'",
+        "$extensionsDir = Join-Path $homeConfig 'extensions'",
+        "$roamingDir = Join-Path $persist_dir 'roaming'",
+        "$programsDir = Join-Path $persist_dir 'programs'",
+        "foreach ($path in @($homeConfig, $homeState, $extensionsDir, $roamingDir, $programsDir)) { if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null } }",
+        "$appDataPath = Join-Path $env:AppData 'OOMOL Studio'",
+        "if (Test-Path $appDataPath) { $item = Get-Item $appDataPath -ErrorAction SilentlyContinue; if ($item -and -not $item.LinkType) { Copy-Item \"$appDataPath\\*\" $roamingDir -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item $appDataPath -Recurse -Force -ErrorAction SilentlyContinue } }",
+        "$localProgramsPath = Join-Path $env:LocalAppData 'Programs\\oomol'",
+        "if (Test-Path $localProgramsPath) { $item = Get-Item $localProgramsPath -ErrorAction SilentlyContinue; if ($item -and -not $item.LinkType) { Copy-Item \"$localProgramsPath\\*\" $programsDir -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item $localProgramsPath -Recurse -Force -ErrorAction SilentlyContinue } }",
+        "$userProfileDataPath = Join-Path $env:USERPROFILE '.oomol-studio-data'",
+        "if (Test-Path $userProfileDataPath) { $item = Get-Item $userProfileDataPath -ErrorAction SilentlyContinue; if ($item -and -not $item.LinkType) { Copy-Item \"$userProfileDataPath\\*\" $homeConfig -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item $userProfileDataPath -Recurse -Force -ErrorAction SilentlyContinue } }",
+        "$userProfileStudioPath = Join-Path $env:USERPROFILE '.oomol-studio'",
+        "if (Test-Path $userProfileStudioPath) { $item = Get-Item $userProfileStudioPath -ErrorAction SilentlyContinue; if ($item -and -not $item.LinkType) { Copy-Item \"$userProfileStudioPath\\*\" $homeState -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item $userProfileStudioPath -Recurse -Force -ErrorAction SilentlyContinue } }",
+        "$extensionsFile = Join-Path $extensionsDir 'extensions.json'",
+        "if (Test-Path $extensionsFile) {",
+        "  info 'Adjusting path in extensions file...'",
+        "  (Get-Content $extensionsFile) -replace '(?<=oomol(/|\\\\)).*?(?=(/|\\\\)home(/|\\\\)config(/|\\\\)extensions)', $version | Set-Content $extensionsFile",
+        "}"
+    ],
+    "persist": "data",
+    "checkver": {
+        "script": [
+            "try {",
+            "    $response = Invoke-WebRequest -Uri 'https://update.oomol.com/latest/win32-x64-user/stable' -MaximumRedirection 0 -ErrorAction Stop",
+            "} catch {",
+            "    if ($_.Exception.Response.StatusCode -eq 302) {",
+            "        $url = $_.Exception.Response.Headers.Location",
+            "    }",
+            "}",
+            "if ($url -match 'Studio-([0-9.]+)-') { $url }"
+        ],
+        "regex": "(?<url>.*Studio-(?<version>[\\d.]+)-.*\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl"
+            }
+        }
+    }
+}

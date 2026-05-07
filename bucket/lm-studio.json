@@ -1,0 +1,100 @@
+{
+    "version": "0.4.12-1",
+    "description": "LM Studio is an easy-to-use desktop app for experimenting with local and open-source Large Language Models (LLMs).",
+    "homepage": "https://lmstudio.ai/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://lmstudio.ai/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://installers.lmstudio.ai/win32/x64/0.4.12-1/LM-Studio-0.4.12-1-x64.exe",
+            "hash": "8b8240682e23815ce673b1680fd81df00aa97f0f3ff395ba31c0ad55c6675ca3"
+        }
+    },
+    "installer": {
+        "script": [
+            "7z x \"$dir\\$fname\" -o\"$dir\\extracted\" -y | Out-Null",
+            "Move-Item \"$dir\\extracted\\`$PLUGINSDIR\\app-64.7z\" \"$dir\\app.7z\"",
+            "7z x \"$dir\\app.7z\" -o\"$dir\" -y | Out-Null",
+            "Remove-Item \"$dir\\extracted\", \"$dir\\app.7z\", \"$dir\\$fname\" -Recurse -Force"
+        ]
+    },
+    "shortcuts": [
+        [
+            "LM Studio.exe",
+            "LM Studio"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/LM Studio",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "local",
+                "source": "LocalAppData/LM-Studio",
+                "target": "$persist_dir/local",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/lm-studio-updater",
+                "target": "$persist_dir/local/lm-studio-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "post_install": [
+        "$homeConfig = Join-Path $persist_dir 'home\\config'",
+        "$homeState = Join-Path $persist_dir 'home\\state'",
+        "$lmStudioDir = Join-Path $homeConfig 'lm-studio'",
+        "$roamingDir = Join-Path $persist_dir 'roaming'",
+        "$localDir = Join-Path $persist_dir 'local'",
+        "foreach ($path in @($homeConfig, $homeState, $lmStudioDir, $roamingDir, $localDir)) { if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null } }",
+        "$localAppDataPath = Join-Path $env:LocalAppData 'LM-Studio'",
+        "if (Test-Path $localAppDataPath) {",
+        "  $localAppDataItem = Get-Item $localAppDataPath -ErrorAction SilentlyContinue",
+        "  if ($localAppDataItem -and -not $localAppDataItem.LinkType) {",
+        "    Copy-Item \"$localAppDataPath\\*\" $localDir -Force -Recurse -ErrorAction SilentlyContinue",
+        "    Remove-Item $localAppDataPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "  }",
+        "}",
+        "$appDataPath = Join-Path $env:AppData 'LM Studio'",
+        "if (Test-Path $appDataPath) {",
+        "  $appDataItem = Get-Item $appDataPath -ErrorAction SilentlyContinue",
+        "  if ($appDataItem -and -not $appDataItem.LinkType) {",
+        "    Copy-Item \"$appDataPath\\*\" $roamingDir -Force -Recurse -ErrorAction SilentlyContinue",
+        "    Remove-Item $appDataPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "  }",
+        "}",
+        "$homePointerPath = Join-Path $env:USERPROFILE '.lmstudio-home-pointer'",
+        "if (-not (Test-Path $homePointerPath)) {",
+        "  $homePointerContent = $lmStudioDir",
+        "  $homePointerContent | Out-File -FilePath $homePointerPath -Encoding utf8 -Force",
+        "}"
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://lmstudio.ai/download",
+        "regex": "win32.*?x64.*?version.*?([\\d.]+).*?build.*?([\\d]+)",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://installers.lmstudio.ai/win32/x64/$version/LM-Studio-$version-x64.exe"
+            }
+        }
+    }
+}

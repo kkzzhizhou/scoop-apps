@@ -1,0 +1,70 @@
+{
+    "version": "1.23.2",
+    "description": "Autonomous AI development environment from Google that brings agent-centric workflows into the IDE.",
+    "homepage": "https://antigravity.google/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://antigravity.google/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/1.23.2-4781536860569600/windows-x64/Antigravity.exe#/Antigravity_installer.exe",
+            "hash": "3874fc761e5c90b3edf8e0365f506ce22241a88f6881cea09713b3f472c4f6ed"
+        }
+    },
+    "innosetup": true,
+    "extract_dir": "{code_GetDestDir}",
+    "shortcuts": [
+        [
+            "Antigravity.exe",
+            "Google Antigravity"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-config",
+                "source": "UserProfile/.antigravity",
+                "target": "$persist_dir/home/config",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/Antigravity",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "script": [
+            "$download = Invoke-WebRequest -Uri 'https://antigravity.google/download' -UseBasicParsing",
+            "if ($download.Content -notmatch 'src=\"(main-[^\"]+\\.js)\"') {",
+            "  throw 'Failed to locate main bundle script on download page.'",
+            "}",
+            "$bundlePath = $matches[1]",
+            "$bundleUrl = if ($bundlePath -like 'http*') { $bundlePath } else { 'https://antigravity.google/' + $bundlePath }",
+            "$bundle = Invoke-WebRequest -Uri $bundleUrl -UseBasicParsing",
+            "if ($bundle.Content -match 'https://edgedl\\.me\\.gvt1\\.com/edgedl/release2/(?<channel>[^\"/]+)/antigravity/stable/(?<buildver>[0-9]+\\.[0-9]+\\.[0-9]+-[0-9]+)/linux-x64/Antigravity\\.tar\\.gz') {",
+            "  $linuxUrl = $matches[0]",
+            "  $windowsUrl = ($linuxUrl -replace '/linux-x64/Antigravity\\.tar\\.gz$', '') + '/windows-x64/Antigravity.exe'",
+            "  Write-Output $windowsUrl",
+            "} else {",
+            "  throw 'Failed to parse Antigravity download URL from bundle script.'",
+            "}"
+        ],
+        "regex": "(?<url>https://edgedl\\.me\\.gvt1\\.com/edgedl/release2/.+/antigravity/stable/(?<version>[0-9]+\\.[0-9]+\\.[0-9]+)-[0-9]+/windows-x64/Antigravity\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/Antigravity_installer.exe"
+            }
+        }
+    }
+}

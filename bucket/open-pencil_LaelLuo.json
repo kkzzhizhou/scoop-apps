@@ -1,0 +1,70 @@
+{
+    "version": "0.7.4",
+    "description": "The world's first open-source AI-native vector design tool and the first to feature concurrent Agent Teams.",
+    "homepage": "https://op.zseven.tech",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ZSeven-W/openpencil/releases/download/v0.7.4/OpenPencil-0.7.4-x64-win-setup.exe#/dl.7z",
+            "hash": "0f3321f82c9dfc55e630e551f71a80e6fcb43cad5b74b2c70f659da2c72bd1fe",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        }
+    },
+    "shortcuts": [
+        [
+            "OpenPencil.exe",
+            "OpenPencil"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/OpenPencil",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "home-port",
+                "source": "UserProfile/.openpencil",
+                "target": "$persist_dir/home/openpencil",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/openpencil-updater",
+                "target": "$persist_dir/local/openpencil-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "url": "https://github.com/ZSeven-W/openpencil/releases",
+        "script": [
+            "$html = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "$latest = [regex]::Match($html.Content, '/ZSeven-W/openpencil/releases/tag/v(?<version>\\d+\\.\\d+\\.\\d+)')",
+            "if (-not $latest.Success) {",
+            "  throw 'Failed to locate the latest OpenPencil release.'",
+            "}",
+            "Write-Output $latest.Groups['version'].Value"
+        ],
+        "regex": "^(?<version>[0-9]+\\.[0-9]+\\.[0-9]+)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ZSeven-W/openpencil/releases/download/v$version/OpenPencil-$version-x64-win-setup.exe#/dl.7z"
+            }
+        }
+    }
+}

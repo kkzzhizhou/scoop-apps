@@ -1,0 +1,67 @@
+{
+    "version": "0.54.11",
+    "description": "Local-first, E2E encrypted software for creating and storing tasks, notes, ideas, documents, workflows, and more.",
+    "homepage": "https://anytype.io/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://anytype.io/terms_of_use"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/anyproto/anytype-ts/releases/download/v0.54.11/Anytype.Setup.0.54.11.exe#/dl.7z",
+            "hash": "ae6df0cd2d82347495ca3f51981f3f9dc3986f2eefe568943b9d0c679a6a2ce3",
+            "pre_install": [
+                "Remove-Item \"$dir\\resources\" -Recurse",
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
+        }
+    },
+    "persist": "data",
+    "shortcuts": [
+        [
+            "Anytype.exe",
+            "Anytype"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/anytype",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/anytype-updater",
+                "target": "$persist_dir/local/anytype-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "script": [
+            "$releases = Invoke-WebRequest -Uri 'https://api.github.com/repos/anyproto/anytype-ts/releases' -UseBasicParsing | ConvertFrom-Json",
+            "$stable = $releases | Where-Object { $_.tag_name -notmatch '-' } | Sort-Object -Property @{ Expression = { [version]($_.tag_name.TrimStart('v')) } } -Descending | Select-Object -First 1",
+            "if (-not $stable) {",
+            "  throw 'Failed to locate stable Anytype release.'",
+            "}",
+            "Write-Output $stable.tag_name"
+        ],
+        "regex": "^v(?<version>.+)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/anyproto/anytype-ts/releases/download/v$version/Anytype.Setup.$version.exe#/dl.7z"
+            }
+        }
+    }
+}

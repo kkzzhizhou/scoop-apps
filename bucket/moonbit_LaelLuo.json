@@ -1,0 +1,73 @@
+{
+    "version": "0.1.20260417",
+    "description": "MoonBit 语言的官方 CLI 工具链（moon 编译器、构建系统、包管理器及 MoonPilot 等）。",
+    "homepage": "https://www.moonbitlang.com/",
+    "license": "AGPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://cli.moonbitlang.com/binaries/latest/moonbit-windows-x86_64.zip",
+            "hash": "7c708447927ddb16bb04ff6e5b1987c4a066cf7aab93105696c4670483b8ebe4"
+        }
+    },
+    "env_set": {
+        "MOON_HOME": "$dir"
+    },
+    "env_add_path": "bin",
+    "post_install": [
+        "$MoonHome = $dir",
+        "$MoonBin = Join-Path $MoonHome 'bin'",
+        "$MoonLib = Join-Path $MoonHome 'lib'",
+        "$agentsSource = Join-Path $MoonBin 'internal\\moon-pilot\\lib\\prompt\\moonbitlang.mbt.md'",
+        "if (Test-Path $agentsSource) {",
+        "  $agentsTarget = Join-Path $MoonHome 'AGENTS.md'",
+        "  if (Test-Path $agentsTarget) {",
+        "    Remove-Item -Force -Path $agentsTarget -ErrorAction SilentlyContinue",
+        "  }",
+        "  New-Item -ItemType HardLink -Path $agentsTarget -Value $agentsSource | Out-Null",
+        "}",
+        "$coreZip = Join-Path $MoonHome 'core.zip'",
+        "Write-Host 'Downloading MoonBit core ...'",
+        "Invoke-WebRequest -Uri 'https://cli.moonbitlang.com/cores/core-latest.zip' -OutFile $coreZip",
+        "if (Test-Path (Join-Path $MoonLib 'core')) {",
+        "  Remove-Item -Recurse -Force (Join-Path $MoonLib 'core') -ErrorAction SilentlyContinue",
+        "}",
+        "Expand-Archive $coreZip -DestinationPath $MoonLib -Force",
+        "Remove-Item $coreZip -Force",
+        "Write-Host 'Bundling MoonBit core ...'",
+        "Push-Location (Join-Path $MoonLib 'core')",
+        "$oldPath = $env:PATH",
+        "$env:PATH = \"$MoonBin;$env:PATH\"",
+        "& \"$MoonBin\\moon.exe\" bundle --warn-list -a --all --quiet",
+        "& \"$MoonBin\\moon.exe\" bundle --warn-list -a --target wasm-gc --quiet",
+        "$env:PATH = $oldPath",
+        "Pop-Location"
+    ],
+    "checkver": {
+        "script": [
+            "$tmpDir = Join-Path $env:TEMP 'moonbit-checkver'",
+            "if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir -ErrorAction SilentlyContinue }",
+            "New-Item -ItemType Directory -Path $tmpDir -Force | Out-Null",
+            "$zipPath = Join-Path $tmpDir 'moonbit-windows-x86_64.zip'",
+            "Invoke-WebRequest -Uri 'https://cli.moonbitlang.com/binaries/latest/moonbit-windows-x86_64.zip' -OutFile $zipPath",
+            "Expand-Archive $zipPath -DestinationPath $tmpDir -Force",
+            "$moonExe = Join-Path $tmpDir 'bin\\moon.exe'",
+            "$versionOutput = & $moonExe version | Out-String",
+            "$versionMatch = [regex]::Match($versionOutput, 'moon ([^ ]+) ')",
+            "if ($versionMatch.Success) {",
+            "  $ver = $versionMatch.Groups[1].Value",
+            "  Write-Output $ver",
+            "} else {",
+            "  throw \"Failed to parse version from 'moon version': $versionOutput\"",
+            "}",
+            "Remove-Item -Recurse -Force $tmpDir -ErrorAction SilentlyContinue"
+        ],
+        "regex": "([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cli.moonbitlang.com/binaries/latest/moonbit-windows-x86_64.zip"
+            }
+        }
+    }
+}

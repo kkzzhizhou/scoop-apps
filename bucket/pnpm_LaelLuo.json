@@ -1,0 +1,71 @@
+{
+    "version": "10.33.2",
+    "description": "A fast and disk space efficient Node package manager.",
+    "homepage": "https://pnpm.io/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pnpm/pnpm/releases/download/v10.33.2/pnpm-win-x64.exe#/pnpm.exe",
+            "hash": "3d1af71e9da7081efd58f95942e1f7e2107bf8fcdae03eb2331c0b6cea59510b"
+        }
+    },
+    "bin": [
+        "pnpm.exe",
+        [
+            "pnpm.exe",
+            "pnpx",
+            "dlx"
+        ],
+        [
+            "pnpm.exe",
+            "npm"
+        ]
+    ],
+    "env_set": {
+        "PNPM_HOME": "$persist_dir\\pnpm-home"
+    },
+    "env_add_path": "pnpm-home",
+    "persist": [
+        "pnpm-home",
+        "state",
+        "store",
+        "cache"
+    ],
+    "pre_install": [
+        "# 创建必要的目录结构",
+        "New-Item -ItemType Directory -Force -Path \"$persist_dir\\pnpm-home\"",
+        "New-Item -ItemType Directory -Force -Path \"$persist_dir\\state\"",
+        "New-Item -ItemType Directory -Force -Path \"$persist_dir\\store\"",
+        "New-Item -ItemType Directory -Force -Path \"$persist_dir\\cache\""
+    ],
+    "post_install": [
+        "# 仅在未由用户显式配置时再设置，避免覆盖用户设置",
+        "if (-not $env:PNPM_STATE_DIR -and ((& \"$dir\\pnpm.exe\" config get state-dir --location=global) -eq 'undefined')) { & \"$dir\\pnpm.exe\" config set state-dir \"$dir\\state\" --global }",
+        "if (-not $env:PNPM_STORE_DIR -and ((& \"$dir\\pnpm.exe\" config get store-dir --location=global) -eq 'undefined')) { & \"$dir\\pnpm.exe\" config set store-dir \"$dir\\store\" --global }",
+        "if (-not $env:PNPM_CACHE_DIR -and ((& \"$dir\\pnpm.exe\" config get cache-dir --location=global) -eq 'undefined')) { & \"$dir\\pnpm.exe\" config set cache-dir \"$dir\\cache\" --global }",
+        "if (-not $env:PNPM_HOME -and ((& \"$dir\\pnpm.exe\" config get global-bin-dir --location=global) -eq 'undefined')) { & \"$dir\\pnpm.exe\" config set global-bin-dir \"$dir\\pnpm-home\" --global }"
+    ],
+    "checkver": {
+        "script": [
+            "# Using checkver script to check through all release tags",
+            "$auth = Get-GitHubToken",
+            "$head = @{}",
+            "if($auth) { $head.add('authorization', \"Bearer $auth\") }",
+            "$url = 'https://api.github.com/repositories/50565430/releases'",
+            "$latest_ver = [Version]::new(0,0,0,0) # note: Powershell 5 does not support casting 'int' or 'float' to 'System.Version'",
+            "$releases = $(Invoke-WebRequest -Headers $head $url).Content | ConvertFrom-Json",
+            "$releases | ForEach-Object {",
+            "    if (!($_.tag_name -match '([\\d.]+)')) { return }",
+            "    if ($_.prerelease) { return }",
+            "    $ver = [Version]::new($matches[1])",
+            "    if ($ver -gt $latest_ver) { $latest_ver = $ver }",
+            "}",
+            "if ($latest_ver -eq [Version]::new(0,0,0,0)) { error \"Could not match version string in '$url'\"; continue }",
+            "Write-Output $latest_ver"
+        ],
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/pnpm/pnpm/releases/download/v$version/pnpm-win-x64.exe#/pnpm.exe"
+    }
+}

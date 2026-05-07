@@ -1,0 +1,75 @@
+{
+    "version": "1.9.2",
+    "description": "智谱 AI 输入法，支持全局语音输入和中英混输。",
+    "homepage": "https://autoglm.zhipuai.cn/autotyper/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://autoglm.aminer.cn/autotyper/updates/AutoGLM_win32_x64_1.9.2.exe#/installer.exe",
+            "hash": "eea3b266188db2749c202cc4bacd8e83f560dccd3a6434d254973903a2d78df5"
+        }
+    },
+    "installer": {
+        "script": [
+            "$tmpDir = Join-Path $dir '_tmp'",
+            "Expand-7zipArchive \"$dir\\installer.exe\" $tmpDir -Removal",
+            "$pluginDir = Join-Path $tmpDir '$PLUGINSDIR'",
+            "$appArchive = Join-Path $pluginDir 'app-64.7z'",
+            "if (-not (Test-Path $appArchive)) { throw 'AutoGLM app archive not found in installer.' }",
+            "Expand-7zipArchive $appArchive \"$dir\\app\" -Removal",
+            "Remove-Item $tmpDir -Recurse -Force"
+        ]
+    },
+    "shortcuts": [
+        [
+            "app\\AutoGLM.exe",
+            "智谱AI输入法"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/AutoGLM",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/autoglm-updater",
+                "target": "$persist_dir/local/autoglm-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "script": [
+            "$download = Invoke-WebRequest -Uri 'https://autoglm.zhipuai.cn/autotyper/' -UseBasicParsing",
+            "if ($download.Content -notmatch 'src=\"([^\"]*index-[^\"]+\\.js)\"') {",
+            "  throw 'Failed to locate main bundle script on AutoGLM autotyper page.'",
+            "}",
+            "$bundlePath = $matches[1]",
+            "$bundleUrl = if ($bundlePath -like 'http*') { $bundlePath } else { 'https://autoglm.zhipuai.cn' + $bundlePath }",
+            "$bundle = Invoke-WebRequest -Uri $bundleUrl -UseBasicParsing",
+            "if ($bundle.Content -match 'https://autoglm\\.aminer\\.cn/autotyper/updates/AutoGLM_win32_x64_(?<version>[0-9.]+)\\.exe') {",
+            "  $matches[0]",
+            "} else {",
+            "  throw 'Failed to parse AutoGLM download URL from bundle script.'",
+            "}"
+        ],
+        "regex": "(?<url>https://autoglm\\.aminer\\.cn/autotyper/updates/AutoGLM_win32_x64_(?<version>[0-9.]+)\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/installer.exe"
+            }
+        }
+    }
+}
