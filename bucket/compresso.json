@@ -1,22 +1,51 @@
 {
-  "version": "3.0.0",
-  "description": "Compress any video into a tiny size.",
-  "homepage": "https://github.com/codeforreal1/compressO",
-  "license": "AGPL-3.0",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/codeforreal1/compressO/releases/download/3.0.0/CompressO_3.0.0_x64.exe#/dl.7z",
-      "hash": "d27e63d2a8eec364aae364e6b7ec34089d3fb6382ad5f28a4760b948fbf13cba"
-    }
-  },
-  "post_install": "Remove-Item -LiteralPath \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
-  "shortcuts": [["compressO.exe", "CompressO"]],
-  "checkver": "github",
-  "autoupdate": {
+    "version": "3.0.0",
+    "description": "Convert any video into a tiny size.",
+    "homepage": "https://github.com/codeforreal1/compressO",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/codeforreal1/compressO#AGPL-3.0-1-ov-file"
+    },
     "architecture": {
-      "64bit": {
-        "url": "https://github.com/codeforreal1/compressO/releases/download/$version/CompressO_$version_x64.exe#/dl.7z"
-      }
+        "64bit": {
+            "url": "https://github.com/codeforreal1/compressO/releases/download/3.0.0/CompressO_3.0.0_x64.exe#/dl.7z",
+            "hash": "d27e63d2a8eec364aae364e6b7ec34089d3fb6382ad5f28a4760b948fbf13cba",
+            "pre_install": "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.compresso.app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.compresso.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.compresso.app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.compresso.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "shortcuts": [
+        [
+            "CompressO.exe",
+            "CompressO"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/codeforreal1/compressO/releases",
+        "jp": "$[0].tag_name",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/codeforreal1/compressO/releases/download/$version/CompressO_$version_x64.exe#/dl.7z"
+            }
+        }
     }
-  }
 }
