@@ -1,0 +1,52 @@
+{
+    "version": "0.6.0",
+    "description": "Open source desktop app for studying online courses and books on your computer. Watch Hotmart, Udemy, Kiwify courses with timestamped notes, spaced repetition flashcards and a focus timer. Read PDFs and EPUBs with highlights, bookmarks and a focus mode. Also downloads YouTube, Instagram, TikTok and torrents.",
+    "homepage": "https://github.com/tonhowtf/omniget",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/tonhowtf/omniget#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/tonhowtf/omniget/releases/download/v0.6.0/omniget_0.6.0_x64-setup.exe#dl.7z",
+            "hash": "b811a011cce59e42c7134f9df2ce1699ed4eba84e361905f150674615dad4cd4",
+            "pre_install": "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\wtf.tonho.omniget\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\wtf.tonho.omniget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\wtf.tonho.omniget\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\wtf.tonho.omniget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "omniget.exe",
+    "shortcuts": [
+        [
+            "omniget.exe",
+            "omniget"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/tonhowtf/omniget/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/tonhowtf/omniget/releases/download/v$version/omniget_$version_x64-setup.exe#dl.7z"
+            }
+        }
+    }
+}

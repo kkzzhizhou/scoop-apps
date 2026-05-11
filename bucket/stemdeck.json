@@ -1,0 +1,51 @@
+{
+    "version": "0.3.0-alpha.1",
+    "description": "Stemdeck is an modern stem extraction platform for musicians and producers, designed to isolate vocals, drums, bass, piano and guitar for practice, transcription, remixing, and creative audio workflows through a modern and interactive interface",
+    "homepage": "https://github.com/thcp/stemdeck",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/thcp/stemdeck#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/thcp/stemdeck/releases/download/v0.3.0-alpha.1/StemDeck-Windows-x64.NVIDIA.zip",
+            "hash": "63caae2ebb6b759dff6e0b16d1bd5348607f5e851d7047aea36fed37a91bd769"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\app.stemdeck.desktop\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\StemDeck\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\app.stemdeck.desktop\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\StemDeck\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "StemDeck.exe",
+    "shortcuts": [
+        [
+            "StemDeck.exe",
+            "StemDeck"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/thcp/stemdeck/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/thcp/stemdeck/releases/download/v$version/StemDeck-Windows-x64.NVIDIA.zip"
+            }
+        }
+    }
+}
