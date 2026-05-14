@@ -1,0 +1,24 @@
+{
+	"version": "0.18.4",
+	"description": "A modern terminal emulator forked from Alacritty",
+	"homepage": "https://github.com/gold-silver-copper/CuTTY",
+	"license": "Apache-2.0",
+	"url": "https://github.com/gold-silver-copper/CuTTY/releases/download/v0.18.4/CuTTY-v0.18.4-portable.exe#/cutty.exe",
+	"hash": "3dfdbf4c5454d762b635f1c671d949f29135c199c84d2903733aa492f51ede87",
+	"bin": "cutty.exe",
+	"shortcuts": [
+		["cutty.exe", "CuTTY", "--working-directory \"%USERPROFILE%\""]
+	],
+	"checkver": {
+		"script": [
+			"$release = Invoke-RestMethod -Headers @{ 'User-Agent' = 'Codex' } -Uri 'https://api.github.com/repos/gold-silver-copper/CuTTY/releases/latest'",
+			"$asset = $release.assets | Where-Object { $_.name -eq \"CuTTY-$($release.tag_name)-portable.exe\" } | Select-Object -First 1",
+			"Write-Output \"$($release.tag_name.TrimStart('v')) $($asset.browser_download_url) $($asset.digest.Replace('sha256:', ''))\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)"
+	},
+	"autoupdate": {
+		"url": "$matchUrl#/cutty.exe",
+		"hash": "$matchHash"
+	}
+}

@@ -1,27 +1,28 @@
 {
-	"version": "0.2.13",
+	"version": "0.2.14",
 	"description": "Qoder CLI - A powerful command-line interface for Qoder AI services.",
 	"homepage": "https://qoder.com",
 	"license": "MIT",
 	"architecture": {
 		"64bit": {
-			"url": "https://download.qoder.com/qodercli/releases/0.2.13/qodercli_0.2.13_windows_amd64.zip",
-			"hash": "dd89347d7b006bf1cec5361445fd4514bb9d3a46e6ba48b60f9bf3185ecea757"
+			"url": "https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/releases/0.2.14/qodercli-windows-x64.zip",
+			"hash": "803c5b70a9fe744fa20e993edf986b3821c1f60da647b2a6716944d50fe08dad"
 		}
 	},
 	"bin": "qodercli.exe",
 	"checkver": {
-		"url": "https://download.qoder.com/qodercli/channels/manifest.json",
-		"jsonpath": "$.latest"
+		"script": [
+			"$json = Invoke-RestMethod -Uri 'https://download.qoder.com/qodercli/channels/manifest.json'",
+			"$file = $json.files | Where-Object { $_.os -eq 'windows' -and $_.arch -eq 'amd64' } | Select-Object -First 1",
+			"Write-Output \"$($json.latest) $($file.url) $($file.sha256)\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s+(?<url>[^\\s]+)\\s+(?<hash>[^\\s]+)"
 	},
 	"autoupdate": {
 		"architecture": {
 			"64bit": {
-				"url": "https://download.qoder.com/qodercli/releases/$version/qodercli_$version_windows_amd64.zip",
-				"hash": {
-					"url": "https://download.qoder.com/qodercli/channels/manifest.json",
-					"jsonpath": "$.files[?(@.os=='windows' && @.arch=='amd64')].sha256"
-				}
+				"url": "$matchUrl",
+				"hash": "$matchHash"
 			}
 		}
 	}
