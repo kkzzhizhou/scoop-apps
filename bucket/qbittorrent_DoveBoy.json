@@ -1,0 +1,68 @@
+{
+    "version": "5.2.0",
+    "description": "Free and reliable P2P Bittorent client.",
+    "homepage": "https://www.qbittorrent.org/",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/qbittorrent/qBittorrent/blob/HEAD/COPYING"
+    },
+    "notes": [
+        "For file associations, run:",
+        "reg import \"$dir\\install-associations.reg\""
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-5.2.0/qbittorrent_5.2.0_x64_setup.exe#/dl.7z",
+            "hash": "sha1:ae6754be9c41305770f5835f33e2b52087d47fe9"
+        }
+    },
+    "pre_install": [
+        "$data_dir = \"$persist_dir\\profile\\qBittorrent\\data\"",
+        "$configuration_dir = \"$persist_dir\\profile\\qBittorrent\\config\"",
+        "$data_dir, $configuration_dir | ForEach-Object { ensure $_ | Out-Null }",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninst*\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "if (-not (Test-Path -Path \"$data_dir\\*\") -and (Test-Path -Path \"$env:LOCALAPPDATA\\qBittorrent\\*\")) {",
+        "    Write-Host \"`nINFO  Migrating qBittorrent data to '$data_dir'...\" -ForegroundColor DarkGray",
+        "    Copy-Item -Path \"$env:LOCALAPPDATA\\qBittorrent\\*\" -Destination $data_dir -Force -Exclude 'cache' -Recurse",
+        "}",
+        "if (-not (Test-Path -Path \"$configuration_dir\\*\") -and (Test-Path -Path \"$env:APPDATA\\qBittorrent\\*\")) {",
+        "    Write-Host \"INFO  Migrating qBittorrent configurations to '$configuration_dir'...\" -ForegroundColor DarkGray",
+        "    Copy-Item -Path \"$env:APPDATA\\qBittorrent\\*\" -Destination $configuration_dir -Force -Recurse",
+        "}"
+    ],
+    "post_install": [
+        "'install-associations', 'uninstall-associations' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\qbittorrent\\$_.reg\") {",
+        "        $qbitPath = \"$dir\".Replace('\\', '\\\\')",
+        "        $content = (Get-Content \"$bucketsdir\\$bucket\\scripts\\qbittorrent\\$_.reg\").Replace('$qbit', $qbitPath)",
+        "        if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "        Set-Content \"$dir\\$_.reg\" $content -Encoding Ascii -Force",
+        "    }",
+        "}"
+    ],
+    "bin": "qbittorrent.exe",
+    "shortcuts": [
+        [
+            "qbittorrent.exe",
+            "qBittorrent"
+        ]
+    ],
+    "persist": [
+        "profile",
+        "qt.conf"
+    ],
+    "uninstaller": {
+        "script": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-associations.reg\" }"
+    },
+    "checkver": {
+        "sourceforge": "qbittorrent/qbittorrent-win32",
+        "regex": "qbittorrent_([\\d.]+)_x64_setup\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent-win32/qbittorrent-$version/qbittorrent_$version_x64_setup.exe#/dl.7z"
+            }
+        }
+    }
+}

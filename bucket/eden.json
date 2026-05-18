@@ -1,53 +1,34 @@
 {
+    "homepage": "https://eden-emu.dev",
     "version": "0.2.0-rc2",
-    "description": "Open source Nintendo Switch emulator (forked from yuzu)",
-    "homepage": "https://eden-emu.dev/",
+    "description": "Nintendo Switch Emulator, a fork of Yuzu",
     "license": {
-        "identifier": "GPL-3.0-or-later",
-        "url": "https://git.eden-emu.dev/eden-emu/eden/raw/branch/master/LICENSE.txt"
+        "identifier": "GPL-3.0",
+        "url": "https://git.eden-emu.dev/eden-emu/eden/src/branch/master/LICENSE.txt"
     },
-    "architecture": {
-        "64bit": {
-            "url": "https://stable.eden-emu.dev/v0.2.0-rc2/Eden-Windows-v0.2.0-rc2-amd64-msvc-standard.zip",
-            "hash": "552001c0dc4964a058cedd2e2bd432c8a3a024d3291e035b56e8b91243531eb4"
-        },
-        "arm64": {
-            "url": "https://stable.eden-emu.dev/v0.2.0-rc2/Eden-Windows-v0.2.0-rc2-mingw-arm64-clang-standard.zip",
-            "hash": "4b599b113226b2d152652b4a9c612d451d0e008e9746390c723e8d056820b39d"
-        }
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
     },
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:APPDATA\\eden\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:APPDATA\\eden\\*\" -Destination \"$persist_dir\\user\" -Recurse",
-        "       Remove-Item -Path \"$env:APPDATA\\eden\" -Recurse",
-        "   }",
-        "}"
-    ],
+    "url": "https://git.eden-emu.dev/eden-emu/eden/releases/download/v0.2.0-rc2/Eden-Windows-v0.2.0-rc2-amd64-msvc-standard.zip",
+    "hash": "552001c0dc4964a058cedd2e2bd432c8a3a024d3291e035b56e8b91243531eb4",
+    "pre_install": "mkdir $dir/user | Out-Null",
     "bin": "eden.exe",
     "shortcuts": [
         [
             "eden.exe",
-            "Eden"
+            "Nintendo Switch"
         ]
     ],
     "persist": "user",
     "checkver": {
-        "url": "https://git.eden-emu.dev/api/v1/repos/eden-emu/eden/releases/latest",
-        "jsonpath": "$.tag_name",
-        "regex": "v([\\d]+(?:\\.[\\d]+)+(?:-[A-Za-z\\d.-]+)?)"
+        "url": "https://git.eden-emu.dev/api/v1/repos/eden-emu/eden/releases",
+        "jsonpath": {
+            "version": "$.[0].name",
+            "download": "$.[0].assets[?(@.name =~ /Windows.+amd64-msvc/i)].browser_download_url"
+        },
+        "regex": "Eden v([\\d\\.\\-rc]+)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://stable.eden-emu.dev/v$version/Eden-Windows-v$version-amd64-msvc-standard.zip"
-            },
-            "arm64": {
-                "url": "https://stable.eden-emu.dev/v$version/Eden-Windows-v$version-mingw-arm64-clang-standard.zip"
-            }
-        }
+        "url": "$matchDownload"
     }
 }

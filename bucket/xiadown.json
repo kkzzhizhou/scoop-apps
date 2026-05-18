@@ -1,0 +1,54 @@
+{
+    "version": "0.2.3",
+    "description": "🐣一款支持在线音乐的视频下载工具 A video download tool with online music support",
+    "homepage": "https://xiadown.dreamapp.cc/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/arnoldhao/xiadown#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/arnoldhao/xiadown/releases/download/v0.2.3/xiadown-windows-x64-0.2.3-installer.exe#/dl.7z",
+            "hash": "89e38d98e7e0a5189f80ae5ad5d516148c40ff74dc6156ed332dcef0ae7bebcd",
+            "pre_install": "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\xiadown.exe\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\xiadown\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\logdata\" -Target \"$env:LOCALAPPDATA\\xiadown\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\xiadown.exe\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\xiadown\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\xiadown\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "xiadown.exe",
+    "shortcuts": [
+        [
+            "xiadown.exe",
+            "下蛋"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/arnoldhao/xiadown/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/xiadown-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/arnoldhao/xiadown/releases/download/v$version/xiadown-windows-x64-$version-installer.exe#/dl.7z"
+            }
+        }
+    }
+}
