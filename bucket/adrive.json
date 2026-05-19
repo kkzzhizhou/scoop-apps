@@ -1,29 +1,28 @@
 {
-    "version": "6.9.1",
-    "description": "The official client for Alibaba's cloud dirve service",
-    "homepage": "https://alipan.com/",
-    "license": {
-        "identifier": "EULA",
-        "url": "https://alipan.com/protocol/service"
-    },
-    "url": "https://dorado-api.deno.dev/alipan?version=6.9.1&dl#/aDrive-6.9.1.7z",
+    "version": "6.9.1.1841",
+    "description": "阿里云盘是一款速度快、不打扰、够安全、易于分享的网盘，由阿里巴巴集团出品",
+    "homepage": "https://www.aliyundrive.com/",
+    "license": "Unknown",
+    "url": "https://sw.pcmgr.qq.com/3b98883604896570e249464cc66020b1/6a0afdda/spcmgr/download/aDrive-6.9.1.exe#/dl.7z",
     "hash": "cc40289de6c35821214c816b8a1101c3ada822f05c7da3b770ae432067eea76a",
-    "post_install": [
-        "@('$PLUGINSDIR', '$TEMP') | ForEach-Object {",
-        "    Remove-Item \"$dir\\$_\" -Recurse -Force",
-        "}"
-    ],
     "shortcuts": [
         [
             "aDrive.exe",
             "阿里云盘"
         ]
     ],
+    "post_install": [
+        "Remove-Item -Force -Recurse \"$dir\\`$PLUGINSDIR\"",
+        "Remove-Item -Force -Recurse \"$dir\\`$TEMP\""
+    ],
     "checkver": {
-        "url": "https://dorado-api.deno.dev/alipan",
-        "jsonpath": "$.version"
+        "script": [
+            "$resp = Invoke-WebRequest -UseBasicParsing -Uri 'https://luban.m.qq.com/api/public/software-manager/softwareProxy' -Body 'cmdid=3318&jprxReq%5Breq%5D%5Bsoft_id_list%5D%5B%5D=28156' -Method 'POST'",
+            "Write-Output $resp.Content"
+        ],
+        "regex": "\"ver_name\":\"([\\d\\.]+)\".+\"download_https_url\":\"https://(?<url>.+exe)\""
     },
     "autoupdate": {
-        "url": "https://dorado-api.deno.dev/alipan?version=$version&dl#/aDrive-$version.7z"
+        "url": "https://$matchUrl#/dl.7z"
     }
 }
