@@ -1,0 +1,29 @@
+{
+    "version": "16.4.0.3497",
+    "description": "搜狗输入法是一款由搜狗公司开发的中文输入法软件，提供了丰富的词库和智能输入功能，支持多种输入方式，包括拼音、五笔、手写等，帮助用户高效地进行中文输入。",
+    "homepage": "https://shurufa.sogou.com/",
+    "license": "Proprietary",
+    "url": "https://ime.gtimg.com/pc/build/_sogou_pinyin_16.4.0.3497_0.exe#/dl.7z",
+    "hash": "218fd0ddeaeabdf3c0fe8b25e7d309d3f851224fe72ceae8a1cd6501d3655781",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\app.7z\" \"$dir\"",
+        "Move-Item \"$dir\\$version\\*\" \"$dir\" -Force -Recurse",
+        "& \"$dir\\Install64.exe\" /s"
+    ],
+    "checkver": {
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'Sogou/SogouInput'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+    },
+    "autoupdate": {
+        "url": "$matchX64#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/s/Sogou/SogouInput/$version/Sogou.SogouInput.installer.yaml",
+            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+        }
+    }
+}
