@@ -1,0 +1,51 @@
+{
+    "version": "1.0.0",
+    "description": "Agentic Coding Platform",
+    "homepage": "https://qoder.com.cn/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://ide.qoder.com.cn/qoder/release/lastest/QoderCNUserSetup-x64.exe",
+            "hash": "b593f0d99874d8bc44f820682485af2e5f601785ea69c4e1f73cc1cb0fe0c75a",
+            "extract_dir": "{code_GetDestDir}"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\extensions\") -and (Test-Path \"$env:USERPROFILE\\.qoder-cn\\extensions\")) {",
+        "    info '[Portable Mode] Copying extensions...'",
+        "    Copy-Item \"$env:USERPROFILE\\.qoder-cn\\extensions\" \"$dir\\data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\data\\user-data\") -and (Test-Path \"$env:AppData\\QoderCN\")) {",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\QoderCN\" \"$dir\\data\\user-data\" -Recurse",
+        "}",
+        "$extensions_file = \"$dir\\data\\extensions\\extensions.json\"",
+        "if ((Test-Path \"$extensions_file\")) {",
+        "    info 'Adjusting path in extensions file...'",
+        "    (Get-Content \"$extensions_file\") -replace '(?<=qoder(/|\\\\\\\\)).*?(?=(/|\\\\\\\\)data(/|\\\\\\\\)extensions)', $version | Set-Content \"$extensions_file\"",
+        "}"
+    ],
+    "bin": [
+        [
+            "bin/qoder-cn.cmd",
+            "qodercn",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "shortcuts": [
+        [
+            "QoderCN.exe",
+            "QoderCN",
+            "--user-data-dir=\"$dir\\data\\user-data\" --extensions-dir=\"$dir\\data\\extensions\""
+        ]
+    ],
+    "persist": "data",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ide.qoder.com.cn/qoder/release/lastest/QoderCNUserSetup-x64.exe"
+            }
+        }
+    }
+}

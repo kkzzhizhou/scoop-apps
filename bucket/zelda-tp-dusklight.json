@@ -1,0 +1,55 @@
+{
+    "homepage": "https://twilitrealm.dev/",
+    "version": "1.2.0",
+    "description": "Dusklight brings a classic adventure to PC and mobile platforms with a variety of fixes and improvements.",
+    "license": {
+        "identifier": "CC0-1.0",
+        "url": "https://github.com/TwilitRealm/dusklight/blob/main/LICENSE.md"
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/data Directory",
+        "create $dir/data_location.json File '{\"mode\": \"portable\"}'"
+    ],
+    "persist": [
+        "data",
+        "data_location.json"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/TwilitRealm/dusklight/releases/download/v1.2.0/Dusklight-v1.2.0-win32-x86_64.zip",
+            "hash": "e66cd186379362448e5f1227bf70d71a59a68d30e7fbf5d6e008c3a454640448",
+            "extract_dir": "Dusklight-v1.2.0-win32-x86_64",
+            "bin": "dusklight.exe",
+            "shortcuts": [
+                [
+                    "dusklight.exe",
+                    "Zelda - Twilight Princess (Dusklight)"
+                ]
+            ]
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/TwilitRealm/dusklight/releases/latest",
+        "jsonpath": {
+            "version": "$.tag_name",
+            "download": "$.assets[?(@.name =~ /win32-x86_64\\.zip$/i)].browser_download_url",
+            "hash": "$.assets[?(@.name =~ /win32-x86_64\\.zip$/i)].digest"
+        },
+        "re": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload",
+                "hash": "$matchHash",
+                "extract_dir": "Dusklight-v$version-win32-x86_64"
+            }
+        }
+    }
+}
