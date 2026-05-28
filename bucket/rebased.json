@@ -1,0 +1,49 @@
+{
+    "version": "1.1.1",
+    "description": "A git client based on the IntelliJ platform.",
+    "homepage": "https://github.com/DetachHead/rebased",
+    "license": {
+        "identifier": "Apache-2.0",
+        "url": "https://github.com/DetachHead/rebased/blob/master/LICENSE.txt"
+    },
+    "url": "https://github.com/DetachHead/rebased/releases/download/1.1.1/rebased.exe#/dl.7z",
+    "hash": "e807bf9e033519903b35e0910651da9d9981324ab1533a747337438f39861dbe",
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\" -Recurse -Force",
+    "installer": {
+        "script": [
+            "if (!(Test-Path \"$persist_dir\\bin\\idea.properties\")) {",
+            "    $current = (Split-Path $dir | Join-Path -ChildPath 'current') -replace '\\\\', '/'",
+            "    $content = Get-Content \"$dir\\bin\\idea.properties\"",
+            "    $content = $content -replace '^#\\s*(idea.config.path=).*$', \"`$1$current/profile/config\"",
+            "    $content = $content -replace '^#\\s*(idea.system.path=).*$', \"`$1$current/profile/system\"",
+            "    $content = $content -replace '^#\\s*(idea.plugins.path=).*$', '$1${idea.config.path}/plugins'",
+            "    $content = $content -replace '^#\\s*(idea.log.path=).*$', '$1${idea.system.path}/log'",
+            "    Set-Content -LiteralPath \"$dir\\bin\\idea.properties\" -Value $content -Encoding Ascii -Force",
+            "}"
+        ]
+    },
+    "bin": [
+        [
+            "bin\\idea64.exe",
+            "rebased"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "bin\\idea64.exe",
+            "Rebased"
+        ]
+    ],
+    "persist": [
+        "bin\\idea.properties",
+        "bin\\idea64.exe.vmoptions",
+        "profile"
+    ],
+    "checkver": {
+        "github": "https://github.com/DetachHead/rebased",
+        "regex": "releases/tag/([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://github.com/DetachHead/rebased/releases/download/$version/rebased.exe#/dl.7z"
+    }
+}
