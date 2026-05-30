@@ -1,0 +1,73 @@
+{
+    "version": "1.4.4",
+    "description": "Zed is a high-performance, multiplayer code editor from the creators of Atom and Tree-sitter. It's also open source.",
+    "homepage": "https://zed.dev/",
+    "license": "AGPL-3.0, Apache-2.0, GPL-3.0",
+    "notes": "Please manually disable Zed's auto-update feature in the settings to prevent the updater from installing the program in unintended locations.",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zed-industries/zed/releases/download/v1.4.4/Zed-x86_64.exe",
+            "hash": "b0638b0fae222046ef336ba635d861dc64e8125b1c62e3c9d324a0ffe7be35c6"
+        },
+        "arm64": {
+            "url": "https://github.com/zed-industries/zed/releases/download/v1.4.4/Zed-aarch64.exe",
+            "hash": "5c0377f1bf89c5924e50f65104315d76407b676126a43439fa9cbfbae4593ccc"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{app}'",
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{code_GetInstallDir}' -Removal"
+        ]
+    },
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\Zed\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\Zed\"",
+        "$persistLocal = \"$persist_dir\\Local\"",
+        "$persistRoaming = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistRoaming)) {",
+        "    New-Item -Path $persistRoaming -ItemType Directory | Out-Null",
+        "}",
+        "if (-Not (Test-Path $persistLocal)) {",
+        "    New-Item -Path $persistLocal -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target $persistRoaming | Out-Null",
+        "New-Item -ItemType Junction -Path \"$appLocalDataPath\" -Target $persistLocal | Out-Null"
+    ],
+    "bin": "bin\\zed.exe",
+    "shortcuts": [
+        [
+            "zed.exe",
+            "Zed"
+        ]
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\Zed\"",
+        "$appLocalDataPath = \"$env:LOCALAPPDATA\\Zed\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (Test-Path $appLocalDataPath) {",
+        "    Remove-Item $appLocalDataPath -Recurse -Force",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/zed-industries/zed"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zed-industries/zed/releases/download/v$version/Zed-x86_64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/zed-industries/zed/releases/download/v$version/Zed-aarch64.exe"
+            }
+        }
+    }
+}
