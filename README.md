@@ -105,8 +105,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - Small-Ku/turbo-bucket
 - kengwang/scoop-ctftools-bucket
-- noql-net/scoop
 - WinApps-share/WinApps-bucket
+- noql-net/scoop
 - brian6932/dank-scoop
 - ygguorun/scoop-bucket
 - aliesbelik/poldi
@@ -117,9 +117,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Weidows-projects/scoop-3rd
 - ChungZH/peach
 - starise/Scoop-Confetti
+- TianXiaTech/scoop-txt
 - iquiw/scoop-bucket
 - Darkatse/Scoop-Darkatse
-- TianXiaTech/scoop-txt
 - seumsc/scoop-seu
 - ocodo/wezterm-alt-windows-icon-builds
 - 42wim/scoop-bucket
@@ -127,10 +127,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - starise/Scoop-Gaming
 - jfut/scoop-jfut
 - mo-san/scoop-bucket
-- aoisummer/scoop-bucket
 - AkariiinMKII/Scoop4kariiin
-- typst-community/scoop-bucket
+- aoisummer/scoop-bucket
 - cc713/ownscoop
+- typst-community/scoop-bucket
 - natecohen/scoop-av
 - rivy/scoop-bucket
 - AntonOks/scoop-aoks
@@ -146,9 +146,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - 404NetworkError/scoop-bucket
 - LaelLuo/scoop
+- ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
 - younger-1/scoop-it
-- ShuguangSun/sgs-scoop-bucket
 - windedge/ladle-bucket
 - Rinkerbel/scooped
 - milnak/scoop-bucket
