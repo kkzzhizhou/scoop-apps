@@ -96,8 +96,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - DoveBoy/Apps
 - EFLKumo/jam
 - zhoujin7/tomato
-- hu3rror/scoop-muggle
 - wzv5/ScoopBucket
+- hu3rror/scoop-muggle
 - naderi/scoop-bucket
 - TheRandomLabs/Scoop-Python
 - amorphobia/siku
@@ -116,8 +116,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - batkiz/backit
 - Weidows-projects/scoop-3rd
 - ChungZH/peach
-- starise/Scoop-Confetti
 - TianXiaTech/scoop-txt
+- starise/Scoop-Confetti
 - iquiw/scoop-bucket
 - Darkatse/Scoop-Darkatse
 - seumsc/scoop-seu
@@ -130,8 +130,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - AkariiinMKII/Scoop4kariiin
 - aoisummer/scoop-bucket
 - cc713/ownscoop
-- typst-community/scoop-bucket
 - natecohen/scoop-av
+- typst-community/scoop-bucket
 - rivy/scoop-bucket
 - AntonOks/scoop-aoks
 - HUMORCE/nuke
@@ -146,10 +146,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - ChinLong/scoop-customize
 - 404NetworkError/scoop-bucket
 - LaelLuo/scoop
+- Locietta/sniffer
 - ShuguangSun/sgs-scoop-bucket
 - windedge/ladle-bucket
 - jcwillox/scoop-bucket
-- Locietta/sniffer
 - younger-1/scoop-it
 - Rinkerbel/scooped
 - milnak/scoop-bucket

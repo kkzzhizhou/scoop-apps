@@ -1,25 +1,21 @@
 {
-    "version": "2.01.2510260",
+    "version": "2.01.2510290",
     "homepage": "https://developers.weixin.qq.com/miniprogram/dev/devtools/devtools.html",
     "license": "Freeware",
-    "description": "微信小程序官方开发工具",
-    "notes": "We don't persist your WeChat DevTool data, they are still storaged in '%APPDATA%\\微信开发者工具'",
+    "description": "微信开发者工具",
     "architecture": {
         "64bit": {
-            "url": "https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&download_version=2012510260&version_type=1#/installer.exe",
-            "hash": "62981f7c5b3b4bc61641832a555c494326db6c95c193d9e1e0f1a266d99969d6"
+            "url": "https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&download_version=2012510290&version_type=1#/installer.exe",
+            "hash": "f817db8dd71c9a9b27583c18a17c300144314162ca7b7f944b6262c458b127f7"
         },
         "32bit": {
-            "url": "https://servicewechat.com/wxa-dev-logic/download_redirect?type=ia32&from=mpwiki&download_version=2012510260&version_type=1#/installer.exe",
-            "hash": "17f04128750f671481eba21129216da23ad77601a9e41cca26984eae22e29ac3"
+            "url": "https://servicewechat.com/wxa-dev-logic/download_redirect?type=ia32&from=mpwiki&download_version=2012510290&version_type=1#/installer.exe",
+            "hash": "b221ca766c951bd195944517039b829ca2c98df784addc05b89201f9c6f96eac"
         }
     },
     "installer": {
         "script": [
-            "Expand-7zipArchive \"$dir\\installer.exe\" \"$dir\\app\" -Removal",
-            "@('$PLUGINSDIR') | ForEach-Object {",
-            "    Remove-Item \"$dir\\app\\$_\" -Recurse -Force",
-            "}"
+            "Expand-7zipArchive \"$dir\\installer.exe\" \"$dir\\app\" -Removal"
         ]
     },
     "shortcuts": [
@@ -28,9 +24,35 @@
             "微信开发者工具"
         ]
     ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "LocalAppData/微信开发者工具",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
     "checkver": {
-        "url": "https://developers.weixin.qq.com/miniprogram/dev/devtools/stable.html",
-        "regex": "#</a> ([\\d.]+) <a href=\"https://.*?Windows"
+        "script": [
+            "$url = 'https://servicewechat.com/wxa-dev-logic/download_redirect?type=x64&from=mpwiki&version_type=1'",
+            "$request = [System.Net.HttpWebRequest]::Create($url)",
+            "$request.Method = 'HEAD'",
+            "$request.AllowAutoRedirect = $false",
+            "$response = $null",
+            "try {",
+            "    $response = $request.GetResponse()",
+            "    Write-Output $response.Headers['Location']",
+            "} finally {",
+            "    if ($response) { $response.Close() }",
+            "}"
+        ],
+        "regex": "wechat_devtools_([\\d.]+)_win32_"
     },
     "autoupdate": {
         "architecture": {
@@ -41,5 +63,6 @@
                 "url": "https://servicewechat.com/wxa-dev-logic/download_redirect?type=ia32&from=mpwiki&download_version=$majorVersion$minorVersion$patchVersion$buildVersion&version_type=1#/installer.exe"
             }
         }
-    }
+    },
+    "notes": "WeChat DevTool user data is stored under '%LocalAppData\\微信开发者工具' and is persisted via portableProfile mapping to '$persist_dir\\roaming'."
 }

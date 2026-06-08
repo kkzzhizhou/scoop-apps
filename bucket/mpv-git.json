@@ -1,6 +1,7 @@
 {
-    "version": "20260607",
-    "description": "Video player based on MPlayer/mplayer2 (builds by shinchiro)",
+    "$schema": "https://raw.githubusercontent.com/brian6932/Scoop/64bit-v2-v3-v4/schema.json",
+    "version": "20260608-1780878465-6444c05059",
+    "description": "Video player based on MPlayer/mplayer2 (builds by zhongfly)",
     "homepage": "https://mpv.io",
     "license": "LGPL-2.1-or-later,GPL-2.0-or-later",
     "notes": [
@@ -11,20 +12,20 @@
         "yt-dlp": "yt-dlp"
     },
     "architecture": {
-        "64bit": {
-            "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20260607/mpv-x86_64-20260607-git-71ebd08.7z",
-            "hash": "d74e88b5acf6f4f4b72dae66c01c439154fe343ab7ed02874b4aaeed651b8c89"
-        },
-        "32bit": {
-            "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20260607/mpv-i686-20260607-git-71ebd08.7z",
-            "hash": "b3fd511ef1696c8e3328b079d89ca3f9ef05365efdcbd78a6077bc1009a7772f"
-        },
         "arm64": {
-            "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/20260607/mpv-aarch64-20260607-git-71ebd08.7z",
-            "hash": "f7987623bb650e553372aa56542bb3b05acc1636b095f643f1010f0ef81127e5"
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-06-08-6444c05059/mpv-aarch64-20260608-git-6444c05059.7z",
+            "hash": "56d9c01fee51071b4c8b9cfd1cad64faac46bc5f57f407ca0b5cd87fdf9d256b"
+        },
+        "64bit-v3": {
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-06-08-6444c05059/mpv-x86_64-v3-20260608-git-6444c05059.7z",
+            "hash": "d7139a14c83ce36f35e7707e6379f616a1d36badf111231b92fbd655dfc2825c"
+        },
+        "64bit": {
+            "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/2026-06-08-6444c05059/mpv-x86_64-20260608-git-6444c05059.7z",
+            "hash": "8a0ae6dfefc9d90496c005bbc7ab9b90b07499d513792d681c5fbb3b7d65fce6"
         }
     },
-    "pre_install": "Remove-Item \"$dir\\updater.bat\"",
+    "pre_install": "Remove-Item \"$dir/updater.bat\"",
     "env_add_path": ".",
     "shortcuts": [
         [
@@ -33,22 +34,36 @@
         ]
     ],
     "persist": "portable_config",
+    "env_set": {
+        "MPV_HOME": "$dir\\portable_config"
+    },
     "checkver": {
-        "github": "https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest",
-        "jsonpath": "$.assets[*].browser_download_url",
-        "regex": "mpv-x86_64-(\\d+)-git-(?<commit>[\\da-f]+)\\.7z"
+        "script": [
+            "try {",
+            "    $api = Invoke-RestMethod https://api.github.com/repositories/412382551/releases/latest -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })",
+            "    $api.tag_name, (Get-Date $api.updated_at -UFormat %s) -join ' '",
+            "}",
+            "catch {",
+            "    ''",
+            "}"
+        ],
+        "regex": "\\A(\\d+)-(\\d{2})-(\\d{2})(-[a-f\\d]+) (\\d+)\\Z",
+        "replace": "${1}${2}${3}-${5}${4}"
     },
     "autoupdate": {
         "architecture": {
-            "64bit": {
-                "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/$version/mpv-x86_64-$version-git-$matchCommit.7z"
-            },
-            "32bit": {
-                "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/$version/mpv-i686-$version-git-$matchCommit.7z"
-            },
             "arm64": {
-                "url": "https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/$version/mpv-aarch64-$version-git-$matchCommit.7z"
+                "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/$match1-$match2-$match3$match4/mpv-aarch64-$match1$match2$match3-git$match4.7z"
+            },
+            "64bit-v3": {
+                "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/$match1-$match2-$match3$match4/mpv-x86_64-v3-$match1$match2$match3-git$match4.7z"
+            },
+            "64bit": {
+                "url": "https://github.com/zhongfly/mpv-winbuild/releases/download/$match1-$match2-$match3$match4/mpv-x86_64-$match1$match2$match3-git$match4.7z"
             }
+        },
+        "hash": {
+            "url": "$baseurl/sha256.txt"
         }
     }
 }

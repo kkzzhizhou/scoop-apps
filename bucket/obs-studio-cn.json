@@ -1,36 +1,58 @@
 {
-    "version": "31.1.2",
-    "description": "Video Recording And Live Streaming Software",
+    "version": "32.1.2",
+    "description": "Video recording and live streaming software",
     "homepage": "https://obsproject.com",
     "license": "GPL-2.0-only",
+    "notes": [
+        "Add Virtual Camera module by running: \"$dir\\data\\obs-plugins\\win-dshow\\virtualcam-install.bat\"",
+        "Remove it by running: \"$dir\\data\\obs-plugins\\win-dshow\\virtualcam-uninstall.bat\""
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/obsproject/obs-studio/LatestRelease/OBS-Studio-31.1.2-Windows-x64.zip",
-            "hash": "9513cd402936593a6a5500da5d2bd49e6cd04dce05509c7b7f48dd25c391d2d8"
+            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/obsproject/obs-studio/LatestRelease/OBS-Studio-32.1.2-Windows-x64.zip",
+            "hash": "8d97e4563bd8d22d03e63042aa7dccede1d555c9bd35ce8a9e5019b0d0201bf6",
+            "shortcuts": [
+                [
+                    "bin\\64bit\\obs64.exe",
+                    "OBS Studio"
+                ]
+            ]
         },
         "arm64": {
-            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/obsproject/obs-studio/LatestRelease/OBS-Studio-31.1.2-Windows-arm64.zip",
-            "hash": "1e6740c7ddb7b9ee0049d402b9922df95ff2fdb4d0415eafb6e57556d8af648d"
+            "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/obsproject/obs-studio/LatestRelease/OBS-Studio-32.1.2-Windows-arm64.zip",
+            "hash": "5e1e400e1b49d2019c97c928873229336c8e0b56df488663532376485746328e",
+            "shortcuts": [
+                [
+                    "bin\\64bit\\obs64.exe",
+                    "OBS Studio"
+                ]
+            ]
         }
     },
-    "pre_install": "if (!(Test-Path \"$persist_dir\\portable_mode.txt\")) { New-Item \"$dir\\portable_mode.txt\" | Out-Null }",
-    "persist": [
-        "config",
-        "portable_mode.txt",
-        "obs-plugins"
-    ],
-    "shortcuts": [
-        [
-            "bin\\64bit\\obs64.exe",
-            "OBS Studio"
-        ]
+    "pre_install": [
+        "if (-not (Test-Path \"$persist_dir\\portable_mode.txt\")) {",
+        "    New-Item -Path \"$dir\\portable_mode.txt\" -ItemType File -Force | Out-Null",
+        "}"
     ],
     "post_install": [
-        "if (!(Test-Path \"$dir\\obs-plugins.original\")) { return }",
-        "Copy-Item \"$dir\\obs-plugins.original\\*\" \"$dir\\obs-plugins\" -Recurse -Force",
-        "Remove-Item \"$dir\\obs-plugins.original\" -Recurse -Force"
+        "'data', 'obs-plugins' | ForEach-Object {",
+        "    $source_dir = Join-Path $dir \"$_.original\"",
+        "    $destination_dir = Join-Path $dir $_",
+        "    if (Test-Path \"$source_dir\") {",
+        "        Copy-Item -Path \"$source_dir\\*\" -Destination $destination_dir -Force -Recurse",
+        "        Remove-Item -Path $source_dir -Recurse -Force -ErrorAction SilentlyContinue",
+        "    }",
+        "}"
     ],
-    "checkver": "github",
+    "persist": [
+        "data",
+        "config",
+        "obs-plugins",
+        "portable_mode.txt"
+    ],
+    "checkver": {
+        "github": "https://github.com/obsproject/obs-studio"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
@@ -39,10 +61,6 @@
             "arm64": {
                 "url": "https://mirrors.tuna.tsinghua.edu.cn/github-release/obsproject/obs-studio/LatestRelease/OBS-Studio-$version-Windows-arm64.zip"
             }
-        },
-        "hash": {
-            "url": "https://github.com/obsproject/obs-studio/releases/$version",
-            "regex": "(?sm)$basename.*?$sha256"
         }
     }
 }
