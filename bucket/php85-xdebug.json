@@ -1,0 +1,61 @@
+{
+    "version": "3.5.3-8.5",
+    "description": "A popular general-purpose scripting language that is especially suited to web development. (version 8.5)",
+    "homepage": "https://xdebug.org/",
+    "license": {
+        "identifier": "Xdebug-1.03",
+        "url": "https://xdebug.org/license"
+    },
+    "notes": [
+        "Xdebug is already enabled if PHP 8.5 was installed through scoop!",
+        "Otherwise add '$dir\\php_xdebug.dll' to your php.ini"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://xdebug.org/files/php_xdebug-3.5.3-8.5-ts-vs17-x86_64.dll#/php_xdebug.dll",
+            "hash": "c75623ba050ddef734ba28a957e92df9ce5b8dfdb1a0569e5071bd6b68a12292"
+        }
+    },
+    "post_install": [
+        "$config = @(",
+        "    \"zend_extension=$dir\\php_xdebug.dll\",",
+        "    \"[xdebug]\",",
+        "    \"xdebug.mode=develop,debug\",",
+        "    \"xdebug.client_port=9003\",",
+        "    \"xdebug.start_with_request=trigger   # If you always want to use debug, set the value to 'yes'\"",
+        ") -join \"`n\"",
+        "$php = $app -Split '-' | Select-Object -First 1",
+        "$configUpdated = $false",
+        "foreach ($phpGlobal in @($false, $true)) {",
+        "    if (installed $php $phpGlobal) {",
+        "        $configPath = \"$(persistdir $php $phpGlobal)\\cli\\conf.d\\xdebug.ini\"",
+        "        if(-not (Test-Path -Path $configPath)) {",
+        "            $configUpdated = $true",
+        "            ensure (Split-Path $configPath -Parent) | Out-Null",
+        "            Write-Host \"Enabling extension $configPath\"",
+        "            Add-Content -Value $config -Path $configPath",
+        "        }",
+        "        break",
+        "    }",
+        "}",
+        "if(-not $configUpdated) {",
+        "    Write-Host -ForegroundColor Yellow \"You may need to manually enable php_xdebug.dll. Add the following:`n\"",
+        "    Write-Host -ForegroundColor Cyan \"$config`n`n\"",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://xdebug.org/download/historical",
+        "regex": "php_xdebug-([\\d.]+-8\\.5)-ts-vs17-x86_64\\.dll"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://xdebug.org/files/php_xdebug-$version-ts-vs17-x86_64.dll#/php_xdebug.dll"
+            }
+        },
+        "hash": {
+            "url": "https://xdebug.org/download/historical",
+            "regex": "([a-fA-F0-9]{64}).+?$basename"
+        }
+    }
+}
