@@ -1,0 +1,51 @@
+{
+    "version": "8.5.2.102",
+    "description": "Windows client for BaiduNetdisk",
+    "homepage": "https://pan.baidu.com/",
+    "license": "Freeware",
+    "notes": [
+        "For app still running issue in uninstallation and update, run the following command and try again:",
+        "Get-Process -Name YunDetectService, kernelUpdate -ErrorAction SilentlyContinue | Stop-Process -Force"
+    ],
+    "depends": "Scoop4kariiin/Scoop4kariiinUtils",
+    "url": "https://issuepcdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_8.5.2.102.exe#dl.7z",
+    "hash": "cc4293373f4eaacf95509a9f95abf89a32db4d93bd83aa7742f3a262075516e7",
+    "shortcuts": [
+        [
+            "BaiduNetdisk.exe",
+            "BaiduNetdisk"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\baidunetdisk\" -AppData",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\BaiduYunGuanjia\" -AppData",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\BaiduYunKernel\" -AppData",
+            "Restore-PersistItem -AppDir \"$dir\" -PersistDir \"$persist_dir\" -Name \"AppSettingApp.dat\"",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+        ]
+    },
+    "persist": [
+        "users"
+    ],
+    "uninstaller": {
+        "script": [
+            "Get-Process -Name YunDetectService, kernelUpdate -ErrorAction SilentlyContinue | Stop-Process -Force",
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Dismount-ExternalRuntimeData -Target \"baidunetdisk\" -AppData",
+            "Dismount-ExternalRuntimeData -Target \"BaiduYunGuanjia\" -AppData",
+            "Dismount-ExternalRuntimeData -Target \"BaiduYunKernel\" -AppData",
+            "Backup-PersistItem -AppDir \"$dir\" -PersistDir \"$persist_dir\" -Name \"AppSettingApp.dat\"",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+        ]
+    },
+    "checkver": {
+        "url": "https://pan.baidu.com/disk/cmsdata?do=client",
+        "regex": "Windows电脑客户端V([\\d.]+)\""
+    },
+    "autoupdate": {
+        "url": "https://issuepcdn.baidupcs.com/issue/netdisk/yunguanjia/BaiduNetdisk_$version.exe#dl.7z"
+    }
+}
