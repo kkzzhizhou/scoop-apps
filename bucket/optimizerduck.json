@@ -1,0 +1,49 @@
+{
+    "version": "2.22.4",
+    "description": "Free, open-source Windows optimization tool for performance, privacy, and simplicity.",
+    "homepage": "https://optimizerduck.vercel.app/",
+    "license": {
+        "identifier": "GNU GENERAL PUBLIC LICENSE",
+        "url": "https://github.com/itsfatduck/optimizerDuck#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/itsfatduck/optimizerDuck/releases/download/v2.22.4/optimizerDuck-Windows-x64-2.22.4.exe#/optimizerDuck.exe",
+            "hash": "afb9cea997c0dc1a08d4d16f3f2b3f8833c17ed39331f4bd3f620d73eec4b08a"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\optimizerDuck\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\optimizerDuck\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "optimizerDuck.exe",
+    "shortcuts": [
+        [
+            "optimizerDuck.exe",
+            "optimizerDuck"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/itsfatduck/optimizerDuck/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/optimizerDuck-Windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/itsfatduck/optimizerDuck/releases/download/v$version/optimizerDuck-Windows-x64-$version.exe#/optimizerDuck.exe"
+            }
+        }
+    }
+}
