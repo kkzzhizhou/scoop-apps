@@ -1,42 +1,36 @@
 {
     "homepage": "https://openwork.software/",
-    "version": "0.13.3",
+    "version": "0.17.0",
     "description": "An open-source alternative to Claude Cowork, powered by opencode ",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/different-ai/openwork/releases/download/v0.13.3/openwork-desktop-windows-x64.msi",
-            "hash": "ca643bb3c4d24aca8ae28dd7d676c7afcbd720ad5946c405da3ec37f45db93d2"
+            "url": "https://github.com/different-ai/openwork/releases/download/v0.17.0/openwork-win-x64-0.17.0.exe#/dl.7z",
+            "hash": "187b76563b197e34b7a0b5b6f4b9e66a6fb41a14cfcb4f3cdae2a222be0b53c6",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ],
+            "post_install": "New-Item $env:AppData\\com.differentai.openwork -ItemType Junction -Target \"$persist_dir\\data\" | Out-Null"
         }
     },
-    "extract_dir": "PFiles\\OpenWork",
+    "persist": "data",
     "shortcuts": [
         [
-            "openwork.exe",
-            "openwork (different-ai)"
+            "OpenWork.exe",
+            "OpenWork"
         ]
     ],
-    "post_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "    ensure \"$persist_dir\" | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\data\")) {",
-        "    ensure \"$persist_dir\\data\" | Out-Null",
-        "}",
-        "New-Item $env:AppData\\com.differentai.openwork -ItemType Junction -Target \"$persist_dir\\data\" | Out-Null"
-    ],
-    "pre_uninstall": [
-        "if (Test-Path \"$Env:AppData\\com.differentai.openwork\\*\") {",
-        "    Remove-Item $env:APPDATA\\com.differentai.openwork -Force -Recurse",
-        "}"
-    ],
+    "uninstaller": {
+        "script": "Remove-Item $env:APPDATA\\com.differentai.openwork -Force -Recurse"
+    },
     "checkver": {
         "github": "https://github.com/different-ai/openwork"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/different-ai/openwork/releases/download/v$version/openwork-desktop-windows-x64.msi"
+                "url": "https://github.com/different-ai/openwork/releases/download/v$version/openwork-win-x64-$version.exe#/dl.7z"
             }
         }
     }

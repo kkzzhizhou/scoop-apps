@@ -1,13 +1,27 @@
 {
     "homepage": "https://uu.163.com/",
     "description": "Game accelerator created by Netease Inc.",
-    "version": "6.9.2.5223",
+    "version": "6.10.0.5224",
     "license": {
         "identifier": "EULA",
         "url": "https://uu.163.com/agreement.html"
     },
-    "url": "https://dorado-api.deno.dev/neteaseuu?version=6.9.2.5223#/dl.7z",
-    "hash": "13fd97a852e063fc9d6327a6187190acb3f8f044c4fa329d7a2f065a1dcd4bc2",
+    "url": "https://uu.gdl.netease.com/5224/UU-6.10.0.exe#/dl.7z",
+    "hash": "87d7ff75d7d040ce2b509cd256cea1aeb952fa11bae403a7d14f555646fbcef6",
+    "installer": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Netease\\UU\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "shortcuts": [
         [
             "uu_launcher.exe",
@@ -16,14 +30,14 @@
     ],
     "checkver": {
         "script": [
-            "$url = 'https://adl.netease.com/d/g/uu/c/gw/js'",
+            "$url = 'https://adl.netease.com/d/g/uu/c/gw?type=pc'",
             "$response = Invoke-WebRequest -Uri $url -UseBasicParsing",
             "Write-Output $response.Content"
         ],
-        "regex": "gdl.netease.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+).exe(?<keys>.*?)\"",
+        "regex": "pc_link = \"https://.*?.gdl.netease.com/(?<build>\\d+)/UU-(?<ver>[\\d.]+).exe",
         "replace": "${ver}.${build}"
     },
     "autoupdate": {
-        "url": "https://dorado-api.deno.dev/neteaseuu?version=$version#/dl.7z"
+        "url": "https://uu.gdl.netease.com/$matchBuild/UU-$matchVer.exe#/dl.7z"
     }
 }
