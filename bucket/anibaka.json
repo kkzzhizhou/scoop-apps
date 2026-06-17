@@ -1,0 +1,47 @@
+{
+    "version": "4.6.0.0530",
+    "description": "一个支持超分辨率的在线动漫弹幕APP。多平台，多番剧源，多弹幕，高清无广告。追番看番必备软件。",
+    "homepage": "https://ani-baka.vercel.app/",
+    "license": "Unknown",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AniBakaBaka/AniBaka/releases/download/4.6.0/baka-4.6.0+0530-windows.zip",
+            "hash": "219a771f7f44177c24a650d4710d7894d2e2deca29c59baa030d15194cc1cba8"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.sichuankejing.lupinshenghuo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.sichuankejing.lupinshenghuo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "baka.exe",
+    "shortcuts": [
+        [
+            "baka.exe",
+            "Baka"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/AniBakaBaka/AniBaka/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/([\\d.]+)/baka-([\\d.]+)%2B([\\d]+)-windows",
+        "replace": "${2}.${3}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/AniBakaBaka/AniBaka/releases/download/$match1/baka-$match2+$match3-windows.zip"
+            }
+        }
+    }
+}
