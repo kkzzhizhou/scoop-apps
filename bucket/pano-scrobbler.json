@@ -1,0 +1,50 @@
+{
+    "version": "440",
+    "description": "Feature rich scrobbler for Windows, Linux & Android. Supports Last.fm, ListenBrainz, Libre.fm & Pleroma. With regex edits, charts & Discord Rich Presence on PC.",
+    "homepage": "https://kawaiidango.github.io/pano-scrobbler/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/kawaiiDango/pano-scrobbler#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kawaiiDango/pano-scrobbler/releases/download/440/pano-scrobbler-windows-x64.exe",
+            "hash": "d4c29b4e1c4c7078d51e8a030110d462f937388d4522c355c89c3304e268ce0e"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\pano-scrobbler\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\pano-scrobbler\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "pano-scrobbler.exe",
+    "shortcuts": [
+        [
+            "pano-scrobbler.exe",
+            "pano-scrobbler"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/kawaiiDango/pano-scrobbler/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/([\\d]+)/pano-scrobbler-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kawaiiDango/pano-scrobbler/releases/download/$version/pano-scrobbler-windows-x64.exe"
+            }
+        }
+    }
+}

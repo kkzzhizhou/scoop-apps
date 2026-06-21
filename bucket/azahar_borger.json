@@ -9,26 +9,15 @@
             "hash": "cb95fea3ae87f456c2b5b5c3bafa6b8931b8a1ba6473d437497d316159630b62"
         }
     },
-    "extract_dir": "azahar-2124.3-windows-msys2",
+    "extract_dir": "azahar-windows-msys2-2125.1.2",
     "pre_install": [
-        "",
-        "# Ensure user folder exists",
-        "if (-not (Test-Path \"$dir\\user\")) {",
-        "New-Item -ItemType Directory -Path \"$dir\\user\" -Force | Out-Null",
-        "}",
-        "$appDataPath = $env:APPDATA",
-        "$documentsPath = [Environment]::GetFolderPath('MyDocuments')",
-        "",
-        "# Migrate application data from common locations",
-        "$appDataPath, $documentsPath | ForEach-Object {",
-        "$path = if ($_ -eq $appDataPath) { \"$appDataPath\\azahar\" } else { \"$documentsPath\\azahar\" }",
-        "if (Test-Path $path) {",
-        "$items = Get-ChildItem -Path $path -Force",
-        "if ($items) {",
-        "Write-Host \"Migrating data from $path\"",
-        "$items | Copy-Item -Destination \"$dir\\portable_data\" -Recurse -Force -ErrorAction SilentlyContinue",
-        "}",
-        "}",
+        "if (!(Test-Path \"$persist_dir\\user\")) {",
+        "   New-Item -Path \"$persist_dir\" -Name \"user\" -ItemType \"directory\" | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Citra\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Citra\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\Citra\" -Recurse",
+        "   }",
         "}"
     ],
     "bin": "azahar.exe",
@@ -43,11 +32,7 @@
         "github": "https://github.com/azahar-emu/azahar"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/azahar-emu/azahar/releases/download/$version/azahar-$version-windows-msys2.zip"
-            }
-        },
-        "extract_dir": "azahar-$version-windows-msys2"
+        "url": "https://github.com/azahar-emu/azahar/releases/download/$version/azahar-windows-msys2-$version.zip",
+        "extract_dir": "azahar-windows-msys2-$version"
     }
 }

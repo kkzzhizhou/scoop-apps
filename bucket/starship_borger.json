@@ -15,44 +15,27 @@
         }
     },
     "pre_install": [
-        "if (!(Test-Path \"$persist_dir\\starship.cfg.json\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\starship.cfg.json\" | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\default.sav\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\default.sav\" | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\imgui.ini\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\imgui.ini\" | Out-Null",
+        "$files = @('starship.cfg.json', 'default.sav', 'imgui.ini')",
+        "foreach ($file in $files) {",
+        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+        "        New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\$file\" | Out-Null",
+        "    }",
         "}"
     ],
     "post_install": [
-        "'starship.cfg.json' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
-        "}",
-        "'default.sav' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
-        "}",
-        "'imgui.ini' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
+        "$files = @('starship.cfg.json', 'default.sav', 'imgui.ini')",
+        "foreach ($file in $files) {",
+        "    if (Test-Path \"$persist_dir\\$file.bak\") {",
+        "        Copy-Item -Force \"$persist_dir\\$file.bak\" \"$dir\\$file\"",
+        "    } else {",
+        "        New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$file\" | Out-Null",
+        "    }",
         "}"
     ],
-    "bin": "starship.exe",
     "shortcuts": [
         [
             "starship.exe",
-            "Starship [win][mk64]"
+            "StarFox 64 [n64][sf64]"
         ]
     ],
     "persist": [
@@ -64,14 +47,9 @@
     ],
     "uninstaller": {
         "script": [
-            "'starship.cfg.json' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
-            "}",
-            "'default.sav' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
-            "}",
-            "'imgui.ini' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "$files = @('starship.cfg.json', 'default.sav', 'imgui.ini')",
+            "foreach ($file in $files) {",
+            "    Copy-Item -Force \"$dir\\$file\" \"$persist_dir\\$file.bak\"",
             "}"
         ]
     },
@@ -83,7 +61,7 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/HarbourMasters/Starship/releases/download/$version/Starship-$matchMajorname-$matchMinorname-Windows.zip"
+                "url": "https://github.com/HarbourMasters/Starship/releases/download/v$version/Starship-$matchMajorname-$matchMinorname-Windows.zip"
             }
         }
     }

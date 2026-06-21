@@ -1,5 +1,5 @@
 {
-    "version": "4047",
+    "version": "4056-5b040dc",
     "description": "Sony PlayStation Vita emulator",
     "homepage": "https://vita3k.org",
     "license": "GPL-2.0-only",
@@ -9,7 +9,11 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip",
-            "hash": "55ee8ac4c87e2cbade358ab7a074229f23c2a20d2ff38f2268fee07481225bcc"
+            "hash": "6d579e2d7c27c20aa4ee6c675fac7ffdfed592157a9d2b7fea9d496f5b9030b6"
+        },
+        "arm64": {
+            "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-arm64-latest.zip",
+            "hash": "08fd00d7e8e854d9d819a2057e7fb15834b74306195761645b3214ee071d2b5d"
         }
     },
     "pre_install": [
@@ -30,20 +34,29 @@
     ],
     "checkver": {
         "script": [
-            "$app = 'vita3k'",
             "$url = 'https://github.com/Vita3K/Vita3K/releases/tag/continuous'",
-            "$cont = (Invoke-WebRequest $url -UseBasicParsing -Headers @{ 'User-Agent' = 'Mozilla/5.0' }).Content",
-            "if ($cont -match 'Vita3K Build:\\s*(\\d+)') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
-            "if ($cont -match 'Corresponding commit:\\s*([a-f0-9]{7})') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
-            "# fallback: try to extract first 7-char commit from the page",
-            "if ($cont -match '([a-f0-9]{7})') { Write-Output ($app + ': ' + $matches[1]); exit 0 }",
-            "Write-Error 'could not detect vita3k build or commit'"
-        ]
+            "$build_regex = 'Vita3K Build: (\\d+)'",
+            "$commit_regex = 'Corresponding commit: ([a-f0-9]{7})'",
+            "",
+            "$cont = (Invoke-WebRequest $url -UseBasicParsing).Content",
+            "",
+            "if(!($cont -match $build_regex)) { error \"Could match '$build_regex' on '$url'\"; break }",
+            "$build_number = $matches[1]",
+            "if(!($cont -match $commit_regex)) { error \"Could match '$commit_regex' on '$url'\"; break }",
+            "$commit_sha = $matches[1]",
+            "",
+            "$script_ver = \"$build_number-$commit_sha\"",
+            "Write-Output $script_ver"
+        ],
+        "regex": "(\\d+-[a-f0-9]{7})"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-latest.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/Vita3K/Vita3K/releases/download/continuous/windows-arm64-latest.zip"
             }
         }
     }

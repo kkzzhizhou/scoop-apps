@@ -1,5 +1,5 @@
 {
-    "version": "2603-369",
+    "version": "2603-379",
     "description": "A Nintendo GameCube and Wii emulator",
     "homepage": "https://dolphin-emu.org/",
     "license": {
@@ -11,9 +11,14 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://dl.dolphin-emu.org/builds/7d/33/dolphin-master-2603-369-x64.7z",
-            "hash": "595bb54090cc332473fd081caae0450720190aaaef8f6ca618b1783430774e70",
+            "url": "https://dl.dolphin-emu.org/builds/46/7d/dolphin-master-2603-379-x64.7z",
+            "hash": "7bef59e6e023932c7122c51f421f470dee41f1a35021d2498339894234c63164",
             "extract_dir": "Dolphin-x64"
+        },
+        "arm64": {
+            "url": "https://dl.dolphin-emu.org/builds/30/b1/dolphin-master-2603-379-ARM64.7z",
+            "hash": "59a0433e43623c80decff020f68fb14cd9eb82489516071ff4e7f301ad00d4aa",
+            "extract_dir": "Dolphin-ARM64"
         }
     },
     "pre_install": [
@@ -26,8 +31,14 @@
     ],
     "post_install": "Set-Content -Value $null -Path \"$dir\\portable.txt\"",
     "bin": [
-        "Dolphin.exe",
-        "DolphinTool.exe"
+        [
+            "Dolphin.exe",
+            "dolphin-dev"
+        ],
+        [
+            "DolphinTool.exe",
+            "dolphintool-dev"
+        ]
     ],
     "shortcuts": [
         [
@@ -37,14 +48,16 @@
     ],
     "persist": "User",
     "checkver": {
-        "url": "https://dolphin-emu.org/download/list/master/1/",
-        "regex": "\\/(?<rand1>.{2})\\/(?<rand2>.{2})\\/dolphin-master-(?<major>[\\d\\.]+)-(?<build>[\\d]+)",
-        "replace": "${major}-${build}"
+        "url": "https://dolphin-emu.org/download/",
+        "regex": "(?<prefix1>.{5})/dolphin-master-(?<version>[\\w-]+)-x64[\\s\\S]+?(?<prefix2>.{5})/dolphin-master-\\k<version>-ARM64"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dl.dolphin-emu.org/builds/$matchRand1/$matchRand2/dolphin-master-$matchMajor-$matchBuild-x64.7z"
+                "url": "https://dl.dolphin-emu.org/builds/$matchPrefix1/dolphin-master-$version-x64.7z"
+            },
+            "arm64": {
+                "url": "https://dl.dolphin-emu.org/builds/$matchPrefix2/dolphin-master-$version-ARM64.7z"
             }
         }
     }

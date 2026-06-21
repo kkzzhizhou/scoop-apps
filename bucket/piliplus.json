@@ -1,0 +1,51 @@
+{
+    "version": "2.0.9.2",
+    "description": "使用Flutter开发的BiliBili第三方客户端",
+    "homepage": "https://github.com/bggRGjQaUbCoE/PiliPlus",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/bggRGjQaUbCoE/PiliPlus#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/bggRGjQaUbCoE/PiliPlus/releases/download/2.0.9.2/PiliPlus_windows_2.0.9+5051_x64_setup.exe",
+            "hash": "83bb836f1c0a1b980bcc6b8e0f241f2a607ed56777759c6b091a3ed75ae95fb9"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "piliplus.exe",
+    "shortcuts": [
+        [
+            "piliplus.exe",
+            "PiliPlus"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/bggRGjQaUbCoE/PiliPlus/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/([\\d.]+)/PiliPlus_windows_([\\d.]+)%2B([\\d]+)_x64",
+        "replace": "${1}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/bggRGjQaUbCoE/PiliPlus/releases/download/$match1/PiliPlus_windows_$match2+$match3_x64_setup.exe"
+            }
+        }
+    }
+}

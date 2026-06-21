@@ -1,14 +1,34 @@
 {
-    "version": "2026-04-19-585c49a",
+    "version": "20260419185636-585c49a",
     "description": "Microsoft Xbox emulator",
     "homepage": "https://cxbx-reloaded.co.uk/",
     "license": {
         "identifier": "GPL-2.0",
         "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/blob/master/COPYING"
     },
-    "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-585c49a/CxbxReloaded-Release.zip",
-    "hash": "010d1e85bee9f82f05ae57ca483e7ae61fecba06c1637bf6b5a74ca09b03bf43",
-    "pre_install": "if (!(Test-Path \"$persist_dir\\settings.ini\")) { $null = New-Item \"$dir\\settings.ini\" }",
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-585c49a/CxbxReloaded-Release.zip",
+            "hash": "010d1e85bee9f82f05ae57ca483e7ae61fecba06c1637bf6b5a74ca09b03bf43"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\Cxbx-Reloaded\") {",
+        "       Write-Host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\Cxbx-Reloaded\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       (Get-Content -Path \"$persist_dir\\settings.ini\").Replace(\"DataStorageToggle = 0x0\", \"DataStorageToggle = 0x1\") | Set-Content -Path \"$persist_dir\\settings.ini\"",
+        "       Remove-Item -Path \"$env:APPDATA\\Cxbx-Reloaded\" -Recurse -Force",
+        "   } else {",
+        "       New-Item \"$dir\\EEPROM.bin\" -ItemType File | Out-Null",
+        "       New-item \"$dir\\settings.ini\" -ItemType File | Out-Null",
+        "   }",
+        "}"
+    ],
     "bin": "cxbx.exe",
     "shortcuts": [
         [
@@ -18,14 +38,29 @@
     ],
     "persist": [
         "EmuDisk",
+        "EmuMediaBoard",
+        "EmuMu",
+        "SymbolCache",
+        "EEPROM.bin",
         "settings.ini"
     ],
     "checkver": {
         "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases.atom",
-        "regex": "<updated>(?<date>\\d{4}-\\d{2}-\\d{2})T[\\s\\S]*?<title>CI-(?<commit>[a-f\\d]+)</title>",
-        "replace": "${date}-${commit}"
+        "script": [
+            "$xml = [xml]$page",
+            "$entry = $xml.feed.entry | Select-Object -First 1",
+            "$updated = $entry.updated",
+            "$title = $entry.title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z CI-(?<commit>[a-f\\d]+)",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
-        "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$matchCommit/CxbxReloaded-Release.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Cxbx-Reloaded/Cxbx-Reloaded/releases/download/CI-$matchCommit/CxbxReloaded-Release.zip"
+            }
+        }
     }
 }

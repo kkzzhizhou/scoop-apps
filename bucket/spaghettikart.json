@@ -4,43 +4,39 @@
     "homepage": "https://github.com/HarbourMasters/SpaghettiKart",
     "license": "Unlicense",
     "notes": [
-        "ATTENTION: SpaghettiKart requires specific N64 rom(s) of Mario Kart 64 to function.",
+        "ATTENTION: SpaghettiKart requires specific n64 rom(s) of Mario Kart 64 to function.",
         "Place the rom(s) in $persist_dir.",
         "Learn more at https://github.com/HarbourMasters/SpaghettiKart?tab=readme-ov-file#quick-start"
     ],
     "architecture": {
         "64bit": {
             "url": "https://github.com/HarbourMasters/SpaghettiKart/releases/download/1.0.0/spaghetti-windows.zip",
-            "hash": "bf7bd7cdb5f412c7b370af92949b9431ce7503968631f8cacd607933fb32aff3"
+            "hash": "bf7bd7cdb5f412c7b370af92949B9431CE7503968631F8CACD607933FB32AFF3"
         }
     },
     "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "    New-Item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\spaghettify.cfg.json\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\spaghettify.cfg.json\" | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\default.sav\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\default.sav\" | Out-Null",
-        "}",
-        "if (!(Test-Path \"$persist_dir\\imgui.ini\")) {",
-        "    New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\imgui.ini\" | Out-Null",
+        "$files = @('spaghettify.cfg.json', 'default.sav', 'imgui.ini')",
+        "foreach ($file in $files) {",
+        "    if (!(Test-Path \"$persist_dir\\$file\")) {",
+        "        New-Item -ItemType File -ErrorAction SilentlyContinue \"$dir\\$file\" | Out-Null",
+        "    }",
         "}"
     ],
     "post_install": [
-        "'spaghettify.cfg.json', 'default.sav', 'imgui.ini' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
+        "$files = @('spaghettify.cfg.json', 'default.sav', 'imgui.ini')",
+        "foreach ($file in $files) {",
+        "    if (Test-Path \"$persist_dir\\$file.bak\") {",
+        "        Copy-Item -Force \"$persist_dir\\$file.bak\" \"$dir\\$file\"",
+        "    } else {",
+        "        New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$file\" | Out-Null",
+        "    }",
         "}"
     ],
+    "bin": "Spaghettify.exe",
     "shortcuts": [
         [
             "Spaghettify.exe",
-            "SpaghettiKart"
+            "Mario Kart 64 [n64][mk64]"
         ]
     ],
     "persist": [
@@ -52,21 +48,19 @@
     ],
     "uninstaller": {
         "script": [
-            "'spaghettify.cfg.json', 'default.sav', 'imgui.ini' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "$files = @('spaghettify.cfg.json', 'default.sav', 'imgui.ini')",
+            "foreach ($file in $files) {",
+            "    Copy-Item -Force \"$dir\\$file\" \"$persist_dir\\$file.bak\"",
             "}"
         ]
     },
-    "checkver": "github",
+    "checkver": {
+        "github": "https://github.com/HarbourMasters/SpaghettiKart"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/HarbourMasters/SpaghettiKart/releases/download/$version/spaghetti-windows.zip",
-                "hash": {
-                    "url": "https://api.github.com/repos/HarbourMasters/SpaghettiKart/releases",
-                    "jsonpath": "$[?(@.prerelease == false)].assets[?(@.name =~ /^spaghetti-windows.zip$/)].digest",
-                    "regex": "[A-Fa-f0-9]{64}"
-                }
+                "url": "https://github.com/HarbourMasters/SpaghettiKart/releases/download/$version/spaghetti-windows.zip"
             }
         }
     }

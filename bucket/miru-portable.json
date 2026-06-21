@@ -1,0 +1,50 @@
+{
+    "version": "1.8.1",
+    "description": "🎉 A versatile application that is free, open-source, and supports extension sources for videos, comics, and novels, available on Android, Windows, and Web platforms.",
+    "homepage": "https://miru.js.org/",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/miru-project/miru-app#AGPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/miru-project/miru-app/releases/download/v1.8.1/Miru-v1.8.1-windows.zip",
+            "hash": "7d9d7f4d8ddff27e56e0853da11a454a16919b9f2104a15952805b6e96ef2f49"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:USERPROFILE\\Documents\\miru\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:USERPROFILE\\Documents\\miru\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "miru.exe",
+    "shortcuts": [
+        [
+            "miru.exe",
+            "Miru"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/miru-project/miru-app/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/miru-project/miru-app/releases/download/v$version/Miru-v$version-windows.zip"
+            }
+        }
+    }
+}

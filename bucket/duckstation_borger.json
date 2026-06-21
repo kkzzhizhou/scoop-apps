@@ -1,9 +1,9 @@
 {
-    "version": "2026-06-14-7d19968",
+    "version": "20260614-g7d19968",
     "description": "Sony PlayStation emulator",
     "homepage": "https://github.com/stenzek/duckstation/",
     "license": {
-        "identifier": "GPL-3.0-only",
+        "identifier": "CC-BY-NC-ND-4.0",
         "url": "https://github.com/stenzek/duckstation/blob/master/LICENSE"
     },
     "notes": [
@@ -11,27 +11,44 @@
         "Place the BIOS file in $persist_dir\\bios",
         "Learn more at: https://www.duckstation.org/wiki/BIOS"
     ],
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip",
-            "hash": "e3ebe0d4214492e9b68f5f0014b6c84ca490c4f2370981f44ad3ad2c6aa0526f"
+            "hash": "e3ebe0d4214492e9b68f5f0014b6c84ca490c4f2370981f44ad3ad2c6aa0526f",
+            "bin": [
+                [
+                    "duckstation-qt-x64-ReleaseLTCG.exe",
+                    "duckstation"
+                ]
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-ARM64-release.zip",
+            "hash": "eaf833e7fbd721f6315f98c344f18e003f178abd0508006066575658a67f182e",
+            "bin": [
+                [
+                    "duckstation-qt-ARM64-ReleaseLTCG.exe",
+                    "duckstation"
+                ]
+            ]
         }
     },
-    "installer": {
-        "script": [
-            "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
-            "if (!(Test-Path \"$persist_dir\")) {",
-            "  '[Main]', 'SettingsVersion = 3', '[AutoUpdater]', 'CheckAtStartup = false' | Set-Content \"$dir\\settings.ini\"",
-            "}"
-        ]
-    },
-    "post_install": [
-        "echo \"update bin/shortcuts\"",
-        "$shell = New-Object -COM WScript.Shell",
-        "$shortcut = $shell.CreateShortCut(\"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\")",
-        "$shortcut.TargetPath = \"$original_dir\\duckstation-qt-x64-ReleaseLTCG.exe\"",
-        "$shortcut.Save()"
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:USERPROFILE\\Documents\\DuckStation\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\DuckStation\\*\" -Destination \"$persist_dir\" -Recurse",
+        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\DuckStation\" -Recurse",
+        "   } else {",
+        "       '[Main]', 'SettingsVersion = 3', '[AutoUpdater]', 'CheckAtStartup = false' | Set-Content \"$dir\\settings.ini\"",
+        "   }",
+        "}"
     ],
+    "post_install": "New-item \"$dir\\portable.txt\" -ItemType File | Out-Null",
     "shortcuts": [
         [
             "duckstation-qt-x64-ReleaseLTCG.exe",
@@ -53,19 +70,19 @@
         "textures",
         "settings.ini"
     ],
-    "uninstaller": {
-        "script": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
-    },
     "checkver": {
         "url": "https://github.com/stenzek/duckstation/releases/tag/latest",
         "regex": " datetime=\"(?<year>[0-9]{4})-(?<month>[0-9]{2})-(?<day>[0-9]{2})[\\s\\S]*?.*duckstation/commit/(?<commit>[0-9a-f]{7})",
-        "replace": "${year}-${month}-${day}-${commit}"
+        "replace": "${year}${month}${day}-g${commit}"
     },
     "autoupdate": {
-        "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip"
-    },
-    "post_uninstall": [
-        "echo \"update bin/shortcuts\"",
-        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\DuckStation.lnk\""
-    ]
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-x64-release.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/stenzek/duckstation/releases/download/latest/duckstation-windows-ARM64-release.zip"
+            }
+        }
+    }
 }
