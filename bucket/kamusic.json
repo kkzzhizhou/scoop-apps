@@ -1,0 +1,56 @@
+{
+    "version": "2.9.3",
+    "description": "最好用最轻量的第三方酷狗概念版音乐播放器",
+    "homepage": "https://github.com/Linsxyx/KugouMusic.NET",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/Linsxyx/KugouMusic.NET#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Linsxyx/KugouMusic.NET/releases/download/v2.9.3/KugouAvaloniaPlayer-win-x64.exe#/dl.7z",
+            "hash": "238ae6b86196f82b67b6438615325d2c211bd05422851d011da23be943b559f7",
+            "pre_install": [
+                "Copy-Item \"$dir\\lib\\app\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "Remove-Item -LiteralPath \"$dir\\[Content_Types].xml\" -Force -ErrorAction 'SilentlyContinue'",
+                "Remove-Item \"$dir\\_rels\", \"$dir\\lib\", \"$dir\\*.nuspec\", \"$dir\\*.ico\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\cachedata\" -Target \"$env:LOCALAPPDATA\\kugou\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\kugou\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\kugou\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kugou\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "KugouAvaloniaPlayer.exe",
+    "shortcuts": [
+        [
+            "KugouAvaloniaPlayer.exe",
+            "KugouAvaloniaPlayer"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Linsxyx/KugouMusic.NET/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/KugouAvaloniaPlayer-win"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Linsxyx/KugouMusic.NET/releases/download/v$version/KugouAvaloniaPlayer-win-x64.exe#/dl.7z"
+            }
+        }
+    }
+}

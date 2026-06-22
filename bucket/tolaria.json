@@ -1,25 +1,13 @@
 {
-    "version": "2026.5.14",
+    "##": "Tolaria",
+    "version": "2026.6.14",
     "description": "Desktop app to manage markdown knowledge bases",
-    "homepage": "https://tolaria.md/",
+    "homepage": "https://github.com/refactoringhq/tolaria",
     "license": "AGPL-3.0",
-    "architecture": {
-        "64bit": {
-            "url": "https://github.com/refactoringhq/tolaria/releases/download/stable-v2026.5.14/Tolaria_2026.5.14_x64-setup.exe#/dl.7z",
-            "hash": "c0311133be9e57992b8d2c75dbfbc4220f174711a9a78cf263e3c9559010dee1"
-        }
-    },
-    "post_install": [
-        "Remove-Item \"$dir\\*.nsi\", \"$dir\\`$*\", \"$dir\\Uninstall*.exe\" -Recurse -Force",
-        "$appDataPath = \"$env:APPDATA\\com.tolaria.app\"",
-        "$persistPath = \"$persist_dir\\Roaming\"",
-        "if (Test-Path $appDataPath) {",
-        "    Remove-Item $appDataPath -Recurse -Force",
-        "}",
-        "if (-Not (Test-Path $persistPath)) {",
-        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
-        "}",
-        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+    "url": "https://github.com/refactoringhq/tolaria/releases/download/v2026-06-14/Tolaria_2026.6.14_x64-setup.exe#/dl.7z",
+    "hash": "d0b3f40d0f9304efd7a04db198f5d5db6b516de685426f483eb8eb0884b1d6de",
+    "pre_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
     ],
     "shortcuts": [
         [
@@ -27,28 +15,21 @@
             "Tolaria"
         ]
     ],
-    "post_uninstall": [
-        "$appDataPath = \"$env:APPDATA\\com.tolaria.app\"",
-        "if (Test-Path $appDataPath) {",
-        "    Remove-Item $appDataPath -Recurse -Force",
-        "}"
-    ],
-    "uninstaller": {
-        "script": [
-            "if (Test-Path \"$env:LOCALAPPDATA\\club.refactoring.tolaria\" -PathType Container) {",
-            "    Remove-Item -Recurse -Force \"$env:LOCALAPPDATA\\club.refactoring.tolaria\"",
-            "}"
-        ]
-    },
     "checkver": {
-        "github": "https://github.com/refactoringhq/tolaria",
-        "regex": "stable-v([\\d.]+)"
+        "script": [
+            "$ErrorActionPreference = 'Stop'",
+            "$url = 'https://github.com/refactoringhq/tolaria/releases/latest'",
+            "$res = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing",
+            "$finalUrl = if ($res.BaseResponse.ResponseUri) { $res.BaseResponse.ResponseUri.AbsoluteUri } else { $res.BaseResponse.RequestMessage.RequestUri.AbsoluteUri }",
+            "if ($finalUrl -notmatch '/releases/tag/v(\\d{4})-(\\d{2})-(\\d{2})$') { throw \"Unable to parse latest version from: $finalUrl\" }",
+            "$version = \"$($Matches[1]).$([int]$Matches[2]).$([int]$Matches[3])\"",
+            "$tag = \"$($Matches[1])-$($Matches[2])-$($Matches[3])\"",
+            "\"$version $tag\""
+        ],
+        "regex": "([\\d.]+) ([\\d-]+)",
+        "replace": "$1"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://github.com/refactoringhq/tolaria/releases/download/stable-v$version/Tolaria_$version_x64-setup.exe#/dl.7z"
-            }
-        }
+        "url": "https://github.com/refactoringhq/tolaria/releases/download/v$match2/Tolaria_$version_x64-setup.exe#/dl.7z"
     }
 }

@@ -1,0 +1,54 @@
+{
+    "version": "2026.5.14",
+    "description": "Desktop app to manage markdown knowledge bases",
+    "homepage": "https://tolaria.md/",
+    "license": "AGPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/refactoringhq/tolaria/releases/download/stable-v2026.5.14/Tolaria_2026.5.14_x64-setup.exe#/dl.7z",
+            "hash": "c0311133be9e57992b8d2c75dbfbc4220f174711a9a78cf263e3c9559010dee1"
+        }
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\*.nsi\", \"$dir\\`$*\", \"$dir\\Uninstall*.exe\" -Recurse -Force",
+        "$appDataPath = \"$env:APPDATA\\com.tolaria.app\"",
+        "$persistPath = \"$persist_dir\\Roaming\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}",
+        "if (-Not (Test-Path $persistPath)) {",
+        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
+        "}",
+        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "tolaria.exe",
+            "Tolaria"
+        ]
+    ],
+    "post_uninstall": [
+        "$appDataPath = \"$env:APPDATA\\com.tolaria.app\"",
+        "if (Test-Path $appDataPath) {",
+        "    Remove-Item $appDataPath -Recurse -Force",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "if (Test-Path \"$env:LOCALAPPDATA\\club.refactoring.tolaria\" -PathType Container) {",
+            "    Remove-Item -Recurse -Force \"$env:LOCALAPPDATA\\club.refactoring.tolaria\"",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/refactoringhq/tolaria",
+        "regex": "stable-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/refactoringhq/tolaria/releases/download/stable-v$version/Tolaria_$version_x64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}
