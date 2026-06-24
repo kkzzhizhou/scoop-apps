@@ -1,0 +1,40 @@
+{
+	"version": "1.12.0.178",
+	"description": "A graphical frontend for Legendary, the FOSS Epic Games Launcher alternative (Prerelease)",
+	"homepage": "https://github.com/RareDevs/Rare",
+	"license": "GPL-3.0",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/RareDevs/Rare/releases/download/1.12.0.178/Rare-1.12.0.178-x86_64.msi",
+			"hash": "e71351e883afe8548b1fad5e4028a5d30cc2fa540f30daf21de02c11ead0ece3"
+		},
+		"arm64": {
+			"url": "https://github.com/RareDevs/Rare/releases/download/1.12.0.178/Rare-1.12.0.178-arm64.msi",
+			"hash": "fc7360eb9befba984e089925cb7a4532b0f199773fc0dd91899b410170cecf41"
+		}
+	},
+	"bin": "rare.exe",
+	"shortcuts": [["rare.exe", "Rare Prerelease"]],
+	"checkver": {
+		"script": [
+			"$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/RareDevs/Rare/releases'",
+			"$latest = $rel_info | Where-Object { $_.prerelease } | Sort-Object { $_.published_at } | Select-Object -last 1",
+			"$latest_x64 = $latest.assets | Where-Object { $_.name -like '*x86_64.msi' } | Select-Object -first 1",
+			"$latest_arm64 = $latest.assets | Where-Object { $_.name -like '*arm64.msi' } | Select-Object -first 1",
+			"Write-Output $latest.tag_name $latest_x64.digest $latest_arm64.digest"
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<x64hash>[^\\s]+)?\\s(?<armhash>[^\\s]+)?"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/RareDevs/Rare/releases/download/$version/Rare-$version-x86_64.msi",
+				"hash": "$matchX64hash"
+			},
+			"arm64": {
+				"url": "https://github.com/RareDevs/Rare/releases/download/$version/Rare-$version-arm64.msi",
+				"hash": "$matchArmhash"
+			}
+		}
+	}
+}
