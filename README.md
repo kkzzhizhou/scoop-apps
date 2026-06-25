@@ -96,8 +96,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - DoveBoy/Apps
 - EFLKumo/jam
 - zhoujin7/tomato
-- hu3rror/scoop-muggle
 - wzv5/ScoopBucket
+- hu3rror/scoop-muggle
 - naderi/scoop-bucket
 - TheRandomLabs/Scoop-Python
 - amorphobia/siku
@@ -105,8 +105,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - NyaMisty/scoop_bucket_misty
 - Small-Ku/turbo-bucket
 - WinApps-share/WinApps-bucket
-- noql-net/scoop
 - kengwang/scoop-ctftools-bucket
+- noql-net/scoop
 - brian6932/dank-scoop
 - ygguorun/scoop-bucket
 - aliesbelik/poldi
@@ -124,8 +124,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - TianXiaTech/scoop-txt
 - 42wim/scoop-bucket
 - starise/Scoop-Gaming
-- babo4d/scoop-xrtools
 - jfut/scoop-jfut
+- babo4d/scoop-xrtools
 - mo-san/scoop-bucket
 - aoisummer/scoop-bucket
 - AkariiinMKII/Scoop4kariiin
@@ -134,8 +134,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - typst-community/scoop-bucket
 - rivy/scoop-bucket
 - AntonOks/scoop-aoks
-- maboloshi/scoop-private
 - HUMORCE/nuke
+- maboloshi/scoop-private
 - 404NetworkError/scoop-bucket
 - littleli/Scoop-littleli
 - Deide/deide-bucket
@@ -145,11 +145,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - p8rdev/scoop-portableapps
 - beer-psi/scoop-bucket
 - ChinLong/scoop-customize
+- ShuguangSun/sgs-scoop-bucket
 - Rinkerbel/scooped
 - windedge/ladle-bucket
-- ShuguangSun/sgs-scoop-bucket
 - The-Simples/scoop-minecraft
-- milnak/scoop-bucket
 - younger-1/scoop-it
 - LaelLuo/scoop
 - jcwillox/scoop-python
