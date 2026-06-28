@@ -1,12 +1,13 @@
 {
-    "version": "14561856257",
+    "version": "2026-06-12",
     "description": "A small utility for quickly adjusting the brightness of external monitors using the DDC/CI protocol.",
     "homepage": "https://github.com/sidit77/rusty-twinkle-tray",
     "license": "MIT",
+    "notes": "Don't enable the automatic startup settings in the program, this package does it for you automatically. Just make sure that if you want the higher startup priority, install this package globally.",
     "architecture": {
         "64bit": {
-            "url": "https://nightly.link/sidit77/rusty-twinkle-tray/workflows/build/main/rusty-twinkle-tray.exe.zip",
-            "hash": "e5fb4e6c109966c37f0bed177d62eecae4cb2d1145b9bb3e2da19853c921b4bf"
+            "url": "https://github.com/sidit77/rusty-twinkle-tray/releases/download/release-2026-06-12/rusty-twinkle-tray.exe",
+            "hash": "be69e63fff934229fd8f50d33597ad3d8218fe5336a3c1617235966eaafdde86"
         }
     },
     "shortcuts": [
@@ -15,14 +16,22 @@
             "Rusty Twinkle Tray"
         ]
     ],
+    "post_install": [
+        "$null = New-ItemProperty -Path \"HK$(if ($global) { 'LM' } else { 'CU' }):/SOFTWARE/Microsoft/Windows/CurrentVersion/Run\" -Name '_RustyTwinkleTray' -Value \"$([char][byte]34)$dir\\rusty-twinkle-tray.exe$([char][byte]34)\" -PropertyType String -Force",
+        "& \"$dir/rusty-twinkle-tray.exe\""
+    ],
+    "pre_uninstall": [
+        "Remove-ItemProperty \"HK$(if ($global) { 'LM' } else { 'CU' }):/SOFTWARE/Microsoft/Windows/CurrentVersion/Run\" '_RustyTwinkleTray'",
+        "Get-Process rusty-twinkle-tray -ErrorAction Ignore | Stop-Process"
+    ],
     "checkver": {
-        "url": "https://api.github.com/repositories/733894444/actions/workflows/build.yml/runs?branch=main&status=success&per_page=1",
-        "jsonpath": "$.workflow_runs[0].id"
+        "url": "https://api.github.com/repositories/733894444/releases/latest",
+        "jsonpath": "$.name"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://nightly.link/sidit77/rusty-twinkle-tray/workflows/build/main/rusty-twinkle-tray.exe.zip"
+                "url": "https://github.com/sidit77/rusty-twinkle-tray/releases/download/release-$version/rusty-twinkle-tray.exe"
             }
         }
     }
