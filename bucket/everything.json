@@ -1,5 +1,5 @@
 {
-    "version": "1.4.1.1032",
+    "version": "1.5.0.1415b",
     "description": "Locate files and folders by name instantly.",
     "homepage": "https://www.voidtools.com",
     "license": "MIT",
@@ -9,22 +9,19 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://www.voidtools.com/Everything-1.4.1.1032.x64.zip",
-            "hash": "698df475ec44e638f66f1b6a32d28fea613cec78d3b6310e6abe53431eeb940c"
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.x64.zip",
+            "hash": "561c1ea1a04266af61b5e1a475387ed7ddb9857b7a832797030adace2dadea56"
         },
         "32bit": {
-            "url": "https://www.voidtools.com/Everything-1.4.1.1032.x86.zip",
-            "hash": "156db5beb747d69470518a7b9b55af11efc4d3285ddb7cc013c0cc13ced5f237"
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.x86.zip",
+            "hash": "824d4cb85ed4600c73e5103ff759b900233722c12ad0e3ced746756f2316964a"
         },
         "arm64": {
-            "url": "https://www.voidtools.com/Everything-1.4.1.1032.ARM64.zip",
-            "hash": "23dca1a64574bf30c9988bbaf5f1d201a0ec7ee9a15e12270ae92a52183cccc8"
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.ARM64.zip",
+            "hash": "a7417b4ce9c9cb7d10c9a669885a4a0328dda65998ed2e27222aad44c593c621"
         }
     },
     "pre_install": [
-        "# for arm64",
-        "if ($architecture -eq 'arm64') { Rename-Item \"$dir\\EverythingARM64.exe\" -NewName 'Everything.exe' }",
-        "# END",
         "ensure \"$persist_dir\" | Out-Null",
         "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Start-Process -Wait \"$dir\\Everything.exe\" -Args @('-install-config null') }",
         "Get-ChildItem \"$persist_dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
@@ -42,6 +39,19 @@
         "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
         "}"
     ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
+        "if ($(Get-Service -Name Everything -ErrorAction SilentlyContinue).Status -ne 'Stopped') {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to stop Everything service'; break }",
+        "    Stop-Service -Name 'Everything' -Force -ErrorAction SilentlyContinue | Out-Null",
+        "}",
+        "if ((Get-Service -Name Everything -ErrorAction SilentlyContinue) -and ($cmd -eq 'uninstall')) {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to remove Everything service'; break }",
+        "    sc.exe delete 'Everything'",
+        "}",
+        "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+        "Get-ChildItem \"$dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    ],
     "bin": "Everything.exe",
     "shortcuts": [
         [
@@ -49,23 +59,10 @@
             "Everything"
         ]
     ],
-    "pre_uninstall": [
-        "Stop-Process -Name 'Everything' -Force -ErrorAction SilentlyContinue",
-        "$service_installed_in_current_dir_via_scoop = (sc.exe qc Everything) -match $dir.Replace('\\', '\\\\')",
-        "if ($service_installed_in_current_dir_via_scoop) {",
-        "    if ($(Get-Service -Name Everything -ErrorAction SilentlyContinue).Status -ne 'Stopped') {",
-        "        if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to stop Everything service'; break }",
-        "        Stop-Service -Name 'Everything' -Force -ErrorAction SilentlyContinue | Out-Null",
-        "    }",
-        "    if ((Get-Service -Name Everything -ErrorAction SilentlyContinue) -and ($cmd -eq 'uninstall')) {",
-        "        if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to remove Everything service'; break }",
-        "        sc.exe delete 'Everything'",
-        "    }",
-        "}",
-        "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
-        "Get-ChildItem \"$dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
-    ],
-    "checkver": "Download Everything ([\\d.]+)",
+    "checkver": {
+        "url": "https://www.voidtools.com/zh-cn/downloads/",
+        "regex": "Everything-(1\\.5[\\d\\.\\w]*)\\.(?:x64|x86|arm64)-Setup"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {

@@ -1,29 +1,40 @@
 {
-    "version": "1.4.1.1032",
+    "version": "1.5.0.1415b",
     "description": "Locate files and folders by name instantly.",
     "homepage": "https://www.voidtools.com",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "http://www.voidtools.com/Everything-1.4.1.1032.x64-Setup.exe",
-            "hash": "c42efad041d4c0bb4d4ac97ae7cbe89f153ec1fe078772392e749c7f5d5282d3"
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.x64-Setup.exe#/dl.7z",
+            "hash": "ab76b4f9b756ffd808950c99b5dc0da666985d4b6907e22fe72c0640b6f0abad"
         },
         "32bit": {
-            "url": "http://www.voidtools.com/Everything-1.4.1.1032.x86-Setup.exe",
-            "hash": "781a31b440045219752a1bb40fbd204b1d96964d4bf56af01b18e3d549b037aa"
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.x86-Setup.exe#/dl.7z",
+            "hash": "8cb20eb74da2f86d9d9e9b1871e5ea6eb7d83de675775a6145ac0211dcef15e1"
+        },
+        "arm64": {
+            "url": "https://www.voidtools.com/Everything-1.5.0.1415b.ARM64-Setup.exe#/dl.7z",
+            "hash": "561f17e1b232685f964b474b9d0a9229bd40beb9be5c9ca10daf367b3061412d"
         }
     },
-    "installer": {
-        "args": [
-            "/S",
-            "/D=$dir"
-        ]
-    },
-    "post_install": "Remove-Item -Recurse \"$([Environment]::GetFolderPath('startmenu'))\\Programs\\Everything\"",
-    "uninstaller": {
-        "file": "Uninstall.exe",
-        "args": "/S"
-    },
+    "extract_dir": "$PLUGINSDIR//Everything",
+    "pre_install": [
+        "ensure \"$persist_dir\" | Out-Null",
+        "if (!(Test-Path \"$persist_dir\\Everything.ini\")) { Start-Process -Wait \"$dir\\Everything.exe\" -Args @('-install-config null') }",
+        "Get-ChildItem \"$persist_dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$dir\" -ErrorAction SilentlyContinue"
+    ],
+    "pre_uninstall": [
+        "Stop-Process -Name 'everything' -Force -ErrorAction SilentlyContinue",
+        "if ($(Get-Service -Name Everything -ErrorAction SilentlyContinue).Status -ne 'Stopped') {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to stop Everything service'; break }",
+        "    Stop-Service -Name 'Everything' -Force -ErrorAction SilentlyContinue | Out-Null",
+        "}",
+        "if ((Get-Service -Name Everything -ErrorAction SilentlyContinue) -and ($cmd -eq 'uninstall')) {",
+        "    if (!(is_admin) -and $(Get-Service -Name Everything -ErrorAction SilentlyContinue)) { error 'Admin rights are required to remove Everything service'; break }",
+        "    sc.exe delete 'Everything'",
+        "}",
+        "Get-ChildItem \"$dir\\*\" -Include 'Bookmarks.csv', 'Everything.db', 'Everything.ini', 'Filters.csv', 'Search History.csv' | Copy-Item -Destination \"$persist_dir\" -ErrorAction SilentlyContinue -Force"
+    ],
     "bin": "Everything.exe",
     "shortcuts": [
         [
@@ -31,18 +42,24 @@
             "Everything"
         ]
     ],
-    "checkver": "Download Everything ([\\d.]+)",
+    "checkver": {
+        "url": "https://www.voidtools.com/zh-cn/downloads/",
+        "regex": "Everything-(1\\.5[\\d\\.\\w]*)\\.(?:x64|x86|arm64)-Setup"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "http://www.voidtools.com/Everything-$version.x64-Setup.exe"
+                "url": "https://www.voidtools.com/Everything-$version.x64-Setup.exe#/dl.7z"
             },
             "32bit": {
-                "url": "http://www.voidtools.com/Everything-$version.x86-Setup.exe"
+                "url": "https://www.voidtools.com/Everything-$version.x86-Setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://www.voidtools.com/Everything-$version.ARM64-Setup.exe#/dl.7z"
             }
         },
         "hash": {
-            "url": "https://www.voidtools.com/Everything-$version.sha256"
+            "url": "$baseurl/Everything-$version.sha256"
         }
     }
 }
