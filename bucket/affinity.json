@@ -1,0 +1,70 @@
+{
+    "version": "3.2.2.4557",
+    "description": "Professional creative software, free for everyone. Portable.",
+    "homepage": "https://www.affinity.studio",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.affinity.studio/Affinity%20x64.msix#/dl.7z",
+            "hash": "b15df22e96582de73bef487f202d063e884ff6c38d3699fabae96cc3988a049d"
+        },
+        "arm64": {
+            "url": "https://downloads.affinity.studio/Affinity%20arm64.msix#/dl.7z",
+            "hash": "0eb94cec093a27e7de4045feb6d4158f21dd31b4a872b21ae204180e761558f7"
+        }
+    },
+    "extract_dir": "App",
+    "post_install": [
+        "Get-ChildItem *%20*.* -Path \"$dir\" -Recurse | Rename-Item -NewName { $_.Name -Replace '%20', ' ' }",
+        "'AppData', 'ProgramData' | ForEach-Object {",
+        "    $data = [Environment]::GetEnvironmentVariable($_) +\"\\Affinity\"",
+        "    if (-not (Test-Path \"$data\\*\")) {",
+        "        Remove-Item \"$data\" 2>$null",
+        "        if (-not (Test-Path \"$persist_dir\\$_\")) {",
+        "            New-Item -ItemType Directory -Path \"$persist_dir\\$_\" >$null",
+        "        }",
+        "        New-DirectoryJunction \"$data\" \"$persist_dir\\$_\" >$null",
+        "    }",
+        "}",
+        "Write-Host \"`nRegistering affinity:// protocol handler\"",
+        "$regpath = \"HKCU:\\SOFTWARE\\Classes\\affinity\"",
+        "New-Item -Path $regpath -Value \"URL:Affinity callback handler\" -Force | Out-Null",
+        "New-ItemProperty -Path $regpath -Name \"URL Protocol\" -PropertyType String -Force | Out-Null",
+        "New-Item -Path \"$regpath\\shell\\open\\command\" -Value \"`\"$dir\\affinity.exe`\" `\"%1`\"\" -Force| Out-Null"
+    ],
+    "shortcuts": [
+        [
+            "Affinity.exe",
+            "Canva Affinity"
+        ]
+    ],
+    "post_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    'AppData', 'ProgramData' | ForEach-Object {",
+        "        $data = Get-Item ([Environment]::GetEnvironmentVariable($_) +\"\\Affinity\")",
+        "        if (\"$($data.Target)\" -eq \"$persist_dir\\$_\") { $data.Delete() }",
+        "    }",
+        "    Remove-Item \"$Env:LocalAppData\\Microsoft\\CLR_v4.0\\UsageLogs\\Affinity.exe.log\" 2>$null",
+        "    Remove-Item \"$Env:ProgramData\\Intel\\ShaderCache\\Affinity*\" 2>$null",
+        "    Remove-Item 'HKLM:SOFTWARE\\Microsoft\\Tracing\\Affinity_RASAPI32' -Force -Recurse 2>$null",
+        "    Remove-Item 'HKLM:SOFTWARE\\Microsoft\\Tracing\\Affinity_RASMANCS' -Force -Recurse 2>$null",
+        "}",
+        "Write-Host \"`nUnregistering affinity:// protocol handler\"",
+        "Remove-Item \"HKCU:\\SOFTWARE\\Classes\\affinity\" -Recurse -Force"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/c/Canva/Affinity",
+        "regex": "([\\d\\.]+)\"[\\s}\\]]+$",
+        "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.affinity.studio/Affinity%20x64.msix#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://downloads.affinity.studio/Affinity%20arm64.msix#/dl.7z"
+            }
+        }
+    }
+}
