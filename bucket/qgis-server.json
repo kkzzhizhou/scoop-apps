@@ -1,0 +1,68 @@
+{
+    "version": "4.0.3-2.579",
+    "description": "A free and open source geographic information system (GIS).",
+    "homepage": "https://trac.osgeo.org/osgeo4w/",
+    "license": "GPL-2.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe",
+            "hash": "6746638d273334ffae3f813ce964023c5655fdf33eb82bd4ce1a97340c684798"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process -FilePath \"$dir\\osgeo4w-setup.exe\" -ArgumentList \"--quiet-mode --autoaccept --arch x86_64 --root `\"$dir`\" --local-package-dir `\"$dir\\cache`\" --site https://download.osgeo.org/osgeo4w/v2/ --download --safe --packages qgis-full,qgis-server,apache,mod_fcgid\" -Wait -NoNewWindow"
+    ],
+    "installer": {
+        "script": "Get-ChildItem \"$dir\\cache\" -Filter *.tar.* -Recurse | ForEach-Object { Expand-7zipArchive -Path $_.FullName -DestinationPath \"$dir\" }"
+    },
+    "post_install": [
+        "Remove-Item \"$dir\\cache\" -Recurse -Force",
+        "$bat = \"$dir\\etc\\postinstall.bat\"",
+        "\"echo on\" > $bat",
+        "\"set `\"OSGEO4W_ROOT=$dir`\"\" >> $bat",
+        "\"set `\"OSGEO4W_ROOT_MSYS=$dir`\"\" >> $bat",
+        "\"set `\"OSGEO4W_STARTMENU=$(shortcut_folder $global)\\OSGeo4W`\"\" >> $bat",
+        "\"set `\"OSGEO4W_DESKTOP=$env:USERPROFILE\\Desktop`\"\" >> $bat",
+        "\"set OSGEO4W_MENU_LINKS=1\" >> $bat",
+        "\"set OSGEO4W_DESKTOP_LINKS=0\" >> $bat",
+        "\"cd /d %OSGEO4W_ROOT%\" >> $bat",
+        "\"call `\"$dir\\bin\\o4w_env.bat`\"\" >> $bat",
+        "Get-ChildItem \"$dir\\etc\\postinstall\" -Filter *.bat | ForEach-Object { \"%COMSPEC% /c `\"$($_.FullName)`\" && ren `\"$($_.FullName)`\" $($_.Name).done \" >> $bat }",
+        "Start-Process -FilePath \"$bat\" -Wait -NoNewWindow"
+    ],
+    "bin": [
+        "OSGeo4W.bat",
+        "bin\\o4w_env.bat"
+    ],
+    "pre_uninstall": [
+        "$bat = \"$dir\\etc\\preremove.bat\"",
+        "\"echo on\" > $bat",
+        "\"set `\"OSGEO4W_ROOT=$dir`\"\" >> $bat",
+        "\"set `\"OSGEO4W_ROOT_MSYS=$dir`\"\" >> $bat",
+        "\"set `\"OSGEO4W_STARTMENU=$(shortcut_folder $global)\\OSGeo4W`\"\" >> $bat",
+        "\"set `\"OSGEO4W_DESKTOP=$env:USERPROFILE\\Desktop`\"\" >> $bat",
+        "\"set OSGEO4W_MENU_LINKS=1\" >> $bat",
+        "\"set OSGEO4W_DESKTOP_LINKS=0\" >> $bat",
+        "\"cd /d %OSGEO4W_ROOT%\" >> $bat",
+        "\"call `\"$dir\\bin\\o4w_env.bat`\"\" >> $bat",
+        "Get-ChildItem \"$dir\\etc\\preremove\" -Filter *.bat | ForEach-Object { \"%COMSPEC% /c `\"$($_.FullName)`\" && ren `\"$($_.FullName)`\" $($_.Name).done \" >> $bat }",
+        "Start-Process -FilePath \"$bat\" -Wait -NoNewWindow"
+    ],
+    "checkver": {
+        "regex": "([\\d.]+-[\\d.]+)",
+        "script": [
+            "(Invoke-WebRequest -Uri https://github.com/jef-n/OSGeo4W/raw/refs/heads/master/src/setup/ChangeLog).Content -match 'Revision:\\s*(\\d+\\.\\d+)' | Out-Null",
+            "$osgeo4w = $matches[1]",
+            "Invoke-WebRequest -Uri https://github.com/qgis/QGIS-Website/raw/main/data/conf.json | ConvertFrom-Json | Select-Object -ExpandProperty release -OutVariable qgis",
+            "\"$qgis-$osgeo4w\""
+        ]
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.osgeo.org/osgeo4w/v2/osgeo4w-setup.exe"
+            }
+        }
+    }
+}
