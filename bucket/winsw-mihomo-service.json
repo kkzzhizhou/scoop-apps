@@ -1,0 +1,61 @@
+{
+    "version": "3.0.0-alpha.11",
+    "description": "A wrapper executable that can be used to host any executable as a Windows service (Pre-release version).",
+    "homepage": "https://github.com/winsw/winsw",
+    "license": "MIT",
+    "depends": [
+        "muggle/mihomo"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/winsw/winsw/releases/download/v3.0.0-alpha.11/WinSW-x64.exe#/mihomo-service.exe",
+            "hash": "a2daa6a33a9c2b791ae31d9092e7935c339d1e03e89bfb747618ce2f4e819e20"
+        },
+        "32bit": {
+            "url": "https://github.com/winsw/winsw/releases/download/v3.0.0-alpha.11/WinSW-x86.exe#/mihomo-service.exe",
+            "hash": "3201432b44825b0dc763eb4052dc84b179314e2a338794c9f5f797e8fe2bb0fc"
+        }
+    },
+    "bin": [
+        "mihomo-service.exe"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\mihomo-service.xml\")) {",
+        "    $xml = @(",
+        "        '<service>'",
+        "        '  <id>mihomo</id>'",
+        "        '  <name>Mihomo Service</name>'",
+        "        '  <description>Mihomo Windows Service run by Scoop</description>'",
+        "        '  <executable>%BASE%\\..\\..\\mihomo\\current\\mihomo.exe</executable>'",
+        "        '  <arguments>-d . -f config\\config.yaml</arguments>'",
+        "        '  <workingdirectory>%BASE%\\..\\..\\mihomo\\current</workingdirectory>'",
+        "        '  <startmode>Automatic</startmode>'",
+        "        '  <hidewindow>true</hidewindow>'",
+        "        '  <onfailure action=\"restart\" delay=\"10 sec\"/>'",
+        "        '  <onfailure action=\"restart\" delay=\"30 sec\"/>'",
+        "        '  <log mode=\"roll\">'",
+        "        '    <sizeThreshold>10240</sizeThreshold>'",
+        "        '    <keepFiles>8</keepFiles>'",
+        "        '  </log>'",
+        "        '</service>'",
+        "    )",
+        "    Set-Content -Encoding UTF8 -Path \"$dir\\mihomo-service.xml\" -Value $xml",
+        "}"
+    ],
+    "persist": "mihomo-service.xml",
+    "checkver": {
+        "github": "https://api.github.com/repos/winsw/winsw/releases",
+        "jsonpath": "$[?(@.prerelease == true)].tag_name",
+        "regex": "v(?<version>[\\w-.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/winsw/winsw/releases/download/v$version/WinSW-x64.exe#/mihomo-service.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/winsw/winsw/releases/download/v$version/WinSW-x86.exe#/mihomo-service.exe"
+            }
+        }
+    }
+}

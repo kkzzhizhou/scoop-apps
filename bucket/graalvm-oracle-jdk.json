@@ -1,76 +1,43 @@
 {
-	"description": "High-performance, embeddable, polyglot Virtual Machine for JVM-langs (Java, Scala, Kotlin), JavaScript/NodeJS, Python, Ruby, R, and LLVM-langs (C, C++, Rust)",
-	"version": "25.0.3+9.1",
-	"homepage": "https://www.graalvm.org/",
-	"license": {
-		"identifier": "Freeware",
-		"url": "https://www.oracle.com/downloads/licenses/graal-free-license.html"
-	},
-	"url": "https://download.oracle.com/graalvm/25/archive/graalvm-jdk-25.0.3_windows-x64_bin.zip",
-	"hash": "8678e147a7e3c32eca47f1466d199b5c7346c9aad2ee55b51ebdf504d6ea7c72",
-	"extract_dir": "graalvm-jdk-25.0.3+9.1",
-	"env_add_path": "bin",
-	"env_set": {
-		"JAVA_HOME": "$dir",
-		"GRAALVM_HOME": "$dir"
-	},
-	"checkver": {
-		"script": [
-			"$downloads = Invoke-WebRequest -Uri 'https://www.graalvm.org/downloads/' -UseBasicParsing -ErrorAction Stop",
-			"$latest_version_elm = $downloads.Links | Where-Object { $_.onclick -match 'changeVersion\\(''\\d+''' } | Sort-Object { $_.onclick } | Select-Object -last 1",
-			"if ($latest_version_elm.onclick -match 'changeVersion\\(''(\\d+)''') {",
-			"    $major_version = $Matches[1]",
-			"} else {",
-			"    throw 'Failed to find major version on downloads page.'",
-			"}",
-			"",
-			"$zip_url = \"https://download.oracle.com/graalvm/$major_version/latest/graalvm-jdk-$($major_version)_windows-x64_bin.zip\"",
-			"$temp_path = [System.IO.Path]::GetTempFileName()",
-			"$bytes = $null",
-			"try {",
-			"    $headers = [System.Collections.Generic.Dictionary[string,string]]::new()",
-			"    $headers.Add('Range', 'bytes=0-8191')",
-			"    Invoke-RestMethod -Uri $zip_url -Headers $headers -OutFile $temp_path -ErrorAction Stop",
-			"    $bytes = [System.IO.File]::ReadAllBytes($temp_path)",
-			"} catch {",
-			"    # Range header not supported (Windows PowerShell 5.1); Workaround: use .Net WebRequest",
-			"    $request = [System.Net.WebRequest]::Create($zip_url)",
-			"    $request.Method = 'GET'",
-			"    $request.AddRange(0, 8191)",
-			"    $response = $request.GetResponse()",
-			"    $stream = $response.GetResponseStream()",
-			"    $buf = New-Object byte[] 8192",
-			"    $read = $stream.Read($buf, 0, 8192)",
-			"    $stream.Close()",
-			"    $response.Close()",
-			"    $bytes = $buf[0..($read - 1)]",
-			"} finally {",
-			"    if (Test-Path $temp_path) { Remove-Item $temp_path -Force -ErrorAction SilentlyContinue }",
-			"}",
-			"",
-			"if (@($bytes).Count -lt 30 -or ([System.BitConverter]::ToUInt32($bytes, 0) -ne 67324752)) {",
-			"    throw 'Invalid or incomplete ZIP file header.'",
-			"}",
-			"$name_len = [System.BitConverter]::ToUInt16($bytes, 26)",
-			"$name_start = 30",
-			"",
-			"if ($name_start + $name_len -gt @($bytes).Count) { throw 'Filename length too large for header.' }",
-			"$name_bytes = $bytes[$name_start..($name_start + $name_len - 1)]",
-			"$filename = [System.Text.Encoding]::GetEncoding(437).GetString($name_bytes)",
-			"",
-			"if ($filename -match 'graalvm-jdk-([\\d\\w\\.\\+]+)/?') {",
-			"    Write-Output $Matches[1]",
-			"} else {",
-			"    throw \"Failed to extract version from filename: $filename\"",
-			"}"
-		],
-		"regex": "((?<ver>(?<major>\\d+)(?:\\.[\\d.])*)[\\+|-].*)"
-	},
-	"autoupdate": {
-		"url": "https://download.oracle.com/graalvm/$matchMajor/archive/graalvm-jdk-$matchVer_windows-x64_bin.zip",
-		"hash": {
-			"url": "https://download.oracle.com/graalvm/$matchMajor/archive/graalvm-jdk-$matchVer_windows-x64_bin.zip.sha256"
-		},
-		"extract_dir": "graalvm-jdk-$version"
-	}
+    "description": "High-performance, embeddable, polyglot Virtual Machine for JVM-langs (Java, Scala, Kotlin), JavaScript/NodeJS, Python, Ruby, R, and LLVM-langs (C, C++, Rust)",
+    "version": "25.1.3",
+    "homepage": "https://www.graalvm.org/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.oracle.com/downloads/licenses/graal-free-license.html"
+    },
+    "url": "https://download.oracle.com/graalvm/25i1/archive/graalvm-jdk-25i1-25.0.3_windows-x64_bin.zip",
+    "hash": "ed574ce79e213f31fec3289528ae009065b2036ed78fd4a79f7ec69e67f9b446",
+    "extract_to": "tmp",
+    "installer": {
+        "script": [
+            "(Get-ChildItem -Directory \"$dir\\tmp\").FullName | % { Move-Item \"$_\\*\" \"$dir\" }",
+            "Remove-Item -Recurse \"$dir\\tmp\""
+        ]
+    },
+    "env_add_path": "bin",
+    "env_set": {
+        "JAVA_HOME": "$dir",
+        "GRAALVM_HOME": "$dir"
+    },
+    "checkver": {
+        "script": [
+            "$baseurl = 'https://www.oracle.com'",
+            "$download = Invoke-RestMethod \"$baseurl/a/tech/docs/graalvm-downloads.json\"",
+            "$release = $download.0",
+            "$version = ($release.Releases.PSObject.Properties.Name) | Sort-Object -Descending | Select-Object -First 1",
+            "$jsonFile = $release.Releases.$version.'JSON File'",
+            "$releaseData = Invoke-RestMethod \"$baseurl$jsonFile\"",
+            "$url = ($releaseData.Packages.Core.Files.PSObject.Properties.Value | Where-Object { $_.File -match 'windows-x64' } | Select-Object -First 1).File",
+            "$url -match 'graalvm-jdk-(\\w+)-([\\d.]+)_' | Out-Null",
+            "Write-Output \"$version|$($matches[1])|$($matches[2])\""
+        ],
+        "regex": "([\\d.]+)\\|(?<ver>\\w+)\\|(?<jdk>[\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://download.oracle.com/graalvm/$matchVer/archive/graalvm-jdk-$matchVer-$matchJdk_windows-x64_bin.zip",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
 }

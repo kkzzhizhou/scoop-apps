@@ -1,0 +1,39 @@
+{
+    "version": "0.5.3",
+    "description": "A desktop translation and screenshot OCR assistant for academic reading, web browsing, and cross-language communication.",
+    "homepage": "https://manggo.pylogmon.com/",
+    "license": "Proprietary",
+    "url": "https://gitcode.com/Pylogmon/Manggo/releases/download/0.5.3/Manggo-0.5.3-Windows-AMD64.exe#/dl.7z",
+    "hash": "6f0a1672fb039fa0ef79550a680fee33928e57d098e667a500aee2f6c79f95d3",
+    "shortcuts": [
+        [
+            "bin\\Manggo.exe",
+            "Manggo"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "# 数据迁移",
+        "$runtimeCache = \"$env:LocalAppData\\Manggo\\Manggo\"",
+        "$runtimeCachePersist = \"$persist_dir\\Manggo\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$runtimeCache = \"$env:LocalAppData\\Manggo\\Manggo\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "Manggo",
+    "checkver": {
+        "url": "https://api.gitcode.com/api/v5/repos/Pylogmon/Manggo/releases/latest",
+        "jsonpath": "$.tag_name"
+    },
+    "autoupdate": {
+        "url": "https://gitcode.com/Pylogmon/Manggo/releases/download/$version/Manggo-$version-Windows-AMD64.exe#/dl.7z"
+    }
+}
