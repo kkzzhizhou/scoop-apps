@@ -1,12 +1,12 @@
 {
-    "version": "0.1.20260529",
+    "version": "0.1.20260703",
     "description": "MoonBit 语言的官方 CLI 工具链（moon 编译器、构建系统、包管理器及 MoonPilot 等）。",
     "homepage": "https://www.moonbitlang.com/",
     "license": "AGPL-3.0-only",
     "architecture": {
         "64bit": {
             "url": "https://cli.moonbitlang.com/binaries/latest/moonbit-windows-x86_64.zip",
-            "hash": "babc846bce0ef6a8f3bf12f941e7320957a7b3bef9d448d31d9c68ab996a47b1"
+            "hash": "5d22e54487036aaf12ea8539df45ad731b4938a00c563e416c80e5210d8b4801"
         }
     },
     "env_set": {
@@ -51,15 +51,24 @@
             "Invoke-WebRequest -Uri 'https://cli.moonbitlang.com/binaries/latest/moonbit-windows-x86_64.zip' -OutFile $zipPath",
             "Expand-Archive $zipPath -DestinationPath $tmpDir -Force",
             "$moonExe = Join-Path $tmpDir 'bin\\moon.exe'",
-            "$versionOutput = & $moonExe version | Out-String",
-            "$versionMatch = [regex]::Match($versionOutput, 'moon ([^ ]+) ')",
-            "if ($versionMatch.Success) {",
-            "  $ver = $versionMatch.Groups[1].Value",
-            "  Write-Output $ver",
-            "} else {",
-            "  throw \"Failed to parse version from 'moon version': $versionOutput\"",
-            "}",
-            "Remove-Item -Recurse -Force $tmpDir -ErrorAction SilentlyContinue"
+            "$oldMoonHome = $env:MOON_HOME",
+            "$oldPath = $env:PATH",
+            "$env:MOON_HOME = $tmpDir",
+            "$env:PATH = \"$(Join-Path $tmpDir 'bin');$env:PATH\"",
+            "try {",
+            "  $versionOutput = & $moonExe version | Out-String",
+            "  $versionMatch = [regex]::Match($versionOutput, 'moon ([^ ]+) ')",
+            "  if ($versionMatch.Success) {",
+            "    $ver = $versionMatch.Groups[1].Value",
+            "    Write-Output $ver",
+            "  } else {",
+            "    throw \"Failed to parse version from 'moon version': $versionOutput\"",
+            "  }",
+            "} finally {",
+            "  $env:MOON_HOME = $oldMoonHome",
+            "  $env:PATH = $oldPath",
+            "  Remove-Item -Recurse -Force $tmpDir -ErrorAction SilentlyContinue",
+            "}"
         ],
         "regex": "([\\d\\.]+)"
     },

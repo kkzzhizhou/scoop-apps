@@ -1,0 +1,44 @@
+{
+    "version": "3.9.23.5365",
+    "description": "StartAllBack: 为Windows 11恢复经典开始菜单和任务栏。",
+    "homepage": "https://www.startallback.com/",
+    "license": "Proprietary",
+    "url": "https://github.com/maboloshi/scoop-private/releases/download/v1.0/StartAllBack3.9.23.5365-Stbale-Repack.exe#/dl.7z",
+    "hash": "5cdf89e8c9e6cab547f0250130032600384620858fc31c4dfb4ef640ab8ec336",
+    "shortcuts": [
+        [
+            "StartAllBackCfg.exe",
+            "StartAllBack 配置"
+        ]
+    ],
+    "installer": {
+        "script": [
+            "$installType = if ($global) { '/elevated' } else { '' }",
+            "Write-Host \"`n正在安装 StartAllBack (安装类型: $(if ($global) { '全局' } else { '当前用户' }))...\" -ForegroundColor Cyan",
+            "$pinfo = New-Object System.Diagnostics.ProcessStartInfo",
+            "$pinfo.FileName = \"$dir\\StartAllBackCfg.exe\"",
+            "$pinfo.Arguments = \"/install /silent $installType\"",
+            "$p = New-Object System.Diagnostics.Process",
+            "$p.StartInfo = $pinfo",
+            "$p.Start() | Out-Null",
+            "$p.WaitForExit()"        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$installType = if ($global) { '/elevated' } else { '' }",
+            "$root = if ($global) { 'HKLM' } else { 'HKCU' }",
+            "Write-Host \"`n正在卸载 StartAllBack...\" -ForegroundColor Cyan",
+            "if (Test-Path \"$dir\\StartAllBackCfg.exe\") {",
+            "    $pinfo = New-Object System.Diagnostics.ProcessStartInfo",
+            "    $pinfo.FileName = \"$dir\\StartAllBackCfg.exe\"",
+            "    $pinfo.Arguments = \"/uninstall /silent $installType\"",
+            "    $p = New-Object System.Diagnostics.Process",
+            "    $p.StartInfo = $pinfo",
+            "    $p.Start() | Out-Null",
+            "    $p.WaitForExit()",
+            "}",
+            "Write-Host \"`n如果需要删除所有设置，请运行\" -ForegroundColor Yellow",
+            "Write-Host \"reg delete $root\\Software\\StartIsBack /f\" -ForegroundColor Yellow"
+        ]
+    }
+}

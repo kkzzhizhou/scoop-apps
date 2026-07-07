@@ -1,0 +1,64 @@
+{
+    "version": "2.1.0.36_3",
+    "description": "微信输入法",
+    "homepage": "https://z.weixin.qq.com/",
+    "license": "Freeware",
+    "notes": [
+        "这是系统安装器，不是绿色便携版。",
+        "安装器会安装到系统目录，可能触发 UAC。"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.z.weixin.qq.com/app/win/WeTypeSetup_2.1.0.36_3.exe#/WeTypeSetup.exe",
+            "hash": "6a7e6d4d5e387b8f79e0efd23ff9de4ec5569ffee10293d1cc9d2c40fcf40610"
+        },
+        "arm64": {
+            "url": "https://download.z.weixin.qq.com/app/win/WeTypeSetup_2.1.0.36_3.exe#/WeTypeSetup.exe",
+            "hash": "6a7e6d4d5e387b8f79e0efd23ff9de4ec5569ffee10293d1cc9d2c40fcf40610"
+        }
+    },
+    "installer": {
+        "script": [
+            "$installer = \"$dir\\WeTypeSetup.exe\"",
+            "$arguments = '/s'",
+            "",
+            "$identity = [Security.Principal.WindowsIdentity]::GetCurrent()",
+            "$principal = [Security.Principal.WindowsPrincipal]::new($identity)",
+            "$isAdmin = $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
+            "",
+            "if (-not $isAdmin) {",
+            "    error '微信输入法是系统级输入法安装器，需要管理员权限。请右键以管理员身份打开 PowerShell / Windows Terminal 后重新执行：scoop install wetype'",
+            "    exit 1",
+            "}",
+            "",
+            "$process = Start-Process -FilePath $installer -ArgumentList $arguments -Wait -PassThru",
+            "",
+            "if ($null -ne $process.ExitCode -and $process.ExitCode -ne 0) {",
+            "    error \"微信输入法安装失败，退出码：$($process.ExitCode)\"",
+            "    exit $process.ExitCode",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$app = Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*', 'HKLM:\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\*' -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -eq '微信输入法' } | Select-Object -First 1",
+            "if (-not $app) { error '没有找到微信输入法卸载信息。'; exit 1 }",
+            "$uninstaller = $app.UninstallString.Trim('\"')",
+            "Start-Process -FilePath $uninstaller -Wait"
+        ]
+    },
+    "checkver": {
+        "url": "https://z.weixin.qq.com/",
+        "regex": "latest\":\"https:\\/\\/download\\.z\\.weixin\\.qq\\.com\\/app\\/win\\/WeTypeSetup_([\\d\\._]+)\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.z.weixin.qq.com/app/win/WeTypeSetup_$version.exe#/WeTypeSetup.exe"
+            },
+            "arm64": {
+                "url": "https://download.z.weixin.qq.com/app/win/WeTypeSetup_$version.exe#/WeTypeSetup.exe"
+            }
+        }
+    }
+}

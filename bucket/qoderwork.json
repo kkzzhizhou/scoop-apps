@@ -1,51 +1,59 @@
 {
-    "version": "4.9.5.25622162",
-    "description": "腾讯云代码助手 CodeBuddy - AI 时代的智能编程伙伴，集成设计到开发的全栈 IDE",
-    "homepage": "https://www.codebuddy.ai/",
+    "version": "0.9.9",
+    "description": "QoderWork - Beyond chat, get it done",
+    "homepage": "https://qoder.com/qoderwork",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://www.codebuddy.ai/genie/document/privacyPolicy"
+        "url": "https://qoder.com/product-service"
     },
-    "notes": [
-        "CodeBuddy 是腾讯云推出的 AI 驱动的全栈开发 IDE，主要功能：",
-        "- AI 代码补全：智能实时代码预测和自动补全",
-        "- AI 设计生成：将手绘概念转换为高保真交互原型",
-        "- 设计转代码：将 Figma 设计转换为生产就绪代码",
-        "- AI 全栈开发：多文件代码生成和重构的完整软件开发代理",
-        "- 内置 BaaS 集成：零配置 Supabase 集成，提供即时数据库和身份验证",
-        "- 一键部署：从开发到实时演示，秒级完成",
-        "",
-        "首次使用需要登录腾讯云账号并获取邀请码。",
-        "邀请码申请：https://wj.qq.com/s2/22240515/0ac5"
-    ],
     "architecture": {
         "64bit": {
-            "url": "https://codebuddy-1328495429.cos.accelerate.myqcloud.com/aiide/win32-x64-user/CodeBuddy-win32-x64-user-4.9.5.25622162-bae7923c.exe",
-            "hash": "d4eef9625f914a928ec069cb5ec20fd992abe32b422f144aec8de92dc3b6266d"
+            "url": "https://download.qoder.com/qoder-work/releases/latest/QoderWork-Setup-User-x64.exe#/dl.7z",
+            "hash": "0396954fd4f9e46c88a4f8bcfadc1b8d79949d700d94cf6163a5ffdaaf1abf9f",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
         }
     },
-    "innosetup": true,
-    "extract_dir": "{code_GetDestDir}",
     "shortcuts": [
         [
-            "CodeBuddy.exe",
-            "CodeBuddy"
+            "QoderWork.exe",
+            "QoderWork"
         ]
     ],
     "persist": "data",
     "checkver": {
-        "url": "https://www.codebuddy.ai/v2/update?platform=ide-win32-x64-user",
-        "jsonpath": "$.url",
-        "regex": "(?<url>.*CodeBuddy-win32-x64-user-(?<version>[\\d.]+)-.*\\.exe)",
-        "replace": "${version}"
+        "script": [
+            "$downloadUrl = 'https://download.qoder.com/qoder-work/releases/latest/QoderWork-Setup-User-x64.exe'",
+            "$headers = @{ Range = 'bytes=0-3145727' }",
+            "$tmpFile = Join-Path $env:TEMP ('qoderwork_' + [guid]::NewGuid().ToString() + '.exe')",
+            "try {",
+            "    Invoke-WebRequest -Uri $downloadUrl -Headers $headers -UseBasicParsing -OutFile $tmpFile",
+            "    $version = (Get-Item $tmpFile).VersionInfo.FileVersion",
+            "    if (-not $version) { throw 'Unable to read QoderWork version from installer metadata.' }",
+            "    Write-Output ($downloadUrl + '|' + $version)",
+            "}",
+            "finally {",
+            "    if (Test-Path $tmpFile) { Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue }",
+            "}"
+        ],
+        "regex": "^(?<url>.+)\\|(?<version>[\\d.]+)$"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "$matchUrl"
+                "url": "$matchUrl#/dl.7z"
             }
         }
     },
+    "notes": [
+        "QoderWork 使用官方 latest 安装器直链。",
+        "实机首启已确认：~\\.qoderwork -> persist/qoderwork/home/config。",
+        "~\\.qoder 属于 qoder 侧目录，当前清单不做持久化。",
+        "checkver 通过请求安装器前 3 MiB 分片并读取文件版本号实现。",
+        "当前尚未观察到 %APPDATA%\\QoderWork 的首启写入；若后续发现额外数据目录，可再补充 portableProfile。"
+    ],
     "post_install": [
         "#region scoop-portable-profile",
         "# Portable profile helpers for Scoop manifests.",
@@ -184,9 +192,7 @@
         "}",
         "#endregion",
         "Invoke-PortableMappings -Action Install -Context @{ Dir = $dir; PersistDir = $persist_dir } -Mappings @(",
-        "    @{ Label = 'roaming'; Source = 'AppData/CodeBuddy'; Target = \"$persist_dir/roaming\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' },",
-        "    @{ Label = 'extensions'; Source = 'LocalAppData/CodeBuddyExtension'; Target = \"$persist_dir/local/extensions\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' },",
-        "    @{ Label = 'home-config'; Source = 'UserProfile/.codebuddy'; Target = \"$persist_dir/home/config\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' }",
+        "    @{ Label = 'home-config'; Source = 'UserProfile/.qoderwork'; Target = \"$persist_dir/home/config\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' }",
         ") -Log:$true"
     ],
     "pre_uninstall": [
@@ -327,9 +333,7 @@
         "}",
         "#endregion",
         "Invoke-PortableMappings -Action Uninstall -Context @{ Dir = $dir; PersistDir = $persist_dir } -Mappings @(",
-        "    @{ Label = 'roaming'; Source = 'AppData/CodeBuddy'; Target = \"$persist_dir/roaming\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' },",
-        "    @{ Label = 'extensions'; Source = 'LocalAppData/CodeBuddyExtension'; Target = \"$persist_dir/local/extensions\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' },",
-        "    @{ Label = 'home-config'; Source = 'UserProfile/.codebuddy'; Target = \"$persist_dir/home/config\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' }",
+        "    @{ Label = 'home-config'; Source = 'UserProfile/.qoderwork'; Target = \"$persist_dir/home/config\"; Strategy = 'symlink'; EnsureTarget = $true; TargetType = 'directory' }",
         ") -Log:$true"
     ]
 }
