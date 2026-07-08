@@ -1,0 +1,54 @@
+{
+    "version": "1.2.0",
+    "description": "Cross-platform GUI written in Rust using ADB to debloat non-rooted Android devices. Improve your privacy, the security and battery life of your device.",
+    "homepage": "https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/releases/download/v1.2.0/uad-ng-windows.exe#/uad.exe",
+            "hash": "f58666d5f54fad19ddb317978019437a6f7b2e67fb869157df9bd40965296600"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\uad\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\uad\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\uad\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\uad\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "uad.exe",
+    "shortcuts": [
+        [
+            "uad.exe",
+            "uad"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Universal-Debloater-Alliance/universal-android-debloater-next-generation/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/releases/download/v$version/uad-ng-windows.exe#/uad.exe"
+            }
+        },
+        "hash": {
+            "url": "$url-checksum.txt"
+        }
+    }
+}
