@@ -27,7 +27,35 @@
             "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
         ]
     },
-    "persist": "users",
+    "post_install": [
+        "$ScriptsDir = Find-BucketDirectory -Root -Name $bucket | Join-Path -ChildPath \"scripts\\BaiduNetdisk\"",
+        "$BNHPaths = Get-ChildItem -Path \"$dir\" -Filter \"baidunetdiskhost.exe\" -Recurse | Select-Object -ExpandProperty Target",
+        "$BNUPaths = Get-ChildItem -Path \"$dir\" -Filter \"baidunetdiskunite.exe\" -Recurse | Select-Object -ExpandProperty Target",
+        "if (Test-Path \"$ScriptsDir\\update-firewall-rules.ps1\") {",
+        "    $Content = Get-Content \"$ScriptsDir\\update-firewall-rules.ps1\" -Encoding UTF8",
+        "    $Content = $Content.Replace('$BNHPaths', \"$BNHPaths\")",
+        "    $Content = $Content.Replace('$BNUPaths', \"$BNUPaths\")",
+        "    $Content | Out-File -FilePath \"$dir\\update-firewall-rules.ps1\" -Encoding UTF8",
+        "    Write-Host \"`nUpdating Windows firewall rules...\" -ForegroundColor Yellow",
+        "    Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
+        "    Start-Sleep -Seconds 1",
+        "    gsudo \"$dir\\update-firewall-rules.ps1\"",
+        "    if ($?) {",
+        "        Write-Host \"Successfully updated Windows firewall rules!\" -ForegroundColor Green",
+        "    } else {",
+        "        Write-Host \"[ERROR] Failed updating Windows firewall rules!\" -ForegroundColor Red",
+        "    }",
+        "} else {",
+        "    Write-Host \"Missing files, please re-add Scoop4kariiin bucket and re-install this app.\" -ForegroundColor Red",
+        "}"
+    ],
+    "persist": [
+        "users",
+        [
+            "module\\BrowserEngine\\users",
+            "BrowserEngineUsers"
+        ]
+    ],
     "uninstaller": {
         "script": [
             "Get-Process -Name YunDetectService, kernelUpdate -ErrorAction SilentlyContinue | Stop-Process -Force",
