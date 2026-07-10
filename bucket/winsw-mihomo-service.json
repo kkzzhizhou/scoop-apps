@@ -3,9 +3,7 @@
     "description": "A wrapper executable that can be used to host any executable as a Windows service (Pre-release version).",
     "homepage": "https://github.com/winsw/winsw",
     "license": "MIT",
-    "depends": [
-        "muggle/mihomo"
-    ],
+    "depends": "muggle/mihomo",
     "architecture": {
         "64bit": {
             "url": "https://github.com/winsw/winsw/releases/download/v3.0.0-alpha.11/WinSW-x64.exe#/mihomo-service.exe",
@@ -40,9 +38,41 @@
         "    Set-Content -Encoding UTF8 -Path \"$dir\\mihomo-service.xml\" -Value $xml",
         "}"
     ],
+    "uninstaller": {
+        "script": [
+            "$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
+            "$serviceName = 'mihomo'",
+            "$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue",
+            "$servicePath = \"$dir\\mihomo-service.exe\"",
+            "if ($service) {",
+            "    if ($isAdmin) {",
+            "        if ($service.Status -eq 'Running') {",
+            "            Write-Host \"Stopping '$serviceName' service...\" -ForegroundColor Yellow",
+            "            & \"$servicePath\" stop | Out-Null",
+            "        }",
+            "        Write-Host \"Uninstalling '$serviceName' service...\" -ForegroundColor Yellow",
+            "        & \"$servicePath\" uninstall | Out-Null",
+            "    } else {",
+            "        Write-Host 'Not running as Administrator. Requesting elevation via UAC to stop/uninstall service...' -ForegroundColor Yellow",
+            "        $elevatedCmds = @()",
+            "        if ($service.Status -eq 'Running') {",
+            "            $elevatedCmds += \"& '$servicePath' stop\"",
+            "        }",
+            "        $elevatedCmds += \"& '$servicePath' uninstall\"",
+            "        $cmdString = $elevatedCmds -join '; '",
+            "        try {",
+            "            Start-Process powershell -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', $cmdString -Verb RunAs -Wait -ErrorAction Stop",
+            "        } catch {",
+            "            Write-Warning 'UAC elevation denied. Failed to stop/uninstall service.'",
+            "        }",
+            "    }",
+            "}"
+        ]
+    },
+    "notes": "Please ensure that the 'muggle/mihomo' package is installed and 'config.yaml' is placed in the 'mihomo/config' folder. Then, run 'mihomo-service.exe install; mihomo-service.exe start' to install and start the Mihomo service.",
     "persist": "mihomo-service.xml",
     "checkver": {
-        "github": "https://api.github.com/repos/winsw/winsw/releases",
+        "url": "https://api.github.com/repos/winsw/winsw/releases",
         "jsonpath": "$[?(@.prerelease == true)].tag_name",
         "regex": "v(?<version>[\\w-.]+)"
     },

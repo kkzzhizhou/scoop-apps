@@ -1,0 +1,48 @@
+{
+    "version": "4.9.7.1",
+    "description": "A unlimited speed multifunctional remote control software",
+    "homepage": "https://www.todesk.com/",
+    "license": "Proprietary",
+    "url": "https://dl.todesk.com/irrigation/ToDesk_4.9.7.1.exe#/dl.7z",
+    "hash": "0793b63e7c3247183bda2acf5f7ae5dc7d44888a0b5e9385764871d3e73e4de8",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config.ini\")) {",
+        "    New-Item -Force -Path \"$persist_dir\\config.ini\" -ItemType File -Value \"[ConfigInfo]`nautoStart=0\" | Out-Null",
+        "}",
+        "# 解压对应架构的7z文件",
+        "if ($architecture -eq '64bit') {",
+        "    Get-ChildItem \"$dir\\app64.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
+        "} else {",
+        "    Get-ChildItem \"$dir\\app32.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
+        "}"
+    ],
+    "post_install": [
+        "# 清理不必要的文件",
+        "Remove-Item \"$dir\\app32.7z\", \"$dir\\app64.7z\" -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\uninst.exe\" -Force -ErrorAction SilentlyContinue"
+    ],
+    "shortcuts": [
+        [
+            "ToDesk.exe",
+            "ToDesk"
+        ]
+    ],
+    "persist": [
+        "Logs",
+        "config.ini"
+    ],
+    "checkver": {
+        "url": "https://www.todesk.com/download.html",
+        "regex": "ToDesk_([\\d.]+).exe"
+    },
+    "autoupdate": {
+        "url": "https://dl.todesk.com/irrigation/ToDesk_$version.exe#/dl.7z"
+    },
+    "notes": [
+        "【工具类型】: 远程控制工具",
+        "【主要功能】: 不限速多功能远程控制软件，支持远程桌面连接",
+        "【适用场景】: 远程办公、技术支持、团队协作",
+        "【技术特点】: Windows可执行文件，图形化界面，支持文件传输"
+    ]
+}

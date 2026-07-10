@@ -1,0 +1,70 @@
+{
+    "version": "2026-04-07T05.58.13",
+    "description": "Decompyle++: C++ based Python bytecode disassembler and decompiler",
+    "notes": [
+        "【工具类型】: 逆向工具",
+        "【主要功能】: Decompyle++，基于C++的Python字节码反汇编器和反编译器",
+        "【适用场景】: 逆向分析、Python程序分析、CTF竞赛",
+        "【技术特点】: C++开发，需要编译安装，支持32位和64位"
+    ],
+    "homepage": "https://github.com/zrax/pycdc",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/zrax/pycdc/blob/main/LICENSE"
+    },
+    "suggest": {
+        "CMake": [
+            "cmake"
+        ],
+        "Visual Studio": "https://visualstudio.microsoft.com/zh-hans/downloads/",
+        "LLVM (替代MSVC)": [
+            "llvm"
+        ],
+        "MinGW (配合LLVM)": [
+            "mingw"
+        ]
+    },
+    "url": "https://github.com/zrax/pycdc/archive/refs/heads/master.zip",
+    "hash": "sha256:fede7674cd7d6aa990b3917a6a134169f69ed76b8d9db366edc0b3d7951ed6f2",
+    "extract_dir": "pycdc-master",
+    "installer": {
+        "script": [
+            "New-Item -ItemType Directory -Path \"$dir\\build\" -Force | Out-Null",
+            "Set-Location \"$dir\\build\"",
+            "try {",
+            "    cmake -G \"Visual Studio 17 2022\" -A x64 ..",
+            "    cmake --build . --config Release --parallel",
+            "} catch {",
+            "    Write-Host \"MSVC编译失败，尝试使用Clang+MinGW编译...\" -ForegroundColor Yellow",
+            "    cmake -G \"MinGW Makefiles\" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release ..",
+            "    mingw32-make -j $env:NUMBER_OF_PROCESSORS",
+            "}",
+            "if (-not (Test-Path \"$dir\\build\\Release\\pycdc.exe\")) {",
+            "    if (Test-Path \"$dir\\build\\pycdc.exe\") {",
+            "        New-Item -ItemType Directory -Path \"$dir\\build\\Release\" -Force | Out-Null",
+            "        Move-Item -Path \"$dir\\build\\*.exe\" -Destination \"$dir\\build\\Release\" -Force",
+            "    } else {",
+            "        Write-Error \"编译失败：未找到pycdc.exe\"",
+            "        exit 1",
+            "    }",
+            "}"
+        ]
+    },
+    "bin": [
+        "build\\Release\\pycdc.exe",
+        "build\\Release\\pycdas.exe"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/zrax/pycdc/commits",
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
+    },
+    "autoupdate": {
+        "url": "https://github.com/zrax/pycdc/archive/refs/heads/master.zip",
+        "extract_dir": "pycdc-master"
+    },
+    "post_install": [
+        "Write-Host \"✅ pycdc 编译完成！可执行文件路径：$dir\\build\\Release\" -ForegroundColor Green",
+        "Write-Host \"📌 命令行直接执行：pycdc / pycdas\" -ForegroundColor Cyan"
+    ]
+}

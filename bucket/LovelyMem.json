@@ -1,28 +1,43 @@
 {
-    "version": "0.85",
+    "version": "0.98",
     "description": "基于Memprocfs和Volatility的可视化内存取证工具",
+    "notes": [
+        "【工具类型】: 安全工具",
+        "【主要功能】: 可视化内存取证工具，集成Memprocfs和Volatility引擎",
+        "【适用场景】: 内存取证、恶意软件分析、安全事件调查",
+        "【技术特点】: 基于Python开发，提供图形化界面，支持多种内存分析插件"
+    ],
     "homepage": "https://github.com/Tokeii0/LovelyMem",
-    "license": "Unlicense",
+    "license": "MIT",
     "suggest": {
-        "python": "python"
+        "python": "uv"
     },
-    "checkver": "github",
-    "url": "https://github.com/Tokeii0/LovelyMem/releases/download/v0.85/Lovelymemv0.85_No_symbols.7z",
-    "hash": "fdaf508127583de937837d89d56d2f9b2d4afa7eb406491d662b05ec8ede23ab",
+    "url": "https://github.com/Tokeii0/LovelyMem/archive/refs/tags/v0.98.zip",
+    "hash": "fc90c08742a14446d04eafcfc00c8f5750292ead3ddf9d317838a0d626aeb78d",
+    "extract_dir": "LovelyMem-0.98",
     "pre_install": [
-        "$content = (Get-Content -Path $(Join-Path $(Find-BucketDirectory -Root -Name $bucket) starters/LovelyMem.cmd)) -replace '%%HOME%%', $dir",
-        "Set-Content -Path $(Join-Path $dir LovelyMem.cmd) -Value $content -Encoding UTF8"
+        "Set-Content \"$dir\\LovelyMem.bat\" '@pushd %~dp0",
+        "@uv run python \"main.py\" %*",
+        "@popd' -Encoding Ascii"
     ],
-    "bin": [
-        [
-            "main.py",
-            "LovelyMem"
-        ]
+    "post_install": [
+        "uv venv \"$dir\\.venv\"",
+        "uv pip install -r $dir\\requirements.txt --python \"$dir\\.venv\\Scripts\\python.exe\""
     ],
+    "bin": "LovelyMem.bat",
     "shortcuts": [
         [
-            "LovelyMem.cmd",
+            "LovelyMem.bat",
             "LovelyMem"
         ]
-    ]
+    ],
+    "persist": [
+        "Tools",
+        "config"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Tokeii0/LovelyMem/archive/refs/tags/v$version.zip",
+        "extract_dir": "LovelyMem-$version"
+    }
 }

@@ -1,6 +1,6 @@
 {
-    "version": "9.12.2",
-    "description": "Postman中文版, Complete API development environment.",
+    "version": "12.18.4",
+    "description": "Postman中文版 - API开发环境（中文包9.12.2，部分新功能界面可能未翻译）",
     "homepage": "https://github.com/hlmd/postman-cn",
     "license": {
         "identifier": "Freeware",
@@ -9,33 +9,55 @@
     "architecture": {
         "64bit": {
             "url": [
-                "https://dl.pstmn.io/download/9.12.2/Postman-win64-9.12.2-full.nupkg#/dl.7z",
+                "https://dl.pstmn.io/download/12.18.4/Postman%20v12.18.4%20(x64).exe#/dl.7z",
                 "https://github.com/hlmd/Postman-cn/releases/download/9.12.2/app.zip"
             ],
             "hash": [
-                "1d7fe5dab746470c5d40b5938c1376ca0220747f35792565ccbad48d53b6924d",
+                "sha1:e4919219bf41c8e551959b3ba3d4357ffb41cc1d",
                 "bb6e561a40b94bbef75ae5835a0b184847c4ead7f74e2fe5f12df810f7440496"
             ]
         }
     },
-    "extract_dir": "lib\\net45",
-    "post_install": "Move-Item \"$dir\\app\" \"$dir\\resources\" -Force",
-    "bin": "Postman.exe",
+    "suggest": {
+        "nodejs": "main/nodejs"
+    },
+    "installer": {
+        "script": [
+            "Expand-7zipArchive \"$dir\\Postman-$version-full.nupkg\" \"$dir\\postman\" -ExtractDir 'lib\\net45' -Removal",
+            "@('background.gif', 'RELEASES', 'setupIcon.ico', 'Update.exe') | ForEach-Object { Remove-Item \"$dir\\$_\" -ErrorAction SilentlyContinue }"
+        ]
+    },
+    "post_install": "if (Get-Command npx -ErrorAction SilentlyContinue) { npx --yes @electron/asar extract \"$dir\\postman\\resources\\app.asar\" \"$dir\\postman\\resources\\app\"; Remove-Item \"$dir\\postman\\resources\\app.asar\" -Force; Copy-Item \"$dir\\app\\*\" \"$dir\\postman\\resources\\app\\\" -Recurse -Force; Remove-Item \"$dir\\app\" -Recurse -Force; Write-Host 'Postman CN installed.' } else { Write-Warning 'Node.js/npx not found. Postman installed without Chinese pack. Install nodejs and reinstall for Chinese support.' }",
+    "bin": "postman\\Postman.exe",
     "shortcuts": [
         [
-            "Postman.exe",
-            "Postman"
+            "postman\\Postman.exe",
+            "Postman CN"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://dl.pstmn.io/changelog?channel=stable&platform=win64",
+        "jsonpath": "$.changelog[0].name"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": [
-                    "https://dl.pstmn.io/download/$version/Postman-win64-$version-full.nupkg#/dl.7z",
-                    "https://github.com/hlmd/Postman-cn/releases/download/$version/app.zip"
-                ]
+                    "https://dl.pstmn.io/download/$version/Postman%20v$version%20(x64).exe#/dl.7z",
+                    "https://github.com/hlmd/Postman-cn/releases/download/9.12.2/app.zip"
+                ],
+                "hash": {
+                    "url": "https://dl.pstmn.io/RELEASES?platform=win64&from=$version",
+                    "regex": "(?sm)$basename.*?$sha1"
+                }
             }
         }
-    }
+    },
+    "notes": [
+        "【工具类型】: 开发工具",
+        "【主要功能】: Postman中文版，完整的API开发环境，支持API测试和调试",
+        "【适用场景】: API开发、接口测试、开发调试",
+        "【技术特点】: 基于Electron，图形化界面，支持64位",
+        "【注意事项】: 中文包版本(9.12.2)较低，部分新功能界面可能未翻译；需Node.js环境支持中文包安装"
+    ]
 }
