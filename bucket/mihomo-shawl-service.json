@@ -1,98 +1,97 @@
 {
-    "version": "1.9.0",
-    "description": "A Windows service wrapper for arbitrary commands (using Shawl) to host Mihomo as a Windows service.",
-    "homepage": "https://github.com/mtkennerly/shawl",
-    "license": "MIT",
-    "depends": "muggle/mihomo",
+    "version": "1.19.28",
+    "description": "A rule-based tunnel in Go (formerly Clash.Meta) with an integrated Windows service wrapper.",
+    "homepage": "https://github.com/MetaCubeX/mihomo",
+    "license": "GPL-3.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win64.zip",
-            "hash": "f883c5d09c9beae2efaeabd8513e7d3f57cd1d0864cec3df4f4a7b6ee904351c"
+            "url": [
+                "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.28/mihomo-windows-amd64-v1.19.28.zip",
+                "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win64.zip"
+            ],
+            "hash": [
+                "27bdbd8f476dfb0f65a2a8ecf43cdf7edc0a132326efc7660308a1302c034a20",
+                "f883c5d09c9beae2efaeabd8513e7d3f57cd1d0864cec3df4f4a7b6ee904351c"
+            ]
         },
         "32bit": {
-            "url": "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win32.zip",
-            "hash": "981608dd6530a688208a9d6b0669ce8c75d12f844e7ecbbdcf19266cdfb6803b"
+            "url": [
+                "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.28/mihomo-windows-386-v1.19.28.zip",
+                "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win32.zip"
+            ],
+            "hash": [
+                "1cc14bdde317b38b861569c1d2aaacaf49907c1707b5aa38838e549b451549b1",
+                "981608dd6530a688208a9d6b0669ce8c75d12f844e7ecbbdcf19266cdfb6803b"
+            ]
+        },
+        "arm64": {
+            "url": [
+                "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.28/mihomo-windows-arm64-v1.19.28.zip",
+                "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win64.zip"
+            ],
+            "hash": [
+                "25cedfb999864e834a3d8424cb8ea61b9145b3cb3aea0180b9fdc009623abeda",
+                "f883c5d09c9beae2efaeabd8513e7d3f57cd1d0864cec3df4f4a7b6ee904351c"
+            ]
         }
     },
     "pre_install": [
-        "Rename-Item \"$dir\\shawl.exe\" -NewName 'mihomo-service.exe'"
+        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
+        "& \"$helper\" -Phase pre_install -Dir \"$dir\" -PersistDir \"$persist_dir\""
     ],
     "post_install": [
-        "$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
-        "$mihomoDir = \"$(appdir mihomo $global)\\current\"",
-        "$servicePath = \"$dir\\mihomo-service.exe\"",
-        "$logDir = \"$dir\\logs\"",
-        "$argsList = @(",
-        "    'add',",
-        "    '--name', 'mihomo-shawl',",
-        "    '--cwd', \"$mihomoDir\",",
-        "    '--log-dir', \"$logDir\",",
-        "    '--log-rotate', 'bytes=10485760',",
-        "    '--log-retain', '8',",
-        "    '--stop-timeout', '5000',",
-        "    '--',",
-        "    \"$mihomoDir\\mihomo.exe\",",
-        "    '-d', '.',",
-        "    '-f', 'config\\config.yaml'",
-        ")",
-        "if ($isAdmin) {",
-        "    sc.exe delete mihomo-shawl | Out-Null",
-        "    & \"$servicePath\" $argsList | Out-Null",
-        "    sc.exe config mihomo-shawl start= auto | Out-Null",
-        "    Write-Host 'Mihomo Windows service registered successfully.' -ForegroundColor Green",
-        "} else {",
-        "    Write-Host 'Not running as Administrator. Requesting UAC elevation to register Windows service...' -ForegroundColor Yellow",
-        "    $cmdString = \"sc.exe delete mihomo-shawl | Out-Null; & '$servicePath' \" + ($argsList | ForEach-Object { \"'$_'\" }) -join ' ' + \"; sc.exe config mihomo-shawl start= auto | Out-Null\"",
-        "    try {",
-        "        Start-Process powershell -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', $cmdString -Verb RunAs -Wait -ErrorAction Stop",
-        "        Write-Host 'Mihomo Windows service registered successfully.' -ForegroundColor Green",
-        "    } catch {",
-        "        Write-Warning 'UAC elevation denied. Service was not registered.'",
-        "    }",
-        "}"
+        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
+        "& \"$helper\" -Phase post_install -Dir \"$dir\" -OriginalDir \"$original_dir\""
     ],
     "uninstaller": {
         "script": [
-            "$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
-            "$serviceName = 'mihomo-shawl'",
-            "$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue",
-            "if ($service) {",
-            "    if ($isAdmin) {",
-            "        if ($service.Status -eq 'Running') {",
-            "            Write-Host \"Stopping '$serviceName' service...\" -ForegroundColor Yellow",
-            "            net.exe stop $serviceName | Out-Null",
-            "        }",
-            "        Write-Host \"Uninstalling '$serviceName' service...\" -ForegroundColor Yellow",
-            "        sc.exe delete $serviceName | Out-Null",
-            "    } else {",
-            "        Write-Host 'Not running as Administrator. Requesting UAC elevation to stop and uninstall service...' -ForegroundColor Yellow",
-            "        $elevatedCmds = @()",
-            "        if ($service.Status -eq 'Running') {",
-            "            $elevatedCmds += \"net.exe stop '$serviceName'\"",
-            "        }",
-            "        $elevatedCmds += \"sc.exe delete '$serviceName'\"",
-            "        $cmdString = $elevatedCmds -join '; '",
-            "        try {",
-            "            Start-Process powershell -ArgumentList '-NoProfile', '-WindowStyle', 'Hidden', '-Command', $cmdString -Verb RunAs -Wait -ErrorAction Stop",
-            "        } catch {",
-            "            Write-Warning 'UAC elevation denied. Failed to stop and uninstall service.'",
-            "        }",
-            "    }",
-            "}"
+            "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+            "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
+            "& \"$helper\" -Phase uninstall"
         ]
     },
-    "persist": "logs",
-    "notes": "Ensure 'config.yaml' is placed in 'mihomo/config'.\n\n=== SERVICE CONTROL COMMANDS ===\n\nStart Service:\nsudo sc.exe start mihomo-shawl\n\nStop Service:\nsudo sc.exe stop mihomo-shawl\n\nEnable Auto-Start (on boot):\nsudo sc.exe config mihomo-shawl start= auto\n\nDisable Auto-Start (manual start):\nsudo sc.exe config mihomo-shawl start= demand",
-    "checkver": {
-        "github": "https://github.com/mtkennerly/shawl"
-    },
+    "persist": [
+        "config.yaml",
+        "ui",
+        "proxies",
+        "rules",
+        "cache.db",
+        "logs"
+    ],
+    "notes": "config.yaml should be placed in the root folder, WebUI should be placed in the 'ui' folder, and proxy providers and rule providers should be placed in the 'proxies' and 'rules' folders respectively.\n\n=== SERVICE CONTROL COMMANDS ===\n\nStart Service:\nmihomo-helper start\n\nStop Service:\nmihomo-helper stop\n\nEnable Auto-Start (on boot):\nmihomo-helper enable\n\nDisable Auto-Start (manual start):\nmihomo-helper disable",
+    "bin": [
+        "mihomo.exe",
+        [
+            "mihomo.exe",
+            "clash"
+        ],
+        [
+            "mihomo-helper.ps1",
+            "mihomo-helper"
+        ]
+    ],
+    "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/mtkennerly/shawl/releases/download/v$version/shawl-v$version-win64.zip"
+                "url": [
+                    "https://github.com/MetaCubeX/mihomo/releases/download/v$version/mihomo-windows-amd64-v$version.zip",
+                    "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win64.zip"
+                ]
             },
             "32bit": {
-                "url": "https://github.com/mtkennerly/shawl/releases/download/v$version/shawl-v$version-win32.zip"
+                "url": [
+                    "https://github.com/MetaCubeX/mihomo/releases/download/v$version/mihomo-windows-386-v$version.zip",
+                    "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win32.zip"
+                ]
+            },
+            "arm64": {
+                "url": [
+                    "https://github.com/MetaCubeX/mihomo/releases/download/v$version/mihomo-windows-arm64-v$version.zip",
+                    "https://github.com/mtkennerly/shawl/releases/download/v1.9.0/shawl-v1.9.0-win64.zip"
+                ]
             }
         }
     }

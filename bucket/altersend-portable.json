@@ -1,0 +1,51 @@
+{
+    "version": "1.6.0",
+    "description": "Send files directly between devices over the internet - no cloud storage, no size limits.",
+    "homepage": "https://altersend.com/",
+    "license": {
+        "identifier": "Apache License",
+        "url": "https://github.com/denislupookov/altersend#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/denislupookov/altersend/releases/download/v1.6.0/AlterSend-win32-x64-1.6.0.zip",
+            "hash": "a1e36155cb5dd1b5a623f418c41da66be80e241092da93a5297f6e670751f90d"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\AlterSend\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\AlterSend\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\AlterSend\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\AlterSend\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "AlterSend.exe",
+    "shortcuts": [
+        [
+            "AlterSend.exe",
+            "AlterSend"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/denislupookov/altersend/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/denislupookov/altersend/releases/download/v$version/AlterSend-win32-x64-$version.zip"
+            }
+        }
+    }
+}

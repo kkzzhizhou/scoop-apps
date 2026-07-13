@@ -1,0 +1,57 @@
+{
+    "version": "1.6.0",
+    "description": "Send files directly between devices over the internet - no cloud storage, no size limits.",
+    "homepage": "https://altersend.com/",
+    "license": {
+        "identifier": "Apache License",
+        "url": "https://github.com/denislupookov/altersend#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/denislupookov/altersend/releases/download/v1.6.0/AlterSend-1.6.0.Setup.exe#/dl.7z",
+            "hash": "bcbf4865adf3882bec27949746b7dc6a9b55d41747437eda19fa4f0b42de60bf",
+            "pre_install": [
+                "Get-ChildItem \"$dir\\AlterSend*.nupkg\" | Rename-Item -NewName 'AlterSend.nupkg'",
+                "Expand-7zipArchive \"$dir\\AlterSend.nupkg\" \"$dir\"",
+                "Copy-Item \"$dir\\lib\\net45\\*\" \"$dir\" -Recurse -Force -ErrorAction 'SilentlyContinue'",
+                "Remove-Item \"$dir\\*.gif\", \"$dir\\*.nupkg\", \"$dir\\RELEASES\", \"$dir\\Update.*\", \"$dir\\lib\", \"$dir\\package\", \"$dir\\_rels\", \"$dir\\*.nuspec\", \"$dir\\*.xml\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\AlterSend\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:LOCALAPPDATA\\AlterSend\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\AlterSend\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\AlterSend\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "AlterSend.exe",
+    "shortcuts": [
+        [
+            "AlterSend.exe",
+            "AlterSend"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/denislupookov/altersend/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/denislupookov/altersend/releases/download/v$version/AlterSend-$version.Setup.exe#/dl.7z"
+            }
+        }
+    }
+}
