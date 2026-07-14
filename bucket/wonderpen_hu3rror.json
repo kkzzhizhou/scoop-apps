@@ -20,19 +20,15 @@
             "hash": "ff16b830f7c255d25f66e5953e4772fb6c8ab4f63b272844cc68121553132cea"
         }
     },
-    "installer": {
-        "script": [
-            "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse",
-            "Import-Module \"$(Find-BucketDirectory -Root -Name $bucket)/scripts/DoradoUtils.psm1\"",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\WonderPen\" -Target \"$env:APPDATA\\WonderPen\"",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
+    "pre_install": [
+        "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
+    ],
+    "post_install": [
+        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -PersistDir \"$persist_dir\" -Target \"$env:APPDATA/WonderPen\""
+    ],
     "pre_uninstall": [
-        "Import-Module \"$(Find-BucketDirectory -Root -Name $bucket)/scripts/DoradoUtils.psm1\"",
-        "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\WonderPen\"",
-        "Remove-Module -Name DoradoUtils"
+        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/WonderPen\""
     ],
     "shortcuts": [
         [

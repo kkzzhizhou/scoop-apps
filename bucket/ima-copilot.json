@@ -1,34 +1,71 @@
 {
-    "version": "147.0.7727.4796",
-    "homepage": "https://ima.qq.com/",
-    "license": "Freeware",
-    "url": "https://app-dl.ima.qq.com/win/2.6.0_4657/ima.copilot_win_x64_1018_2.6.0_4657.exe#/dl.7z",
-    "hash": "937525edd9f050dd40a8e3a8163f8f7c9916c6cf3e06b959fdb98e256e843ee5",
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\chrome.7z\" \"$dir\"",
-        "Move-Item \"$dir\\Chrome-bin\\*\" \"$dir\""
+    "##": [
+        "_edited_from:",
+        "https://github.com/akirco/aki-apps/blob/master/bucket/ima-copilot.json"
     ],
-    "post_install": [
-        "Remove-Item \"$dir\\chrome.7z\" -Force -Recurse",
-        "Remove-Item \"$dir\\Chrome-bin\" -Force -Recurse"
+    "version": "147.0.7727.4861",
+    "description": "腾讯出品的一款集文档处理、知识管理和AI智能问答于一体的智能工作平台",
+    "homepage": "https://ima.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://rule.tencent.com/rule/202410140002"
+    },
+    "url": "https://app-dl.ima.qq.com/win/2.6.1_4722/ima.copilot_win_x64_1018_2.6.1_4722.exe#/dl.7z",
+    "hash": "04b6dddedc4d3c5f698e16dc7e9b1f7be5690078ed66dff1de71b1cef0c6225f",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\chrome.7z\" \"$dir\" -ExtractDir \"Chrome-bin\"",
+        "Remove-Item \"$dir\\chrome.7z\" -Force -Recurse"
     ],
     "shortcuts": [
         [
             "ima.copilot.exe",
-            "ima"
+            "ima",
+            "--force-device-scale-factor=1.5"
         ]
     ],
+    "post_install": [
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding Unicode",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding Unicode",
+        "    }",
+        "}",
+        "reg import \"$dir\\install-context.reg\"",
+        "# 数据迁移",
+        "$runtimeCache = \"$env:LocalAppData\\ima.copilot\\User Data\"",
+        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$runtimeCache = \"$env:LocalAppData\\ima.copilot\\User Data\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "User Data",
     "checkver": {
         "script": [
-            ". \"$pwd\\bin\\utils.ps1\"",
-            "$dl_info = get_installer_info 'Tencent/ima-copilot'",
-            "\"ver:$($dl_info.PackageVersion);\"",
-            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/Tencent.ima-copilot'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
         ],
-        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+        "regex": "InstallerUrl:\\s*(?<url>.+)\\s*[\\s\\S]+?RealVersion:\\s*(?<version>[0-9.]+)"
     },
     "autoupdate": {
-        "url": "$matchX64#/dl.7z",
+        "url": "$matchUrl#/dl.7z",
         "hash": {
             "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/ima-copilot/$version/Tencent.ima-copilot.installer.yaml",
             "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"

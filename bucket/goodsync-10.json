@@ -1,6 +1,6 @@
 {
     "version": "10.20.9.9",
-    "homepage": "https://www.goodsync.com",
+    "homepage": "https://www.goodsync.com/",
     "description": "Simple and secure file backup/synchronization software.",
     "license": {
         "identifier": "Freeware",
@@ -10,18 +10,15 @@
     "hash": "9ccf34318e451ccb9826511266e3c2fa0f3acac36699deeade16c4102597c63b",
     "pre_install": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "Import-Module \"$(Find-BucketDirectory -Root -Name $bucket)/scripts/DoradoUtils.psm1\"",
-        "Mount-ExternalRuntimeData -Source \"$persist_dir\\GoodSync\" -Target \"$env:LOCALAPPDATA\\GoodSync\"",
-        "Remove-Module -Name DoradoUtils",
+        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/GoodSync\" -Target \"$env:LOCALAPPDATA/GoodSync\"",
         "Start-Process \"$dir\\GoodSync-v10-Setup.exe\" -Wait -ArgumentList '/S' -Verb RunAs",
-        "Stop-Process -Name 'gs-server' -Force; Remove-Item \"$dir\\GoodSync-v10-Setup.exe\""
+        "Stop-Process -Name 'gs-server' -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$dir\\GoodSync-v10-Setup.exe\""
     ],
     "pre_uninstall": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        "if (Get-Process -Name 'gs-server' -ErrorAction 'SilentlyContinue') { Stop-Process -Name 'gs-server' -Force }",
+        "Stop-Process -Name 'gs-server' -Force -ErrorAction SilentlyContinue",
         "Start-Process \"$env:ProgramFiles\\Siber Systems\\GoodSync\\gs-runner.exe\" -Wait -ArgumentList @('/stop-remove-services', '/S') -Verb RunAs",
-        "Import-Module \"$(Find-BucketDirectory -Root -Name $bucket)/scripts/DoradoUtils.psm1\"",
-        "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\GoodSync\"",
-        "Remove-Module -Name DoradoUtils"
+        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:LOCALAPPDATA/GoodSync\""
     ]
 }
