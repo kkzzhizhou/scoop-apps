@@ -1,0 +1,50 @@
+{
+    "version": "2.19.9",
+    "description": "LLM client by douyin",
+    "homepage": "https://doubao.com",
+    "license": "freeware",
+    "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/2.15.11/Doubao_installer_2.15.11.exe#/dl.7z",
+    "hash": "8c446c40c9c5da0aa0e4402519d5175dc9367c1d1eee68a8cda5cd0fa9edacfe",
+    "shortcuts": [
+        [
+            "Doubao.exe",
+            "Doubao",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "post_install": [
+        "# 数据迁移",
+        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "script": [
+            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/ByteDance.Doubao'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
+        ],
+        "regex": "Version:\\s*([0-9.]+)"
+    },
+    "autoupdate": {
+        "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/2.15.11/Doubao_installer_2.15.11.exe#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/Doubao/$version/ByteDance.Doubao.installer.yaml",
+            "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
+        }
+    }
+}

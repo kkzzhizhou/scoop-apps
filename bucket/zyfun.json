@@ -1,31 +1,70 @@
 {
-    "##": "zyfun",
     "version": "3.4.7",
-    "description": "跨平台桌面端视频资源播放器，免费高颜值",
+    "description": "跨平台桌面端视频资源播放器,免费高颜值.",
     "homepage": "https://github.com/Hiram-Wong/zyfun",
-    "license": "MIT",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/Hiram-Wong/zyfun#AGPL-3.0-1-ov-file"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/Hiram-Wong/zyfun/releases/download/v3.4.7/zyfun-win-3.4.7-x64-setup.exe#/dl.7z",
-            "hash": "5147442aefa27c6300e9cba7bd03959c49bb9022dff771a5eb9f8508c19d8d9a"
+            "hash": "sha512:63b5a10cea30cde3ebdb8c744a0a869dae0a734626759f1a087b5d43ae8ce1156b7d80a7e2406eaefea7d580a51441d202321fc933287809be42d9ff16f16e42",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/Hiram-Wong/zyfun/releases/download/v3.4.7/zyfun-win-3.4.7-arm64-setup.exe#/dl.7z",
+            "hash": "sha512:63b5a10cea30cde3ebdb8c744a0a869dae0a734626759f1a087b5d43ae8ce1156b7d80a7e2406eaefea7d580a51441d202321fc933287809be42d9ff16f16e42",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
         }
     },
-    "checkver": "github",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\zyfun\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:USERPROFILE\\.zy\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\zyfun\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:USERPROFILE\\zyfun\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "zyfun.exe",
+    "shortcuts": [
+        [
+            "zyfun.exe",
+            "ZYFun"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Hiram-Wong/ZyPlayer/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/Hiram-Wong/zyfun/releases/download/v$version/zyfun-win-$version-x64-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/Hiram-Wong/zyfun/releases/download/v$version/zyfun-win-$version-arm64-setup.exe#/dl.7z"
             }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
         }
-    },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir",
-        "Remove-Item \"$dir\\`$*\" -Force -Recurse"
-    ],
-    "shortcuts": [
-        [
-            "zyfun.exe",
-            "zyfun"
-        ]
-    ]
+    }
 }
