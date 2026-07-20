@@ -1,0 +1,78 @@
+{
+    "version": "153.0b13",
+    "description": "Developer builds of Firefox: the popular open source web browser",
+    "homepage": "https://www.mozilla.org/zh-CN/firefox/developer/",
+    "license": "MPL-2.0",
+    "notes": [
+        "To set profile 'Scoop-Dev' as *DEFAULT*, or profiles/settings was lost after update:",
+        "  - Run 'Firefox Developer Edition Profile Manager', choose 'Scoop-Dev' then click 'Start Firefox Developer Edition'.",
+        "  - Visit 'about:profiles' page in Firefox Dev to check *DEFAULT* profile.",
+        "For details: https://support.mozilla.org/en-US/kb/profile-manager-create-remove-switch-firefox-profiles"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/153.0b13/win64/zh-CN/Firefox%20Setup%20153.0b13.exe#/firefox-developer.7z",
+            "hash": "sha512:9b21356f13f3e82ab9a060bf9dbe56612c13630518175b606683acc0d15cf38e0c1b359840649f00705eeb6527272b36a2b69abb1404536d143b67213c183d0b"
+        },
+        "32bit": {
+            "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/153.0b13/win32/zh-CN/Firefox%20Setup%20153.0b13.exe#/firefox-developer.7z",
+            "hash": "sha512:33435e05a9e2785265a0a03cfde0d657b069bcd0caad56f62a221109fd7322f4bcf79031c0dcf4951899787e4ed6f930e3ee4b8455854961f5e078c1a7582c11"
+        }
+    },
+    "extract_dir": "core",
+    "post_install": [
+        "firefox-dev -CreateProfile \"Scoop-Dev $persist_dir\\profile\"",
+        "$Addition = \"$persist_dir\\addition\"",
+        "if (Test-Path $Addition) {",
+        "  info 'Copying additional items...'",
+        "  Copy-Item -Path $Addition\\* -Destination $dir -Force -Recurse -ErrorAction SilentlyContinue",
+        "}"
+    ],
+    "bin": [
+        [
+            "firefox.exe",
+            "firefox-dev"
+        ],
+        [
+            "firefox.exe",
+            "firefox-developer"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "firefox.exe",
+            "Firefox Developer Edition"
+        ],
+        [
+            "firefox.exe",
+            "Firefox Developer Edition Profile Manager",
+            "-P"
+        ]
+    ],
+    "persist": [
+        "distribution",
+        "profile"
+    ],
+    "checkver": {
+        "url": "https://product-details.mozilla.org/1.0/firefox_versions.json",
+        "jsonpath": "$.FIREFOX_DEVEDITION"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/win64/zh-CN/Firefox%20Setup%20$version.exe#/firefox-developer.7z",
+                "hash": {
+                    "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win64/zh-CN/$basename"
+                }
+            },
+            "32bit": {
+                "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/win32/zh-CN/Firefox%20Setup%20$version.exe#/firefox-developer.7z",
+                "hash": {
+                    "url": "https://download-installer.cdn.mozilla.net/pub/devedition/releases/$version/SHA512SUMS",
+                    "regex": "$sha512\\s+win32/zh-CN/$basename"
+                }
+            }
+        }
+    }
+}
