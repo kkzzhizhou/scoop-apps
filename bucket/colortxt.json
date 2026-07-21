@@ -1,0 +1,59 @@
+{
+    "version": "3.0.8",
+    "description": "「彩读 3.0 书源 × AI+」——一款会给内容上色的本地 TXT 小说阅读器，带给你不一样的阅读体验！（也支持打开常见的电子书格式，如 .epub）。还有章节识别、简繁互转、划线标注、记笔记、多角色语音朗读、AI 阅读助手、书源找书等功能。支持 macOS、Windows 和 Linux。",
+    "homepage": "https://github.com/ssnangua/ColorTxt",
+    "license": {
+        "identifier": "MPL-2.0 license",
+        "url": "https://github.com/ssnangua/ColorTxt#MPL-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ssnangua/ColorTxt/releases/download/v3.0.8/colortxt-3.0.8-Setup.exe#/dl.7z",
+            "hash": "sha512:fa5aa91627c31506a59353a9e6901ae219c29f9495d226821fd267be17d0c38af68ccebbed98e00bd3b7e17cd6a7e5c5dbf4d4410ccc61252b2d0f8c9fcab5b1",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+                "Get-ChildItem \"$dir\\彩读*.exe\" | Rename-Item -NewName 'ColorTxt.exe'"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\colortxt\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\colortxt\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "ColorTxt.exe",
+    "shortcuts": [
+        [
+            "ColorTxt.exe",
+            "ColorTxt"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/ssnangua/ColorTxt/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ssnangua/ColorTxt/releases/download/v$version/colortxt-$version-Setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "mode": "extract",
+            "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+        }
+    }
+}
