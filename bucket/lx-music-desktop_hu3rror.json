@@ -15,11 +15,16 @@
             "洛雪音乐助手"
         ]
     ],
+    "persist_external": [
+        "$env:AppData\\lx-music-desktop"
+    ],
     "post_install": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/lx-music-desktop\" -Target \"$env:APPDATA/lx-music-desktop\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
     ],
     "pre_uninstall": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/lx-music-desktop\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
     ],
     "checkver": "github",
     "autoupdate": {

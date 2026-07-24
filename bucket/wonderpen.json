@@ -1,32 +1,38 @@
 {
-    "version": "3.0.7",
-    "description": "Professional writing app with a focused and fluid writing experience.",
     "homepage": "https://www.tominlab.com/en/wonderpen",
+    "description": "Professional writing app with a focused and fluid writing experience.",
+    "version": "3.2.1",
     "license": {
         "identifier": "Proprietary",
-        "url": "https://www.tominlab.com/en/terms/privacy"
+        "url": "https://www.tominlab.com/en/term/privacy"
     },
     "architecture": {
         "64bit": {
-            "url": "https://file.tominlab.com/WonderPen/desktop/3.0/WonderPen_win_installer_x64_3.0.7(8252).exe#/dl.7z",
-            "hash": "eb6c5319b513ac5cdd289cef3487249ce0f844ed0fdf0f2329a9da16528bbc84"
+            "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/3.2/WonderPen-v3.2.1.8469-win-x64-installer.exe#/dl.7z",
+            "hash": "7c0d9930d3fdf2b7baa7aa6d5a3e8bd406bce2f9efbc8f47d490c111ab4a76da"
         },
         "32bit": {
-            "url": "https://file.tominlab.com/WonderPen/desktop/3.0/WonderPen_win_installer_ia32_3.0.7(8252).exe#/dl.7z",
-            "hash": "d7de57560cf33ce3eaaa54a9b19b53da453fc4b8a4c1a8dd9f28f9f6a88bc6eb"
+            "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/3.2/WonderPen-v3.2.1.8469-win-ia32-installer.exe#/dl.7z",
+            "hash": "3c6ed05791f3b778316bdf78518d34192b70de10bc872403d8da030cd5f4d5a4"
         },
         "arm64": {
-            "url": "https://file.tominlab.com/WonderPen/desktop/3.0/WonderPen_win_installer_arm64_3.0.7(8252).exe#/dl.7z",
-            "hash": "ff16b830f7c255d25f66e5953e4772fb6c8ab4f63b272844cc68121553132cea"
+            "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/3.2/WonderPen-v3.2.1.8469-win-arm64-installer.exe#/dl.7z",
+            "hash": "41f50a88e3789cfb66675b05cbacbbadf898cf7146f9ba32a00cd675e7eeba8e"
         }
     },
-    "installer": {
-        "script": [
-            "Get-Item \"$dir\\`$PLUGINSDIR\\app*.7z\" | Rename-Item -NewName 'app.7z'",
-            "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app.7z\" \"$dir\" -Removal",
-            "Remove-Item \"$dir\\`$*\" -Force -Recurse"
-        ]
-    },
+    "pre_install": [
+        "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-*.7z\" \"$dir\" -Removal",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
+    ],
+    "persist_external": "$env:AppData\\WonderPen",
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
+    ],
     "shortcuts": [
         [
             "WonderPen.exe",
@@ -35,18 +41,18 @@
     ],
     "checkver": {
         "url": "https://www.tominlab.com/wonderpen/downloads/all",
-        "regex": "([\\d.]+)\\((?<build>[\\d]+)\\)"
+        "regex": "WonderPen-v([\\d.]+)\\.(?<build>\\d+)-win-x64-installer\\.exe"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://file.tominlab.com/WonderPen/desktop/$majorVersion.$minorVersion/WonderPen_win_installer_x64_$version($matchBuild).exe#/dl.7z"
+                "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/$majorVersion.$minorVersion/WonderPen-v$version.$matchBuild-win-x64-installer.exe#/dl.7z"
             },
             "32bit": {
-                "url": "https://file.tominlab.com/WonderPen/desktop/$majorVersion.$minorVersion/WonderPen_win_installer_ia32_$version($matchBuild).exe#/dl.7z"
+                "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/$majorVersion.$minorVersion/WonderPen-v$version.$matchBuild-win-ia32-installer.exe#/dl.7z"
             },
             "arm64": {
-                "url": "https://file.tominlab.com/WonderPen/desktop/$majorVersion.$minorVersion/WonderPen_win_installer_arm64_$version($matchBuild).exe#/dl.7z"
+                "url": "https://www.tominlab.com/to/get-file/cdn?file=WonderPen/desktop/$majorVersion.$minorVersion/WonderPen-v$version.$matchBuild-win-arm64-installer.exe#/dl.7z"
             }
         }
     }

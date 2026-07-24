@@ -12,13 +12,17 @@
             "Game Cheats Manager"
         ]
     ],
+    "persist_external": [
+        "$env:AppData\\GCM Trainers",
+        "$env:AppData\\GCM Settings"
+    ],
     "post_install": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/GCM Trainers\" -Target \"$env:APPDATA/GCM Trainers\"",
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/GCM Settings\" -Target \"$env:APPDATA/GCM Settings\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
     ],
     "pre_uninstall": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/GCM Trainers\"",
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/GCM Settings\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
     ],
     "checkver": "github",
     "autoupdate": {

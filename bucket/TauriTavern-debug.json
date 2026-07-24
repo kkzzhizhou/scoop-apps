@@ -1,0 +1,47 @@
+{
+    "version": "2.1.1",
+    "description": "Debug build of the native SillyTavern client, built with Tauri and Rust.",
+    "homepage": "https://github.com/Darkatse/TauriTavern",
+    "license": "AGPL-3.0-only",
+    "suggest": {
+        "Microsoft Edge WebView2": "extras/webview2"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Darkatse/TauriTavern/releases/download/v2.1.1/TauriTavern_2.1.1_x64-setup-DEBUG.exe#/dl.7z",
+            "hash": "2e185bf80669aee8d8cd1a7ea3dc67aa76b9014d2d336025a799e20a45342e22"
+        }
+    },
+    "pre_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\", \"$dir\\uninst*\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "[System.IO.File]::WriteAllText(\"$dir\\portable.flag\", \"\")",
+        "if (!(Test-Path \"$persist_dir\\tauritavern-runtime.json\")) {",
+        "    $runtimeConfig = [ordered]@{ version = 1; data_root = \"$persist_dir\\data\"; migration = $null; migration_error = $null } | ConvertTo-Json -Compress",
+        "    [System.IO.File]::WriteAllText(\"$dir\\tauritavern-runtime.json\", $runtimeConfig)",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "TauriTavern.exe",
+            "TauriTavern (Debug)"
+        ]
+    ],
+    "persist": [
+        "data",
+        "logs",
+        ".data-archive",
+        "tauritavern-runtime.json"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/Darkatse/TauriTavern/releases/latest",
+        "jsonpath": "$.assets[*].browser_download_url",
+        "regex": "releases/download/v([\\d.]+)/TauriTavern_[\\d.]+_x64-setup-DEBUG\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Darkatse/TauriTavern/releases/download/v$version/TauriTavern_$version_x64-setup-DEBUG.exe#/dl.7z"
+            }
+        }
+    }
+}

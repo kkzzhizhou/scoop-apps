@@ -17,13 +17,17 @@
             "Ani"
         ]
     ],
+    "persist_external": [
+        [ "$env:APPDATA\\Him188", "data", "directory" ],
+        [ "$env:LOCALAPPDATA\\Him188", "cache", "directory" ]
+    ],
     "post_install": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -PersistDir \"$persist_dir\" -Target \"$env:APPDATA/Him188\"",
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/cache\" -Target \"$env:LOCALAPPDATA/Him188\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
     ],
     "pre_uninstall": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/Him188\"",
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:LOCALAPPDATA/Him188\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
     ],
     "checkver": "github",
     "autoupdate": {

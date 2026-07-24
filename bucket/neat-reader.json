@@ -6,11 +6,16 @@
     "url": "https://cloud-0-index.vercel.app/api/raw/?path=/packages/scoop/NeatReader_8.1.4.0.7z#/dl.7z_",
     "hash": "b54f9c8802b5eae9dffb3b580cfd048b0378521c96902873896e18b759cf2dfb",
     "pre_install": "Expand-7zipArchive -Path \"$dir\\dl.7z_\" -DestinationPath \"$dir\" -Removal -Switches '-pmuggle'",
+    "persist_external": [
+        "$env:AppData\\NeatReader"
+    ],
     "post_install": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -Source \"$persist_dir/NeatReader\" -Target \"$env:APPDATA/NeatReader\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
     ],
     "pre_uninstall": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/NeatReader\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
     ],
     "shortcuts": [
         [

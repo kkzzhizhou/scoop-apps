@@ -9,11 +9,20 @@
             "hash": "40a0398a6ea53fa8bc0ae8215bfd371e00def3c8495c2bbc66ccaa719bb78325"
         }
     },
+    "persist_external": [
+        [
+            "$env:AppData\\com.lanyeeee.manhuagui-downloader",
+            "data",
+            "directory"
+        ]
+    ],
     "post_install": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Mount -PersistDir \"$persist_dir\" -Target \"$env:APPDATA/com.lanyeeee.manhuagui-downloader\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
     ],
     "pre_uninstall": [
-        "& \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/DoradoHelper.ps1\" -Action Dismount -Target \"$env:APPDATA/com.lanyeeee.manhuagui-downloader\""
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
     ],
     "bin": "manhuagui-downloader.exe",
     "shortcuts": [
@@ -22,11 +31,7 @@
             "Manhuagui Downloader"
         ]
     ],
-    "checkver": {
-        "url": "https://api.github.com/repos/lanyeeee/manhuagui-downloader/releases/latest",
-        "jsonpath": "$..tag_name",
-        "regex": "v([\\d.]+)"
-    },
+    "checkver": "github",
     "autoupdate": {
         "architecture": {
             "64bit": {
