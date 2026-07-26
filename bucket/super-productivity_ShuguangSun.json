@@ -1,0 +1,62 @@
+{
+    "version": "18.16.0",
+    "description": "To-do list & time tracker for programmers and other digital workers with Jira, Github, and Gitlab integration",
+    "homepage": "https://super-productivity.com",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/johannesjo/super-productivity/releases/download/v18.16.0/Super-Productivity-Setup-x64.exe#/dl.7z",
+            "hash": "sha512:0d23dd289eb5b5f5c32e87632a250a8321bde564a7de7a7ee71a34a7f43e1d69dc514ad6b9cfc874836446239dad3ae2762592d5b22f9baffdb4ecb87ac6c56e",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/johannesjo/super-productivity/releases/download/v18.16.0/Super-Productivity-Setup-arm64.exe#/dl.7z",
+            "hash": "sha512:e565afeab82bc3d0ed3132879b516ff7c1324bce68737702011856067a32353dbf7fa3536c4378dce8f436e5e4e194066a451ac3f7b4c425dd4397c90c035279",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "Super Productivity.exe",
+            "Super Productivity"
+        ]
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "    ensure \"$persist_dir\" | Out-Null",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\data\")) {",
+        "    ensure \"$persist_dir\\data\" | Out-Null",
+        "}",
+        "New-Item $env:AppData\\superProductivity -ItemType Junction -Target \"$persist_dir\\data\" | Out-Null"
+    ],
+    "pre_uninstall": [
+        "if (Test-Path \"$Env:AppData\\superProductivity\\*\") {",
+        "    Remove-Item $env:APPDATA\\superProductivity -Force -Recurse",
+        "}"
+    ],
+    "checkver": {
+        "github": "https://github.com/johannesjo/super-productivity"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/johannesjo/super-productivity/releases/download/v$version/Super-Productivity-Setup-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/johannesjo/super-productivity/releases/download/v$version/Super-Productivity-Setup-arm64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+        }
+    }
+}
