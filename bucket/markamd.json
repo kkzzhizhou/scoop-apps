@@ -1,0 +1,55 @@
+{
+    "version": "1.7.1",
+    "description": "local-first markdown editor with live preview, reading mode, diagrams, themes, and context bundles.",
+    "homepage": "https://markamd.vercel.app/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/mattenarle10/markamd#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mattenarle10/markamd/releases/download/v1.7.1/marka.md_1.7.1_x64-setup.exe#/dl.7z",
+            "hash": "e97bdcadf159418e2c56f7007800a2c67cff6a078290873ad1fbf3d07daa1607",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.mattenarle.markamd\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.mattenarle.markamd\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "marka.md.exe",
+            "markamd"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "marka.md.exe",
+            "markamd"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/mattenarle10/markamd/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mattenarle10/markamd/releases/download/v$version/marka.md_$version_x64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}

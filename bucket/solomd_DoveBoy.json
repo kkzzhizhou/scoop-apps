@@ -1,0 +1,54 @@
+{
+    "version": "4.11.1",
+    "description": "A lightweight Markdown and plain text editor built with Tauri 2.",
+    "homepage": "https://solomd.app",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zhitongblog/solomd/releases/download/v4.11.1/SoloMD_4.11.1_x64-setup.exe#/dl.7z",
+            "hash": "4ceb97866c5ae1bfe656261dedfbf7a02ff61cbaeb747813018b520347e45481"
+        },
+        "arm64": {
+            "url": "https://github.com/zhitongblog/solomd/releases/download/v4.11.1/SoloMD_4.11.1_arm64-setup.exe#/dl.7z",
+            "hash": "91e3b028ae10b50563a4c2432b1dffbdbea2fdc12eafefe82c41d8cc8522701e"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse -ErrorAction Ignore",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\app.solomd\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\app.solomd\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\app.solomd\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\app.solomd\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "SoloMD.exe",
+    "shortcuts": [
+        [
+            "SoloMD.exe",
+            "SoloMD"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/zhitongblog/solomd"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zhitongblog/solomd/releases/download/v$version/SoloMD_$version_x64-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/zhitongblog/solomd/releases/download/v$version/SoloMD_$version_arm64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}

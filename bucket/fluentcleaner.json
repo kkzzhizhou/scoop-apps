@@ -1,41 +1,49 @@
 {
-    "version": "26.07.04",
-    "description": "FluentCleaner is a modern Windows cleanup tool built with WinUI3 and powered by the winapp2.ini ecosystem.",
+    "version": "26.07.05",
+    "description": "A real WinUI desktop cleaner with terminal control and multi-database support",
     "homepage": "https://github.com/builtbybel/FluentCleaner",
-    "license": "MIT",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/builtbybel/FluentCleaner#MIT-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": [
-                "https://github.com/builtbybel/FluentCleaner/releases/download/26.07.04/FluentCleaner-win-x64.zip",
-                "https://github.com/builtbybel/FluentCleaner/releases/download/26.07.04/Custom.zip"
-            ],
-            "hash": [
-                "566318a789e95298dae0da669c1efe7f2fe3fc20a570d4b6aa1971b2411140b3",
-                "e955f87694c7ba098840905bd97b0b3673178bee08f3adf242159bc63329e587"
-            ]
+            "url": "https://github.com/builtbybel/FluentCleaner/releases/download/26.07.05/FluentCleaner-win-x64.zip",
+            "hash": "039128b2c30baee2c980b993c945261ea05b3184b5392fc43e4aa4ef94d10711"
         }
     },
     "extract_dir": "FluentCleaner-win-x64",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\FluentCleaner\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\FluentCleaner\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "FCleaner.exe",
     "shortcuts": [
         [
             "FCleaner.exe",
-            "FluentCleaner"
+            "FCleaner"
         ]
     ],
-    "persist": [
-        "Winapp2.ini",
-        "Winapp3.ini",
-        "Winappx.ini",
-        "Custom"
-    ],
-    "checkver": "github",
+    "checkver": {
+        "github": "https://api.github.com/repos/builtbybel/FluentCleaner/releases",
+        "jp": "$[*].tag_name",
+        "regex": "([\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": [
-                    "https://github.com/builtbybel/FluentCleaner/releases/download/$version/FluentCleaner-win-x64.zip",
-                    "https://github.com/builtbybel/FluentCleaner/releases/download/$version/Custom.zip"
-                ]
+                "url": "https://github.com/builtbybel/FluentCleaner/releases/download/$version/FluentCleaner-win-x64.zip"
             }
         }
     }
