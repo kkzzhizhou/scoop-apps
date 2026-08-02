@@ -1,0 +1,69 @@
+{
+    "version": "1.7.2-Beta+0d7412c",
+    "description": "Context Menu Manager Plus 是一个强大的实用程序，它可帮助您管理 Windows 上的右键菜单",
+    "homepage": "https://github.com/PLFJY/ContextMenuMgr",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/PLFJY/ContextMenuMgr#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2-Beta%2B0d7412c/ContextMenuMgrPlus-1.7.2-Beta%2B0d7412c-x64-self-contained-Setup.exe",
+            "hash": "f9696a62517bd08651b9b7dadb8c29f249c1d413edde24dcdbdc99c37e07e725"
+        },
+        "32bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2-Beta%2B0d7412c/ContextMenuMgrPlus-1.7.2-Beta%2B0d7412c-x86-self-contained-Setup.exe",
+            "hash": "a3afa56e8e35ccf3a55e36d8d231d8a19ccd07543ae9c04d2a2e95c9a2142c4f"
+        },
+        "arm64": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2-Beta%2B0d7412c/ContextMenuMgrPlus-1.7.2-Beta%2B0d7412c-arm64-self-contained-Setup.exe",
+            "hash": "4a70faa1db9c356a2f92c24ebd614bf4856dadf8af404efc9437a7cc4091766e"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:ProgramData\\ContextMenuMgr\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:ProgramData\\ContextMenuMgr\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "ContextMenuManagerPlus.exe",
+    "shortcuts": [
+        [
+            "ContextMenuManagerPlus.exe",
+            "ContextMenuManagerPlus"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/PLFJY/ContextMenuMgr/releases",
+        "jp": "$[*].tag_name",
+        "regex": "v(?<version>[\\d.]+-[A-Za-z]+)\\+(?<commit>[\\w]+)",
+        "replace": "${version}+${commit}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$matchVersion%2B$matchCommit/ContextMenuMgrPlus-$matchVersion%2B$matchCommit-x64-self-contained-Setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$matchVersion%2B$matchCommit/ContextMenuMgrPlus-$matchVersion%2B$matchCommit-x86-self-contained-Setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$matchVersion%2B$matchCommit/ContextMenuMgrPlus-$matchVersion%2B$matchCommit-arm64-self-contained-Setup.exe"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases",
+            "regex": "(?s)$basename.*?$sha256"
+        }
+    }
+}

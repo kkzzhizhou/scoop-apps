@@ -1,0 +1,68 @@
+{
+    "version": "1.7.2",
+    "description": "Context Menu Manager Plus 是一个强大的实用程序，它可帮助您管理 Windows 上的右键菜单",
+    "homepage": "https://github.com/PLFJY/ContextMenuMgr",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/PLFJY/ContextMenuMgr#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-x64-self-contained-Setup.exe",
+            "hash": "4a1517d8627710eb9b92440044e89c979c541baf4101d82234e6304b44105ac5"
+        },
+        "32bit": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-x86-self-contained-Setup.exe",
+            "hash": "f77f1f670bc27e3b2cb0396cad06ea8ecf1ee0f29a9b7f3d8eece29ac80d2386"
+        },
+        "arm64": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v1.7.2/ContextMenuMgrPlus-1.7.2-arm64-self-contained-Setup.exe",
+            "hash": "e4c92966172c2dd623ecf98e9fa2d96f89ddf3acee650dfe8d2fc8154dbacef9"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:ProgramData\\ContextMenuMgr\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:ProgramData\\ContextMenuMgr\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "ContextMenuManagerPlus.exe",
+    "shortcuts": [
+        [
+            "ContextMenuManagerPlus.exe",
+            "ContextMenuManagerPlus"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/PLFJY/ContextMenuMgr/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x64-self-contained-Setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-x86-self-contained-Setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/PLFJY/ContextMenuMgr/releases/download/v$version/ContextMenuMgrPlus-$version-arm64-self-contained-Setup.exe"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/PLFJY/ContextMenuMgr/releases/latest",
+            "regex": "(?s)$basename.*?$sha256"
+        }
+    }
+}

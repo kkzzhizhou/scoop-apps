@@ -1,36 +1,30 @@
 {
-    "version": "1.2.",
+    "version": "1.3.3",
     "homepage": "https://github.com/xwmx/pb",
     "description": "A tiny wrapper combining pbcopy & pbpaste in a single command.",
     "license": "MIT",
-    "url": "https://github.com/xwmx/pb/archive/refs/tags/1.2..zip",
-    "hash": "",
+    "depends": "git",
+    "url": "https://github.com/xwmx/pb/archive/refs/tags/1.3.3.zip",
+    "hash": "b3f436f80be6312d4f729fc8e7e5bb064c352d2c338e1ec2cbd02e1e07624a6c",
     "installer": {
         "script": [
-            "$zipfile = (Get-ChildItem \"$dir\" '*.zip#' | Select-Object -First 1).FullName",
-            "Start-Process -Wait -FilePath \"unzip.exe\" -ArgumentList \"$zipfile -d $dir\" -WindowStyle Hidden",
-            "$folder = (Get-Childitem -Directory \"$dir\"| Select-Object -First 1).FullName",
+            "$folder = (Get-ChildItem -Directory \"$dir\" | Where-Object Name -Like 'pb-*' | Select-Object -First 1).FullName",
             "Move-Item \"$folder\\*\" \"$dir\"",
-            "Remove-Item \"$folder\"",
+            "Remove-Item \"$folder\" -Force -Recurse",
+            "Set-Content \"$dir\\pb.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0pb %*\" -Encoding ASCII",
             "Set-Content \"$dir\\nb.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0nb %*\" -Encoding ASCII",
-            "Set-Content \"$dir\\bookmark.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0bin\\bookmark %*\" -Encoding ASCII",
-            "Remove-Item \"$zipfile\" -Force",
-            "Remove-Item \"$dir\\.github\" -Force -Recurse",
-            "Remove-Item \"$dir\\nb.go\" -Force -Recurse",
-            "Remove-Item \"$dir\\test\" -Force -Recurse",
-            "Remove-Item \"$dir\\.gitignore\" -Force",
-            "Remove-Item \"$dir\\.shellcheckrc\" -Force",
-            "Remove-Item \"$dir\\Makefile\" -Force",
-            "Remove-Item \"$dir\\Baskfile\" -Force"
+            "Set-Content \"$dir\\bookmark.bat\" \"@for /f %%i in ('scoop prefix git') do @%%i\\bin\\bash.exe %~dp0bin\\bookmark %*\" -Encoding ASCII"
         ]
     },
-    "bin": "pb.bat",
+    "bin": [
+        "pb.bat",
+        "nb.bat",
+        "bookmark.bat"
+    ],
     "checkver": {
-        "url": "https://github.com/xwmx/pb/tags",
-        "regex": "Update version to ([\\d.]+)."
+        "github": "https://github.com/xwmx/pb"
     },
     "autoupdate": {
-        "url": "https://github.com/xwmx/pb/archive/refs/tags/$version.zip",
-        "extract_dir": "nb-$version"
+        "url": "https://github.com/xwmx/pb/archive/refs/tags/$version.zip"
     }
 }
