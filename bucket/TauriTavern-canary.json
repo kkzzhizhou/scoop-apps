@@ -1,0 +1,45 @@
+{
+    "version": "20260801",
+    "description": "Canary build of the native SillyTavern client for desktop and mobile, built with Tauri and Rust.",
+    "homepage": "https://github.com/Darkatse/TauriTavern",
+    "license": "AGPL-3.0-only",
+    "suggest": {
+        "Microsoft Edge WebView2": "extras/webview2"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Darkatse/TauriTavern/releases/download/Canary/TauriTavern-20260801-canary-windows-x64-portable.exe#/TauriTavern.exe",
+            "hash": "a58ece0d214469c82716e408e7cd5450ab6a0010ab3f4048a004ff85444d28c6"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\tauritavern-runtime.json\")) {",
+        "    $runtimeConfig = [ordered]@{ version = 1; data_root = \"$persist_dir\\data\"; migration = $null; migration_error = $null } | ConvertTo-Json -Compress",
+        "    [System.IO.File]::WriteAllText(\"$dir\\tauritavern-runtime.json\", $runtimeConfig)",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "TauriTavern.exe",
+            "TauriTavern (Canary)"
+        ]
+    ],
+    "persist": [
+        "data",
+        "logs",
+        ".data-archive",
+        "tauritavern-runtime.json"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/Darkatse/TauriTavern/releases/tags/Canary",
+        "jsonpath": "$.assets[*].browser_download_url",
+        "regex": "releases/download/Canary/TauriTavern-([\\d]{8})-canary-windows-x64-portable\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Darkatse/TauriTavern/releases/download/Canary/TauriTavern-$version-canary-windows-x64-portable.exe#/TauriTavern.exe"
+            }
+        }
+    }
+}
