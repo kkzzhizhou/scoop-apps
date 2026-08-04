@@ -1,18 +1,22 @@
 {
-    "version": "224",
+    "version": "20260731095430-ed013e9",
     "description": "PlayStation 4 emulator",
     "homepage": "https://shadps4.net/",
     "license": {
         "identifier": "GPL-2.0-only",
         "url": "https://github.com/shadps4-emu/shadps4-qtlauncher/blob/main/LICENSE"
     },
+    "notes": [
+        "ATTENTION: shadPS4 requires a copy of the official PS4 firmware to function.",
+        "See the official quickstart guide for further instructions: https://github.com/shadps4-emu/shadPS4/blob/main/documents/Quickstart/Quickstart.md"
+    ],
     "suggest": {
         "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/shadps4-emu/shadps4-qtlauncher/releases/download/v224/shadPS4QtLauncher-win64-qt-v224.zip",
-            "hash": "021871249bae6867900f62efd728a6cbdbed9934b69c28488b41d413280e2e1d"
+            "url": "https://github.com/shadps4-emu/shadps4-qtlauncher/releases/download/shadPS4QtLauncher-2026-07-31-ed013e9e3eba9ce245a50d8309aea6cd718f23e8/shadPS4QtLauncher-win64-qt-2026-07-31-ed013e9.zip",
+            "hash": "2f03660d40a0dee40047d73e296b592f16cc86ecb8d914003f918e8c676a3d35"
         }
     },
     "pre_install": [
@@ -59,7 +63,7 @@
     "shortcuts": [
         [
             "shadPS4QtLauncher.exe",
-            "shadPS4"
+            "PlayStation 4 [ps4][shadps4]"
         ]
     ],
     "persist": [
@@ -67,12 +71,20 @@
         "user"
     ],
     "checkver": {
-        "github": "https://github.com/shadps4-emu/shadps4-qtlauncher"
+        "url": "https://api.github.com/repos/shadps4-emu/shadps4-qtlauncher/releases?per_page=1",
+        "script": [
+            "$release = (Invoke-RestMethod $url | Where-Object { $_.prerelease })[0]",
+            "$time = (Get-Date $release.published_at).ToString('yyyyMMddHHmmss')",
+            "$suffix = $release.name -replace '^shadPS4QtLauncher-'",
+            "$commit = ($suffix -split '-')[-1]",
+            "return \"$time-$commit $($release.tag_name) $suffix\""
+        ],
+        "regex": "(?<version>[\\w-]+) (?<tag>[\\w-]+) (?<suffix>[\\w.-]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/shadps4-emu/shadps4-qtlauncher/releases/download/v$version/shadPS4QtLauncher-win64-qt-v$version.zip"
+                "url": "https://github.com/shadps4-emu/shadps4-qtlauncher/releases/download/$matchTag/shadPS4QtLauncher-win64-qt-$matchSuffix.zip"
             }
         }
     }

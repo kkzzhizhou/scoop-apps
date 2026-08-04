@@ -1,0 +1,57 @@
+{
+    "version": "0.7.5",
+    "description": "C盘管家 - 给普通人的 Windows 磁盘与内存维护助手 (Tauri 2 + React)",
+    "homepage": "https://github.com/YGTQ3/disk-butler",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/YGTQ3/disk-butler#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/YGTQ3/disk-butler/releases/download/v0.7.5/DiskButler-Setup.exe#/dl.7z",
+            "hash": "98e39ed0e64692be0b207cf949129d1100b036f1cb6320fe3838fe4aa53ff43f",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.diskbutler.app\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.diskbutler.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.diskbutler.app\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.diskbutler.app\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "disk-butler.exe",
+            "DiskButler"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "disk-butler.exe",
+            "DiskButler"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/YGTQ3/disk-butler/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/YGTQ3/disk-butler/releases/download/v$version/DiskButler-Setup.exe#/dl.7z"
+            }
+        }
+    }
+}
