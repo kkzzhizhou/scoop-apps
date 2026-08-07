@@ -1,0 +1,40 @@
+{
+    "version": "4.35.0",
+    "description": "网易UU远程 - 免费远程控制软件，真4K、超低延迟，支持远程办公/游戏/协助",
+    "homepage": "https://uuyc.163.com",
+    "license": "Unknown",
+    "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/UURemote_Setup.exe",
+    "hash": "06ada871964f130573e29d72ddd8e3da8dfadeb489cdf8870dd1ace49518615c",
+    "installer": {
+        "script": "Invoke-ExternalCommand \"$dir\\UURemote_Setup.exe\" -ArgumentList '/S', \"/D=$dir\" -RunAs"
+    },
+    "shortcuts": [
+        [
+            "GameViewer\\bin\\GameViewerLauncher.exe",
+            "网易UU远程"
+        ]
+    ],
+    "persist": [
+        "GameViewer\\Download",
+        "GameViewer\\config"
+    ],
+    "uninstaller": {
+        "script": [
+            "attrib -R /L \"$dir\\GameViewer\\Download\"",
+            "Remove-Item \"$dir\\GameViewer\\Download\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "attrib -R /L \"$dir\\GameViewer\\config\"",
+            "Remove-Item \"$dir\\GameViewer\\config\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Invoke-ExternalCommand \"$dir\\GameViewer\\Uninstall.exe\" -ArgumentList '/S' -RunAs",
+            "Get-Process | Where-Object { $_.Path -like \"$dir*\" } | Stop-Process -Force -ErrorAction SilentlyContinue",
+            "Start-Sleep -Seconds 10"
+        ]
+    },
+    "post_install": "Remove-Item \"$dir\\UURemote_Setup.exe\" -Force -ErrorAction SilentlyContinue",
+    "checkver": {
+        "url": "https://uuyc.163.com/download/",
+        "regex": "当前版本：V ([\\d.]+)"
+    },
+    "autoupdate": {
+        "url": "https://api.nrd.nie.163.com/api/v1/release/dl/1?channel=gwqd#/UURemote_Setup.exe"
+    }
+}
