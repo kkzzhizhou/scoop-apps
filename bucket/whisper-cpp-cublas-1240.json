@@ -23,9 +23,11 @@
     "extract_dir": "Release",
     "checkver": {
         "script": [
-            "$json = Invoke-RestMethod https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest",
-            "$tag = $json.tag_name -replace '^v',''",
-            "\"$tag-12.4.0\""
+            "$url = 'https://github.com/ggml-org/whisper.cpp/releases/latest'",
+            "$res = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing",
+            "$finalUrl = if ($res.BaseResponse.ResponseUri) { $res.BaseResponse.ResponseUri.AbsoluteUri } else { $res.BaseResponse.RequestMessage.RequestUri.AbsoluteUri }",
+            "if ($finalUrl -notmatch '/releases/tag/v([\\d.]+)$') { throw \"Unable to parse latest version from: $finalUrl\" }",
+            "\"$($Matches[1])-12.4.0\""
         ],
         "regex": "((?<app>[\\d.]+)-12\\.4\\.0)"
     },

@@ -23,9 +23,11 @@
     "hash": "1776668730f5594a0b15f930225779e863dd8280397f9ee7c6e47ccf82bbb203",
     "checkver": {
         "script": [
-            "$json = Invoke-RestMethod https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest",
-            "$tag = $json.tag_name -replace '^v',''",
-            "\"$tag-11.8.0\""
+            "$url = 'https://github.com/ggml-org/whisper.cpp/releases/latest'",
+            "$res = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing",
+            "$finalUrl = if ($res.BaseResponse.ResponseUri) { $res.BaseResponse.ResponseUri.AbsoluteUri } else { $res.BaseResponse.RequestMessage.RequestUri.AbsoluteUri }",
+            "if ($finalUrl -notmatch '/releases/tag/v([\\d.]+)$') { throw \"Unable to parse latest version from: $finalUrl\" }",
+            "\"$($Matches[1])-11.8.0\""
         ],
         "regex": "((?<app>[\\d.]+)-11\\.8\\.0)"
     },
