@@ -1,12 +1,15 @@
 {
-    "homepage": "https://pixpinapp.com/",
-    "description": "功能强大使用简单的截图/贴图工具，帮助你提高效",
-    "version": "3.4.2.2",
-    "license": "Freeware",
+    "version": "3.4.3.2",
+    "description": "Screenshots, screen recording, OCR tool.",
+    "homepage": "https://pixpin.cn/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://pixpin.cn/docs/policy/tos_zh_CN"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://download.pixpinapp.com/PixPin_win_3.4.2.2.zip",
-            "hash": "a1ba2b963a7626e364f3e0655166147c3f578b04469a6b3db22e36e17da18cb2"
+            "url": "https://down.pixpin.cn/PixPin_win_3.4.3.2.zip#/dl.zip",
+            "hash": "1ed2b048f7e1468cdd3dc869c3db0653d9308ffe4f48fb42091b0b559a90b211"
         }
     },
     "extract_dir": "PixPin",
@@ -19,16 +22,26 @@
     "persist": [
         "Config",
         "Data",
-        "History"
+        "History",
+        "OcrModel"
+    ],
+    "post_install": [
+        "$configPath = \"$persist_dir\\Config\\PixPinConfig.json\"",
+        "if (Test-Path $configPath) {",
+        "    return",
+        "}",
+        "$timestamp = [DateTimeOffset]::Now.ToUnixTimeSeconds()",
+        "$content = '{\"System.Update.UpgradeMode#s.win\":{\"t\":' + $timestamp + ',\"v\":0}}'",
+        "$content | Set-Content -Path $configPath -Encoding UTF8"
     ],
     "checkver": {
-        "url": "https://api.viewdepth.cn/app_info?app_id=pixpin&update_type=1&sys=win&ver=0.0.0",
-        "jsonpath": "$.ver_info.version"
+        "url": "https://pixpin.cn/download/",
+        "regex": "PixPin_win_(\\d+(?:\\.\\d+)*)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://download.pixpinapp.com/PixPin_win_$version.zip"
+                "url": "https://down.pixpin.cn/PixPin_win_$version.zip#/dl.zip"
             }
         }
     }
