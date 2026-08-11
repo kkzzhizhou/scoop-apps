@@ -1,0 +1,60 @@
+{
+    "version": "1.4.2",
+    "description": "Parametric/graphic equalizer",
+    "homepage": "https://sourceforge.net/projects/equalizerapo/",
+    "license": "GPL-2.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-x64-1.4.2.exe#/setup.exe",
+            "hash": "sha1:f599c3a16d27864d330529a012fc23a37abdd06d"
+        },
+        "32bit": {
+            "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-x86-1.4.2.exe#/setup.exe",
+            "hash": "sha1:26143075a47ed26419919f735980377289e55688"
+        },
+        "arm64": {
+            "url": "https://downloads.sourceforge.net/project/equalizerapo/1.4.2/EqualizerAPO-ARM64-1.4.2.exe#/setup.exe",
+            "hash": "sha1:80bf3d9cc7f815de81f4be72f48303d0298a982c"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) {",
+            "    error \"Administrator rights are required to install $app.\"",
+            "    break",
+            "}",
+            "",
+            "Start-Job {",
+            "    while ($configurator_process -eq $null) {",
+            "        Start-Sleep -Milliseconds 250",
+            "        $configurator_process = Get-Process | Where-Object { $_.name -eq 'Configurator' }",
+            "    }",
+            "",
+            "    $configurator_process | ForEach-Object { Stop-Process -Id $_.Id }",
+            "} | Out-Null",
+            "",
+            "Start-Process \"$dir\\setup.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null",
+            "Remove-Item \"$dir\\setup.exe\""
+        ]
+    },
+    "uninstaller": {
+        "script": "Start-Process \"$Env:ProgramFiles\\EqualizerAPO\\Uninstall.exe\" -ArgumentList '/S' -Wait -Verb RunAs | Out-Null"
+    },
+    "checkver": {
+        "url": "https://sourceforge.net/projects/equalizerapo/files/",
+        "regex": "equalizerapo/files/([\\d.]+)/"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.sourceforge.net/project/equalizerapo/$version/EqualizerAPO-x64-$version.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://downloads.sourceforge.net/project/equalizerapo/$version/EqualizerAPO-x86-$version.exe#/setup.exe"
+            },
+            "arm64": {
+                "url": "https://downloads.sourceforge.net/project/equalizerapo/$version/EqualizerAPO-ARM64-$version.exe#/setup.exe"
+            }
+        }
+    }
+}

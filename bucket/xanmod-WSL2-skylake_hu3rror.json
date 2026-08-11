@@ -1,0 +1,46 @@
+{
+    "homepage": "https://github.com/Locietta/xanmod-kernel-WSL2",
+    "description": "Xanmod Kernel for WSL2.",
+    "license": "GPL-2.0",
+    "extract_dir": "",
+    "bin": "",
+    "notes": "The manifest is from https://github.com/Locietta/sniffer",
+    "post_install": [
+        "#########################################",
+        "# set `.wslconfig` to use custom kernel #",
+        "#########################################",
+        "$ini = Add-Type -memberDefinition @\"",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern long WritePrivateProfileString (string section, string key, string val, string filePath);",
+        "\"@ -passthru -name CustomWSL2ProfileInstall -UsingNamespace System.Text",
+        "$kernel_path=\"$dir\\bzImage-skylake\" -replace \"\\\\\", \"\\\\\" # double all back-slashess",
+        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $kernel_path, \"$env:USERPROFILE\\.wslconfig\")"
+    ],
+    "post_uninstall": [
+        "##########################################",
+        "# recover `.wslconfig` to default kernel #",
+        "##########################################",
+        "$ini = Add-Type -memberDefinition @\"",
+        "[DllImport(\"Kernel32\")]",
+        "public static extern long WritePrivateProfileString (string section, string key, string val, string filePath);",
+        "\"@ -passthru -name CustomWSL2ProfileUninstall -UsingNamespace System.Text",
+        "$null = $ini::WritePrivateProfileString(\"wsl2\", \"kernel\", $null, \"$env:USERPROFILE\\.wslconfig\")"
+    ],
+    "version": "6.8.11-1.1",
+    "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/6.8.11-locietta-WSL2-xanmod1.1/bzImage-skylake",
+    "hash": "7e844269ce4fc25ac5806622fb52234b71b5a4c8041ef5b63d368143ce5276c1",
+    "checkver": {
+        "script": [
+            "$LATEST = ((curl.exe -sL -H \"Authorization: Bearer $(Get-GitHubToken)\" https://api.github.com/repos/Locietta/xanmod-kernel-WSL2/tags?per_page=60 | ConvertFrom-Json).name | Select-String 'lts' -NotMatch)[0]",
+            "$LATEST"
+        ],
+        "regex": "(?<main>[\\d.]+)-locietta-WSL2-xanmod(?<xanmod>[\\d.]+)",
+        "replace": "${1}-${2}"
+    },
+    "autoupdate": {
+        "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod/bzImage-skylake",
+        "hash": {
+            "url": "https://github.com/Locietta/xanmod-kernel-WSL2/releases/download/$matchMain-locietta-WSL2-xanmod$matchXanmod/bzImage-skylake.sha256"
+        }
+    }
+}
