@@ -5,16 +5,11 @@
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://central.github.com/deployments/desktop/desktop/latest/win32#/dl.7z_",
-            "hash": "436b928ccef4729b0e37ffcab4cfe3b64662895a3003fd1535aca3301a51dc4a"
+            "url": "https://github.com/desktop/desktop/releases/download/release-3.6.4/GitHubDesktop-3.6.4-x64-full.nupkg",
+            "hash": "1633f119f79b5705b4aad2519643c127b5d760557d827b5b8abc7f9e6cff09aa"
         }
     },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\$fname\" \"$dir\\extract\"",
-        "Get-Item \"$dir\\extract\\GitHubDesktop*.nupkg\" | Rename-Item -NewName 'github.nupkg'",
-        "Expand-7zipArchive \"$dir\\extract\\github.nupkg\" \"$dir\" -ExtractDir 'lib\\net45'",
-        "Remove-Item \"$dir\\extract\", \"$dir\\$fname\" -Force -Recurse"
-    ],
+    "extract_dir": "lib\\net45",
     "bin": "GitHubDesktop.exe",
     "shortcuts": [
         [
@@ -23,14 +18,18 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repositories/58559694/tags",
-        "regex": "tags/release-([\\d.]+)\""
+        "github": "https://github.com/desktop/desktop",
+        "jsonpath": "$.tag_name",
+        "regex": "release-([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://central.github.com/deployments/desktop/desktop/latest/win32#/dl.7z_"
+                "url": "https://github.com/desktop/desktop/releases/download/release-$version/GitHubDesktop-$version-x64-full.nupkg"
             }
+        },
+        "hash": {
+            "url": "$baseurl/GitHub.Desktop-$version-checksums.txt"
         }
     }
 }
