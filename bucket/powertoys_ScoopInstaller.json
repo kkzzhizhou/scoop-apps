@@ -1,0 +1,93 @@
+{
+    "version": "0.100.2",
+    "description": "A set of utilities for power users to tune and streamline their Windows experience for greater productivity.",
+    "homepage": "https://github.com/microsoft/PowerToys",
+    "license": "MIT",
+    "notes": [
+        "Add PowerToys context menu option by running:",
+        "Invoke-Expression -Command \"& `\"$dir\\install-context.ps1`\"\"",
+        "",
+        "If an error occurs when updating or uninstalling, execute the following command then retry:",
+        "`Stop-Process -Name 'explorer'`"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/microsoft/PowerToys/releases/download/v0.100.2/PowerToysUserSetup-0.100.2-x64.exe",
+            "hash": "945fdf327e4d38e4ced61b0727b7ab8a1222958782982052989ddf7cb7096f62"
+        },
+        "arm64": {
+            "url": "https://github.com/microsoft/PowerToys/releases/download/v0.100.2/PowerToysUserSetup-0.100.2-arm64.exe",
+            "hash": "5554984d72c30d5fd26355569d1ca8d63b74f0062ee4e59e0186e28216c837ae"
+        }
+    },
+    "installer": {
+        "script": [
+            "Expand-DarkArchive \"$dir\\$fname\" \"$dir\\.tmp\"",
+            "Get-ChildItem \"$dir\\.tmp\\AttachedContainer\\PowerToysUserSetup*.msi\" | Rename-Item -NewName 'PowerToysSetup.msi' -Force",
+            "$ver = ([xml](Get-Content -Raw \"$dir\\.tmp\\UX\\manifest.xml\" -Encoding utf8)).BurnManifest.EngineVersion",
+            "if (($null -ne $ver) -and ($ver -like \"5.*\")) {",
+            "    Expand-MsiArchive \"$dir\\.tmp\\AttachedContainer\\PowerToysSetup.msi\" \"$dir\" -ExtractDir 'LocalApp\\PowerToys'",
+            "} else {",
+            "    Expand-MsiArchive \"$dir\\.tmp\\AttachedContainer\\PowerToysSetup.msi\" \"$dir\" -ExtractDir 'PowerToys'",
+            "}",
+            "Remove-Item \"$dir\\.tmp\", \"$dir\\$fname\" -Force -Recurse",
+            "Get-Content \"$dir\\WinUI3Apps\\hardlinks.txt\" -ErrorAction Ignore | ForEach-Object {",
+            "    Copy-Item \"$dir\\$_\" \"$dir\\WinUI3Apps\\$_\" -Force",
+            "}"
+        ]
+    },
+    "post_install": [
+        "'install-context', 'uninstall-context' | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_.ps1\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_.ps1\"",
+        "        $content = $content.Replace('{{scoop_dir}}', $original_dir)",
+        "        if ($global) {",
+        "            $content = $content.Replace('{{install_scope}}', 'perMachine')",
+        "            $content = $content.Replace('{{registry_scope}}', 'HKLM')",
+        "        }",
+        "        $content = $content.Replace('{{install_scope}}', 'perUser')",
+        "        $content = $content.Replace('{{registry_scope}}', 'HKCU')",
+        "        $content | Set-Content -Path \"$dir\\$_.ps1\"",
+        "    }",
+        "}",
+        "$regpath = 'HKCU:\\Software\\Classes\\powertoys'",
+        "if ($global) {",
+        "    $regpath = $regpath.Replace('HKCU', 'HKLM')",
+        "}",
+        "if (Test-Path -Path $regpath) {",
+        "    Remove-Item -Path $regpath -Recurse -Force | Out-Null",
+        "    Invoke-Expression -Command \"& `\"$dir\\install-context.ps1`\"\"",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "PowerToys.exe",
+            "PowerToys"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$regpath = 'HKCU:\\Software\\Classes\\powertoys'",
+            "if ($global) {",
+            "    $regpath = $regpath.Replace('HKCU', 'HKLM')",
+            "}",
+            "if (Test-Path -Path $regpath) {",
+            "    Invoke-Expression -Command \"& `\"$dir\\uninstall-context.ps1`\"\"",
+            "    if ($cmd -ne 'uninstall') {",
+            "        New-Item -Path $regpath -Force | Out-Null",
+            "    }",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/microsoft/PowerToys/releases/download/v$version/PowerToysUserSetup-$version-x64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/microsoft/PowerToys/releases/download/v$version/PowerToysUserSetup-$version-arm64.exe"
+            }
+        }
+    }
+}
