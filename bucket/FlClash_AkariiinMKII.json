@@ -1,0 +1,70 @@
+{
+    "##": "Extract to a subfolder to avoid overwriting built-in manifest.json, which would break FlClashHelperService.",
+    "version": "0.8.95",
+    "description": "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
+    "homepage": "https://github.com/chen08209/FlClash",
+    "license": "GPL-3.0-only",
+    "depends": [
+        "main/gsudo",
+        "Scoop4kariiin/Scoop4kariiinUtils"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.8.95/FlClash-0.8.95-windows-amd64.zip",
+            "hash": "cc0b5cdb55dd6a50af00f4e32faf1fa1ab41eff2b8c7a0e53b984b4835026f9b"
+        },
+        "arm64": {
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.8.95/FlClash-0.8.95-windows-arm64.zip",
+            "hash": "94fac84fc3b779860d3754bed8ef84252d737e7d27eb64d4f0939d2a72f3c394"
+        }
+    },
+    "extract_to": "app",
+    "installer": {
+        "script": [
+            "Write-Host \"\"",
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\com.follow\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue"
+        ]
+    },
+    "shortcuts": [
+        [
+            "app\\FlClash.exe",
+            "FlClash"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "Write-Host \"\"",
+            "Import-Module -Name Scoop4kariiinUtils -ErrorAction Stop",
+            "Dismount-ExternalRuntimeData -Target \"com.follow\" -AppData",
+            "Remove-Module -Name Scoop4kariiinUtils -ErrorAction SilentlyContinue",
+            "if (-not (Get-Service -Name \"FlClashHelperService\" -ErrorAction SilentlyContinue)) { return }",
+            "Write-Host \"Admin privileges are required to clean up system service and ensure uninstallation success.\" -ForegroundColor Yellow",
+            "Write-Host \"Please approve permission request if UAC prompt pops up.\" -ForegroundColor Yellow",
+            "Start-Sleep -Seconds 1",
+            "Write-Host \"Cleaning up service `'FlClashHelperService`'...\" -NoNewline",
+            "gsudo { sc.exe stop FlClashHelperService | Out-Null; sc.exe delete FlClashHelperService | Out-Null }",
+            "if ($LastExitCode) {",
+            "    Write-Host \"If the uninstallation failed with file in use errors.\" -ForegroundColor Yellow",
+            "    Write-Host \"Manually stop and delete the service `'FlClashHelperService`' and try again.\" -ForegroundColor Yellow",
+            "} else {",
+            "    Write-Host \"success.\" -ForegroundColor Green",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-amd64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-arm64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
+        }
+    }
+}
