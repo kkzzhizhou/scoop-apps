@@ -1,0 +1,37 @@
+{
+    "version": "2026-02-15T05.56.10",
+    "description": "FFDec-MCP - 为 AI 助手提供 SWF 反编译与分析能力的 MCP 服务器",
+    "homepage": "https://github.com/sublimnl/ffdecmcp",
+    "license": "MIT",
+    "url": "https://github.com/sublimnl/ffdecmcp/archive/refs/heads/main.zip#/ffdecmcp.zip",
+    "hash": "sha256:56CCBBE3E8AF81741039F4BC7863AF878C1BBD72F53698CC00C18E0288620E98",
+    "extract_dir": "ffdecmcp-main",
+    "suggest": {
+        "python": "uv",
+        "java": "sec/oraclejdk17"
+    },
+    "pre_install": [
+        "Set-Content \"$dir\\ffdecmcp.bat\" '@pushd %~dp0', '@uv run python -m ffdecmcp %*', '@popd' -Encoding Ascii"
+    ],
+    "post_install": [
+        "uv venv \"$dir\\.venv\"",
+        "uv pip install -e \"$dir\" --python \"$dir\\.venv\\Scripts\\python.exe\""
+    ],
+    "bin": "ffdecmcp.bat",
+    "checkver": {
+        "url": "https://api.github.com/repos/sublimnl/ffdecmcp/commits",
+        "regex": "([\\d-]+T)(\\d+):(\\d+):(\\d+)",
+        "replace": "$1$2.$3.$4"
+    },
+    "autoupdate": {
+        "url": "https://github.com/sublimnl/ffdecmcp/archive/refs/heads/main.zip#/ffdecmcp.zip"
+    },
+    "notes": [
+        "【工具类型】: MCP 服务",
+        "【主要功能】: 将 JPEXS Free Flash Decompiler (FFDec) 封装为 MCP 工具，支持 SWF 反编译、ActionScript 提取、资源导出、去混淆等操作",
+        "【适用场景】: 在 Claude、Cursor 等 MCP 客户端中集成 SWF 分析能力，实现 Flash 逆向工程与安全审计",
+        "【技术特点】: 基于 Python 3.10+ 与 FastMCP，首次运行自动下载 FFDec JAR（需 Java 环境），支持 6 项核心工具：decompile_swf、extract_actionscript、list_symbols、extract_assets、get_swf_metadata、deobfuscate",
+        "【注意事项】: 运行时需 Java 环境（推荐 JDK 17+）；首次启动会自动将 FFDec 下载至 ~/.ffdecmcp/；可通过 --ffdec-path 参数或 FFDEC_PATH 环境变量指定现有 FFDec 路径；MCP 客户端配置命令示例：claude mcp add ffdecmcp -- uvx ffdecmcp"
+    ]
+}
+

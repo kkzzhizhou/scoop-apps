@@ -1,34 +1,72 @@
 {
-    "homepage": "http://tomotoes.com/scrcpy-gui/",
+    "version": "2.4.3",
     "description": "A simple & beautiful GUI application for scrcpy",
-    "version": "1.5.1",
-    "license": "GPL-3.0-only",
+    "homepage": "http://simonaking.com/scrcpy-gui/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/SimonAKing/scrcpy-gui#GPL-3.0-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Tomotoes/scrcpy-gui/releases/download/1.5.1/ScrcpyGui-1.5.1.win64.exe#/scrcpy-gui-1.5.1.win64.zip",
-            "hash": "a377b5fdbd4daa6aeaeaf384ffafced3f1c67b8cb4871d1c09315aa91d202350",
-            "installer": {
-                "script": [
-                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninst*\" -Force -Recurse"
-                ]
-            }
+            "url": "https://github.com/SimonAKing/scrcpy-gui/releases/download/v2.4.3/Scrcpy.GUI-2.4.3-win-x64.exe#/dl.7z",
+            "hash": "51a2cb50212b9ed76cadea8d658ca55da7f1df7e987880b17fd2ee220d608db0",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "32bit": {
+            "url": "https://github.com/SimonAKing/scrcpy-gui/releases/download/v2.4.3/Scrcpy.GUI-2.4.3-win-ia32.exe#/dl.7z",
+            "hash": "d18f277b2d729bc10d78b6c8d8d6a1d00d7f8ce2ede81530c3f63aa11ab2f7b5",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
         }
     },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\scrcpy-gui\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\scrcpy-gui\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Scrcpy GUI.exe",
+            "ScrcpyGUI"
+        ]
+    ],
     "shortcuts": [
         [
-            "ScrcpyGui.exe",
-            "ScrcpyGui"
+            "Scrcpy GUI.exe",
+            "ScrcpyGUI"
         ]
     ],
     "checkver": {
-        "github": "https://github.com/Tomotoes/scrcpy-gui"
+        "github": "https://api.github.com/repos/SimonAKing/scrcpy-gui/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Tomotoes/scrcpy-gui/releases/download/$version/ScrcpyGui-$version.win64.exe#/scrcpy-gui-1.5.1.win64.zip"
+                "url": "https://github.com/SimonAKing/scrcpy-gui/releases/download/v$version/Scrcpy.GUI-$version-win-x64.exe#/dl.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/SimonAKing/scrcpy-gui/releases/download/v$version/Scrcpy.GUI-$version-win-ia32.exe#/dl.7z"
             }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
         }
     }
 }

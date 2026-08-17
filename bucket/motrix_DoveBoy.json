@@ -2,17 +2,36 @@
     "version": "1.8.19",
     "description": "A full-featured download manager.",
     "homepage": "https://motrix.app",
-    "license": "MIT",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/agalwood/Motrix#License-1-ov-file"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/agalwood/Motrix/releases/download/v1.8.19/Motrix-Setup-1.8.19.exe#/dl.7z",
             "hash": "sha512:b8af895ba86f77ed5837b8a65580ec828b45fab647998bc1c82dc82426b857340a4306fc5222a6fb64c0f1c338bb221b90d8f563c7c7aa87d46664722ad56ab9",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+                "Remove-Item \"$dir\\`$*\", \"$dir\\resources\" -Force -Recurse"
             ]
         }
     },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Motrix.exe",
     "shortcuts": [
         [
             "Motrix.exe",
@@ -20,8 +39,8 @@
         ]
     ],
     "checkver": {
-        "github": "https://api.github.com/repos/agalwood/Motrix/releases",
-        "jp": "$[0].tag_name",
+        "github": "https://api.github.com/repos/agalwood/Motrix/releases/latest",
+        "jp": "$.tag_name",
         "regex": "v([\\d.]+)"
     },
     "autoupdate": {
