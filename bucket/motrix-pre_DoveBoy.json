@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0-beta.18",
+    "description": "A full-featured download manager.",
+    "homepage": "https://motrix.app",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/agalwood/Motrix#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/agalwood/Motrix/releases/download/v2.0.0-beta.18/Motrix-Setup-2.0.0-beta.18.exe#/dl.7z",
+            "hash": "sha512:6382c6c7f8c36fca40cfd8309f9e37d6fc39447f8c6d7c04697c32841efcfc4f421ac0ba1181ec22f5d101de8142c536ab3aa43b977e515dc7aadb546ab42166",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\resources\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Motrix.exe",
+    "shortcuts": [
+        [
+            "Motrix.exe",
+            "Motrix"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/agalwood/Motrix/releases",
+        "jp": "$[*].tag_name",
+        "regex": "v([\\d.]+-[\\w.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-Setup-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/beta.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

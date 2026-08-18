@@ -1,30 +1,50 @@
 {
-    "version": "2.24.7",
+    "version": "2.24.9",
     "description": "LLM client by douyin",
     "homepage": "https://doubao.com",
     "license": "freeware",
-    "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/2.24.7/Doubao_installer_2.24.7.exe#/dl.7z",
-    "hash": "f414971a9af467accd2d17c0e5afaecbd17d50f0f51f6d702c5ee2ede70ab4fa",
+    "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/2.24.9/Doubao_installer_2.24.9.exe#/dl.7z",
+    "hash": "ef84aae2a5db4524dfaaacce6246262306262391522f01298ac60c83469fde8b",
     "shortcuts": [
         [
             "Doubao.exe",
-            "Doubao"
+            "Doubao",
+            "--force-device-scale-factor=1.5"
         ]
     ],
+    "post_install": [
+        "# 数据迁移",
+        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
+        "if (Test-Path $runtimeCachePersist) {",
+        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
+        "} elseif (Test-Path $runtimeCache) {",
+        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
+        "}",
+        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "persist": "User Data",
     "checkver": {
         "script": [
-            ". \"$pwd\\bin\\utils.ps1\"",
-            "$dl_info = get_installer_info 'ByteDance/Doubao'",
-            "\"ver:$($dl_info.PackageVersion);\"",
-            "\"x64:$($dl_info.x64_exe.InstallerUrl);\""
+            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/ByteDance.Doubao'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
         ],
-        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?);"
+        "regex": "Version:\\s*([0-9.]+)"
     },
     "autoupdate": {
-        "url": "$matchX64#/dl.7z",
+        "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/$version/Doubao_installer_$version.exe#/dl.7z",
         "hash": {
             "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/b/ByteDance/Doubao/$version/ByteDance.Doubao.installer.yaml",
-            "regex": "Architecture: x64[\\s\\S]+?InstallerSha256:\\s?(.+)"
+            "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
         }
     }
 }
