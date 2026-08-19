@@ -4,8 +4,11 @@
     "homepage": "https://github.com/wez/wezterm",
     "license": "Apache-2.0",
     "notes": [
-        "Add \"Open with Wezterm\" as a context menu option by running:",
-        "reg import \"$dir\\install-context.reg\""
+        "- Add \"Open with Wezterm\" as a context menu option by running:",
+        "  reg import \"$dir\\install-context.reg\"",
+        "- Config is in the persisted $dir/user folder. Edit $dir/user/main.lua as the entrypoint. $dir/wezterm.lua should be left as is.",
+        "- If you're moving to this manifest from another one for some reason, just copy your $dir/wezterm.lua into $dir/user/main.lua",
+        "  and set $dir/wezterm.lua to the following:  return require(\"user/main\")"
     ],
     "architecture": {
         "64bit": {
@@ -16,10 +19,15 @@
         "function create($path, $type, $content) {",
         "   if (-not (Test-Path \"$path\")) {",
         "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
-        "       Write-Output \"Creating $path...\"",
+        "       Write-Host \"Creating $path...\"",
         "   }",
         "}",
-        "create $dir/wezterm.lua File"
+        "Write-Host 'Checking defaults...'",
+        "$bucketName = (scoop bucket list | Where-Object Source -Match 'deide-bucket').Name",
+        "$defaultConfig = Get-Content \"$bucketsdir\\$bucketName\\defaults\\$app\\main.lua\"",
+        "create $persist_dir/wezterm.lua File 'return require(\"user/main\")'",
+        "create $persist_dir/user Directory",
+        "create $persist_dir/user/main.lua File \"$defaultConfig\""
     ],
     "installer": {
         "script": [
@@ -29,8 +37,8 @@
         ]
     },
     "post_install": [
-        "$weztermPath = \"$dir\\wezterm-gui.exe\".Replace('\\', '\\\\')",
         "$bucketName = (scoop bucket list | Where-Object Source -Match 'deide-bucket').Name",
+        "$weztermPath = \"$dir\\wezterm-gui.exe\".Replace('\\', '\\\\')",
         "'install-context', 'uninstall-context' | ForEach-Object {",
         "    if (Test-Path \"$bucketsdir\\$bucketName\\scripts\\$app\\$_.reg\") {",
         "        $content = Get-Content \"$bucketsdir\\$bucketName\\scripts\\$app\\$_.reg\"",

@@ -1,11 +1,11 @@
 {
-    "homepage": "https://github.com/KurtBestor/Hitomi-Downloader",
+    "homepage": "https://gitflic.ru/project/kurtbestor/hitomi-downloader",
     "description": "🍰 Desktop utility to download images/videos/music/text from various websites, and more.",
     "version": "4.2",
     "license": "Unlicense",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/KurtBestor/Hitomi-Downloader/releases/download/v4.2/hitomi_downloader_GUI.zip",
+            "url": "https://gitflic.ru/project/kurtbestor/hitomi-downloader/release/a8b96f1b-eb39-44f9-90de-8cec329f3f6b/c9f47b36-3f80-48c9-847c-713a103ca74c/download#/hitomi_downloader_GUI.zip",
             "hash": "98407a9028db9c0a24dcdb8aa11083dd3271fc6c9558edffb7d63f58dda9ab3b",
             "pre_install": "if(!(Test-Path \"$persist_dir\\hitomi_downloader_GUI.ini\")) { New-Item \"$dir\\hitomi_downloader_GUI.ini\" -ItemType File -Force | Out-Null }"
         }
@@ -21,14 +21,25 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/KurtBestor/Hitomi-Downloader",
-        "regex": "Downloader\\sv(?<major>[\\d.]+)(?<build>[a-z]?)?",
-        "replace": "${major}${build}"
+        "url": "https://gitflic.ru/project/kurtbestor/hitomi-downloader/release",
+        "script": [
+            "$url = 'https://gitflic.ru/project/kurtbestor/hitomi-downloader/release'",
+            "$page = (Invoke-WebRequest -UseBasicParsing $url).Content",
+            "$releaseUrl = [regex]::Match($page, '/project/kurtbestor/hitomi-downloader/release/([0-9a-f-]+)').Groups[1].Value",
+            "if (!$releaseUrl) { error \"Could not find GitFlic release UUID\"; return }",
+            "$releasePage = \"https://gitflic.ru/project/kurtbestor/hitomi-downloader/release/$releaseUrl\"",
+            "$release = (Invoke-WebRequest -UseBasicParsing $releasePage).Content",
+            "$version = [regex]::Match($release, 'Hitomi Downloader\\s*-\\s*v([\\d.]+)').Groups[1].Value",
+            "$file = [regex]::Match($release, '/project/kurtbestor/hitomi-downloader/release/[0-9a-f-]+/([0-9a-f-]+)/download').Groups[1].Value",
+            "if (!$version -or !$file) { error \"Could not find release version or download UUID\"; return }",
+            "Write-Output \"$version $releaseUrl $file\""
+        ],
+        "regex": "([\\d.]+) ([0-9a-f-]+) ([0-9a-f-]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/KurtBestor/Hitomi-Downloader/releases/download/v$matchMajor$matchBuild/hitomi_downloader_GUI.zip"
+                "url": "https://gitflic.ru/project/kurtbestor/hitomi-downloader/release/$match2/$match3/download#/hitomi_downloader_GUI.zip"
             }
         }
     }
