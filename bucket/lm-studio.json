@@ -1,5 +1,5 @@
 {
-    "version": "0.4.20-1",
+    "version": "0.4.21-2",
     "description": "LM Studio is an easy-to-use desktop app for experimenting with local and open-source Large Language Models (LLMs).",
     "homepage": "https://lmstudio.ai/",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://installers.lmstudio.ai/win32/x64/0.4.20-1/LM-Studio-0.4.20-1-x64.exe",
-            "hash": "cae7b4a3dbdf97252f35d2d2d1b70e81415f1aac92b3e4779994bdec84ec067d"
+            "url": "https://installers.lmstudio.ai/win32/x64/0.4.21-2/LM-Studio-0.4.21-2-x64.exe",
+            "hash": "a781f188a593c847b52b21c1486e7ad8c6e2d0748f6ec2840e1a545e5a2ed196"
         }
     },
     "installer": {
@@ -198,9 +198,20 @@
     ],
     "persist": "data",
     "checkver": {
-        "url": "https://lmstudio.ai/download",
-        "regex": "win32.*?x64.*?version.*?([\\d.]+).*?build.*?([\\d]+)",
-        "replace": "${1}-${2}"
+        "script": [
+            "$req = [System.Net.HttpWebRequest]::Create('https://lmstudio.ai/download/latest/win32/x64')",
+            "$req.Method = 'HEAD'",
+            "$req.AllowAutoRedirect = $false",
+            "$resp = $null",
+            "try {",
+            "    $resp = $req.GetResponse()",
+            "    $loc = $resp.Headers['Location']",
+            "} finally {",
+            "    if ($resp) { $resp.Close() }",
+            "}",
+            "if ($loc -match 'x64/([\\d.]+-\\d+)/LM-Studio') { Write-Output $Matches[1] }"
+        ],
+        "regex": "([\\d.]+-\\d+)"
     },
     "autoupdate": {
         "architecture": {

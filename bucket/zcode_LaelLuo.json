@@ -1,12 +1,12 @@
 {
-    "version": "3.3.5",
+    "version": "3.8.1",
     "description": "智谱 ZCode - GLM 官方适配的 AI 编程开发工具（IDE）。",
     "homepage": "https://zcode.z.ai/cn",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.3.5/ZCode-3.3.5-win-x64.exe#/dl.7z",
-            "hash": "a6d70daa0919557722ccb60dace2bbf41f889668c37e08e984948f6c630e25fa"
+            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.8.1/windows-x64/ZCode-3.8.1-win-x64.exe#/dl.7z",
+            "hash": "3ba15b6e13ec7557b12ef3c78d520d5112d50433b2523087b3731b35068f3b01"
         }
     },
     "pre_install": [
@@ -20,13 +20,46 @@
         ]
     ],
     "checkver": {
-        "url": "https://zcode.z.ai/cn/changelog",
-        "regex": "font-mono text-sm\">([\\d.]+)</span>"
+        "script": [
+            "$ProgressPreference = 'SilentlyContinue'",
+            "$dlBase = 'https://cdn-zcode.z.ai/zcode/electron/releases/{0}/windows-x64/ZCode-{0}-win-x64.exe'",
+            "function Test-ZCodeVer([string]$v) {",
+            "    try {",
+            "        $r = Invoke-WebRequest -Uri ($dlBase -f $v) -Method Head -UseBasicParsing -TimeoutSec 15",
+            "        return ($r.StatusCode -eq 200 -or $r.StatusCode -eq 206)",
+            "    } catch { return $false }",
+            "}",
+            "# changelog 页面作基线(页面滞后无妨,CDN 探测向上补齐)",
+            "$seed = '3.3.5'",
+            "try {",
+            "    $html = (Invoke-WebRequest -Uri 'https://zcode.z.ai/cn/changelog' -UseBasicParsing -TimeoutSec 30).Content",
+            "    if ($html -match 'font-mono text-sm\">([\\d.]+)</span>') { $seed = $Matches[1] }",
+            "} catch { }",
+            "$s = [version]$seed",
+            "$best = $seed",
+            "$minor = $s.Minor",
+            "while ($minor -le ($s.Minor + 8)) {",
+            "    $any = $false",
+            "    for ($patch = 0; $patch -le 20; $patch++) {",
+            "        $v = \"$($s.Major).$minor.$patch\"",
+            "        if (Test-ZCodeVer $v) {",
+            "            $any = $true",
+            "            if ([version]$v -gt [version]$best) { $best = $v }",
+            "        }",
+            "    }",
+            "    if (-not $any) { break }",
+            "    $minor++",
+            "}",
+            "$nm = \"$($s.Major + 1).0.0\"",
+            "if ((Test-ZCodeVer $nm) -and [version]$nm -gt [version]$best) { $best = $nm }",
+            "$best"
+        ],
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://cdn-zcode.z.ai/zcode/electron/releases/$version/ZCode-$version-win-x64.exe#/dl.7z"
+                "url": "https://cdn-zcode.z.ai/zcode/electron/releases/$version/windows-x64/ZCode-$version-win-x64.exe#/dl.7z"
             }
         }
     },
