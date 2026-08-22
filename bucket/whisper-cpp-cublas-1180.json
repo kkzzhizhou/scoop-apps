@@ -23,11 +23,12 @@
     "hash": "1776668730f5594a0b15f930225779e863dd8280397f9ee7c6e47ccf82bbb203",
     "checkver": {
         "script": [
-            "$url = 'https://github.com/ggml-org/whisper.cpp/releases/latest'",
-            "$res = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing",
-            "$finalUrl = if ($res.BaseResponse.ResponseUri) { $res.BaseResponse.ResponseUri.AbsoluteUri } else { $res.BaseResponse.RequestMessage.RequestUri.AbsoluteUri }",
-            "if ($finalUrl -notmatch '/releases/tag/v([\\d.]+)$') { throw \"Unable to parse latest version from: $finalUrl\" }",
-            "\"$($Matches[1])-11.8.0\""
+            "$headers = @{ 'User-Agent' = 'Scoop' }",
+            "if ($GitHubToken) { $headers['Authorization'] = 'token ' + $GitHubToken }",
+            "$rels = Invoke-RestMethod -Uri 'https://api.github.com/repos/ggml-org/whisper.cpp/releases?per_page=100' -Headers $headers",
+            "$tag = ($rels | Where-Object { -not $_.prerelease -and -not $_.draft -and $_.tag_name -match '^v[\\d.]+$' } | Select-Object -First 1).tag_name",
+            "if (-not $tag) { throw 'No stable v-tag release found' }",
+            "\"$($tag.TrimStart('v'))-11.8.0\""
         ],
         "regex": "((?<app>[\\d.]+)-11\\.8\\.0)"
     },

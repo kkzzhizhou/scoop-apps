@@ -1,0 +1,53 @@
+{
+    "version": "2.26.0-beta.1",
+    "description": "High-precision automation assistant. Designed for heavy-duty operations and maximum efficiency in Arknights: Endfield.",
+    "homepage": "https://github.com/MaaEnd/MaaEnd",
+    "license": "AGPL-3.0",
+    "pre_install": [
+        "if (Test-Path \"$(appdir maaend)\") {",
+        "    error 'MaaEnd is already installed. You are trying to install/update MaaEnd-Beta.';",
+        "    throw 'Abort'",
+        "} else { if ($cmd -eq 'update') {",
+        " Start-Process powershell -ArgumentList '-NoProfile -Command Stop-Process -Name \"MaaEnd\" -Force' -Verb RunAs -WindowStyle Hidden -Wait",
+        "  };",
+        "}"
+    ],
+    "pre_uninstall": "Start-Process powershell -ArgumentList '-NoProfile -Command Stop-Process -Name \"MaaEnd\" -Force' -Verb RunAs -WindowStyle Hidden",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/MaaEnd/MaaEnd/releases/download/v2.26.0-beta.1/MaaEnd-win-x86_64-v2.26.0-beta.1.zip",
+            "hash": "d31076df9029bd3569d46d822f3893e34857d35988daa03f49525b467850846c"
+        },
+        "arm64": {
+            "url": "https://github.com/MaaEnd/MaaEnd/releases/download/v2.26.0-beta.1/MaaEnd-win-aarch64-v2.26.0-beta.1.zip",
+            "hash": "91917fac784ffb55779fffdf4ca34dd384ad681b0a18e7568fcc59731978f8f4"
+        }
+    },
+    "bin": "MaaEnd.exe",
+    "shortcuts": [
+        [
+            "MaaEnd.exe",
+            "MaaEnd"
+        ]
+    ],
+    "persist": [
+        "cache",
+        "config",
+        "debug"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/MaaEnd/MaaEnd/releases",
+        "jsonpath": "$[?(@.prerelease == true)].tag_name",
+        "regex": "(?!v)([\\w.-]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/MaaEnd/MaaEnd/releases/download/v$version/MaaEnd-win-x86_64-v$version.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/MaaEnd/MaaEnd/releases/download/v$version/MaaEnd-win-aarch64-v$version.zip"
+            }
+        }
+    }
+}

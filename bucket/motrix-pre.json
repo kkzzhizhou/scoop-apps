@@ -1,29 +1,56 @@
 {
-    "version": "2.0.0-beta.19",
-    "description": "A full-featured download manager (Pre-release).",
+    "version": "2.0.0-beta.21",
+    "description": "A full-featured download manager.",
     "homepage": "https://motrix.app",
-    "license": "MIT",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/agalwood/Motrix#License-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/agalwood/Motrix/releases/download/v2.0.0-beta.19/Motrix-2.0.0-beta.19-win.zip",
-            "hash": "0464374e2f23c4ccb1b1e87e422f8268c8110abb41a8121f2f669aac18dfc1ac"
+            "url": "https://github.com/agalwood/Motrix/releases/download/v2.0.0-beta.21/Motrix-Setup-2.0.0-beta.21.exe#/dl.7z",
+            "hash": "sha512:977f59486ed0a55a58499f4f5cd71345e4a71c2bd1c1ec9a72bd1672eac20ace99f127f0eb1d1a9884f6194206e0bd500dd273c30c972a86d7186c728f4e8929",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\resources\" -Force -Recurse"
+            ]
         }
     },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Motrix\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Motrix.exe",
     "shortcuts": [
         [
             "Motrix.exe",
-            "Motrix (Pre-release)"
+            "Motrix"
         ]
     ],
     "checkver": {
         "github": "https://api.github.com/repos/agalwood/Motrix/releases",
-        "jsonpath": "$[0].tag_name",
-        "regex": "^v([\\w.-]+)$"
+        "jp": "$[*].tag_name",
+        "regex": "v([\\d.]+-[\\w.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-$version-win.zip"
+                "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-Setup-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/beta.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
             }
         }
     }
