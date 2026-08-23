@@ -26,12 +26,13 @@
     ],
     "checkver": {
         "script": [
-            "$releases = Invoke-WebRequest -Uri 'https://api.github.com/repos/anyproto/anytype-ts/releases' -UseBasicParsing | ConvertFrom-Json",
-            "$stable = $releases | Where-Object { $_.tag_name -notmatch '-' } | Sort-Object -Property @{ Expression = { [version]($_.tag_name.TrimStart('v')) } } -Descending | Select-Object -First 1",
-            "if (-not $stable) {",
-            "  throw 'Failed to locate stable Anytype release.'",
-            "}",
-            "Write-Output $stable.tag_name"
+            "try {",
+            "    $headers = @{}",
+            "    if ($env:GITHUB_TOKEN) { $headers.Authorization = \"Bearer $env:GITHUB_TOKEN\" }",
+            "    $releases = Invoke-WebRequest -Uri 'https://api.github.com/repos/anyproto/anytype-ts/releases' -UseBasicParsing -Headers $headers | ConvertFrom-Json",
+            "    $stable = $releases | Where-Object { $_.tag_name -notmatch '-' } | Sort-Object -Property @{ Expression = { [version]($_.tag_name.TrimStart('v')) } } -Descending | Select-Object -First 1",
+            "    if ($stable) { Write-Output $stable.tag_name }",
+            "} catch { }"
         ],
         "regex": "^v(?<version>.+)$"
     },
