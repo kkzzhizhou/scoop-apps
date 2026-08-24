@@ -1,0 +1,49 @@
+{
+    "version": "3.3",
+    "description": "A minimalist Windows desktop sticky note tool. It puts a few quiet, usable, and unobtrusive sheets of paper on your desktop. Native WPF, with support for to-dos and Markdown.",
+    "homepage": "https://github.com/snownico0722/PaperTodo",
+    "license": {
+        "identifier": "Copyright © 2026 snownico0722.",
+        "url": "https://github.com/snownico0722/PaperTodo#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/snownico0722/PaperTodo/releases/download/v3.3/PaperTodo-v3.3-win-x64-no-runtime.exe#/PaperTodo.exe",
+            "hash": "13f07498942c6785a6ec99f2a8e76d9feee9037f3392c647e26521bdaede2ec7"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\PaperTodo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\PaperTodo\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "PaperTodo.exe",
+    "shortcuts": [
+        [
+            "PaperTodo.exe",
+            "PaperTodo"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/snownico0722/PaperTodo/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/snownico0722/PaperTodo/releases/download/v$version/PaperTodo-v$version-win-x64-no-runtime.exe#/PaperTodo.exe"
+            }
+        }
+    }
+}
