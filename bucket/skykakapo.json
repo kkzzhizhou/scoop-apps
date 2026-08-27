@@ -1,0 +1,69 @@
+{
+	"version": "154.0.1",
+	"description": "Firefox-based web browser optimized with CSIR PGO while preserving Firefox compatibility",
+	"homepage": "https://tete009.pages.dev/software",
+	"license": "MPL-2.0",
+	"architecture": {
+		"64bit": {
+			"url": "https://drive.usercontent.google.com/download?id=11TSYX8Xg4LVuVQ8uxylHRNgNBJRAUTKw&export=download&confirm=t#/skykakapo.7z",
+			"hash": "28273bc8e5db1404b96c33729b78eeb971e8486f461c2de271ba578096e0a00b"
+		}
+	},
+	"pre_install": [
+		"$buildDirs = @(Get-ChildItem -LiteralPath $dir -Directory | Where-Object { $_.Name -like 'skykakapo-*' })",
+		"if ($buildDirs.Count -ne 1) { throw \"Expected exactly one SkyKakapo build directory, found $($buildDirs.Count)\" }",
+		"Get-ChildItem -LiteralPath $buildDirs[0].FullName -Force | Move-Item -Destination $dir -Force",
+		"Remove-Item -LiteralPath $buildDirs[0].FullName -Recurse -Force",
+		"$persistIni = Join-Path $persist_dir 'tmemutil.ini'",
+		"$installIni = Join-Path $dir 'tmemutil.ini'",
+		"if (Test-Path -LiteralPath $persistIni -PathType Container) { Remove-Item -LiteralPath $persistIni -Recurse -Force }",
+		"if (Test-Path -LiteralPath $persistIni -PathType Leaf) {",
+		"    Remove-Item -LiteralPath $installIni -Force -ErrorAction SilentlyContinue",
+		"} else {",
+		"    @(",
+		"        '[General]',",
+		"        'Portable=1',",
+		"        'PortableDataPath=PortableData',",
+		"        '',",
+		"        '[Env]',",
+		"        'MOZ_LEGACY_PROFILES=1',",
+		"        'TT_DISABLE_START_MENU_SHORTCUT_CREATION=1'",
+		"    ) | Set-Content -LiteralPath $installIni -Encoding ASCII",
+		"}"
+	],
+	"bin": "skykakapo.exe",
+	"shortcuts": [
+		[
+			"skykakapo.exe",
+			"SkyKakapo"
+		]
+	],
+	"persist": [
+		"tmemutil.ini",
+		"PortableData"
+	],
+	"checkver": {
+		"script": [
+			"$page = Invoke-WebRequest -Uri 'https://tete009.pages.dev/en-US/software' -UseBasicParsing",
+			"$release = [regex]::Match($page.Content, '(?is)<h4[^>]*>\\s*SkyKakapo\\s+(?<version>\\d+(?:\\.\\d+)+)\\s*</h4>(?<block>.*?)(?=<h4[^>]*>|</section>|$)')",
+			"if (-not $release.Success) { throw 'Failed to find the stable SkyKakapo release' }",
+			"$version = $release.Groups['version'].Value",
+			"$block = $release.Groups['block'].Value",
+			"$drive = [regex]::Match($block, 'https://drive\\.google\\.com/file/d/(?<id>[^/\\\"?]+)')",
+			"if (-not $drive.Success) { throw 'Failed to find the SkyKakapo Google Drive file ID' }",
+			"$text = [System.Net.WebUtility]::HtmlDecode(($block -replace '<[^>]+>', ' '))",
+			"$sha256 = [regex]::Match($text, 'SHA256[^:]*:\\s*(?<hash>[0-9a-fA-F]{64})')",
+			"if (-not $sha256.Success) { throw 'Failed to find the SkyKakapo SHA256' }",
+			"Write-Output $version $drive.Groups['id'].Value $sha256.Groups['hash'].Value.ToLowerInvariant()"
+		],
+		"regex": "(?<version>[\\d.]+)\\s+(?<driveId>\\S+)\\s+(?<hash>[a-f0-9]{64})"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://drive.usercontent.google.com/download?id=$matchDriveId&export=download&confirm=t#/skykakapo.7z",
+				"hash": "$matchHash"
+			}
+		}
+	}
+}

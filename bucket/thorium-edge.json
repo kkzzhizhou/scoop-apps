@@ -1,0 +1,64 @@
+{
+	"version": "152.0.7977.55",
+	"description": "Chromium fork for Linux, Windows, MacOS, Android, and Raspberry Pi named after radioactive element No. 90. Compiled with AVX2 support. If your CPU does not support AVX2 DO NOT INSTALL. Use CPU-Z to determine if your CPU supports AVX2.",
+	"homepage": "https://thorium.rocks/",
+	"license": {
+		"identifier": "BSD-3-Clause",
+		"url": "https://github.com/Alex313031/Thorium-Win/blob/main/LICENSE"
+	},
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/gz83/thorium/releases/download/M152.0.7977.55/Thorium_AVX2_152.0.7977.55.zip",
+			"hash": "d1311e8b980082e93b1cc574cc88d518fef4cc9f1adb67d49e669402c06f8364"
+		}
+	},
+	"bin": [
+		["BIN\\thorium.exe", "thorium", "--user-data-dir=\"$dir\\USER_DATA\""]
+	],
+	"shortcuts": [
+		["BIN\\thorium.exe", "Thorium", "--user-data-dir=\"$dir\\USER_DATA\""]
+	],
+	"post_install": [
+		"if (!(Test-Path \"$dir\\USER_DATA\\*\") -and (Test-Path \"$env:LocalAppData\\Thorium\\User Data\")) {",
+		"    info '[Portable Mode]: Copying user data...'",
+		"    Copy-Item \"$env:LocalAppData\\Thorium\\User Data\\*\" \"$dir\\USER_DATA\" -Recurse",
+		"}"
+	],
+	"env_set": {
+		"CHROME_EXECUTABLE": "$dir\\BIN\\thorium.exe"
+	},
+	"persist": "USER_DATA",
+	"checkver": {
+		"script": [
+			"$repos = @('gz83/thorium', 'Alex313031/Thorium-Win')",
+			"$candidates = foreach ($repo in $repos) {",
+			"    try {",
+			"        $rels = Invoke-RestMethod -Uri ('https://api.github.com/repos/' + $repo + '/releases')",
+			"        foreach ($rel in $rels) {",
+			"            $asset = $rel.assets | Where-Object { $_.name -match '(?i)^thorium_avx2_.*\\.zip$' } | Select-Object -First 1",
+			"            if ($asset -and ($rel.tag_name -match '(?i)M?v?([0-9.]+)')) {",
+			"                [PSCustomObject]@{",
+			"                    version = $Matches[1]",
+			"                    ver_obj = [version]$Matches[1]",
+			"                    url = $asset.browser_download_url",
+			"                    digest = $asset.digest",
+			"                }",
+			"            }",
+			"        }",
+			"    } catch {}",
+			"}",
+			"$latest = $candidates | Sort-Object ver_obj | Select-Object -Last 1",
+			"$hash = if ($latest.digest) { $latest.digest -replace '^sha256:', '' } else { '' }",
+			"Write-Output $latest.version $latest.url $hash"
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<url>[^\\s]+)(?:\\s(?<hash>[a-fA-F0-9]{64}))?"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "$matchUrl",
+				"hash": "$matchHash"
+			}
+		}
+	}
+}

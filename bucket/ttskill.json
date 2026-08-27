@@ -1,0 +1,59 @@
+{
+    "version": "0.1.2",
+    "description": "天天基金 CLI 基础包，提供登录、业务 Skill 同步和调用能力",
+    "homepage": "https://skills.tiantianfunds.com/ttfund-skills/ttfund-skill-cli-install.md",
+    "license": "Unknown",
+    "url": "https://skills.tiantianfunds.com/ttskill/packages/base/0.1.2/win32/x64/ttskill-base-win32-x64-0.1.2.zip",
+    "hash": "7dffa6d3b6e3883a34091d5dab85e29a80119a96647bf1c432d63ccbb96a1db7",
+    "extract_dir": "ttskill-base-win32-x64-0.1.2",
+    "bin": "bin/ttskill.cmd",
+    "installer": {
+        "script": [
+            "$runtime = \"$env:LOCALAPPDATA\\TTFund\\ttfund-skills\"",
+            "$persist = \"$persist_dir\\ttfund-skills\"",
+            "New-Item (Split-Path $runtime) -ItemType Directory -Force | Out-Null",
+            "New-Item $persist -ItemType Directory -Force | Out-Null",
+            "if (Test-Path $runtime) {",
+            "    if ((Get-Item $runtime).LinkType) {",
+            "        Remove-Item $runtime -Force",
+            "    } else {",
+            "        Get-ChildItem $runtime -Force | Move-Item -Destination $persist -Force",
+            "        Remove-Item $runtime -Force -Recurse",
+            "    }",
+            "}",
+            "New-Item $runtime -ItemType Junction -Target $persist -Force | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "$runtime = \"$env:LOCALAPPDATA\\TTFund\\ttfund-skills\"",
+            "if ((Test-Path $runtime) -and (Get-Item $runtime).LinkType) {",
+            "    Remove-Item $runtime -Force",
+            "}"
+        ]
+    },
+    "post_install": [
+        "$node = \"$dir\\runtime\\node.exe\"",
+        "$cli = \"$dir\\bin\\ttskill.js\"",
+        "$listUrl = \"https://skills.tiantianfunds.com/ai-smart-skill-service/openapi/skill-package/list?env=prod\"",
+        "$items = @((Invoke-RestMethod $listUrl).data.items)",
+        "foreach ($item in $items) {",
+        "    & $node $cli skill install $item.skill_id --env prod 2>&1 | Out-Null",
+        "    if ($LASTEXITCODE -eq 0) { Write-Host \"ttskill: installed $($item.skill_id)\" } else { Write-Host \"ttskill: failed to install $($item.skill_id)\" }",
+        "}",
+        "$installed = (& $node $cli skill list --json | ConvertFrom-Json)",
+        "if (@($installed.skills).Count -lt $items.Count) { Write-Host \"ttskill: synced fewer skill packages than expected; run 'ttskill skill install <skill_id>' to retry\" } else { Write-Host \"ttskill: synced $(@($installed.skills).Count) business skill packages\" }"
+    ],
+    "checkver": {
+        "url": "https://skills.tiantianfunds.com/ai-smart-skill-service/openapi/base-package/resolve?platform=win32&arch=x64&env=prod",
+        "jsonpath": "$.data.version"
+    },
+    "autoupdate": {
+        "url": "https://skills.tiantianfunds.com/ttskill/packages/base/$version/win32/x64/ttskill-base-win32-x64-$version.zip",
+        "extract_dir": "ttskill-base-win32-x64-$version",
+        "hash": {
+            "url": "https://skills.tiantianfunds.com/ai-smart-skill-service/openapi/base-package/resolve?platform=win32&arch=x64&env=prod",
+            "jsonpath": "$.data.sha256"
+        }
+    }
+}

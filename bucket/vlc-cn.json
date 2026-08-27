@@ -8,12 +8,18 @@
             "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/3.0.23/win64/vlc-3.0.23-win64.7z",
             "hash": "eb4fd8a28291da73608c733786a09610fea865fbe94113bcb60b91c1ebb8404a"
         },
-        "32bit": {
-            "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/3.0.23/win32/vlc-3.0.23-win32.7z",
-            "hash": "f148ff49cdac6c0b6b7018ad7c4e6cd24c99bc6c2dea8258d82684261a639017"
+        "arm64": {
+            "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/3.0.23/winarm64/vlc-3.0.23-winarm64.7z",
+            "hash": "63014f3f3431681384e0306c7fe9846f7aa014faad8b0b7571e8ce5360e3220b"
         }
     },
     "extract_dir": "vlc-3.0.23",
+    "notes": [
+        "To register file associations, run:",
+        "reg import \"$dir\\install-associations.reg\"",
+        "To unregister file associations, run:",
+        "reg import \"$dir\\uninstall-associations.reg\""
+    ],
     "pre_install": [
         "if (!(Test-Path \"$persist_dir\\portable\") -and (Test-Path \"$env:APPDATA\\vlc\")) {",
         "    info \"Copying old '$env:APPDATA\\vlc' to '$persist_dir\\portable'\"",
@@ -22,6 +28,23 @@
         "    Move-Item \"$dir\\portable\\vlc-qt-interface.ini\" \"$dir\\portable\\vlc\"",
         "}"
     ],
+    "post_install": [
+        "$vlc_path = $dir -replace '\\\\', '\\\\'",
+        "Get-ChildItem -Path \"$bucketsdir\\$bucket\\scripts\\$app\" -Filter '*.reg' -File | ForEach-Object {",
+        "    $content = Get-Content -Path $_.FullName -Encoding ascii",
+        "    if ($global) { $content = $content -replace 'HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE' }",
+        "    $content -replace '{{vlc_dir}}', $vlc_path | Set-Content -Path \"$dir\\$($_.Name)\" -Encoding unicode",
+        "}"
+    ],
+    "post_uninstall": [
+        "$extensions = @('.3g2', '.3gp', '.asf', '.avi', '.divx', '.flv', '.m2ts', '.m4v', '.mkv', '.mov', '.mp4', '.mp4v', '.mpeg', '.mpg', '.ogv', '.ts', '.vob', '.webm', '.wmv', '.aac', '.ac3', '.ape', '.flac', '.m4a', '.mid', '.midi', '.mp3', '.oga', '.ogg', '.opus', '.wav', '.wma', '.wv', '.m3u', '.m3u8', '.pls', '.xspf')",
+        "$root = if ($global) { 'HKLM:' } else { 'HKCU:' }",
+        "foreach ($ext in $extensions) {",
+        "    Remove-ItemProperty -Path \"$root\\Software\\Classes\\$ext\\OpenWithProgIDs\" -Name 'VLC.AssocFile' -ErrorAction SilentlyContinue",
+        "}",
+        "Remove-Item -Path \"$root\\Software\\Classes\\VLC.AssocFile\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "bin": "vlc.exe",
     "shortcuts": [
         [
             "vlc.exe",
@@ -30,7 +53,7 @@
     ],
     "persist": "portable",
     "checkver": {
-        "url": "https://videolan.org/vlc/download-windows.html",
+        "url": "https://www.videolan.org/vlc/download-windows.html",
         "regex": "\\s+([\\d.]+)</span>"
     },
     "autoupdate": {
@@ -38,8 +61,8 @@
             "64bit": {
                 "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/$version/win64/vlc-$version-win64.7z"
             },
-            "32bit": {
-                "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/$version/win32/vlc-$version-win32.7z"
+            "arm64": {
+                "url": "https://mirrors.ustc.edu.cn/videolan-ftp/vlc/$version/winarm64/vlc-$version-winarm64.7z"
             }
         },
         "hash": {
