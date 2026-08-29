@@ -1,18 +1,53 @@
 {
     "version": "2.23.0",
-    "description": "WinScript is an open-source tool built to help you build custom scripts for Windows 10 and 11.",
-    "homepage": "https://github.com/flick9000/winscript",
-    "license": "GPL-3.0",
-    "url": "https://github.com/flick9000/winscript/releases/download/v2.23.0/winscript-portable.exe",
-    "hash": "1d4911dd9becd105f1b609f642122a7a0a2f9828b9e6662848ab17eebee10142",
+    "description": "Open-source tool to build your Windows script from scratch. It includes debloat, privacy, performance & app installing scripts.",
+    "homepage": "https://winscript.cc/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/flick9000/winscript#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/flick9000/winscript/releases/download/v2.23.0/winscript-installer.exe#/dl.7z",
+            "hash": "7cfa4360d456dfdbf5da7122a13c23fa0e28b33e57dda02fedebb36c548dc751",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\flick.winscript.dev\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\flick.winscript.dev\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "WinScript.exe",
     "shortcuts": [
         [
-            "winscript-portable.exe",
+            "WinScript.exe",
             "WinScript"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "github": "https://api.github.com/repos/flick9000/winscript/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
     "autoupdate": {
-        "url": "https://github.com/flick9000/winscript/releases/download/v$version/winscript-portable.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/flick9000/winscript/releases/download/v$version/winscript-installer.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.json"
+        }
     }
 }
