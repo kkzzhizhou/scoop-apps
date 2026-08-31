@@ -1,20 +1,26 @@
 {
-    "version": "3.4.1",
+    "version": "5.3.4",
     "description": "An intelligent and versatile general-purpose SQL client and reporting tool for databases which integrates ChatGPT capabilities.",
-    "homepage": "https://github.com/OtterMind/Chat2DB",
+    "no": "https://github.com/ViCrack/scoop-bucket/blob/16f7fc72202815c38a0d7d0e66f0a9eb4980dba5/bucket/chat2db.json",
+    "homepage": "https://github.com/chat2db/Chat2DB",
     "license": "Apache-2.0",
-    "url": "https://github.com/OtterMind/Chat2DB/releases/download/v3.4.1/Chat2DB-Setup-3.4.1.exe",
-    "hash": "sha256:da7c6b2573cbaebd52128edeb987ecb93df48124775d8b77909afbf31c773a06",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/chat2db/Chat2DB/releases/download/v5.3.4/Chat2DB-Community-5.3.4.msi",
+            "hash": "e23ba2ae99142f980b5b2ea73a2f4c6948fb3016bc5c5b628103259f58e25417"
+        }
+    },
     "installer": {
         "script": [
-            "Expand-7zipArchive -Path \"$dir\\Chat2DB-Setup-$version.exe\" -Removal",
-            "Expand-7zipArchive -Path \"$dir\\`$PLUGINSDIR\\app-64.7z\" -DestinationPath $dir"
+            "$nsis = Get-ChildItem \"$dir\" -Filter \"Chat2DB-Setup-*.exe\" | Select-Object -First 1",
+            "if ($nsis) {",
+            "    Expand-7zipArchive -Path $nsis.FullName -Removal",
+            "    Expand-7zipArchive -Path \"$dir\\`$PLUGINSDIR\\app-64.7z\" -DestinationPath $dir",
+            "    Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue",
+            "    Remove-Item \"$dir\\`$R0\" -Force -Recurse -ErrorAction SilentlyContinue",
+            "}"
         ]
     },
-    "post_install": [
-        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse",
-        "Remove-Item \"$dir\\`$R0\" -Force -Recurse"
-    ],
     "bin": "chat2db.exe",
     "shortcuts": [
         [
@@ -22,17 +28,12 @@
             "Chat2DB"
         ]
     ],
-    "checkver": {
-        "url": "https://github.com/OtterMind/Chat2DB/releases",
-        "regex": "tag/v([\\d.]+)"
-    },
+    "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/OtterMind/Chat2DB/releases/download/v$version/Chat2DB-Setup-$version.exe"
-    },
-    "notes": [
-        "【工具类型】: 开发工具",
-        "【主要功能】: 智能SQL客户端和数据库报告工具，集成ChatGPT功能",
-        "【适用场景】: 数据库管理、SQL查询、数据分析",
-        "【技术特点】: 提供图形化界面，支持AI辅助查询"
-    ]
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/chat2db/Chat2DB/releases/download/v$version/Chat2DB-Community-$version.msi"
+            }
+        }
+    }
 }

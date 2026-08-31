@@ -24,21 +24,27 @@
         "Expand-7ZipArchive \"$dir\\`$PLUGINSDIR\\app-*.7z\" \"$dir\" -Removal",
         "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
     ],
-    "persist_external": "$env:AppData\\WonderPen",
     "post_install": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
-    ],
-    "pre_uninstall": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
+        "if (-not (Get-ChildItem \"$persist_dir\\data\" -Force -ErrorAction SilentlyContinue)) {",
+        "    if (Test-Path \"$persist_dir\\WonderPen\") {",
+        "        info '[Portable Mode] Migrating persist_external data...'",
+        "        Move-Item \"$persist_dir\\WonderPen\\*\" \"$persist_dir\\data\"",
+        "        Remove-Item \"$persist_dir\\WonderPen\" -Recurse -Force",
+        "    } elseif (Test-Path \"$env:APPDATA\\WonderPen\") {",
+        "        info '[Portable Mode] Migrating user data from AppData...'",
+        "        Move-Item \"$env:APPDATA\\WonderPen\\*\" \"$persist_dir\\data\"",
+        "        Remove-Item \"$env:APPDATA\\WonderPen\" -Recurse -Force",
+        "    }",
+        "}"
     ],
     "shortcuts": [
         [
             "WonderPen.exe",
-            "WonderPen"
+            "WonderPen",
+            "--wp-user-data-dir=\"$dir\\data\""
         ]
     ],
+    "persist": "data",
     "checkver": {
         "url": "https://www.tominlab.com/wonderpen/downloads/all",
         "regex": "WonderPen-v([\\d.]+)\\.(?<build>\\d+)-win-x64-installer\\.exe"

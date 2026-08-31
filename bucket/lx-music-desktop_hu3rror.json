@@ -15,16 +15,14 @@
             "洛雪音乐助手"
         ]
     ],
-    "persist_external": [
-        "$env:AppData\\lx-music-desktop"
-    ],
+    "persist": "portable",
     "post_install": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
-    ],
-    "pre_uninstall": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
+        "if (-not (Test-Path \"$persist_dir\\portable\\userData\") -and (Test-Path \"$env:AppData\\lx-music-desktop\")) {",
+        "    New-Item -ItemType Directory \"$persist_dir\\portable\\userData\" -Force | Out-Null",
+        "    info '[Portable Mode] Copying user data...'",
+        "    Copy-Item \"$env:AppData\\lx-music-desktop\\*\" \"$persist_dir\\portable\\userData\" -Recurse -Force",
+        "    Remove-Item \"$env:AppData\\lx-music-desktop\" -Recurse -Force",
+        "}"
     ],
     "checkver": "github",
     "autoupdate": {
