@@ -1,12 +1,12 @@
 {
-    "version": "1.11.0",
+    "version": "1.11.5",
     "description": "智谱 AI 输入法，支持全局语音输入和中英混输。",
     "homepage": "https://autoglm.zhipuai.cn/autotyper/",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://autoglm.aminer.cn/autotyper/oversea/prod/AutoGLM_win32_x64_1.11.0_260507_2038_oversea.exe#/installer.exe",
-            "hash": "0adcd158f262335d4ce717bdeaf1967515915e9c871c94d50e9202bfc9babb56"
+            "url": "https://autoglm.aminer.cn/autotyper/updates/AutoGLM_win32_x64_1.11.5_260609_2109.exe#/installer.exe",
+            "hash": "13f8c4ff9e0bea8e1f25e061bd07d0f2de0de4d577ae085eab8fb721335e5873"
         }
     },
     "installer": {
@@ -50,20 +50,20 @@
     },
     "checkver": {
         "script": [
-            "$download = Invoke-WebRequest -Uri 'https://autoglm.zhipuai.cn/autotyper/' -UseBasicParsing",
-            "if ($download.Content -notmatch 'src=\"([^\"]*index-[^\"]+\\.js)\"') {",
-            "  throw 'Failed to locate main bundle script on AutoGLM autotyper page.'",
+            "$edge = Get-Item 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe', 'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe' -ErrorAction SilentlyContinue | Select-Object -First 1",
+            "$dom = ''",
+            "if ($edge) {",
+            "  $profile = Join-Path $env:TEMP ('autoglm-checkver-' + [guid]::NewGuid().ToString('N'))",
+            "  $dom = & $edge.FullName --headless=new --disable-gpu --no-first-run \"--user-data-dir=$profile\" '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36' --virtual-time-budget=8000 --dump-dom 'https://autoglm.zhipuai.cn/autotyper/' 2>$null | Out-String",
+            "  Remove-Item $profile -Recurse -Force -ErrorAction SilentlyContinue",
             "}",
-            "$bundlePath = $matches[1]",
-            "$bundleUrl = if ($bundlePath -like 'http*') { $bundlePath } else { 'https://autoglm.zhipuai.cn' + $bundlePath }",
-            "$bundle = Invoke-WebRequest -Uri $bundleUrl -UseBasicParsing",
-            "if ($bundle.Content -match 'https://autoglm\\.aminer\\.cn/autotyper/(?:updates|oversea/prod)/AutoGLM_win32_x64_(?<version>[0-9.]+)(?:_[^\"''`\\s]+)?\\.exe') {",
+            "if ($dom -match 'https://autoglm\\.aminer\\.cn/autotyper/updates/AutoGLM_win32_x64_(?<version>[0-9.]+)(?:_[^\"''`\\s]+)?\\.exe') {",
             "  $matches[0]",
             "} else {",
-            "  throw 'Failed to parse AutoGLM download URL from bundle script.'",
+            "  ''",
             "}"
         ],
-        "regex": "(?<url>https://autoglm\\.aminer\\.cn/autotyper/(?:updates|oversea/prod)/AutoGLM_win32_x64_(?<version>[0-9.]+)(?:_[^\"''`\\s]+)?\\.exe)"
+        "regex": "(?<url>https://autoglm\\.aminer\\.cn/autotyper/updates/AutoGLM_win32_x64_(?<version>[0-9.]+)(?:_[^\"''`\\s]+)?\\.exe)"
     },
     "autoupdate": {
         "architecture": {
