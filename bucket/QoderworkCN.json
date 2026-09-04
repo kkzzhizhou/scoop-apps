@@ -1,0 +1,88 @@
+{
+    "version": "0.9.15",
+    "description": "QoderWork 中国版 - 智能编程助手，让工作更高效",
+    "homepage": "https://qoder.cn",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://qoder.com/product-service"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://static.qoder.com.cn/qoder-work-cn/releases/latest/QoderWorkCN-Setup-User-x64.exe#/dl.7z",
+            "hash": "9d056bffc93d73b8d46d930f130eab7d6e53c4b4de7f87ddda072f299ab9e271",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "QoderWork CN.exe",
+            "QoderWork CN",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "post_install": [
+        "# 迁移 AppData\\QoderWork CN",
+        "$source = \"$env:AppData\\QoderWork CN\"",
+        "$target = ensure \"$persist_dir\\QoderWork CN\"",
+        "if (Test-Path \"$source\") {",
+        "    Move-Item -Path \"$source\\*\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null",
+        "# 迁移 USERPROFILE\\.qoderworkcn",
+        "$source = \"$env:USERPROFILE\\.qoderworkcn\"",
+        "$target = ensure \"$persist_dir\\.qoderworkcn\"",
+        "if (Test-Path \"$source\") {",
+        "    Move-Item -Path \"$source\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$source = @(\"$env:AppData\\QoderWork CN\", \"$env:USERPROFILE\\.qoderworkcn\")",
+        "Remove-Item -Path $source -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://static.qoder.com.cn/qoder-work-cn/releases/latest/QoderWorkCN-Setup-User-x64.exe'",
+            "$tmp = Join-Path $env:TEMP ('qoder_' + [guid]::NewGuid() + '.exe')",
+            "",
+            "# 1. HEAD 请求获取 ETag",
+            "try { $head = Invoke-WebRequest -Uri $url -Method Head -UseBasicParsing -ErrorAction Stop }",
+            "catch { $head = $_.Exception.Response }",
+            "",
+            "# 2. 清洗 ETag：去引号 -> 转小写 -> 检查是否含 '-' (分片标识)",
+            "$rawEtag = $head.Headers['ETag']",
+            "if ($rawEtag) {",
+            "    $cleanHash = $rawEtag.Trim('\"').ToLower()",
+            "    # 如果带 '-' 说明是分片上传，不是纯 MD5，置空（让 Scoop 自己算）",
+            "    if ($cleanHash -match '-') { $hash = '' } else { $hash = $cleanHash }",
+            "} else {",
+            "    $hash = ''",
+            "}",
+            "",
+            "# 3. 下载前 1MB 读版本号（已有实测确认）",
+            "try {",
+            "    Invoke-WebRequest -Uri $url -Headers @{Range='bytes=0-1048575'} -OutFile $tmp -UseBasicParsing -ErrorAction Stop",
+            "    $version = (Get-Item $tmp).VersionInfo.FileVersion",
+            "    if (-not $version) { throw '无法读取版本号' }",
+            "} finally {",
+            "    if (Test-Path $tmp) { Remove-Item $tmp -Force -ErrorAction SilentlyContinue }",
+            "}",
+            "",
+            "# 4. 输出（注意：如果 hash 为空，输出结果就是 'url|version|'）",
+            "Write-Output (\"$url|$version|$hash\")"
+        ],
+        "regex": "^(?<url>.+)\\|(?<version>[\\d.]+)\\|(?<hash>.*)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/dl.7z",
+                "hash": "md5:$matchHash"
+            }
+        }
+    }
+}

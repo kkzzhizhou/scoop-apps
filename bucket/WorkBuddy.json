@@ -1,0 +1,62 @@
+{
+    "version": "5.5.2.37672479",
+    "description": "腾讯云代码助手推出的 AI Agent 办公工具，可自主规划并交付多模态复杂任务结果。",
+    "homepage": "https://www.codebuddy.cn/work/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.codebuddy.cn/workbuddy/saas/win32-x64-user/WorkBuddy-win32-x64-user-5.5.2.37672479-2b0177c3.exe#/dl.7z",
+            "hash": "ab8b2cd10218e584b51c2f6975fe0c3e05fd724b85f761242f46b95860986d58",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "WorkBuddy.exe",
+            "WorkBuddy",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "post_install": [
+        "# 迁移 AppData\\WorkBuddy",
+        "$source = \"$env:AppData\\WorkBuddy\"",
+        "$target = ensure \"$persist_dir\\WorkBuddy\"",
+        "if (Test-Path \"$source\") {",
+        "    Move-Item -Path \"$source\\*\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null",
+        "# 迁移 USERPROFILE\\.workbuddy",
+        "$source = \"$env:USERPROFILE\\.workbuddy\"",
+        "$target = ensure \"$persist_dir\\.workBuddy\"",
+        "if (Test-Path \"$source\") {",
+        "    Move-Item -Path \"$source\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
+        "}",
+        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$source = @(\"$env:AppData\\WorkBuddy\", \"$env:USERPROFILE\\.workbuddy\")",
+        "Remove-Item -Path $source -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "script": [
+            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/Tencent.WorkBuddy'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
+        ],
+        "regex": "Version:\\s*(?<version>\\S+)[\\s\\S]+?InstallerUrl:\\s*(?<url>\\S+)"
+    },
+    "autoupdate": {
+        "url": "$matchUrl#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/WorkBuddy/$majorVersion.$minorVersion.$patchVersion/Tencent.WorkBuddy.installer.yaml",
+            "regex": "InstallerSha256:\\s?(.+)"
+        }
+    }
+}
