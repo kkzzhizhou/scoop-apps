@@ -1,56 +1,43 @@
 {
-    "version": "2.8.1",
-    "description": "A feature rich FOSS PlayStation 2 emulator",
-    "homepage": "https://pcsx2.net/",
+    "homepage": "https://pcsx2.net",
+    "version": "2.9.30",
+    "description": "Playstation 2 Emulator",
+    "url": "https://github.com/PCSX2/pcsx2/releases/download/v2.9.30/pcsx2-v2.9.30-windows-x64-Qt.7z",
+    "hash": "sha256:7c813780ab16f46a0dd39c068a6d03d79d5ebb616254138449df01566ed8084f",
     "license": {
-        "identifier": "GPL-3.0",
+        "identifier": "GPL-3.0-only",
         "url": "https://github.com/PCSX2/pcsx2/blob/master/COPYING.GPLv3"
     },
-    "notes": [
-        "ATTENTION: PCSX2 requires a dump of the PS2 BIOS to function.",
-        "Place the BIOS file in $persist_dir\\bios",
-        "Learn more at https://wiki.pcsx2.net/Setting_up_Windows_version#BIOS"
-    ],
-    "suggest": {
-        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
-    },
-    "url": "https://github.com/PCSX2/pcsx2/releases/download/v2.8.1/pcsx2-v2.8.1-windows-x64-Qt.7z",
-    "hash": "e953cb12355eb0f86cb4a95fac6d91a3a654efd209bfba0c3faaeeaceb7d6b49",
-    "pre_install": [
-        "if (!(Test-Path \"$persist_dir\")) {",
-        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
-        "   if (Test-Path \"$env:USERPROFILE\\Documents\\PCSX2\") {",
-        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
-        "       Copy-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\\*\" -Destination \"$persist_dir\" -Recurse",
-        "       Remove-Item -Path \"$env:USERPROFILE\\Documents\\PCSX2\" -Recurse",
-        "   }",
-        "}"
-    ],
-    "post_install": "Set-Content -Value $null -Path \"$dir\\portable.ini\"",
+    "bin": "pcsx2-qt.exe",
     "shortcuts": [
         [
             "pcsx2-qt.exe",
-            "PCSX2"
+            "PS2"
         ]
     ],
     "persist": [
-        "bios",
-        "cheats_ws",
-        "cheats",
-        "inis",
-        "inputprofiles",
-        "logs",
+        "portable.ini",
         "memcards",
-        "shaders\\GSdx_FX_Settings.ini",
         "snaps",
         "sstates",
-        "textures"
+        "bios",
+        "inis",
+        "gamesettings",
+        "inputprofiles",
+        "cheats",
+        "textures",
+        "videos"
     ],
     "checkver": {
-        "github": "https://github.com/PCSX2/pcsx2/"
+        "url": "https://api.github.com/repos/PCSX2/pcsx2/releases",
+        "jsonpath": {
+            "version": "$.[0].name",
+            "hash": "$.[0].assets[?(@.name =~ /.+windows-x64-Qt.7z$/i)].digest"
+        },
+        "regex": "(\\d+\\.\\d+\\.\\d+)"
     },
     "autoupdate": {
         "url": "https://github.com/PCSX2/pcsx2/releases/download/v$version/pcsx2-v$version-windows-x64-Qt.7z",
-        "extract_dir": "PCSX2 $version"
+        "hash": "$matchHash"
     }
 }

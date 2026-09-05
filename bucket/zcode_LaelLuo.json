@@ -1,17 +1,44 @@
 {
-    "version": "3.8.1",
+    "version": "3.11.2",
     "description": "智谱 ZCode - GLM 官方适配的 AI 编程开发工具（IDE）。",
     "homepage": "https://zcode.z.ai/cn",
     "license": "Proprietary",
     "architecture": {
         "64bit": {
-            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.8.1/windows-x64/ZCode-3.8.1-win-x64.exe#/dl.7z",
-            "hash": "3ba15b6e13ec7557b12ef3c78d520d5112d50433b2523087b3731b35068f3b01"
+            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.11.2/windows-x64/ZCode-3.11.2-win-x64.exe#/dl.7z",
+            "hash": "4db76b6785c10fbc852dd9c9d257f574ea46f2a889d0beb9398ae0885d716717"
         }
     },
     "pre_install": [
         "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "# 快捷方式必须指真实版本目录：经 current junction 启动会让 ZCode 内置电脑操作助手(CUA broker)的 asar 路径逃逸检查失败(invalid-runtime-manifest)；post_install 时 $dir 即真实版本目录",
+        "$realExe = Join-Path $dir 'ZCode.exe'",
+        "$sh = New-Object -ComObject WScript.Shell",
+        "$programs = [Environment]::GetFolderPath('Programs')",
+        "$mainLnk = Join-Path $programs 'ZCode.lnk'",
+        "$l = $sh.CreateShortcut($mainLnk)",
+        "$l.TargetPath = $realExe",
+        "$l.WorkingDirectory = $dir",
+        "$l.Save()",
+        "Get-ChildItem $programs -Recurse -Filter 'ZCode.lnk' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -ne $mainLnk } | ForEach-Object {",
+        "    $s = $sh.CreateShortcut($_.FullName)",
+        "    $s.TargetPath = $realExe",
+        "    $s.WorkingDirectory = $dir",
+        "    $s.Save()",
+        "}",
+        "info \"[ZCode] 快捷方式已指向真实版本目录: $realExe\""
+    ],
+    "pre_uninstall": [
+        "# 只删指向本应用目录的主快捷方式；scoop 自建的 Scoop Apps 快捷方式由 scoop 卸载流程清理",
+        "$appRoot = Split-Path $dir -Parent",
+        "$lnkPath = Join-Path ([Environment]::GetFolderPath('Programs')) 'ZCode.lnk'",
+        "if (Test-Path $lnkPath) {",
+        "    $l = (New-Object -ComObject WScript.Shell).CreateShortcut($lnkPath)",
+        "    if ($l.TargetPath -like \"$appRoot\\*\") { Remove-Item $lnkPath -Force }",
+        "}"
     ],
     "shortcuts": [
         [
