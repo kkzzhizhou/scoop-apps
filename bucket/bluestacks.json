@@ -1,0 +1,65 @@
+{
+    "version": "5.22.166.1003",
+    "description": "Android emulator",
+    "homepage": "https://www.bluestacks.com/bluestacks-5.html",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.bluestacks.com/terms-and-privacy.html#terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://ak-build.bluestacks.com/public/app-player/windows/nxt/5.22.166.1003/e0cbf0a49445273dc3c94ced970fd7d4/FullInstaller/x64/BlueStacksFullInstaller_5.22.166.1003_amd64_native.exe#/setup.exe",
+            "hash": "dbe8b99d3d06f520865d7add1c8651b4841d55bef07fb04c9f2d025263adcab7"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { \"$app requires admin rights to $cmd\"; break }",
+            "Start-Process -Wait \"$dir\\setup.exe\" \"-s\" -Verb RunAs",
+            "Remove-Item \"$Env:Public\\Desktop\\BlueStacks 5*.lnk\""
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { \"$app requires admin rights to $cmd\"; break }",
+            "$uninstaller = (Get-ItemProperty -ErrorAction Ignore \"HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\BlueStacks_nxt\" -Name UninstallString).UninstallString",
+            "if (!$uninstaller) { $uninstaller = (Get-ItemProperty -ErrorAction Ignore \"HKLM:\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\BlueStacks_nxt\" -Name UninstallString).UninstallString }",
+            "if (!$uninstaller) { warn 'Could not find app info in registry' }",
+            "# Remove -tmp at the end",
+            "$uninstaller = $uninstaller.Substring(0, $uninstaller.Length - 5)",
+            "Start-Process -Wait \"$uninstaller\" \"-s\" -Verb RunAs"
+        ]
+    },
+    "checkver": {
+        "github": "https://api.github.com/repos/microsoft/winget-pkgs/contents/manifests/b/BlueStack/BlueStacks",
+        "script": [
+            "$release = $page | ConvertFrom-Json -ErrorAction Stop",
+            "$first_letter, $publisher, $package = $url.Split('/') | Select-Object -Last 3",
+            "$path_segments = $release | Where-Object { $_.type -eq 'dir' } |",
+            "        Sort-Object -Property { [version]$_.name } -Descending | ForEach-Object -MemberName name",
+            "$package_url = $url -replace 'api\\.github\\.com/repos(.+?)contents', 'raw.githubusercontent.com$1HEAD'",
+            "foreach ($path_segment in $path_segments) {",
+            "    $manifest_url = \"$package_url/{2}/{0}.{1}.installer.yaml\" -f $publisher, $package, $path_segment",
+            "    $manifest_info = Invoke-RestMethod -Uri $manifest_url -ErrorAction Stop",
+            "    if ($null -ne $manifest_info -and $manifest_info -match 'nxt/(?<version>[\\d.]+)/(?<token>[^/]+)') {",
+            "        $version_info = @{ result = \"$($Matches['version']), $($Matches['token'])\" } | ConvertTo-Json -Compress",
+            "        Write-Output $version_info",
+            "        break",
+            "    }",
+            "}"
+        ],
+        "jsonpath": "$.result",
+        "regex": "([\\d.]+), (?<token>.+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ak-build.bluestacks.com/public/app-player/windows/nxt/$version/$matchToken/FullInstaller/x64/BlueStacksFullInstaller_$version_amd64_native.exe#/setup.exe"
+            }
+        },
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/HEAD/manifests/b/BlueStack/BlueStacks/$version/BlueStack.BlueStacks.installer.yaml",
+            "regex": "(?s)$basename.+?$sha256"
+        }
+    }
+}

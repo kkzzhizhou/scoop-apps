@@ -1,26 +1,35 @@
 {
-    "version": "31.3.2",
+    "version": "31.4.2",
     "description": "Professional diagramming",
-    "homepage": "https://www.drawio.com/",
+    "homepage": "https://www.diagrams.net",
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v31.3.2/draw.io-31.3.2-windows-installer.exe#/dl.7z",
-            "hash": "4ce9f1d4b6cc058caecd1423b3f7a94c7520e2c743fc203841b738e002ac75d6",
-            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
-        },
-        "32bit": {
-            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v31.3.2/draw.io-ia32-31.3.2-windows-32bit-installer.exe#/dl.7z",
-            "hash": "d3a2eae436b2a5f08861e2727abd49370da45a5fe932d973daad19e43993dc8a",
-            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\""
+            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v31.4.2/draw.io-31.4.2-windows-installer.exe#/dl.7z",
+            "hash": "b0acb3faf5979ee376796714dd6fc6b5d99286bc172dcbe826587f4ee5035a49",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+            ]
         },
         "arm64": {
-            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v31.3.2/draw.io-arm64-31.3.2-windows-arm64-installer.exe#/dl.7z",
-            "hash": "27ff333d09ebfd1bfaa9c18a76cc50b428eddea9fe8bdfb4b640080c1bb2c0e0",
-            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\""
+            "url": "https://github.com/jgraph/drawio-desktop/releases/download/v31.4.2/draw.io-arm64-31.4.2-windows-arm64-installer.exe#/dl.7z",
+            "hash": "cf7a3ed0704bd5e04078a9fd1dac6b80421971e86f326ed6d8ea30693c6fbd6d",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse"
+            ]
         }
     },
-    "post_install": "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "ensure \"$persist_dir\" | Out-Null",
+            "New-Item \"$env:APPDATA\\draw.io\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": "Remove-Item \"$env:APPDATA\\draw.io\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+    },
     "bin": "draw.io.exe",
     "shortcuts": [
         [
@@ -36,12 +45,13 @@
             "64bit": {
                 "url": "https://github.com/jgraph/drawio-desktop/releases/download/v$version/draw.io-$version-windows-installer.exe#/dl.7z"
             },
-            "32bit": {
-                "url": "https://github.com/jgraph/drawio-desktop/releases/download/v$version/draw.io-ia32-$version-windows-32bit-installer.exe#/dl.7z"
-            },
             "arm64": {
                 "url": "https://github.com/jgraph/drawio-desktop/releases/download/v$version/draw.io-arm64-$version-windows-arm64-installer.exe#/dl.7z"
             }
+        },
+        "hash": {
+            "url": "$baseurl/Files-SHA256-Hashes.txt",
+            "regex": "$basename\\s*?$sha256"
         }
     }
 }

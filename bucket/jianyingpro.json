@@ -3,27 +3,28 @@
     "description": "Video editing application produced by ByteDance",
     "license": "Proprietary",
     "version": "11.4.0.14410",
-    "url": "https://lf3-package.vlabstatic.com/obj/faceu-packages/Jianying_11_4_0_14410_jianyingpro_0_creatortool.exe#/jianyingpro.7z",
-    "hash": "md5:4895a694f913868517c1f83b82d42ce0",
+    "url": "https://lf3-package.vlabstatic.com/obj/faceu-packages/Jianying_11_4_0_14410_jianyingpro_0_creatortool.exe#/dl.7z",
+    "hash": "3f829bbf87e9b5234b6327d421ff5a6db3a0b9fb7befd96a8ac26e5c01fef1e5",
     "extract_dir": "JYPacket/11.4.0.14410",
     "shortcuts": [
         [
             "JianyingPro.exe",
-            "剪映专业版"
+            "Jianying Pro"
         ]
     ],
     "checkver": {
-        "url": "https://is.snssdk.com/service/settings/v3/?device_platform=windows&os_version=10&aid=3704&iid=0&version_code=197888",
-        "jsonpath": "$.data.settings.update_reminder.lastest_stable_url",
-        "regex": "https://(?<path>.*?)/Jianying_(?<major>[\\d]+)_(?<minor>[\\d]+)_(?<patch>[\\d]+)_(?<build>[\\d]+)_jianyingpro_0_creatortool.exe",
-        "replace": "${major}.${minor}.${patch}.${build}"
+        "script": [
+            ". \"$pwd\\bin\\utils.ps1\"",
+            "$dl_info = get_installer_info 'ByteDance/JianyingPro'",
+            "\"ver:$($dl_info.PackageVersion);\"",
+            "\"x64:$($dl_info.x64_exe.InstallerUrl);\"",
+            "\"hash:$($dl_info.x64_exe.InstallerSha256);\""
+        ],
+        "regex": "ver:(?<version>.+?); x64:(?<x64>.+?); hash:(?<hash>.+?)$"
     },
     "autoupdate": {
-        "url": "https://$matchPath/Jianying_$underscoreVersion_jianyingpro_0_creatortool.exe#/jianyingpro.7z",
-        "hash": {
-            "url": "https://is.snssdk.com/service/settings/v3/?device_platform=windows&os_version=10&aid=3704&iid=0&version_code=197888",
-            "jsonpath": "$.data.settings.update_reminder.lastest_stable_url_md5"
-        },
+        "url": "$matchX64#/dl.7z",
+        "hash": "$matchHash",
         "extract_dir": "JYPacket/$version"
     }
 }

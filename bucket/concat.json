@@ -1,0 +1,61 @@
+{
+    "version": "0.2.1",
+    "description": "Free & Open-Source CapCut replacement.",
+    "homepage": "https://github.com/jub0t/Concat",
+    "license": {
+        "identifier": "AGPL-3.0",
+        "url": "https://github.com/jub0t/Concat/blob/main/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/jub0t/Concat/releases/download/v0.2.1/Concat-0.2.1-windows-x86_64.zip",
+            "hash": "d3d9481fb6963f8f8fa364aba4481307cb5749442649a9dd99c83f5a401186ce"
+        },
+        "arm64": {
+            "url": "https://github.com/jub0t/Concat/releases/download/v0.2.1/Concat-0.2.1-windows-aarch64.zip",
+            "hash": "2694628265536f654b4a93bd1fae0a021eab590d81833b0c33f9d150a96d9967"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\app.concat.editor\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\app.concat.editor\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "concat.exe",
+    "shortcuts": [
+        [
+            "concat.exe",
+            "Concat"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/jub0t/Concat/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/jub0t/Concat/releases/download/v$version/Concat-$version-windows-x86_64.zip",
+                "extract_dir": "Concat-$version-windows-x86_64"
+            },
+            "arm64": {
+                "url": "https://github.com/jub0t/Concat/releases/download/v$version/Concat-$version-windows-aarch64.zip",
+                "extract_dir": "Concat-$version-windows-aarch64"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
+        }
+    }
+}

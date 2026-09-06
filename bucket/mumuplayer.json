@@ -1,0 +1,49 @@
+{
+    "version": "5.30.2.3616",
+    "description": "Android Emulator",
+    "homepage": "https://mumuplayer.com",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://a11.gdl.easebar.com/MuMu-setup-V5.30.2.3616-overseas-0611173626.exe",
+            "hash": "a2cfdad8d34247227132061baca1986ea80924f9b584e21c75bc9b3617e8432e"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\$fname\" -ArgumentList @('/S', '/auto_start=false', \"/D=$dir\") -Wait -Verb RunAs"
+    ],
+    "post_install": "Remove-Item \"$dir\\$fname\", \"$dir\\uninstall.exe\"",
+    "shortcuts": [
+        [
+            "nx_main\\MuMuNxMain.exe",
+            "MuMuPlayer"
+        ]
+    ],
+    "persist": [
+        "configs",
+        "vms"
+    ],
+    "post_uninstall": [
+        "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\MuMuPlayer\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "Remove-Item \"$env:USERPROFILE\\Desktop\\MuMuPlayer.lnk\" -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "script": [
+            "$response = Invoke-RestMethod -Uri 'https://api.mumuglobal.com/api/v1/download/nx' -Method Post -ContentType 'application/x-www-form-urlencoded' -Body @{",
+            "    architecture = 'x86_64'",
+            "    machine      = '\"\"'",
+            "    usage        = '1'",
+            "}",
+            "Write-Output $response.data.mumu.link"
+        ],
+        "regex": "V(?<version>[\\d.]+)-overseas-(?<build>[\\d]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://a11.gdl.easebar.com/MuMu-setup-V$matchVersion-overseas-$matchBuild.exe"
+            }
+        }
+    }
+}
