@@ -1,12 +1,12 @@
 {
-	"version": "154.0.1",
+	"version": "155.0.1",
 	"description": "Firefox-based web browser optimized with CSIR PGO while preserving Firefox compatibility",
 	"homepage": "https://tete009.pages.dev/software",
 	"license": "MPL-2.0",
 	"architecture": {
 		"64bit": {
-			"url": "https://drive.usercontent.google.com/download?id=11TSYX8Xg4LVuVQ8uxylHRNgNBJRAUTKw&export=download&confirm=t#/skykakapo.7z",
-			"hash": "28273bc8e5db1404b96c33729b78eeb971e8486f461c2de271ba578096e0a00b"
+			"url": "https://drive.usercontent.google.com/download?id=1fjE-nB0DqK-JZQMJ0uAhXAA9yOuR2J7X&export=download&confirm=t#/skykakapo.7z",
+			"hash": "66e0b4ae0dc9555df682a65591a7481431233c74bf398a5526778bb2f670baeb"
 		}
 	},
 	"pre_install": [
@@ -32,24 +32,19 @@
 		"}"
 	],
 	"bin": "skykakapo.exe",
-	"shortcuts": [
-		[
-			"skykakapo.exe",
-			"SkyKakapo"
-		]
-	],
-	"persist": [
-		"tmemutil.ini",
-		"PortableData"
-	],
+	"shortcuts": [["skykakapo.exe", "SkyKakapo"]],
+	"persist": ["tmemutil.ini", "PortableData"],
 	"checkver": {
 		"script": [
 			"$page = Invoke-WebRequest -Uri 'https://tete009.pages.dev/en-US/software' -UseBasicParsing",
-			"$release = [regex]::Match($page.Content, '(?is)<h4[^>]*>\\s*SkyKakapo\\s+(?<version>\\d+(?:\\.\\d+)+)\\s*</h4>(?<block>.*?)(?=<h4[^>]*>|</section>|$)')",
+			"$html = [System.Net.WebUtility]::HtmlDecode($page.Content)",
+			"$release = [regex]::Match($html, '(?is)<h[1-6][^>]*>(?:(?!</h[1-6]>).)*?SkyKakapo\\s+(?<version>\\d+(?:\\.\\d+)+)\\b(?:(?!</h[1-6]>).)*?</h[1-6]>')",
 			"if (-not $release.Success) { throw 'Failed to find the stable SkyKakapo release' }",
+			"$rest = $html.Substring($release.Index + $release.Length)",
+			"$nextHeading = [regex]::Match($rest, '(?is)<h[1-6]\\b')",
+			"$block = if ($nextHeading.Success) { $rest.Substring(0, $nextHeading.Index) } else { $rest }",
 			"$version = $release.Groups['version'].Value",
-			"$block = $release.Groups['block'].Value",
-			"$drive = [regex]::Match($block, 'https://drive\\.google\\.com/file/d/(?<id>[^/\\\"?]+)')",
+			"$drive = [regex]::Match($block, '(?i)drive\\.google\\.com/file/d/(?<id>[^/\\\"?&<]+)|drive\\.usercontent\\.google\\.com/[^\\\"<]*[?&]id=(?<id>[^&\\\"<]+)')",
 			"if (-not $drive.Success) { throw 'Failed to find the SkyKakapo Google Drive file ID' }",
 			"$text = [System.Net.WebUtility]::HtmlDecode(($block -replace '<[^>]+>', ' '))",
 			"$sha256 = [regex]::Match($text, 'SHA256[^:]*:\\s*(?<hash>[0-9a-fA-F]{64})')",
