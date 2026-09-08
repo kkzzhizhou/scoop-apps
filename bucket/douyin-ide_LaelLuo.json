@@ -1,12 +1,12 @@
 {
     "homepage": "https://developer.open-douyin.com/",
     "description": "IDE for ByteDance/Douyin MicroApp Development",
-    "version": "4.5.2",
+    "version": "4.5.5",
     "license": "Unknown",
     "architecture": {
         "64bit": {
-            "url": "https://sf1-cdn-tos.douyinstatic.com/obj/microapp/frontend/ide/package/obj/developer/ide/332737976/win32/%E6%8A%96%E9%9F%B3%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7-4.5.2.exe#/dl.7z",
-            "hash": "sha512:95bf8efc183bcf7b91e16180ad36a7abc3b85b4db7f642ade6bbdf8d2ed095869370acec39523e01b0fc3c42a35cb1a586c0c109429dd3b448539d2b9b15366b",
+            "url": "https://sf1-cdn-tos.douyinstatic.com/obj/microapp/frontend/ide/package/obj/developer/ide/433599866/win32/%E6%8A%96%E9%9F%B3%E5%BC%80%E5%8F%91%E8%80%85%E5%B7%A5%E5%85%B7-4.5.5.exe#/dl.7z",
+            "hash": "sha512:5360cfbc4648e2b6fb4903fc1d0848b81ea883b350179b6723e9bfbcc346607851dea2993f7673a8ab241c494b1101144623dd7cc9dabea51098f6b45584a31a",
             "installer": {
                 "script": [
                     "Remove-Item \"$dir\\*\" -Exclude \"app-64.7z\"",
@@ -38,6 +38,14 @@
                 "target": "$persist_dir/miniprogram-ide",
                 "strategy": "symlink",
                 "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/@bytedminiprogram-ide-updater",
+                "target": "$persist_dir/updater-blocker",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
             }
         ],
         "options": {
@@ -46,25 +54,7 @@
     },
     "checkver": {
         "url": "https://tron.jiyunhudong.com/api/sdk/check_update?pid=68986292666087352589&uid=14ba7004-3008-47d1-a6b4-aee091f8673e&branch=master&buildId=",
-        "script": [
-            "$currentUrl = $json.architecture.'64bit'.url -replace '#/dl.7z$',''",
-            "$currentMatch = [regex]::Match($currentUrl, '/developer/ide/(?<build>\\d+)/win32/.+?-(?<version>[0-9.]+)\\.exe$')",
-            "if (-not $currentMatch.Success) {",
-            "  throw 'Failed to parse current Douyin IDE build metadata from manifest URL.'",
-            "}",
-            "$responseJson = Invoke-WebRequest -Uri ($url + $currentMatch.Groups['build'].Value) -UseBasicParsing | Select-Object -ExpandProperty Content",
-            "$response = $responseJson | ConvertFrom-Json",
-            "if ($response.data.needUpdate) {",
-            "  $updateMatch = [regex]::Match($responseJson, '/developer/ide/(?<build>\\d+)/win32/.+?-(?<version>[0-9.]+)\\.exe')",
-            "  if (-not $updateMatch.Success) {",
-            "    throw 'Douyin IDE update response did not contain a downloadable installer path.'",
-            "  }",
-            "  Write-Output ($updateMatch.Groups['build'].Value + '|' + $updateMatch.Groups['version'].Value)",
-            "} else {",
-            "  Write-Output ($currentMatch.Groups['build'].Value + '|' + $currentMatch.Groups['version'].Value)",
-            "}"
-        ],
-        "regex": "^(?<build>\\d+)\\|(?<version>[0-9.]+)$"
+        "regex": "/developer/ide/(?<build>[\\d.]+)/win32/(?<name>.*?)-(?<version>[0-9-.]+).exe"
     },
     "autoupdate": {
         "architecture": {
