@@ -1,0 +1,42 @@
+{
+    "version": "10.15.23",
+    "description": "A high-performance remote desktop client.",
+    "homepage": "https://jumpdesktop.com/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://jumpdesktop.com/downloads/viewer/JumpDesktop-10.15.23.exe#/JumpDesktop.exe",
+            "hash": "bc63d1c61983c4c2f4d4e16dcdec4d3ff274f48278da1a88a85c6fdb4f444c90"
+        }
+    },
+    "installer": {
+        "script": [
+            "$extract = Join-Path $dir 'extract'",
+            "New-Item -ItemType Directory -Path $extract | Out-Null",
+            "Invoke-ExternalCommand -FilePath \"$dir\\JumpDesktop.exe\" -ArgumentList @('/extract', $extract)",
+            "$payload = Get-ChildItem -LiteralPath $extract -Directory | Select-Object -First 1",
+            "if ($null -eq $payload) { throw 'Could not extract Jump Desktop.' }",
+            "Move-Item -Path \"$($payload.FullName)\\*\" -Destination $dir",
+            "Remove-Item -LiteralPath $extract, \"$dir\\JumpDesktop.msi\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -LiteralPath \"$dir\\JumpDesktop.exe\" -Force -ErrorAction SilentlyContinue"
+        ]
+    },
+    "bin": "JumpClient.exe",
+    "shortcuts": [
+        [
+            "JumpClient.exe",
+            "Jump Desktop"
+        ]
+    ],
+    "checkver": {
+        "url": "https://changelog.jumpdesktop.com/atom.xml",
+        "regex": "Version ([\\d.]+) \\("
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://jumpdesktop.com/downloads/viewer/JumpDesktop-$version.exe#/JumpDesktop.exe"
+            }
+        }
+    }
+}
