@@ -1,0 +1,52 @@
+{
+    "version": "2-1691",
+    "description": "Kingdom Hearts libraries, tools, game engine and documentation",
+    "homepage": "https://github.com/OpenKH/OpenKh",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/OpenKH/OpenKh/releases/download/release2-1691/openkh.zip",
+            "hash": "6e88976744a0fba13f605357238e88285e86ce8c092d2434b935d3feb4ac6eb2"
+        }
+    },
+    "extract_dir": "openkh",
+    "pre_install": [
+        "$null = 'mod', 'mods', 'presets', 'data' | ForEach-Object { if (!(Test-Path \"$persist_dir/$_\")) { New-Item -ItemType Directory \"$dir/$_\" } }",
+        "$null = if (!(Test-Path \"$persist_dir/mods-manager.yml\")) { Set-Content -NoNewline -Encoding utf8 \"$dir/mods-manager.yml\" 'yamlGenPrefs: []' }",
+        "$null = 'KH1', 'KH2', 'BBS', 'ReCoM', 'KH3D' | ForEach-Object { $_ = \"/mods-$_.txt\"; if (!(Test-Path \"$persist_dir$_\")) { New-Item -ItemType File \"$dir$_\" } }"
+    ],
+    "persist": [
+        "mods",
+        "mod",
+        "presets",
+        "data",
+        "mods-manager.yml",
+        "mods-KH1.txt",
+        "mods-KH2.txt",
+        "mods-BBS.txt",
+        "mods-ReCoM.txt",
+        "mods-KH3D.txt"
+    ],
+    "shortcuts": [
+        [
+            "OpenKh.Launcher.exe",
+            "OpenKH Launcher"
+        ],
+        [
+            "OpenKh.Tools.ModsManager.exe",
+            "Mods Manager - OpenKH"
+        ]
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repositories/141183500/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "\\Arelease(\\d+-\\d+)\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/OpenKH/OpenKh/releases/download/release$version/openkh.zip"
+            }
+        }
+    }
+}

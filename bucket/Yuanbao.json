@@ -1,0 +1,51 @@
+{
+    "version": "2.84.1.621",
+    "description": "Yuanbao (Tencent Yuanbao). An AI assistant and chat client.",
+    "homepage": "https://yuanbao.tencent.com/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn-hybrid-prod.hunyuan.tencent.com/Desktop/official/a26f6c2d166f0001f6ae00d1503565ed/yuanbao_2.84.1.621_x64.exe#/dl.7z",
+            "hash": "582fe48d01f1d497bbd2f7d7a10064bbad089a419ad282eeba4907646c5368ab"
+        }
+    },
+    "installer": {
+        "script": [
+            "$payload = Get-ChildItem -LiteralPath $dir -Filter 'install*.7z' | Select-Object -First 1",
+            "if (!$payload) { abort 'Could not find the Yuanbao application payload.' }",
+            "Expand-7ZipArchive -Path $payload.FullName -DestinationPath $dir -Removal",
+            "$verdir = Get-ChildItem -LiteralPath $dir -Directory | Where-Object { $_.Name -match '^\\d+(?:\\.\\d+)+$' } | Select-Object -First 1",
+            "if (!$verdir) { abort 'Could not find the Yuanbao application directory.' }",
+            "$pkg = Get-ChildItem -LiteralPath $verdir.FullName -Directory | Where-Object { $_.Name -like '*.nsisbin' } | Select-Object -First 1",
+            "if ($pkg) {",
+            "    Compress-Archive -Path (Join-Path $pkg.FullName '*') -DestinationPath (Join-Path $verdir.FullName 'content.pkg') -CompressionLevel Optimal",
+            "    Remove-Item -LiteralPath $pkg.FullName -Recurse -Force",
+            "}",
+            "Remove-Item -LiteralPath (Join-Path $dir 'plugin_compress.ini'), (Join-Path $dir 'yuanbao_new.exe') -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -LiteralPath (Join-Path $dir '$PLUGINSDIR'), (Join-Path $dir '$WINDIR'), (Join-Path $dir '$R8'), (Join-Path $dir '$0') -Recurse -Force -ErrorAction SilentlyContinue"
+        ]
+    },
+    "bin": "yuanbao.exe",
+    "shortcuts": [
+        [
+            "yuanbao.exe",
+            "Yuanbao"
+        ]
+    ],
+    "checkver": {
+        "url": "https://yuanbao.tencent.com/api/info/public/general",
+        "regex": "\"windows\":\"https://cdn-hybrid-prod\\.hunyuan\\.tencent\\.com/(?<url>Desktop/official/[a-f0-9]+/yuanbao_(?<version>[\\d.]+)_x64\\.exe)\""
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn-hybrid-prod.hunyuan.tencent.com/$matchUrl#/dl.7z",
+                "hash": {
+                    "url": "https://yuanbao.tencent.com/api/info/public/general",
+                    "regex": "\"windows\":\"https://cdn-hybrid-prod\\.hunyuan\\.tencent\\.com/Desktop/official/([a-f0-9]{32})/"
+                }
+            }
+        }
+    },
+    "notes": "App data is stored outside the Scoop directory, in '%APPDATA%\\Tencent\\Yuanbao'."
+}

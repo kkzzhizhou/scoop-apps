@@ -1,0 +1,43 @@
+{
+    "version": "1.5.1",
+    "description": "AI-powered intelligent terminal by Tencent Cloud",
+    "homepage": "https://orcaterm.com/",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://orcaterm-desktop-1258344699.cos.ap-guangzhou.myqcloud.com/release/latest/OrcaTerm-latest-win-x64.exe#/dl.7z",
+            "hash": "f753a99b6939d6b92988dbe4d19de4654c9fd77597be6a8fb9a6602726c16067"
+        }
+    },
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Recurse -Force -ErrorAction SilentlyContinue",
+    "shortcuts": [
+        [
+            "OrcaTerm.exe",
+            "OrcaTerm"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://orcaterm-desktop-1258344699.cos.ap-guangzhou.myqcloud.com/release/latest/OrcaTerm-latest-win-x64.exe'",
+            "$tmp = Join-Path $env:TEMP 'OrcaTerm-version-head.bin'",
+            "$req = [System.Net.HttpWebRequest]::Create($url)",
+            "$req.AddRange(0, 262143)",
+            "$resp = $req.GetResponse()",
+            "$stream = $resp.GetResponseStream()",
+            "$file = [System.IO.File]::Create($tmp)",
+            "$stream.CopyTo($file)",
+            "$file.Close(); $stream.Close(); $resp.Close()",
+            "$text = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($tmp))",
+            "Remove-Item $tmp -Force",
+            "if ($text -match 'ProductVersion[^0-9]*([0-9][0-9A-Za-z.\\-]*)') { $matches[1] } else { throw 'ProductVersion not found in the OrcaTerm installer' }"
+        ],
+        "regex": "^([0-9][0-9A-Za-z.\\-]*)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://orcaterm-desktop-1258344699.cos.ap-guangzhou.myqcloud.com/release/latest/OrcaTerm-latest-win-x64.exe#/dl.7z"
+            }
+        }
+    }
+}

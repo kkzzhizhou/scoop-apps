@@ -1,24 +1,61 @@
 {
+    "version": "3.45.10.411",
+    "description": "Tencent Meeting (WeMeet). Video conferencing with HD video, screen sharing and meeting management.",
     "homepage": "https://meeting.tencent.com/",
-    "license": "unknown",
-    "version": "3.8.6.428",
-    "url": "https://updatecdn.meeting.qq.com/cos/c8e7fa1ddeaab18af4756163a7d52764/TencentMeeting_0300000000_3.8.6.428.publish.exe#/dl.7z",
-    "hash": "1a0116cf4c105e43c520204b0d6462bd2aa714e137005e5f31dc89fda428f660",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://updatecdn.meeting.qq.com/cos/b4e365dc68200484ad9bb3fb0415c3b1/TencentMeeting_0300000000_3.45.10.411_x86_64.publish.officialwebsite.exe?sourceforge.net#/dl.7z",
+            "hash": "md5:b4e365dc68200484ad9bb3fb0415c3b1"
+        },
+        "32bit": {
+            "url": "https://updatecdn.meeting.qq.com/cos/a8ea13e836c8e7400bc9233871cd0563/TencentMeeting_0300000000_3.45.10.411.publish.officialwebsite.exe?sourceforge.net#/dl.7z",
+            "hash": "md5:a8ea13e836c8e7400bc9233871cd0563"
+        }
+    },
     "installer": {
         "script": [
-            "Rename-Item \"$dir\\`$_10_\" \"$dir\\$version\"",
-            "Remove-Item \"$dir\\wemeetapp_new.exe\" -Force",
-            "Remove-Item \"$dir\\`$TEMP\", \"$dir\\`$WINDIR\", \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+            "$appdir = Get-ChildItem -LiteralPath $dir -Directory | Where-Object { $_.Name -like '$_*_' } | Select-Object -First 1",
+            "if ($appdir) {",
+            "    Rename-Item -LiteralPath $appdir.FullName -NewName $manifest.version",
+            "} elseif (!(Test-Path (Join-Path $dir $manifest.version))) {",
+            "    abort 'Could not find the Tencent Meeting application directory.'",
+            "}",
+            "Remove-Item -LiteralPath (Join-Path $dir 'WeMeetApp_new.exe') -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -LiteralPath (Join-Path $dir '$TEMP'), (Join-Path $dir '$WINDIR'), (Join-Path $dir '$PLUGINSDIR') -Force -Recurse -ErrorAction SilentlyContinue"
         ]
     },
-    "bin": "wemeetapp.exe",
+    "bin": "WeMeetApp.exe",
     "shortcuts": [
         [
-            "wemeetapp.exe",
+            "WeMeetApp.exe",
             "Tencent Meeting"
         ]
     ],
+    "checkver": {
+        "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%7D%2C%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%2C%22arch%22%3A%22x86_64%22%7D%5D&nonce=0000000000000000",
+        "regex": "\"platform\":\"windows\",\"md5\":\"[a-f0-9]{32}\",\"size\":\\d+,\"url\":\"https://updatecdn\\.meeting\\.qq\\.com/(?<cdn32>cos/[a-f0-9]+/TencentMeeting_0300000000_[\\d.]+\\.publish\\.officialwebsite\\.exe)\",\"version\":\"(?<version>[\\d.]+)\",\"sub-date\":\"[^\"]*\"\\},\\{\"channel\":\"[^\"]*\",\"platform\":\"windows_x86_64\",\"md5\":\"[a-f0-9]{32}\",\"size\":\\d+,\"url\":\"https://updatecdn\\.meeting\\.qq\\.com/(?<cdn64>cos/[a-f0-9]+/TencentMeeting_0300000000_[\\d.]+_x86_64\\.publish\\.officialwebsite\\.exe)\""
+    },
     "autoupdate": {
-        "url": "https://$matchUrl#/dl.7z"
-    }
+        "architecture": {
+            "64bit": {
+                "url": "https://updatecdn.meeting.qq.com/$matchCdn64?sourceforge.net#/dl.7z",
+                "hash": {
+                    "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%7D%2C%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%2C%22arch%22%3A%22x86_64%22%7D%5D&nonce=0000000000000000",
+                    "regex": "\"platform\":\"windows_x86_64\",\"md5\":\"([a-f0-9]{32})\""
+                }
+            },
+            "32bit": {
+                "url": "https://updatecdn.meeting.qq.com/$matchCdn32?sourceforge.net#/dl.7z",
+                "hash": {
+                    "url": "https://meeting.tencent.com/web-service/query-download-info?q=%5B%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%7D%2C%7B%22package-type%22%3A%22app%22%2C%22channel%22%3A%220300000000%22%2C%22platform%22%3A%22windows%22%2C%22arch%22%3A%22x86_64%22%7D%5D&nonce=0000000000000000",
+                    "regex": "\"platform\":\"windows\",\"md5\":\"([a-f0-9]{32})\""
+                }
+            }
+        }
+    },
+    "notes": [
+        "The download URL carries a '?sourceforge.net' marker solely to keep Scoop from sending a Referer header, which the Tencent CDN rejects with HTTP 403.",
+        "App data is stored outside the Scoop directory, in '%APPDATA%\\Tencent\\WeMeet'."
+    ]
 }
