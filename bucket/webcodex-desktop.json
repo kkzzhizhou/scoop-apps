@@ -1,0 +1,65 @@
+{
+	"version": "0.4.1",
+	"description": "Give cloud AI agents a real development environment on your own machines. (Desktop GUI)",
+	"homepage": "https://github.com/yyjeqhc/webcodex",
+	"license": "Apache-2.0",
+	"depends": "webcodex",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/yyjeqhc/webcodex/releases/download/v0.4.1/webcodex-desktop-v0.4.1-win32-x64-setup.exe#/dl.7z",
+			"hash": "177f450120a618be32e20fdb0fdc1b9b1bd0d55c3060146555d931b6d2627b4a"
+		}
+	},
+	"shortcuts": [
+		[
+			"WebCodex.exe",
+			"WebCodex Desktop"
+		]
+	],
+	"post_install": [
+		"Remove-Item -LiteralPath \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Recurse -Force -ErrorAction SilentlyContinue",
+		"$cli = scoop prefix webcodex",
+		"if (-not $cli -or -not (Test-Path -LiteralPath $cli)) {",
+		"    abort \"Could not find installed webcodex package via 'scoop prefix webcodex'.\"",
+		"}",
+		"$bins = @('webcodex.exe', 'webcodex-server.exe', 'webcodex-runner.exe')",
+		"foreach ($b in $bins) {",
+		"    $exe = Join-Path $cli $b",
+		"    if (-not (Test-Path -LiteralPath $exe)) {",
+		"        abort \"Missing binary '$b' in webcodex installation ($cli).\"",
+		"    }",
+		"    $verOutput = (& $exe --version | Out-String)",
+		"    if ($verOutput -notmatch \"\\b$([regex]::Escape($version))\\b\") {",
+		"        abort \"Version mismatch: $b reported '$verOutput', expected version '$version'.\"",
+		"    }",
+		"}",
+		"$runtime = Join-Path $dir 'webcodex-runtime'",
+		"if (Test-Path -LiteralPath $runtime) {",
+		"    Remove-Item -LiteralPath $runtime -Recurse -Force",
+		"}",
+		"New-Item -ItemType Junction -Path $runtime -Target $cli | Out-Null"
+	],
+	"pre_uninstall": [
+		"$runtime = Join-Path $dir 'webcodex-runtime'",
+		"if (Test-Path -LiteralPath $runtime) {",
+		"    (Get-Item -LiteralPath $runtime).Delete()",
+		"}"
+	],
+	"checkver": {
+		"script": [
+			"$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/yyjeqhc/webcodex/releases/latest'",
+			"$latest_desktop = $rel_info.assets | Where-Object {$_.name -match '^webcodex-desktop-v[\\d.]+-win32-x64-setup\\.exe$'} | Select-Object -first 1",
+			"$version = $rel_info.tag_name -replace '^v', ''",
+			"Write-Output \"$version $($latest_desktop.digest.Replace('sha256:',''))\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<desktopHash>[^\\s]+)"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/yyjeqhc/webcodex/releases/download/v$version/webcodex-desktop-v$version-win32-x64-setup.exe#/dl.7z",
+				"hash": "$matchDesktopHash"
+			}
+		}
+	}
+}

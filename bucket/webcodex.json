@@ -1,0 +1,43 @@
+{
+	"version": "0.4.1",
+	"description": "Give cloud AI agents a real development environment on your own machines.",
+	"homepage": "https://github.com/yyjeqhc/webcodex",
+	"license": "Apache-2.0",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/yyjeqhc/webcodex/releases/download/v0.4.1/webcodex-v0.4.1-win32-x64.tar.gz",
+			"hash": "a97cc94fef24456b43b70a3420098e240fea153a7d567f053e8b9279edd0751c"
+		},
+		"arm64": {
+			"url": "https://github.com/yyjeqhc/webcodex/releases/download/v0.4.1/webcodex-v0.4.1-win32-arm64.tar.gz",
+			"hash": "a1e1babe4e53dc9ec8c27233702fd425d11f73b3092a85fcceeb3ad1bd6e0aa6"
+		}
+	},
+	"bin": [
+		"webcodex.exe",
+		"webcodex-server.exe",
+		"webcodex-runner.exe"
+	],
+	"checkver": {
+		"script": [
+			"$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/yyjeqhc/webcodex/releases/latest'",
+			"$latest_x64 = $rel_info.assets | Where-Object {$_.name -match '^webcodex-v[\\d.]+-win32-x64\\.tar\\.gz$'} | Select-Object -first 1",
+			"$latest_arm64 = $rel_info.assets | Where-Object {$_.name -match '^webcodex-v[\\d.]+-win32-arm64\\.tar\\.gz$'} | Select-Object -first 1",
+			"$version = $rel_info.tag_name -replace '^v', ''",
+			"Write-Output \"$version $($latest_x64.digest.Replace('sha256:','')) $($latest_arm64.digest.Replace('sha256:',''))\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<x64hash>[^\\s]+)\\s(?<armhash>[^\\s]+)"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/yyjeqhc/webcodex/releases/download/v$version/webcodex-v$version-win32-x64.tar.gz",
+				"hash": "$matchX64hash"
+			},
+			"arm64": {
+				"url": "https://github.com/yyjeqhc/webcodex/releases/download/v$version/webcodex-v$version-win32-arm64.tar.gz",
+				"hash": "$matchArmhash"
+			}
+		}
+	}
+}
