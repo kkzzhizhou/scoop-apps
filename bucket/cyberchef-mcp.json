@@ -1,29 +1,33 @@
 {
-    "version": "3.10.0",
+    "version": "4.1.0",
     "description": "CyberChef-MCP - 为 AI 助手提供 CyberChef 数据处理能力的 MCP 服务器",
     "homepage": "https://github.com/doublegate/CyberChef-MCP",
     "license": "Apache-2.0",
-    "url": "https://github.com/doublegate/CyberChef-MCP/archive/refs/tags/v3.10.0.zip",
-    "hash": "0e8b6e6c6864725e0da31cb44f0b15292567fb4d18adcf549a8a60504c261609",
-    "extract_dir": "CyberChef-MCP-3.10.0",
+    "url": "https://github.com/doublegate/CyberChef-MCP/archive/refs/tags/v4.1.0.zip#/cyberchef-mcp.archive",
+    "hash": "7382c26aea9022645a002d36c89afbc22c62211fabd8454888249eed94f60429",
     "suggest": {
         "nodejs": "main/nodejs"
     },
-    "pre_install": [
-        "Push-Location \"$dir\"; npm.cmd install --omit=optional; Pop-Location",
-        "Set-Content \"$dir\\cyberchef-mcp.bat\" '@pushd %~dp0', '@call node src/node/mcp-server.mjs %*', '@popd' -Encoding Ascii"
-    ],
+    "installer": {
+        "script": [
+            "& 7z x \"$dir\\cyberchef-mcp.archive\" -o\"$dir\" -aoa -y -snl- -bd 2>&1 | Out-Null",
+            "Move-Item -Path \"$dir\\CyberChef-MCP-$version\\*\" -Destination \"$dir\" -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -Path \"$dir\\CyberChef-MCP-$version\" -Recurse -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -Path \"$dir\\cyberchef-mcp.archive\" -Force -ErrorAction SilentlyContinue",
+            "Push-Location \"$dir\"; npm.cmd install --omit=optional; Pop-Location",
+            "Set-Content \"$dir\\cyberchef-mcp.bat\" '@pushd %~dp0', '@call node src/node/mcp-server.mjs %*', '@popd' -Encoding Ascii"
+        ]
+    },
     "bin": "cyberchef-mcp.bat",
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/doublegate/CyberChef-MCP/archive/refs/tags/v$version.zip",
-        "extract_dir": "CyberChef-MCP-$version"
+        "url": "https://github.com/doublegate/CyberChef-MCP/archive/refs/tags/v$version.zip#/cyberchef-mcp.archive"
     },
     "notes": [
         "【工具类型】: MCP 服务",
         "【主要功能】: 将 CyberChef 的 463 项数据处理操作（编码、加密、压缩、取证分析等）封装为 MCP 工具，供 AI 助手调用",
         "【适用场景】: 在 Claude、Cursor 等 MCP 客户端中集成 CyberChef 能力，实现自然语言驱动的数据处理",
         "【技术特点】: 基于 Node.js v22+ 与 @modelcontextprotocol/sdk，支持 stdio/HTTP 双传输、Worker 线程池、流式进度通知",
-        "【注意事项】: 安装时会自动执行 npm install（需先安装 Node.js）；启用 Worker 线程池需设置环境变量 ENABLE_WORKERS=true；切换 HTTP 传输需设置 CYBERCHEF_TRANSPORT=http"
+        "【注意事项】: 安装时会自动执行 npm install（需先安装 Node.js）；解压使用 7z -snl- 跳过源码归档中的符号链接（如 CLAUDE.md，仅文档，无功能影响）；启用 Worker 线程池需设置环境变量 ENABLE_WORKERS=true；切换 HTTP 传输需设置 CYBERCHEF_TRANSPORT=http"
     ]
 }
