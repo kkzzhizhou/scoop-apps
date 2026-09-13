@@ -1,32 +1,45 @@
 {
-    "version": "2.12.3",
-    "description": "Music player",
+    "version": "2.12.4",
+    "description": "一个基于 electron 的音乐软件",
     "homepage": "https://github.com/lyswhut/lx-music-desktop",
-    "license": "Apache-2.0",
+    "license": "Apache-2.0 license",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.12.3/lx-music-desktop-v2.12.3-win_x64-green.7z",
-            "hash": "a893ede29b17452f4f814b39b707a82348ac2f479d3acac18db32bb076fc82d7"
+            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.12.4/lx-music-desktop-v2.12.4-win_x64-green.7z",
+            "hash": "c047dc2e8753151d168a2778c742e2495dd002e25740776e30de27e2ae12284c"
         },
-        "32bit": {
-            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.12.3/lx-music-desktop-v2.12.3-win7_x86-green.7z",
-            "hash": "156b631956f4836895aff6deb96f5277020dcd85cd9c1e2c9f173291296d2db5"
+        "arm64": {
+            "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v2.12.4/lx-music-desktop-v2.12.4-win_arm64-green.7z",
+            "hash": "7170933016de53576fca18e809f68ac0a6d08933b3805d2257e0817fb14da793"
         }
     },
     "shortcuts": [
         [
             "lx-music-desktop.exe",
-            "lx-music-desktop"
+            "洛雪音乐助手"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "script": [
+            "$url = 'https://api.github.com/repos/lyswhut/lx-music-desktop/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'lx-music-desktop-v([\\d.]+)-win_x64-green\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'lx-music-desktop-v([\\d.]+)-win_arm64-green\\.' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $arm64"
+        ],
+        "regex": "([\\d.]+) (?<arm64>[\\d.]+)"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win_x64-green.7z"
             },
-            "32bit": {
-                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$version/lx-music-desktop-v$version-win7_x86-green.7z"
+            "arm64": {
+                "url": "https://github.com/lyswhut/lx-music-desktop/releases/download/v$matchArm64/lx-music-desktop-v$matchArm64-win_arm64-green.7z"
             }
         }
     }
