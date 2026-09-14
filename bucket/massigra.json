@@ -20,8 +20,21 @@
         ]
     ],
     "checkver": {
-        "url": "https://siku-api.deno.dev/massigra",
-        "regex": "\"ver\"\\s?:\\s?\"([\\d\\.]+)\".*?\"software_dl_url\"\\s?:\\s?\"(?<soft>.*?)\".*?\"help_dl_url\"\\s?:\\s?\"(?<help>.*?)\""
+        "script": [
+            "$ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.49'",
+            "$headers = @{ 'user-agent' = $ua }",
+            "$page = (Invoke-WebRequest -UseBasicParsing -Uri 'https://www.vector.co.jp/soft/dl/win95/art/se400675.html' -Headers $headers).Content",
+            "$ver = [regex]::Match($page, 'MassiGra<span class=\"version\">([\\d\\.]+)</span>').Groups[1].Value",
+            "$soft = ''",
+            "$help = ''",
+            "foreach ($link in [regex]::Matches($page, '/download/file/win95/art/[\\w\\d]+\\.html').Value) {",
+            "    $filePage = (Invoke-WebRequest -UseBasicParsing -Uri \"https://www.vector.co.jp$link\" -Headers $headers).Content",
+            "    if (!$soft) { $soft = [regex]::Match($filePage, 'https://ftp\\.vector\\.co\\.jp/[\\d/]+MassiGra[\\d]+\\.zip').Value }",
+            "    if (!$help) { $help = [regex]::Match($filePage, 'https://ftp\\.vector\\.co\\.jp/[\\d/]+MassiGra[\\d]+Help\\.zip').Value }",
+            "}",
+            "if ($ver -and $soft -and $help) { \"$ver $soft $help\" }"
+        ],
+        "regex": "^([\\d\\.]+)\\s+(?<soft>\\S+)\\s+(?<help>\\S+)$"
     },
     "autoupdate": {
         "url": [
