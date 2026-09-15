@@ -9,17 +9,38 @@
             "hash": "a7e5fc4268abf2e805d7b07dcc76285638e7f130fa8a4d4c38046211bb742934"
         }
     },
-    "pre_install": "Expand-7zipArchive -Path \"$dir\\aegisub-portable-64.zip\" -ExtractDir 'aegisub-portable' -Removal",
+    "pre_install": [
+        "Expand-7zipArchive -Path \"$dir\\aegisub-portable-64.zip\" -ExtractDir 'aegisub-portable' -Removal",
+        "'config.json', 'hotkey.json' | ForEach {",
+        "   if (Test-Path \"$persist_dir\\$_\") {",
+        "       Copy-Item \"$persist_dir\\$_\" \"$dir\\\"",
+        "   }",
+        "}"
+    ],
+    "pre_uninstall": [
+        "# Manually persist files",
+        "'config.json', 'hotkey.json' | ForEach {",
+        "   if (Test-Path \"$dir\\$_\") {",
+        "       ensure \"$persist_dir\" | Out-Null",
+        "       Copy-Item \"$dir\\$_\" \"$persist_dir\\\"",
+        "   }",
+        "}"
+    ],
     "shortcuts": [
         [
             "aegisub.exe",
             "Aegisub"
         ]
     ],
+    "persist": [
+        "config",
+        "config.json",
+        "hotkey.json"
+    ],
     "checkver": {
-        "github": "https://github.com/arch1t3cht/Aegisub",
+        "url": "https://api.github.com/repos/arch1t3cht/Aegisub/releases/latest",
         "jsonpath": "$.tag_name",
-        "regex": "([\\w.-]+)"
+        "regex": "([\\w\\-_]+)"
     },
     "autoupdate": {
         "architecture": {
