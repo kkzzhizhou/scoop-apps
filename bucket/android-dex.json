@@ -1,0 +1,79 @@
+{
+    "version": "1.3",
+    "description": "Universal Samsung DeX alternative for all Android devices. Run Android apps on Windows, Linux & macOS with resizable windows, advanced FPS gaming controls, and high-performance wireless ADB mirroring.",
+    "homepage": "https://shrey113.github.io/Android-Dex/",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Shrey113/Android-Dex/releases/download/Android-Dex-v.1.3/Android_Dex_Windows_x64.zip#/android_dex_payload.bin",
+            "hash": "b5ab997a1f055ce1fefaabba3bc3f25cf9d214bf30d338e9d8e6cb8eeeeaf1b0"
+        },
+        "arm64": {
+            "url": "https://github.com/Shrey113/Android-Dex/releases/download/Android-Dex-v.1.3/Android_Dex_Windows_ARM64.zip#/android_dex_payload.bin",
+            "hash": "39e98e313e3f5c0a8ed97f4f8ac12b9dd6153bc40907cdf5ca564fff2bfaea64"
+        }
+    },
+    "extract": false,
+    "pre_install": [
+        "$payload = Join-Path $dir 'android_dex_payload.bin'",
+        "if (Test-Path $payload) {",
+        "    Rename-Item -Path $payload -NewName 'outer.zip' -Force",
+        "    Expand-Archive -Path (Join-Path $dir 'outer.zip') -DestinationPath $dir -Force",
+        "    Remove-Item (Join-Path $dir 'outer.zip') -Force",
+        "    $innerZip = Get-ChildItem -Path $dir -Filter '*.zip' | Select-Object -First 1",
+        "    if ($innerZip) {",
+        "        Expand-Archive -Path $innerZip.FullName -DestinationPath $dir -Force",
+        "        Remove-Item $innerZip.FullName -Force",
+        "    }",
+        "    $innerFolder = Join-Path $dir 'Android_Dex'",
+        "    if (Test-Path $innerFolder) {",
+        "        Get-ChildItem -Path $innerFolder -Force | Move-Item -Destination $dir -Force",
+        "        Remove-Item -Path $innerFolder -Recurse -Force",
+        "    }",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Android_Dex.exe",
+            "AndroidDex"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Android_Dex.exe",
+            "AndroidDex"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Shrey113/Android-Dex/releases",
+        "jp": "$[0].tag_name",
+        "regex": "Android-Dex-v.([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Shrey113/Android-Dex/releases/download/Android-Dex-v.$version/Android_Dex_Windows_x64.zip#/android_dex_payload.bin"
+            },
+            "arm64": {
+                "url": "https://github.com/Shrey113/Android-Dex/releases/download/Android-Dex-v.$version/Android_Dex_Windows_ARM64.zip#/android_dex_payload.bin"
+            }
+        }
+    }
+}

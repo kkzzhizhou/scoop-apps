@@ -1,12 +1,12 @@
 {
-	"version": "155.0.1",
+	"version": "156.0",
 	"description": "Firefox-based web browser optimized with CSIR PGO while preserving Firefox compatibility",
 	"homepage": "https://tete009.pages.dev/software",
 	"license": "MPL-2.0",
 	"architecture": {
 		"64bit": {
-			"url": "https://drive.usercontent.google.com/download?id=1fjE-nB0DqK-JZQMJ0uAhXAA9yOuR2J7X&export=download&confirm=t#/skykakapo.7z",
-			"hash": "66e0b4ae0dc9555df682a65591a7481431233c74bf398a5526778bb2f670baeb"
+			"url": "https://downloads.sourceforge.net/project/skykakapo/156.0/skykakapo-156.0-2026091423.en-US.win64-sse3-cspgo.7z",
+			"hash": "sha1:b42e222957fca5e5f5dad076162e166dd6eafeb3"
 		}
 	},
 	"pre_install": [
@@ -44,20 +44,26 @@
 			"$nextHeading = [regex]::Match($rest, '(?is)<h[1-6]\\b')",
 			"$block = if ($nextHeading.Success) { $rest.Substring(0, $nextHeading.Index) } else { $rest }",
 			"$version = $release.Groups['version'].Value",
-			"$drive = [regex]::Match($block, '(?i)drive\\.google\\.com/file/d/(?<id>[^/\\\"?&<]+)|drive\\.usercontent\\.google\\.com/[^\\\"<]*[?&]id=(?<id>[^&\\\"<]+)')",
-			"if (-not $drive.Success) { throw 'Failed to find the SkyKakapo Google Drive file ID' }",
-			"$text = [System.Net.WebUtility]::HtmlDecode(($block -replace '<[^>]+>', ' '))",
-			"$sha256 = [regex]::Match($text, 'SHA256[^:]*:\\s*(?<hash>[0-9a-fA-F]{64})')",
-			"if (-not $sha256.Success) { throw 'Failed to find the SkyKakapo SHA256' }",
-			"Write-Output $version $drive.Groups['id'].Value $sha256.Groups['hash'].Value.ToLowerInvariant()"
+			"$sfFolderMatch = [regex]::Match($block, 'sourceforge\\.net/projects/skykakapo/files/(?<folder>[^/\\\"?#\\s]+)')",
+			"if (-not $sfFolderMatch.Success) { throw 'Failed to find the SkyKakapo SourceForge folder' }",
+			"$folder = $sfFolderMatch.Groups['folder'].Value",
+			"$fileMatch = [regex]::Match($block, '<!--\\s*(?<filename>skykakapo-[^>]+\\.7z)\\s*-->')",
+			"$filename = if ($fileMatch.Success) {",
+			"    $fileMatch.Groups['filename'].Value",
+			"} else {",
+			"    $rss = Invoke-WebRequest -Uri \"https://sourceforge.net/projects/skykakapo/rss?path=/$folder\" -UseBasicParsing",
+			"    $rssMatch = [regex]::Match($rss.Content, '(?i)/projects/skykakapo/files/[^/]+/([^/]+\\.7z)/download')",
+			"    if (-not $rssMatch.Success) { throw 'Failed to find the SkyKakapo filename from RSS' }",
+			"    $rssMatch.Groups[1].Value",
+			"}",
+			"Write-Output \"$version $folder $filename\""
 		],
-		"regex": "(?<version>[\\d.]+)\\s+(?<driveId>\\S+)\\s+(?<hash>[a-f0-9]{64})"
+		"regex": "(?<version>[\\d.]+)\\s+(?<folder>\\S+)\\s+(?<filename>\\S+)"
 	},
 	"autoupdate": {
 		"architecture": {
 			"64bit": {
-				"url": "https://drive.usercontent.google.com/download?id=$matchDriveId&export=download&confirm=t#/skykakapo.7z",
-				"hash": "$matchHash"
+				"url": "https://downloads.sourceforge.net/project/skykakapo/$matchFolder/$matchFilename"
 			}
 		}
 	}
