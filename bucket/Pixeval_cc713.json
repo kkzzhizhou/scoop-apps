@@ -1,23 +1,43 @@
 {
-    "version": "4.3.18",
+    "version": "5.0.12",
     "description": "Wow. Yet another Pixiv client!",
     "homepage": "https://github.com/Pixeval/Pixeval",
-    "license": "GPL-3.0",
+    "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Pixeval/Pixeval/releases/download/4.3.18/Pixeval_4.3.18.0_x64.msix#/dl.7z",
-            "hash": "4f96e0f06e3eea1e3911be116735c09c03dc7e8de2df71fe77b2e35d5d7d752f"
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.0.12/Pixeval-win-x64-Portable.zip",
+            "hash": "2fa8332c9a865d469c71d1e75d6a4878a1c0bf6f8385753c48bc2905c28b9cf1"
         },
         "32bit": {
-            "url": "https://github.com/Pixeval/Pixeval/releases/download/4.3.18/Pixeval_4.3.18.0_x86.msix#/dl.7z",
-            "hash": "d90e65c88e2b422093463f00761630421c08cb7101471b0641ba1ddb5d7c63c4"
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.0.12/Pixeval-win-x86-Portable.zip",
+            "hash": "fc506334659aee25f6c370d63514610ac19d0613b8191101312dda60a8a6aafa"
         },
         "arm64": {
-            "url": "https://github.com/Pixeval/Pixeval/releases/download/4.3.18/Pixeval_4.3.18.0_arm64.msix#/dl.7z",
-            "hash": "7b53015289d4337fd199ce42cde7e2391471a9c038cde7e2be656bd8a20f318c"
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.0.12/Pixeval-win-arm64-Portable.zip",
+            "hash": "2c5deb16305cceddaeb08d5b5525b4515afdbb03f1b3767f6e58553832a6aa65"
         }
     },
-    "bin": "Pixeval.exe",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Pixeval\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Pixeval\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Pixeval.exe",
+            "Pixeval"
+        ]
+    ],
     "shortcuts": [
         [
             "Pixeval.exe",
@@ -25,20 +45,24 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/Pixeval/Pixeval/releases/latest",
-        "regex": "(?sm)browser_download_url.*?releases/download/([\\d.]+)/Pixeval_([\\d.]+).0_x64.msix"
+        "github": "https://api.github.com/repos/Pixeval/Pixeval/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval_$version.0_x64.msix#/dl.7z"
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-x64-Portable.zip"
             },
             "32bit": {
-                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval_$version.0_x86.msix#/dl.7z"
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-x86-Portable.zip"
             },
             "arm64": {
-                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval_$version.0_arm64.msix#/dl.7z"
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-arm64-Portable.zip"
             }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
         }
     }
 }
