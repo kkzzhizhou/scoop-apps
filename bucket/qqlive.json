@@ -1,13 +1,29 @@
 {
-    "version": "11.184.2229.0",
     "homepage": "https://v.qq.com/",
-    "license": "Freeware",
+    "description": "腾讯视频是腾讯推出的在线视频媒体平台。",
+    "license": "BSD-3-Clause",
+    "version": "11.184.2229.0",
     "url": "https://dldir1.qq.com/qqtv/TencentVideo11.184.2229.0.exe#/dl.7z",
     "hash": "4c0b99afc5d434ae4a39e9f856a1b5af422e159af402f370dd4ebaac5aeed803",
     "post_install": [
         "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\`$TEMP\" -Force -Recurse",
         "Copy-Item \"$dir\\QQLive.tpc\" \"$dir\\instok\""
     ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Tencent\\QQLive\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Tencent\\QQLive\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "shortcuts": [
         [
             "QQLive.exe",
@@ -20,5 +36,10 @@
     },
     "autoupdate": {
         "url": "https://dldir1.qq.com/qqtv/TencentVideo$version.exe#/dl.7z"
-    }
+    },
+    "notes": [
+        "如果更新出现仍在运行的话，需要先关掉进程和服务",
+        "Get-Process *qqlive* | Stop-Process",
+        "Get-Service *qqlive* | Stop-Service"
+    ]
 }
