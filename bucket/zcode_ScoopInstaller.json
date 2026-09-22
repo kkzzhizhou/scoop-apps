@@ -1,0 +1,52 @@
+{
+    "version": "3.14.1",
+    "description": "A full-featured Agentic Development Environment (ADE) built for Long Horizon Tasks, powered by Z.ai.",
+    "homepage": "https://zcode.z.ai/en",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://zcode.z.ai/en/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.14.1/windows-x64/ZCode-3.14.1-win-x64.exe#/dl.7z",
+            "hash": "f5216f6df1d5f5cf69d55d732c64927533fe9eeb31e8b39bed2493fac09ed9a0"
+        },
+        "arm64": {
+            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.14.1/windows-arm64/ZCode-3.14.1-win-arm64.exe#/dl.7z",
+            "hash": "9e29dc50cb0902e738f84d18fbde6ace6b6a5669dd70419351ecbafea549ac7f"
+        }
+    },
+    "installer": {
+        "script": [
+            "Get-Item -Path \"$dir\\`$PLUGINSDIR\\app*.7z\" | Expand-7zipArchive -DestinationPath \"$dir\"",
+            "Remove-Item -Path \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -Force"
+        ]
+    },
+    "post_install": [
+        "# Disable built-in update mechanism to prevent conflicts with Scoop's update management",
+        "$yaml = \"$dir\\resources\\app-update.yml\"",
+        "$content = Get-Content -Path $yaml | Foreach-Object {",
+        "    if ($_.StartsWith('url')) { \"$($_.Replace('url', '# url')) # Disabled by Scoop\" } else { $_ }",
+        "}",
+        "Set-Content $yaml -Value $content -Encoding ascii"
+    ],
+    "shortcuts": [
+        [
+            "ZCode.exe",
+            "ZCode"
+        ]
+    ],
+    "checkver": {
+        "regex": "ZCode-(?<version>\\d+(?:\\.\\d+)+)-win-x64\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn-zcode.z.ai/zcode/electron/releases/$version/windows-x64/ZCode-$version-win-x64.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://cdn-zcode.z.ai/zcode/electron/releases/$version/windows-arm64/ZCode-$version-win-arm64.exe#/dl.7z"
+            }
+        }
+    }
+}
