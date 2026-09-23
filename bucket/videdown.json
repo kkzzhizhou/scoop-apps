@@ -1,0 +1,53 @@
+{
+    "version": "1.2.7",
+    "description": "Videdown 是一款现代化的开源视频下载工具，让你可以从抖音 小红书 B站 YT Instagram等网站下载无水印高清视频",
+    "homepage": "https://github.com/cshuangyy/videdown",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/cshuangyy/videdown#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/cshuangyy/videdown/releases/download/v1.2.7/Videdown.Setup1.2.7.exe#/dl.7z",
+            "hash": "6b22367bc884b7fe9f1da70f2b58fd09d35bae4ed93512b685749199ae643b62",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\videdown\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\videdown\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Videdown.exe",
+    "shortcuts": [
+        [
+            "Videdown.exe",
+            "Videdown"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/cshuangyy/videdown/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/cshuangyy/videdown/releases/download/v$version/Videdown.Setup$version.exe#/dl.7z"
+            }
+        }
+    }
+}

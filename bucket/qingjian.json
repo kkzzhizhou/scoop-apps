@@ -3,6 +3,7 @@
     "description": "用 Rust 写的拼音输入法，候选词旁多一条正在学的语言的译词",
     "homepage": "https://qingjian.app/",
     "license": "GPL-3.0-or-later",
+    "notes": "青简是 TSF 输入法，注册 DLL 要写 HKCR 与 HKLM\\SOFTWARE\\Microsoft\\CTF。输入引擎 qingjian-server 在切到青简时自动拉起，也可以从开始菜单启动。",
     "architecture": {
         "64bit": {
             "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-v0.1.3/qingjian-0.1.3-windows-x86_64-setup.exe",
@@ -10,18 +11,62 @@
         }
     },
     "innosetup": true,
+    "post_install": [
+        "# 青简的输入法本体是两份按版本命名的 TSF DLL，32 位那份必须用 SysWOW64 的 regsvr32 注册，InprocServer32 才会落到 WOW6432Node。",
+        "# 装到用户目录下时 AppContainer（设置、任务栏搜索等）默认读不到，给 ALL APPLICATION PACKAGES 放开读+执行。",
+        "& \"$env:windir\\System32\\icacls.exe\" $dir /grant '*S-1-15-2-1:(OI)(CI)RX' /T /C /Q | Out-Null",
+        "try {",
+        "    Get-ChildItem -LiteralPath $dir -Filter 'qingjian_tsf-*.dll' | ForEach-Object {",
+        "        # regsvr32 要写 HKCR 与 HKLM，直接提权跑（Scoop 默认不提权）。",
+        "        $bits = if ($_.Name -like '*-x86.dll') { 'SysWOW64' } else { 'System32' }",
+        "        Start-Process \"$env:windir\\$bits\\regsvr32.exe\" -ArgumentList '/s', $_.FullName -Verb RunAs -Wait -ErrorAction Stop",
+        "    }",
+        "} catch {",
+        "    Write-Host \"注册「青简」文本服务失败：$($_.Exception.Message)\" -ForegroundColor Yellow",
+        "}",
+        "if (-not ('Qingjian.Tsf' -as [type])) { Add-Type -Namespace 'Qingjian' -Name 'Tsf' -MemberDefinition '[DllImport(\"input.dll\", CharSet = CharSet.Unicode)] public static extern bool InstallLayoutOrTip(string psz, uint dwFlags);' }",
+        "# 把「青简」加进当前用户的键盘列表：input.dll 的 InstallLayoutOrTip，0x0804 = 中文(简体)，第 2 个 GUID 是语言 profile。",
+        "if (-not [Qingjian.Tsf]::InstallLayoutOrTip('0x0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}', 0)) {",
+        "    Write-Host '没能自动添加「青简」键盘，请在「设置 → 时间和语言 → 语言和区域 → 中文(简体) → 键盘」里手动添加。' -ForegroundColor Yellow",
+        "}"
+    ],
     "shortcuts": [
         [
             "qingjian-server.exe",
-            "qingjian"
+            "青简"
+        ],
+        [
+            "qingjian-settings.exe",
+            "青简设置"
         ]
     ],
+    "pre_uninstall": [
+        "# 先停掉 Server 与设置程序：进程占着 exe / DLL 时既注销不掉也删不掉。",
+        "Get-Process -Name qingjian-server, qingjian-settings -ErrorAction SilentlyContinue | Stop-Process -Force",
+        "if (-not ('Qingjian.Tsf' -as [type])) { Add-Type -Namespace 'Qingjian' -Name 'Tsf' -MemberDefinition '[DllImport(\"input.dll\", CharSet = CharSet.Unicode)] public static extern bool InstallLayoutOrTip(string psz, uint dwFlags);' }",
+        "# 从当前用户的键盘列表里摘掉「青简」，否则会留一条指向已删除 DLL 的残项（1 = ILOT_UNINSTALL）。",
+        "if (-not [Qingjian.Tsf]::InstallLayoutOrTip('0x0804:{4FDCA82D-E923-49BF-9E75-BB906B93B8BB}{8119F8E0-CF81-423B-9189-C0D7374324B3}', 1)) {",
+        "    Write-Host '没能自动移除「青简」键盘，请在「设置 → 时间和语言 → 语言和区域 → 中文(简体) → 键盘」里手动移除。' -ForegroundColor Yellow",
+        "}",
+        "# 只注销本目录里这两份 DLL：别的版本那份不能 /u，那会把整个 CLSID 一起注销掉。",
+        "try {",
+        "    Get-ChildItem -LiteralPath $dir -Filter 'qingjian_tsf-*.dll' | ForEach-Object {",
+        "        $bits = if ($_.Name -like '*-x86.dll') { 'SysWOW64' } else { 'System32' }",
+        "        Start-Process \"$env:windir\\$bits\\regsvr32.exe\" -ArgumentList '/u', '/s', $_.FullName -Verb RunAs -Wait -ErrorAction Stop",
+        "    }",
+        "} catch {",
+        "    Write-Host \"注销「青简」文本服务失败：$($_.Exception.Message)\" -ForegroundColor Yellow",
+        "}"
+    ],
     "checkver": {
-        "url": "https://github.com/qingjian-team/qingjian/releases",
-        "regex": "download/windows-v([\\d.]+)/qingjian-[\\d.]+-windows-x86_64-setup.exe",
-        "replace": "$1"
+        "url": "https://api.github.com/repos/qingjian-team/qingjian/releases",
+        "regex": "tag_name\\s*:\\s*\"(?<version>windows-v(?>[\\d.]+(?:-[\\w.-]+)?))\""
     },
     "autoupdate": {
-        "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-$version/qingjian-$version-windows-x86_64-setup.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/qingjian-team/qingjian/releases/download/windows-$version/qingjian-$version-windows-x86_64-setup.exe"
+            }
+        }
     }
 }

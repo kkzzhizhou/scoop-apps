@@ -1,0 +1,57 @@
+{
+    "version": "1.4.10",
+    "description": "A Telegram client, but déjà vu",
+    "homepage": "https://mithka.ieb.app/",
+    "license": {
+        "identifier": "BSD-3-Clause license",
+        "url": "https://github.com/iebb/mithka#BSD-3-Clause-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/iebb/mithka/releases/download/v1.4.10/mithka-1.4.10-20260918-windows-x64-setup.exe",
+            "hash": "fba51aa2079a869a91f44889cf4d1a3395756f427be5403d4e45c386a9c87e9a"
+        },
+        "arm64": {
+            "url": "https://github.com/iebb/mithka/releases/download/v1.4.10/mithka-1.4.10-20260918-windows-arm64-setup.exe",
+            "hash": "f9c692cd488ef1567ed646fd1f7d589b87fbed0a86403e25252c29731cbc77db"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\ad.neko\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\ad.neko\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "mithka.exe",
+    "shortcuts": [
+        [
+            "mithka.exe",
+            "Mithka"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/iebb/mithka/releases/latest",
+        "jp": "$.assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/mithka-([\\d.]+)-(?<date>[\\d]+)-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/iebb/mithka/releases/download/v$version/mithka-$version-$matchDate-windows-x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/iebb/mithka/releases/download/v$version/mithka-$version-$matchDate-windows-arm64-setup.exe"
+            }
+        }
+    }
+}
