@@ -1,9 +1,9 @@
 {
-    "version": "3.9.7",
+    "version": "3.12.1",
     "description": "学外语必备神器",
-    "homepage": "http://aboboo.com/",
+    "homepage": "https://www.aboboo.com/",
     "license": "Freeware",
-    "url": "https://download.aboboo.com/release/Aboboo.Full.3.9.7.zip",
+    "url": "https://download.aboboo.com/release/Aboboo.Full.3.12.1.zip",
     "shortcuts": [
         [
             "Aboboo.exe",
@@ -11,8 +11,21 @@
         ]
     ],
     "checkver": {
-        "url": "https://www.aboboo.com/g/#/home",
-        "regex": "windows客户端（ V([\\d+.]+) ）"
+        "script": [
+            "$ProgressPreference = 'SilentlyContinue'",
+            "$html = (Invoke-WebRequest 'https://www.aboboo.com/g/' -UseBasicParsing).Content",
+            "$cur = [regex]::Match($html, \"clientInfo = \\{[^}]*version: '([\\d.]+)'\").Groups[1].Value",
+            "$old = [regex]::Match($html, \"oldClientInfo = \\{[^}]*version: '([\\d.]+)'\").Groups[1].Value",
+            "$found = ''",
+            "$cand = @()",
+            "if ($cur) { $cand += $cur }",
+            "if ($old) { $cand += $old }",
+            "if ($cur) { $p = $cur.Split('.'); $Maj = [int]$p[0]; $Min = [int]$p[1]; $Bld = [int]$p[2]; $Bld..0 | ForEach-Object { $cand += \"$($Maj).$($Min).$_\" }; $MinPrev = $Min - 1; 20..0 | ForEach-Object { $cand += \"$($Maj).$($MinPrev).$_\" } }",
+            "$cand = $cand | Select-Object -Unique",
+            "foreach ($v in $cand) { if ($found) { break }; try { $r = Invoke-WebRequest \"https://download.aboboo.com/release/Aboboo.Full.$v.zip\" -Method Head -UseBasicParsing -ErrorAction Stop; if ($r.StatusCode -eq 200) { $found = $v } } catch {} }",
+            "\"VERSION=$found\""
+        ],
+        "regex": "VERSION=([\\d.]+)"
     },
     "autoupdate": {
         "url": "https://download.aboboo.com/release/Aboboo.Full.$version.zip"
