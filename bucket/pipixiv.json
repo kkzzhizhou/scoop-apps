@@ -1,0 +1,52 @@
+{
+    "version": "2.5.1",
+    "description": "一个使用Compose Multiplatform开发的第三方Pixiv客户端，支持国内直连",
+    "homepage": "https://github.com/darriousliu/PiPixiv",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/darriousliu/PiPixiv#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/darriousliu/PiPixiv/releases/download/v2.5.1/PiPixiv-v2.5.1-windows-x86_64.msi",
+            "hash": "bb1822ef80cb70caaa1a1688eb3b2e0b2d9628b8e0fff6605d1dfdba7cdd98f8"
+        }
+    },
+    "extract_dir": "PiPixiv\\PiPixiv",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\nucleus\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\PiPixiv\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\nucleus\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\PiPixiv\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "PiPixiv.exe",
+    "shortcuts": [
+        [
+            "PiPixiv.exe",
+            "PiPixiv"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/darriousliu/PiPixiv/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/darriousliu/PiPixiv/releases/download/v$version/PiPixiv-v$version-windows-x86_64.msi"
+            }
+        }
+    }
+}
