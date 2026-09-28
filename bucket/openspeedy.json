@@ -9,7 +9,31 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/game1024/OpenSpeedy/releases/download/3.3.11/OpenSpeedy-3.3.11-msi-signed.zip",
-            "hash": "18532adbdac1af1526f014ad8157e198dd53b6b6832a4808f2378efe0a4210aa"
+            "hash": "18532adbdac1af1526f014ad8157e198dd53b6b6832a4808f2378efe0a4210aa",
+            "pre_install": [
+                "# 1. 重命名 msi",
+                "Get-ChildItem -Path \"$dir\" -Filter '*.msi' -File | Rename-Item -NewName 'OpenSpeedy.msi' -Force",
+                "$msiPath = Join-Path $dir 'OpenSpeedy.msi'",
+                "# 2. 在 TEMP 目录下创建无空格的临时解压目录",
+                "$tmp = Join-Path $env:TEMP \"openspeedy_extract_$([guid]::NewGuid().ToString('N'))\"",
+                "New-Item -ItemType Directory -Force -Path $tmp | Out-Null",
+                "# 3. 使用 msiexec /a 解包到无空格临时目录",
+                "$msiArgs = @('/a', \"`\"$msiPath`\"\", '/qn', \"TARGETDIR=`\"$tmp`\"\")",
+                "$process = Start-Process msiexec.exe -ArgumentList $msiArgs -Wait -NoNewWindow -PassThru",
+                "if ($process.ExitCode -ne 0) { throw \"msiexec failed with exit code $($process.ExitCode)\" }",
+                "# 4. 将解压出来的文件移动到 $dir。兼容两种目录结构",
+                "$innerDir = Join-Path $tmp 'PFiles\\OpenSpeedy'",
+                "if (Test-Path $innerDir) {",
+                "    Get-ChildItem -Path $innerDir -Force | Move-Item -Destination $dir -Force",
+                "} else {",
+                "    Get-ChildItem -Path $tmp -Force | Move-Item -Destination $dir -Force",
+                "}",
+                "# 5. 清理临时目录和 msi",
+                "Remove-Item -Path $tmp -Recurse -Force -ErrorAction SilentlyContinue",
+                "Remove-Item -Path $msiPath -Force",
+                "# 6. 最终校验",
+                "if (-not (Test-Path \"$dir\\openspeedy.exe\")) { throw 'openspeedy.exe not found after extraction' }"
+            ]
         }
     },
     "bin": "openspeedy.exe",
