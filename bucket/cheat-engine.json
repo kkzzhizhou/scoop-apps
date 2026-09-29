@@ -1,21 +1,67 @@
 {
-    "version": "7.6",
+    "version": "7.7",
     "description": "Tool for modifying/debugging single player games and applications.",
-    "homepage": "https://cheatengine.org",
+    "homepage": "https://cheatengine.org/index.php",
     "license": {
         "identifier": "Freeware",
         "url": "https://github.com/cheat-engine/cheat-engine/issues/60#issuecomment-467317576"
     },
-    "url": "https://raw.githubusercontent.com/ScoopInstaller/Binary/master/cheat-engine/CheatEngine76.7z",
-    "hash": "87d58e73fac883aea6c3a09e7497acbf1c6ebdd12a8a76152f0438e9f9927559",
-    "shortcuts": [
-        [
-            "Cheat Engine.exe",
-            "Cheat Engine"
+    "url": "https://d3gpt2g9zwv61d.cloudfront.net/Oet5cFJ3g.exe",
+    "hash": "6b187245571eab9fe396439f50d8b5a1dbdbeaff435132c596ab30fc42df3447",
+    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "shortcuts": [
+                [
+                    "Cheat Engine.exe",
+                    "Cheat Engine"
+                ],
+                [
+                    "windowsrepair.exe",
+                    "Cheat Engine Windows Repair"
+                ],
+                [
+                    "Tutorial-x86_64.exe",
+                    "Cheat Engine Tutorial"
+                ]
+            ]
+        },
+        "32bit": {
+            "shortcuts": [
+                [
+                    "Cheat Engine.exe",
+                    "Cheat Engine"
+                ],
+                [
+                    "windowsrepair.exe",
+                    "Cheat Engine Windows Repair"
+                ],
+                [
+                    "Tutorial-i386.exe",
+                    "Cheat Engine Tutorial"
+                ]
+            ]
+        }
+    },
+    "checkver": {
+        "url": "https://www.cheatengine.org/downloads.php",
+        "script": [
+            "$page = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "$regexVersion = [regex]'Download Cheat Engine ([\\d.]+)'",
+            "$regexUrl = [regex]'https://(?<subdomain>[^\\.]+)\\.cloudfront\\.net/(?<filename>[^\\.]+)\\.exe'",
+            "$matchVersion = $regexVersion.Match($page.Content)",
+            "$matchUrl = $regexUrl.Match($page.Content)",
+            "if (-not $matchVersion.Success) { throw '无法从官网解析出版本号' }",
+            "if (-not $matchUrl.Success) { throw '无法从官网解析出下载链接' }",
+            "$version = $matchVersion.Groups[1].Value",
+            "$subdomain = $matchUrl.Groups['subdomain'].Value",
+            "$filename = $matchUrl.Groups['filename'].Value",
+            "$version + ' ' + $subdomain + ' ' + $filename"
         ],
-        [
-            "windowsrepair.exe",
-            "Cheat Engine Windows Repair"
-        ]
-    ]
+        "regex": "(?<version>[\\d.]+)\\s+(?<subdomain>[^\\s]+)\\s+(?<filename>[^\\s]+)"
+    },
+    "autoupdate": {
+        "url": "https://$matchSubdomain.cloudfront.net/$matchFilename.exe",
+        "hash": "skip"
+    }
 }

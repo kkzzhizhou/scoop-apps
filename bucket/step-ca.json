@@ -1,0 +1,41 @@
+{
+    "version": "0.30.2",
+    "description": "Step-ca is an online certificate authority for secure, automated certificate management for DevOps",
+    "homepage": "https://smallstep.com/certificates",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/smallstep/certificates/releases/download/v0.30.2/step-ca_windows_0.30.2_amd64.zip",
+            "hash": "89912b33a2100e21dab58ed2f8740e6b61556edf5cf135b860f713506f1ccb71"
+        }
+    },
+    "bin": "step-ca.exe",
+    "persist": [
+        ".step"
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$dir\\.step\")) { New-Item -ItemType Directory -Path \"$dir\\.step\" | Out-Null }"
+    ],
+    "env_set": {
+        "STEPPATH": "$persist_dir\\.step"
+    },
+    "notes": [
+        "step-ca stores its PKI home (config, certs, secrets, db) under $STEPPATH, which is redirected to $dir\\.step and persisted across updates.",
+        "Initialize a CA with 'step ca init', then run: step-ca config\\ca.json",
+        "Only a 64bit Windows build is published for this release."
+    ],
+    "checkver": {
+        "github": "https://github.com/smallstep/certificates"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/smallstep/certificates/releases/download/v$version/step-ca_windows_$version_amd64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/checksums.txt",
+            "regex": "($sha256)\\s+\\*?$basename"
+        }
+    }
+}
