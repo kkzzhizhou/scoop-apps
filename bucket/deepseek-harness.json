@@ -1,0 +1,51 @@
+{
+    "version": "0.2.0-rc.2",
+    "description": "DeepSeek Harness desktop app for agent tasks and plugins",
+    "homepage": "https://www.deepseek.com/harness/",
+    "license": "MIT",
+    "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
+    "hash": "d61cd8882f8b8a1251144320493ad27920d15139503eba2465b9579eee720cfc",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall DeepSeek Harness.exe\" -Force -Recurse"
+    ],
+    "shortcuts": [
+        [
+            "DeepSeek Harness.exe",
+            "DeepSeek Harness"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url = 'https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe'",
+            "$request = [System.Net.HttpWebRequest]::Create($url)",
+            "$request.AddRange(0, 2097151)",
+            "$request.Timeout = 30000",
+            "$request.ReadWriteTimeout = 30000",
+            "$response = $null",
+            "$tempFile = $null",
+            "try {",
+            "    $response = $request.GetResponse()",
+            "    if ([int]$response.StatusCode -ne 206) { throw \"Expected a partial download (HTTP 206), received $([int]$response.StatusCode)\" }",
+            "    if ($response.ContentLength -gt 2097152) { throw \"Version probe exceeded 2 MiB: $($response.ContentLength)\" }",
+            "    $tempFile = [System.IO.Path]::GetTempFileName()",
+            "    $output = [System.IO.File]::OpenWrite($tempFile)",
+            "    try { $response.GetResponseStream().CopyTo($output) } finally { $output.Dispose() }",
+            "    if ((Get-Item $tempFile).Length -gt 2097152) { throw 'Version probe exceeded 2 MiB' }",
+            "    $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($tempFile).ProductVersion",
+            "    if ($version -notmatch '^[\\d.]+(?:-[\\w.]+)?$') { throw \"Unexpected installer ProductVersion: $version\" }",
+            "    Write-Output $version",
+            "} finally {",
+            "    if ($response) { $response.Close() }",
+            "    if ($tempFile -and (Test-Path $tempFile)) { Remove-Item $tempFile -Force }",
+            "}"
+        ],
+        "regex": "(?<version>[\\d.]+(?:-[\\w.]+)?)"
+    },
+    "autoupdate": {
+        "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
+        "hash": {
+            "mode": "download"
+        }
+    }
+}
