@@ -1,0 +1,69 @@
+{
+    "version": "0.18.2.1",
+    "description": "The Chromium-based web browser made for people, with love. Best privacy by default, unbiased ad-blocking, no bloat and no noise.",
+    "homepage": "https://helium.computer",
+    "license": "BSD-3-Clause, GPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/imputnet/helium-windows/releases/download/0.18.2.1/helium_0.18.2.1_x64-windows.zip",
+            "hash": "1cb12ab9ac54e5563de5de09d6c97adbf90e73b512b360fee877e7336057eb3a",
+            "extract_dir": "helium_0.18.2.1_x64-windows"
+        },
+        "arm64": {
+            "url": "https://github.com/imputnet/helium-windows/releases/download/0.18.2.1/helium_0.18.2.1_arm64-windows.zip",
+            "hash": "791c479ac8319e1976638d8527dc5a40d1865a7d85c4571c08518667dc4e22d0",
+            "extract_dir": "helium_0.18.2.1_arm64-windows"
+        }
+    },
+    "post_install": [
+        "$targetPersist = \"$persist_dir\\User Data\"",
+        "$cUserData = \"$env:LOCALAPPDATA\\imput\\Helium\\User Data\"",
+        "if (-not (Test-Path -LiteralPath $targetPersist)) { New-Item -ItemType Directory -Path $targetPersist -Force | Out-Null }",
+        "$parentDir = Split-Path -Path $cUserData -Parent",
+        "if (-not (Test-Path -LiteralPath $parentDir)) { New-Item -ItemType Directory -Path $parentDir -Force | Out-Null }",
+        "if (-not (Test-Path -LiteralPath $cUserData)) {",
+        "    New-Item -ItemType Junction -Path $cUserData -Target $targetPersist | Out-Null",
+        "} else {",
+        "    $item = Get-Item -LiteralPath $cUserData -Force",
+        "    if (-not ($item.Attributes -match 'ReparsePoint')) {",
+        "        if ((Get-ChildItem -LiteralPath $targetPersist -Force | Measure-Object).Count -eq 0) {",
+        "            Get-ChildItem -LiteralPath $cUserData -Force | Move-Item -Destination $targetPersist -Force",
+        "            Remove-Item -LiteralPath $cUserData -Force -Recurse",
+        "        } else {",
+        "            $bakName = \"User Data.bak_$(Get-Date -Format 'yyyyMMddHHmmss')\"",
+        "            Write-Host \"The existing Helium user data has been backed up to: $bakName\" -ForegroundColor Yellow",
+        "            Rename-Item -LiteralPath $cUserData -NewName $bakName",
+        "        }",
+        "        New-Item -ItemType Junction -Path $cUserData -Target $targetPersist | Out-Null",
+        "    }",
+        "}"
+    ],
+    "bin": [
+        [
+            "chrome.exe",
+            "helium"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "chrome.exe",
+            "Helium"
+        ]
+    ],
+    "persist": "User Data",
+    "checkver": {
+        "github": "https://github.com/imputnet/helium-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/imputnet/helium-windows/releases/download/$version/helium_$version_x64-windows.zip",
+                "extract_dir": "helium_$version_x64-windows"
+            },
+            "arm64": {
+                "url": "https://github.com/imputnet/helium-windows/releases/download/$version/helium_$version_arm64-windows.zip",
+                "extract_dir": "helium_$version_arm64-windows"
+            }
+        }
+    }
+}

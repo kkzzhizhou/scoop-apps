@@ -1,0 +1,42 @@
+{
+    "version": "0.2.0-rc.2",
+    "description": "DeepSeek official desktop client for the Harness agent runtime, supporting background tasks, local file access and plugin management.",
+    "homepage": "https://www.deepseek.com/download",
+    "license": "MIT",
+    "notes": [
+        "DeepSeek Harness official desktop app (Electron NSIS installer, 64-bit).",
+        "Two-layer extraction: Scoop 7z-extracts the NSIS installer, then the inner $PLUGINSDIR\\app-64.7z is expanded, which contains 'DeepSeek Harness.exe'.",
+        "The Windows download URL is versionless (dsh-latest-windows-x64.exe); Scoop autoupdate recomputes the SHA-256 by downloading the new installer, so updates may take a while.",
+        "Version is sourced from the deepseek-ai/deepseek-harness GitHub releases, which mirror the desktop client releases."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
+            "hash": "d61cd8882f8b8a1251144320493ad27920d15139503eba2465b9579eee720cfc",
+            "installer": {
+                "script": [
+                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall DeepSeek Harness.exe\" -Recurse -Force -ErrorAction SilentlyContinue"
+                ]
+            }
+        }
+    },
+    "bin": "DeepSeek Harness.exe",
+    "shortcuts": [
+        [
+            "DeepSeek Harness.exe",
+            "DeepSeek Harness"
+        ]
+    ],
+    "checkver": {
+        "url": "https://github.com/deepseek-ai/deepseek-harness/releases",
+        "regex": "/releases/tag/dsh-v([\\d.]+(?:-rc\\.[\\d]+)?)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z"
+            }
+        }
+    }
+}
