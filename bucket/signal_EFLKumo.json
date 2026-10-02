@@ -1,17 +1,17 @@
 {
-    "version": "8.28.0",
+    "version": "8.29.0",
     "description": "A cross-platform encrypted messaging service.",
     "homepage": "https://signal.org",
     "license": "GPL-3.0-only",
     "architecture": {
         "64bit": {
-            "url": "https://updates.signal.org/desktop/signal-desktop-win-x64-8.28.0.exe#/dl.7z",
-            "hash": "sha512:8c212e7ab1527bd1e256d112ef2e345a4f959abcc8ed5382a6e07ad5644b79946fdc925d9fb28dd796519d6308b45184fb7e50c803a820f3c4e0b94b047be683",
+            "url": "https://updates.signal.org/desktop/signal-desktop-win-x64-8.29.0.exe#/dl.7z",
+            "hash": "sha512:16b6dc62bafa82844b8ebd1866db7242ef73210003fa7f29293168f26e8d4ba22b7e36811a6f6d8b63fb9d2d5030d18fbd9be869bca940b8638ba0947fa8986f",
             "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
         },
         "arm64": {
-            "url": "https://updates.signal.org/desktop/signal-desktop-win-arm64-8.28.0.exe#/dl.7z",
-            "hash": "sha512:0be297f0151a059423aec3403bd73b9c84f57a5431fe1b55362105ba36bdc748950a1764b9c96b4fd687c5b61869c5c9b86353b43b08af1ad9ba85f2ad6a2935",
+            "url": "https://updates.signal.org/desktop/signal-desktop-win-arm64-8.29.0.exe#/dl.7z",
+            "hash": "sha512:0c8863640f04078ca4664e3a2c50b7c828bc3676ee19918ed0f76c57eda15efe907dcf11c4ce09a5f386cd26b2f156e04096aa7e2634c81346c8ded8e5f052c0",
             "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\""
         }
     },
@@ -19,25 +19,49 @@
         "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*.exe\" -Recurse -Force",
         "$appDataPath = \"$env:APPDATA\\Signal\"",
         "$persistPath = \"$persist_dir\\Roaming\"",
-        "if (Test-Path $appDataPath) {",
-        "    Remove-Item $appDataPath -Recurse -Force",
+        "function Test-PersistJunction($item, $target) {",
+        "    if (-not $item) { return $false }",
+        "    $linkTarget = if ($item.PSObject.Properties['LinkTarget'] -and $item.LinkTarget) { $item.LinkTarget } else { $item.Target }",
+        "    if ($linkTarget -is [array]) { $linkTarget = $linkTarget[0] }",
+        "    if (-not $linkTarget) { return $false }",
+        "    return $linkTarget.ToString().TrimEnd('\\', '/') -ieq $target.TrimEnd('\\', '/')",
         "}",
-        "if (-Not (Test-Path $persistPath)) {",
-        "    New-Item -Path \"$persistPath\" -ItemType Directory | Out-Null",
+        "function Remove-PersistTarget($path) {",
+        "    $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
+        "    if ($item) {",
+        "        Remove-Item -LiteralPath $path -Force -Recurse -ErrorAction Stop",
+        "    }",
         "}",
-        "New-Item -ItemType Junction -Path \"$appDataPath\" -Target \"$persistPath\" | Out-Null"
+        "$appData = Get-Item -LiteralPath $appDataPath -Force -ErrorAction SilentlyContinue",
+        "$isJunction = [bool]($appData -and ($appData.Attributes -band [System.IO.FileAttributes]::ReparsePoint))",
+        "if (-not ($isJunction -and (Test-PersistJunction $appData $persistPath))) {",
+        "    $persistHasData = (Test-Path -LiteralPath $persistPath) -and (Get-ChildItem -LiteralPath $persistPath -Force -ErrorAction SilentlyContinue | Select-Object -First 1)",
+        "    if (-not $persistHasData) {",
+        "        New-Item -ItemType Directory -Path (Split-Path -Path $persistPath -Parent) -Force -ErrorAction Stop | Out-Null",
+        "        Remove-PersistTarget $persistPath",
+        "        if ($appData -and -not $isJunction) {",
+        "            Move-Item -LiteralPath $appDataPath -Destination $persistPath -Force -ErrorAction Stop",
+        "            $appData = $null",
+        "        } else {",
+        "            New-Item -Path $persistPath -ItemType Directory -Force -ErrorAction Stop | Out-Null",
+        "        }",
+        "    }",
+        "    if ($appData -and -not $isJunction) {",
+        "        $bakName = \"Signal.bak_$(Get-Date -Format 'yyyyMMddHHmmss')\"",
+        "        Rename-Item -LiteralPath $appDataPath -NewName $bakName -Force -ErrorAction Stop",
+        "        Write-Host \"Existing Signal user data has been backed up to: $bakName\" -ForegroundColor Yellow",
+        "    }",
+        "    if ($isJunction) {",
+        "        [System.IO.Directory]::Delete($appDataPath)",
+        "    }",
+        "    New-Item -ItemType Junction -Path $appDataPath -Target $persistPath -ErrorAction Stop | Out-Null",
+        "}"
     ],
     "shortcuts": [
         [
             "Signal.exe",
             "Signal"
         ]
-    ],
-    "post_uninstall": [
-        "$appDataPath = \"$env:APPDATA\\Signal\"",
-        "if (Test-Path $appDataPath) {",
-        "    Remove-Item $appDataPath -Recurse -Force",
-        "}"
     ],
     "checkver": {
         "url": "https://updates.signal.org/desktop/latest.yml",

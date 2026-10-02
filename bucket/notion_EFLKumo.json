@@ -1,0 +1,87 @@
+{
+    "version": "7.36.1",
+    "description": "Collaborative note taking",
+    "homepage": "https://www.notion.so/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.notion.so/Terms-and-Privacy-28ffdd083dc3473e9c2da6ec011b58ac"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://desktop-release.notion-static.com/Notion%20Setup%207.36.1.exe#/dl.7z",
+            "hash": "sha512:43f0e62ed8d36fa4f5e958a05ae64bac6c89426367885ec88261fab212285d2ea38589957aa7e113ecb6a8a5742a758e430d660aa569a0e38b223dac9c905e06"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\" -Recurse",
+        "# Disable auto-updates:",
+        "$yaml = \"$dir\\resources\\app-update.yml\"",
+        "$content = Get-Content $yaml | Foreach-Object {",
+        "  if ($_.StartsWith('url')) { \"$($_.Replace('url', '# url')) # Disabled by Scoop\" } else { $_ }",
+        "}",
+        "Set-Content $yaml -Value $content -Encoding ascii"
+    ],
+    "shortcuts": [
+        [
+            "Notion.exe",
+            "Notion"
+        ]
+    ],
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\Notion\"",
+        "$persistPath = \"$persist_dir\"",
+        "function Test-PersistJunction($item, $target) {",
+        "    if (-not $item) { return $false }",
+        "    $linkTarget = if ($item.PSObject.Properties['LinkTarget'] -and $item.LinkTarget) { $item.LinkTarget } else { $item.Target }",
+        "    if ($linkTarget -is [array]) { $linkTarget = $linkTarget[0] }",
+        "    if (-not $linkTarget) { return $false }",
+        "    return $linkTarget.ToString().TrimEnd('\\', '/') -ieq $target.TrimEnd('\\', '/')",
+        "}",
+        "function Remove-PersistTarget($path) {",
+        "    $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
+        "    if ($item) {",
+        "        Remove-Item -LiteralPath $path -Force -Recurse -ErrorAction Stop",
+        "    }",
+        "}",
+        "$appData = Get-Item -LiteralPath $appDataPath -Force -ErrorAction SilentlyContinue",
+        "$isJunction = [bool]($appData -and ($appData.Attributes -band [System.IO.FileAttributes]::ReparsePoint))",
+        "if (-not ($isJunction -and (Test-PersistJunction $appData $persistPath))) {",
+        "    $persistHasData = (Test-Path -LiteralPath $persistPath) -and (Get-ChildItem -LiteralPath $persistPath -Force -ErrorAction SilentlyContinue | Select-Object -First 1)",
+        "    if (-not $persistHasData) {",
+        "        New-Item -ItemType Directory -Path (Split-Path -Path $persistPath -Parent) -Force -ErrorAction Stop | Out-Null",
+        "        Remove-PersistTarget $persistPath",
+        "        if ($appData -and -not $isJunction) {",
+        "            Move-Item -LiteralPath $appDataPath -Destination $persistPath -Force -ErrorAction Stop",
+        "            $appData = $null",
+        "        } else {",
+        "            New-Item -Path $persistPath -ItemType Directory -Force -ErrorAction Stop | Out-Null",
+        "        }",
+        "    }",
+        "    if ($appData -and -not $isJunction) {",
+        "        $bakName = \"Notion.bak_$(Get-Date -Format 'yyyyMMddHHmmss')\"",
+        "        Rename-Item -LiteralPath $appDataPath -NewName $bakName -Force -ErrorAction Stop",
+        "        Write-Host \"Existing Notion user data has been backed up to: $bakName\" -ForegroundColor Yellow",
+        "    }",
+        "    if ($isJunction) {",
+        "        [System.IO.Directory]::Delete($appDataPath)",
+        "    }",
+        "    New-Item -ItemType Junction -Path $appDataPath -Target $persistPath -ErrorAction Stop | Out-Null",
+        "}"
+    ],
+    "checkver": {
+        "url": "https://desktop-release.notion-static.com/latest.yml",
+        "regex": "version:\\s+([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://desktop-release.notion-static.com/Notion%20Setup%20$version.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
+        }
+    }
+}

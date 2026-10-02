@@ -1,0 +1,51 @@
+{
+    "version": "0.10.0",
+    "description": "Official repository of OmniGet - Open-source download manager for courses (Udemy/Hotmart), YouTube, music & 1,800+ sites. Built with Tauri 2.0, Rust & Svelte.",
+    "homepage": "https://omniget.nav.bd/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/OpenSelena/omniget#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/OpenSelena/omniget/releases/download/v0.10.0/omniget_0.10.0_x64-portable.exe#/omniget.exe",
+            "hash": "1a2af18787aed71b3305aade54bb48a9c3b57a52e02d3913d791a80ed7cf72c9"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.openselena.omniget\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\com.openselena.omniget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.openselena.omniget\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.openselena.omniget\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "omniget.exe",
+    "shortcuts": [
+        [
+            "omniget.exe",
+            "omniget"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/OpenSelena/omniget/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/OpenSelena/omniget/releases/download/v$version/omniget_$version_x64-portable.exe#/omniget.exe"
+            }
+        }
+    }
+}
