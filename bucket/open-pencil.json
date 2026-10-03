@@ -162,12 +162,12 @@
     "checkver": {
         "url": "https://github.com/ZSeven-W/openpencil/releases",
         "script": [
-            "$html = Invoke-WebRequest -Uri $url -UseBasicParsing",
-            "$latest = [regex]::Match($html.Content, '/ZSeven-W/openpencil/releases/tag/v(?<version>\\d+\\.\\d+\\.\\d+)')",
-            "if (-not $latest.Success) {",
-            "  throw 'Failed to locate the latest OpenPencil release.'",
-            "}",
-            "Write-Output $latest.Groups['version'].Value"
+            "$html = $null",
+            "try { $html = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop } catch { }",
+            "if ($html) {",
+            "  $latest = [regex]::Match($html.Content, '/ZSeven-W/openpencil/releases/tag/v(?<version>\\d+\\.\\d+\\.\\d+)')",
+            "  if ($latest.Success) { Write-Output $latest.Groups['version'].Value }",
+            "}"
         ],
         "regex": "^(?<version>[0-9]+\\.[0-9]+\\.[0-9]+)$"
     },

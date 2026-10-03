@@ -1,6 +1,6 @@
 {
     "##": [
-        "_edited_from",
+        "_edited_from:",
         "https://github.com/xrgzs/sdoog/blob/master/bucket/directoryopus-cn.json",
         "https://github.com/okibcn/ScoopMaster/blob/master/bucket/DirectoryOpus.json"
     ],
@@ -19,13 +19,6 @@
         "51eff4f05273bf1668556798a56ff7ff5d615ece404f67ce5fa09c3cf33b5a68",
         "d4a2c30bfd1aa426eaaa7d36d9cec05317a1dd87c464d35229d5f5cab8944142"
     ],
-    "bin": "dopusrt.exe",
-    "shortcuts": [
-        [
-            "dopus.exe",
-            "Directory Opus"
-        ]
-    ],
     "installer": {
         "file": "installer.exe",
         "args": [
@@ -39,20 +32,41 @@
     "post_install": [
         "Write-Host \"`rTry applying crack patch...\" -Foreground Magenta",
         "Stop-Process -Name 'dopus' -Force -ErrorAction SilentlyContinue",
-        "Invoke-ExternalCommand \"cmd.exe\" -ArgumentList @('/c', \"echo y | `\"$dir\\dopus_patcher.exe`\"\") -Quiet -RunAs",
-        "Write-Host '[Portable Mode]: Copying user config data . . .' -Foreground Magenta",
-        "$source = \"$env:APPDATA\\GPSoftware\\Directory Opus\"",
+        "Invoke-ExternalCommand -FilePath \"cmd.exe\" -ArgumentList @('/c', \"echo y | `\"$dir\\dopus_patcher.exe`\"\") -Quiet -RunAs",
+        "Write-Host '[Portable Mode]: Migrating user config data . . .' -Foreground Magenta",
+        "# 数据迁移：Directory Opus",
+        "$link = \"$env:APPDATA\\GPSoftware\\Directory Opus\"",
         "$target = ensure \"$persist_dir\"",
-        "if (Test-Path \"$source\") {",
-        "    Copy-Item -Path \"$source\\*\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
-        "    Remove-Item -Path \"$source\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
         "}",
-        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null",
-        "$source = ensure \"$env:LOCALAPPDATA\\GPSoftware\\Directory Opus\\State Data\"",
-        "if (Test-Path \"$source\") {",
-        "    Move-Item -Path \"$source\" -Destination \"$target\" -Force -ErrorAction SilentlyContinue",
-        "}",
-        "New-DirectoryJunction \"$source\" \"$target\\State Data\" | Out-Null"
+        "# 数据迁移：Directory Opus State Data",
+        "$link = \"$env:LOCALAPPDATA\\GPSoftware\\Directory Opus\\State Data\"",
+        "$target = ensure \"$persist_dir\\State Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
+    "bin": "dopusrt.exe",
+    "shortcuts": [
+        [
+            "dopus.exe",
+            "Directory Opus"
+        ]
     ],
     "uninstaller": {
         "file": "unins000.exe",
@@ -64,8 +78,10 @@
     },
     "post_uninstall": [
         "# 删除数据软连接",
-        "$stateData = \"$env:APPDATA\\GPSoftware\\Directory Opus\\State Data\"",
-        "Remove-Item -Path $stateData -Force -Recurse -ErrorAction SilentlyContinue"
+        "$link = \"$env:APPDATA\\GPSoftware\\Directory Opus\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue",
+        "$link = \"$env:LOCALAPPDATA\\GPSoftware\\Directory Opus\\State Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "checkver": {
         "script": [

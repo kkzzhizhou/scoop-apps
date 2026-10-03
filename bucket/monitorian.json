@@ -1,29 +1,51 @@
 {
-    "homepage": "https://github.com/emoacht/monitorian",
-    "description": "A Windows desktop tool to adjust the brightness of multiple monitors with ease",
-    "license": "MIT",
     "version": "4.16.1",
+    "description": "A Windows desktop tool to adjust the brightness of multiple monitors with ease.",
+    "homepage": "https://github.com/emoacht/Monitorian",
+    "license": "MIT",
     "architecture": {
         "64bit": {
             "url": "https://github.com/emoacht/Monitorian/releases/download/4.16.1-Installer/MonitorianInstaller4161.zip",
             "hash": "036d79a9a61251dfd6738adc2781d650e3ec2707e02afe73d3ae4f412449a1d0"
         }
     },
-    "pre_install": [
-        "Expand-MsiArchive \"$dir\\Monitorian.Installer.msi\"  \"$dir\\temp\"",
-        "Move-Item \"$dir\\temp\\PFiles\\Monitorian\\*\" -Destination \"$dir\"",
-        "Remove-Item \"$dir\\Monitorian.Installer.msi\""
+    "pre_install": "Expand-MsiArchive \"$dir\\Monitorian.Installer.msi\" $dir -ExtractDir 'PFiles\\Monitorian' -Removal",
+    "post_install": [
+        "# 数据迁移：LocalAppData\\Monitorian",
+        "$link = \"$env:LocalAppData\\Monitorian\"",
+        "$target = ensure \"$persist_dir\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
     ],
+    "bin": "Monitorian.exe",
     "shortcuts": [
         [
             "Monitorian.exe",
             "Monitorian"
         ]
     ],
-    "notes": ".NET Framework 4.8 is required.",
+    "pre_uninstall": [
+        "$registryKey = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'",
+        "if ($cmd -eq 'uninstall') {",
+        "    Remove-ItemProperty $registryKey -Name 'Monitorian' -ErrorAction SilentlyContinue",
+        "}"
+    ],
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\Monitorian\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
     "checkver": {
-        "url": "https://github.com/emoacht/Monitorian/releases/latest",
-        "regex": "/releases/tag/([\\d.]+)-Installer"
+        "github": "https://github.com/emoacht/Monitorian",
+        "regex": "([\\d.]+)-Installer"
     },
     "autoupdate": {
         "architecture": {

@@ -9,10 +9,38 @@
             "hash": "627e5a565436d0876740af69c2747759648662c52958d2a5df1ba330a82c3025",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-                "Remove-Item \"$dir\\`$*\" -Recurse"
+                "Remove-Item -Path \"$dir\\`$*\" -Recurse"
             ]
         }
     },
+    "post_install": [
+        "# 数据迁移：AppData\\WorkBuddy",
+        "$link = \"$env:AppData\\WorkBuddy\"",
+        "$target = ensure \"$persist_dir\\WorkBuddy\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}",
+        "# 数据迁移：USERPROFILE\\.workbuddy",
+        "$link = \"$env:USERPROFILE\\.workbuddy\"",
+        "$target = ensure \"$persist_dir\\.workBuddy\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "shortcuts": [
         [
             "WorkBuddy.exe",
@@ -20,47 +48,31 @@
             "--force-device-scale-factor=1.5"
         ]
     ],
-    "post_install": [
-        "# 迁移 AppData\\WorkBuddy",
-        "$source = \"$env:AppData\\WorkBuddy\"",
-        "$target = ensure \"$persist_dir\\WorkBuddy\"",
-        "if (Test-Path \"$target\") {",
-        "    Remove-Item -Path $source -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $source) {",
-        "    Move-Item -Path $source -Destination $target -Force",
-        "}",
-        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null",
-        "# 迁移 USERPROFILE\\.workbuddy",
-        "$source = \"$env:USERPROFILE\\.workbuddy\"",
-        "$target = ensure \"$persist_dir\\.workBuddy\"",
-        "if (Test-Path \"$target\") {",
-        "    Remove-Item -Path $source -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $source) {",
-        "    Move-Item -Path $source -Destination $target -Force",
-        "}",
-        "New-DirectoryJunction \"$source\" \"$target\" | Out-Null"
-    ],
     "post_uninstall": [
         "# 删除数据软连接",
-        "$source = @(\"$env:AppData\\WorkBuddy\", \"$env:USERPROFILE\\.workbuddy\")",
-        "Remove-Item -Path $source -Force -Recurse -ErrorAction SilentlyContinue"
+        "$link = @(\"$env:AppData\\WorkBuddy\", \"$env:USERPROFILE\\.workbuddy\")",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "checkver": {
         "script": [
-            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/Tencent.WorkBuddy'",
+            "$prefix = 'https://raw.githubusercontent.com/SpecterShell/Dumplings/main/Tasks/Tencent.WorkBuddy'",
             "$stateYamlUrl = $prefix + '/State.yaml'",
-            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl -UseBasicParsing).Content",
             "$logFileUrl = \"$prefix/$stateContent\"",
             "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
             "Write-Output $logContent"
         ],
-        "regex": "Version:\\s*(?<version>\\S+)[\\s\\S]+?InstallerUrl:\\s*(?<url>\\S+)"
+        "regex": "Version:\\s*(?<version>\\S+)[\\s\\S]+?InstallerUrl:\\s*\\S+/(?<name>[^/\\s]+)"
     },
     "autoupdate": {
-        "url": "$matchUrl#/dl.7z",
-        "hash": {
-            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/WorkBuddy/$majorVersion.$minorVersion.$patchVersion/Tencent.WorkBuddy.installer.yaml",
-            "regex": "InstallerSha256:\\s?(.+)"
+        "architecture": {
+            "64bit": {
+                "url": "https://download.codebuddy.cn/workbuddy/saas/win32-x64-user/$matchName#/dl.7z",
+                "hash": {
+                    "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/WorkBuddy/$majorVersion.$minorVersion.$patchVersion/Tencent.WorkBuddy.installer.yaml",
+                    "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
+                }
+            }
         }
     }
 }

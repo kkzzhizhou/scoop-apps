@@ -19,7 +19,7 @@
         }
     },
     "post_install": [
-        "@('crash_handler.exe', 'update_installer.exe') | ForEach-Object { Remove-Item -Force \"$dir\\$_\" }",
+        "@('crash_handler.exe', 'update_installer.exe') | ForEach-Object { Remove-Item -Path \"$dir\\$_\" -Force -ErrorAction SilentlyContinue }",
         "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
         "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
         "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
@@ -31,6 +31,7 @@
         "        Set-Content -Path \"$dir\\$_\" $content -Encoding Unicode",
         "    }",
         "}",
+        "# 导入注册表",
         "reg import \"$dir\\install-context.reg\"",
         "if ($version -eq \"2125\") {",
         "    info 'Cracking . . .'",
@@ -38,22 +39,21 @@
         "    $stream = [System.IO.File]::OpenWrite($sublimepath)",
         "    @'",
         "    0x00048116: 48 C7 C0 01 00 00 00 C3",
-        "    0x0004A54E: 90 90 90 90 90      ",
-        "    0x0004A567: 90 90 90 90 90      ",
-        "    0x00048DA8: 48 31 C0 C3         ",
-        "    0x00047E0D: 48 31 C0 C3         ",
-        "    0x0015B1FC: 48 31 C0 C3         ",
+        "    0x0004A54E: 90 90 90 90 90",
+        "    0x0004A567: 90 90 90 90 90",
+        "    0x00048DA8: 48 31 C0 C3",
+        "    0x00047E0D: 48 31 C0 C3",
+        "    0x0015B1FC: 48 31 C0 C3",
         "'@ -split \"`r?`n\" | ForEach-Object {",
-        "        $offset, $data = ($_ -split ':').Trim()",
-        "        $offset = [convert]::ToInt32($offset, 16)",
-        "        $data = $data -split ' ' | ForEach-Object { [byte]::Parse($_, 'HexNumber') }",
-        "        $stream.Seek($offset, [System.IO.SeekOrigin]::Begin) | Out-Null",
-        "        $stream.Write($data, 0, $data.Length)",
-        "    }",
+        "    $offset, $data = ($_ -split ':').Trim()",
+        "    $offset = [convert]::ToInt32($offset, 16)",
+        "    $data = $data -split ' ' | ForEach-Object { [byte]::Parse($_, 'HexNumber') }",
+        "    $stream.Seek($offset, [System.IO.SeekOrigin]::Begin) | Out-Null",
+        "    $stream.Write($data, 0, $data.Length)",
+        "}",
         "    $stream.Close()",
         "}"
     ],
-    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
     "bin": "smerge.exe",
     "shortcuts": [
         [
@@ -62,6 +62,7 @@
         ]
     ],
     "persist": "Data",
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
     "checkver": {
         "script": [
             "$dev_version, $stable_version = ",

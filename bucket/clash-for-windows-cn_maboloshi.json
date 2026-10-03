@@ -23,6 +23,25 @@
         "",
         "resources"
     ],
+    "post_install": [
+        "if ((Test-Path \"$env:USERPROFILE\\.config\\clash\") -and !(Get-ChildItem \"$persist_dir\\data\" -Force -ErrorAction SilentlyContinue)) {",
+        "    info '[Portable Mode]: Copying user config data . . .'",
+        "    Copy-Item -Path \"$env:USERPROFILE\\.config\\clash\\*\" -Destination \"$persist_dir\\data\" -Force -Recurse",
+        "}",
+        "# 数据迁移",
+        "$link = \"$env:APPDATA\\clash_win\"",
+        "$target = ensure \"$persist_dir\\clash_win\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "shortcuts": [
         [
             "Clash for Windows.exe",
@@ -30,23 +49,10 @@
             "--force-device-scale-factor=1.5"
         ]
     ],
-    "post_install": [
-        "if (!(Test-Path \"$persist_dir\\data\") -and (Test-Path \"$env:USERPROFILE\\.config\\clash\")) {",
-        "    info '[Portable Mode]: Copying user config data . . .'",
-        "    Copy-Item \"$env:USERPROFILE\\.config\\clash\\*\" \"$persist_dir\\data\" -Recurse",
-        "}",
-        "$runtimeCache = \"$env:APPDATA\\clash_win\"",
-        "$runtimeCachePersist = \"$persist_dir\\clash_win\"",
-        "if (Test-Path $runtimeCachePersist) {",
-        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $runtimeCache) {",
-        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
-        "}",
-        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
-    ],
+    "persist": "data",
     "post_uninstall": [
-        "$runtimeCache = \"$env:APPDATA\\clash_win\"",
-        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
-    ],
-    "persist": "data"
+        "# 删除数据软连接",
+        "$link = \"$env:APPDATA\\clash_win\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ]
 }

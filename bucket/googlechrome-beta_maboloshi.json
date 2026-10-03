@@ -1,5 +1,6 @@
 {
-    "version": "153.0.8010.12",
+    "##": "_edited_from: https://github.com/ScoopInstaller/Versions/blob/master/bucket/googlechrome-beta.json",
+    "version": "156.0.8078.4",
     "description": "Fast, secure, and free web browser, built for the modern web.",
     "homepage": "https://www.google.com/chrome/beta",
     "license": {
@@ -8,13 +9,26 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://dl.google.com/release2/chrome/addzjoqatwfh67lirjqys6c6kufq_153.0.8010.12/153.0.8010.12_chrome_installer.exe#/dl.7z",
-            "hash": "76cd7a3c04eb88df3b4f35d91545dabbc1ed17c35e1eb4dab0d8ea81299c05bb"
+            "url": "https://dl.google.com/release2/chrome/i7u2qmconfyv53siowkykyl66q_156.0.8078.4/156.0.8078.4_chrome_installer_uncompressed.exe#/dl.7z",
+            "hash": "8141602f95a9889a7619c891df8e578c87d5377087c903187c49d8e97662a2a3"
         }
     },
-    "installer": {
-        "script": "Expand-7zipArchive \"$dir\\chrome.7z\" -ExtractDir 'Chrome-bin' -Removal"
-    },
+    "extract_dir": "Chrome-bin",
+    "post_install": [
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "bin": [
         [
             "chrome.exe",
@@ -28,33 +42,29 @@
             "--force-device-scale-factor=1.5"
         ]
     ],
-    "post_install": [
-        "$runtimeCache = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
-        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
-        "if (Test-Path $runtimeCachePersist) {",
-        "    Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $runtimeCache) {",
-        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
-        "}",
-        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
-    ],
-    "post_uninstall": [
-        "$runtimeCache = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
-        "Remove-Item $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
-    ],
     "persist": "User Data",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
     "checkver": {
-        "url": "https://scoopinstaller.github.io/UpdateTracker/googlechrome/chrome.min.xml",
-        "regex": "(?sm)<beta32><version>(?<version>[\\d.]+)</version>.+release2/chrome/(?<32>[\\w-]+)_.+<beta64>.+release2/chrome/(?<64>[\\w-]+)_.+</beta64>"
+        "script": [
+            "$AppID = '{8A69D345-D564-463C-AFF1-A69D9E530F96}'",
+            "$Body = '<?xml version=\"1.0\" encoding=\"UTF-8\"?><request protocol=\"3.0\"><os platform=\"win\" version=\"10.0.22000.0\" arch=\"x64\"/><app appid=\"' + $AppID + '\" ap=\"1.1-beta-arch_x64\" version=\"\"><updatecheck/></app></request>'",
+            "$R = Invoke-RestMethod 'https://update.googleapis.com/service/update2' -Method Post -Body $Body",
+            "$Version = $R.response.app.updatecheck.manifest.version",
+            "$Base = $R.SelectSingleNode(\"//url[starts-with(@codebase, 'https://dl.google.com/release2/chrome/')]\")",
+            "$Base.GetAttribute('codebase') -match 'release2/chrome/([^/]+)/' | Out-Null",
+            "$File = $R.SelectSingleNode('//package').GetAttribute('name')",
+            "Write-Output \"$Version,$($Matches[1])/$File\""
+        ],
+        "regex": "(?<version>[\\d.]+),(?<archx64>.+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://dl.google.com/release2/chrome/$match64_$version/$version_chrome_installer.exe#/dl.7z",
-                "hash": {
-                    "url": "https://scoopinstaller.github.io/UpdateTracker/googlechrome/chrome.min.xml",
-                    "xpath": "/chromechecker/beta64[version='$version']/sha256"
-                }
+                "url": "https://dl.google.com/release2/chrome/$matchArchx64#/dl.7z"
             }
         }
     }

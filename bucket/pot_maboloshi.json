@@ -1,8 +1,12 @@
 {
-    "homepage": "https://pot-app.com/",
-    "description": "A cross-platform translation software",
-    "license": "GPL-3.0-only",
     "version": "3.0.7",
+    "description": "A cross-platform translation software",
+    "homepage": "https://pot-app.com/",
+    "license": "GPL-3.0-only",
+    "notes": [
+        "You may need to install Edge WebView2 Runtime to use Pot.",
+        "A installer of Edge WebView2 Runtime is available under the 'redist' folder of the Pot installation directory."
+    ],
     "architecture": {
         "64bit": {
             "url": "https://github.com/pot-app/pot-desktop/releases/download/3.0.7/pot_3.0.7_x64-setup.exe#/dl.7z",
@@ -10,12 +14,20 @@
         }
     },
     "post_install": [
-        "Remove-Item \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue",
-        "if (!(Test-Path \"$dir\\data\\*\") -and (Test-Path \"$env:APPDATA\\com.pot-app.desktop\")) {",
-        "    info '[Portable Mode]: Copying user config data . . .'",
-        "    Copy-Item \"$env:APPDATA\\com.pot-app.desktop\\*\" \"$persist_dir\\data\" -Recurse",
-        "}",
-        "New-DirectoryJunction \"$persist_dir\\data\" \"$env:APPDATA\\com.pot-app.desktop\" | Out-Null"
+        "Remove-Item -Path \"$dir\\`$PLUGINSDIR\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "# 数据迁移",
+        "$link = \"$env:APPDATA\\com.pot-app.desktop\"",
+        "$target = ensure \"$persist_dir\\data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
     ],
     "shortcuts": [
         [
@@ -33,9 +45,5 @@
                 "url": "https://github.com/pot-app/pot-desktop/releases/download/$version/pot_$version_x64-setup.exe#/dl.7z"
             }
         }
-    },
-    "notes": [
-        "You may need to install Edge WebView2 Runtime to use Pot.",
-        "A installer of Edge WebView2 Runtime is available under the 'redist' folder of the Pot installation directory."
-    ]
+    }
 }

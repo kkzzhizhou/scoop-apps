@@ -1,0 +1,79 @@
+{
+    "##": [
+        "_edited_from:",
+        "https://github.com/akirco/aki-apps/blob/master/bucket/ima-copilot.json"
+    ],
+    "version": "2.6.12.5194",
+    "description": "腾讯出品的一款集文档处理、知识管理和AI智能问答于一体的智能工作平台",
+    "homepage": "https://ima.qq.com/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://rule.tencent.com/rule/202410140002"
+    },
+    "url": "https://app-dl.ima.qq.com/win_channel/ima.copilot_win_x64_1018_2.6.12_5194.exe#/dl.7z",
+    "hash": "e0ceee9498bee96595e7165d0b5d77a510fdfddd59c710876ea3cb278a923e4e",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\chrome.7z\" \"$dir\" -ExtractDir \"Chrome-bin\"",
+        "Remove-Item -Path \"$dir\\chrome.7z\" -Force -Recurse"
+    ],
+    "post_install": [
+        "$dir_escaped = \"$dir\".Replace('\\', '\\\\')",
+        "@('install-context.reg', 'uninstall-context.reg') | ForEach-Object {",
+        "    if (Test-Path \"$bucketsdir\\$bucket\\scripts\\$app\\$_\") {",
+        "        $content = Get-Content \"$bucketsdir\\$bucket\\scripts\\$app\\$_\" -Encoding Unicode",
+        "        $content = $content.Replace('$install_dir', $dir_escaped)",
+        "        if ($global) {",
+        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
+        "        }",
+        "        Set-Content -Path \"$dir\\$_\" $content -Encoding Unicode",
+        "    }",
+        "}",
+        "# 导入注册表",
+        "reg import \"$dir\\install-context.reg\"",
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\ima.copilot\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "ima.copilot.exe",
+            "ima",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "persist": "User Data",
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\ima.copilot\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "script": [
+            "$prefix = 'https://raw.githubusercontent.com/SpecterShell/Dumplings/main/Tasks/Tencent.ima-copilot'",
+            "$stateYamlUrl = $prefix + '/State.yaml'",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl -UseBasicParsing).Content",
+            "$logFileUrl = \"$prefix/$stateContent\"",
+            "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
+            "Write-Output $logContent"
+        ],
+        "regex": "Version:\\s*(?<version>\\S+)[\\s\\S]+?InstallerUrl:\\s*\\S+/(?<name>[^/\\s]+)"
+    },
+    "autoupdate": {
+        "url": "https://app-dl.ima.qq.com/win_channel/$matchName#/dl.7z",
+        "hash": {
+            "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/ima-copilot/$version/Tencent.ima-copilot.installer.yaml",
+            "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
+        }
+    }
+}

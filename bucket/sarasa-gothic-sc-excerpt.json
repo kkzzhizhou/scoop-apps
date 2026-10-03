@@ -1,23 +1,8 @@
 {
     "version": "1.0.42",
     "description": "CJK programming font based on Iosevka and Source Han Sans",
-    "license": "OFL-1.1",
     "homepage": "https://github.com/be5invis/Sarasa-Gothic",
-    "url": [
-        "https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.42/SarasaUiSC-TTF-1.0.42.7z#/SarasaUiSC",
-        "https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.42/SarasaMonoSC-TTF-1.0.42.7z#/SarasaMonoSC"
-    ],
-    "hash": [
-        "daba2085409fb8a23dfc22f36e02e8b901a08510a3ac95ce3b0fb7161e6925bd",
-        "aa2150e99eb38c5f9d3a00fe58e3f90a9d89495c795a8ac80934d1c3e6c377ee"
-    ],
-    "checkver": "github",
-    "autoupdate": {
-        "url": [
-            "https://github.com/be5invis/Sarasa-Gothic/releases/download/v$version/SarasaUiSC-TTF-$version.7z#/SarasaUiSC",
-            "https://github.com/be5invis/Sarasa-Gothic/releases/download/v$version/SarasaMonoSC-TTF-$version.7z#/SarasaMonoSC"
-        ]
-    },
+    "license": "OFL-1.1",
     "notes": [
         "仅节选了以下字体：",
         "  更纱黑体 UI SC：常规, 半粗体",
@@ -27,31 +12,39 @@
         "Stop-Service -Name FontCache",
         "2. 删除字体缓存文件",
         "Get-ChildItem -Path $env:windir\\ServiceProfiles\\LocalService\\AppData\\Local\\FontCache -File | foreach { $_.Delete() }",
-        "Remove-Item $env:windir\\System32\\FNTCACHE.DAT -Force",
+        "Remove-Item -Path $env:windir\\System32\\FNTCACHE.DAT -Force",
         "3. 启动字体缓存服务",
         "Start-Service -Name FontCache"
     ],
+    "url": [
+        "https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.42/SarasaUiSC-TTF-1.0.42.7z#/SarasaUiSC.7z_",
+        "https://github.com/be5invis/Sarasa-Gothic/releases/download/v1.0.42/SarasaMonoSC-TTF-1.0.42.7z#/SarasaMonoSC.7z_"
+    ],
+    "hash": [
+        "daba2085409fb8a23dfc22f36e02e8b901a08510a3ac95ce3b0fb7161e6925bd",
+        "aa2150e99eb38c5f9d3a00fe58e3f90a9d89495c795a8ac80934d1c3e6c377ee"
+    ],
     "installer": {
         "script": [
-            "# 仅提取指定的字体文件                 ",
+            "# 仅提取指定的字体文件",
             "$7zPath = Get-HelperPath -Helper 7zip  ",
             "$ArgList = @(                          ",
-            "    'e', \"$dir\\SarasaUiSC\",         ",
+            "    'e', \"$dir\\SarasaUiSC.7z_\",     ",
             "    '*-Regular.ttf',                   ",
             "    '*-SemiBold.ttf',                  ",
             "    \"-o$dir\", '-y', '-aos'           ",
             ")                                      ",
-            "Invoke-ExternalCommand $7zPath $ArgList",
+            "Invoke-ExternalCommand -FilePath $7zPath -ArgumentList $ArgList",
             "$ArgList = @(                          ",
-            "    'e', \"$dir\\SarasaMonoSC\",     ",
+            "    'e', \"$dir\\SarasaMonoSC.7z_\",   ",
             "    '*-Bold.ttf',         ",
             "    '*-BoldItalic.ttf',   ",
             "    '*-Regular.ttf',      ",
             "    '*-Italic.ttf',       ",
             "    \"-o$dir\", '-y', '-aos'           ",
             ")                                      ",
-            "Invoke-ExternalCommand $7zPath $ArgList",
-            "Remove-Item -Path \"$dir\\SarasaUiSC\", \"$dir\\SarasaMonoSC\" -Force -ErrorAction SilentlyContinue"
+            "Invoke-ExternalCommand -FilePath $7zPath -ArgumentList $ArgList",
+            "Remove-Item -Path \"$dir\\SarasaUiSC.7z_\", \"$dir\\SarasaMonoSC.7z_\" -Force -ErrorAction SilentlyContinue"
         ]
     },
     "post_install": [
@@ -66,7 +59,15 @@
         "        Set-Content -Path \"$dir\\$_\" $content -Encoding Unicode",
         "    }",
         "}",
+        "# 导入字体注册表",
         "reg import \"$dir\\install-fonts.reg\""
     ],
-    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-fonts.reg\" }"
+    "pre_uninstall": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-fonts.reg\" }",
+    "checkver": "github",
+    "autoupdate": {
+        "url": [
+            "https://github.com/be5invis/Sarasa-Gothic/releases/download/v$version/SarasaUiSC-TTF-$version.7z#/SarasaUiSC.7z_",
+            "https://github.com/be5invis/Sarasa-Gothic/releases/download/v$version/SarasaMonoSC-TTF-$version.7z#/SarasaMonoSC.7z_"
+        ]
+    }
 }

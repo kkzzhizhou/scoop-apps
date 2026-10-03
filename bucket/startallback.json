@@ -5,38 +5,26 @@
     "license": "Proprietary",
     "url": "https://github.com/maboloshi/scoop-private/releases/download/v1.0/StartAllBack3.9.25.5386-Stable-Repack.exe#/dl.7z",
     "hash": "12d7d28803085489cbe5f0d2e2d4cfb61b0f60f127a6223f2f969ab8ff120319",
+    "installer": {
+        "script": [
+            "$installType = if ($global) { '/elevated' } else { '' }",
+            "Write-Host \"`n正在安装 StartAllBack (安装类型: $(if ($global) { '全局' } else { '当前用户' }))...\" -ForegroundColor Cyan",
+            "Invoke-ExternalCommand -FilePath \"$dir\\StartAllBackCfg.exe\" -ArgumentList @('/install', '/silent', $installType)"
+        ]
+    },
     "shortcuts": [
         [
             "StartAllBackCfg.exe",
             "StartAllBack 配置"
         ]
     ],
-    "installer": {
-        "script": [
-            "$installType = if ($global) { '/elevated' } else { '' }",
-            "Write-Host \"`n正在安装 StartAllBack (安装类型: $(if ($global) { '全局' } else { '当前用户' }))...\" -ForegroundColor Cyan",
-            "$pinfo = New-Object System.Diagnostics.ProcessStartInfo",
-            "$pinfo.FileName = \"$dir\\StartAllBackCfg.exe\"",
-            "$pinfo.Arguments = \"/install /silent $installType\"",
-            "$p = New-Object System.Diagnostics.Process",
-            "$p.StartInfo = $pinfo",
-            "$p.Start() | Out-Null",
-            "$p.WaitForExit()"
-        ]
-    },
     "uninstaller": {
         "script": [
             "$installType = if ($global) { '/elevated' } else { '' }",
             "$root = if ($global) { 'HKLM' } else { 'HKCU' }",
             "Write-Host \"`n正在卸载 StartAllBack...\" -ForegroundColor Cyan",
             "if (Test-Path \"$dir\\StartAllBackCfg.exe\") {",
-            "    $pinfo = New-Object System.Diagnostics.ProcessStartInfo",
-            "    $pinfo.FileName = \"$dir\\StartAllBackCfg.exe\"",
-            "    $pinfo.Arguments = \"/uninstall /silent $installType\"",
-            "    $p = New-Object System.Diagnostics.Process",
-            "    $p.StartInfo = $pinfo",
-            "    $p.Start() | Out-Null",
-            "    $p.WaitForExit()",
+            "    Invoke-ExternalCommand -FilePath \"$dir\\StartAllBackCfg.exe\" -ArgumentList @('/uninstall', '/silent', $installType)",
             "}",
             "Write-Host \"`n如果需要删除所有设置，请运行\" -ForegroundColor Yellow",
             "Write-Host \"reg delete $root\\Software\\StartIsBack /f\" -ForegroundColor Yellow"

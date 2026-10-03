@@ -5,30 +5,34 @@
     "license": "Proprietary",
     "url": "https://gitcode.com/Pylogmon/Manggo/releases/download/1.0.2/Manggo-1.0.2-Windows-AMD64.exe#/dl.7z",
     "hash": "f85947229a3a48c953a703b08d5d84deef62bfe387d3af541aac9500560fae55",
+    "post_install": [
+        "Remove-Item -Path \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\Manggo\\Manggo\"",
+        "$target = ensure \"$persist_dir\\Manggo\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "shortcuts": [
         [
             "bin\\Manggo.exe",
             "Manggo"
         ]
     ],
-    "post_install": [
-        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse -ErrorAction SilentlyContinue",
-        "# 数据迁移",
-        "$runtimeCache = \"$env:LocalAppData\\Manggo\\Manggo\"",
-        "$runtimeCachePersist = \"$persist_dir\\Manggo\"",
-        "if (Test-Path $runtimeCachePersist) {",
-        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $runtimeCache) {",
-        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
-        "}",
-        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
-    ],
+    "persist": "Manggo",
     "post_uninstall": [
         "# 删除数据软连接",
-        "$runtimeCache = \"$env:LocalAppData\\Manggo\\Manggo\"",
-        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+        "$link = \"$env:LocalAppData\\Manggo\\Manggo\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
     ],
-    "persist": "Manggo",
     "checkver": {
         "url": "https://api.gitcode.com/api/v5/repos/Pylogmon/Manggo/releases/latest",
         "jsonpath": "$.tag_name"

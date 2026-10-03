@@ -2,9 +2,24 @@
     "version": "2.31.4",
     "description": "LLM client by douyin",
     "homepage": "https://doubao.com",
-    "license": "freeware",
+    "license": "Freeware",
     "url": "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao_pc/2.31.4/Doubao_installer_2.31.4.exe#/dl.7z",
     "hash": "c76408e2ad92dc451d11200d6684209d831e2cad01d15f3f5747925ca223963a",
+    "post_install": [
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "shortcuts": [
         [
             "Doubao.exe",
@@ -12,28 +27,17 @@
             "--force-device-scale-factor=1.5"
         ]
     ],
-    "post_install": [
-        "# 数据迁移",
-        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
-        "$runtimeCachePersist = \"$persist_dir\\User Data\"",
-        "if (Test-Path $runtimeCachePersist) {",
-        "    Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue",
-        "} elseif (Test-Path $runtimeCache) {",
-        "    Move-Item -Path $runtimeCache -Destination $runtimeCachePersist -Force",
-        "}",
-        "New-DirectoryJunction $runtimeCache $runtimeCachePersist | Out-Null"
-    ],
+    "persist": "User Data",
     "post_uninstall": [
         "# 删除数据软连接",
-        "$runtimeCache = \"$env:LocalAppData\\Doubao\\User Data\"",
-        "Remove-Item -Path $runtimeCache -Force -Recurse -ErrorAction SilentlyContinue"
+        "$link = \"$env:LocalAppData\\Doubao\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
     ],
-    "persist": "User Data",
     "checkver": {
         "script": [
-            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/ByteDance.Doubao'",
+            "$prefix = 'https://raw.githubusercontent.com/SpecterShell/Dumplings/main/Tasks/ByteDance.Doubao'",
             "$stateYamlUrl = $prefix + '/State.yaml'",
-            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl -UseBasicParsing).Content",
             "$logFileUrl = \"$prefix/$stateContent\"",
             "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
             "Write-Output $logContent"

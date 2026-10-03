@@ -16,16 +16,16 @@
         }
     },
     "post_install": [
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
+        "Remove-Item -Path \"$dir\\`$*\", \"$dir\\Uninst*\" -Force -Recurse",
         "$configpath = ensure \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\"",
         "# 设置微信文件保存位置",
         "$FileSavePath = if (Test-Path \"E:\\微信聊天记录\") { \"E:\\微信聊天记录\" } else { ensure \"$persist_dir\" }",
         "Set-Content -NoNewline -Path \"$configpath\\3ebffe94.ini\" -Value \"$FileSavePath\"",
-        "$regpath = \"HKCU:Software\\Tencent\\WeChat\"",
-        "if (!(Test-Path \"$regpath\")) {",
-        "    New-Item -Path \"$regpath\" -Type Directory -Force | Out-Null",
+        "$registryKey = \"HKCU:\\Software\\Tencent\\WeChat\"",
+        "if (!(Test-Path \"$registryKey\")) {",
+        "    New-Item -Path \"$registryKey\" -Type Directory -Force | Out-Null",
         "}",
-        "New-ItemProperty -Path $regpath -Name \"FileSavePath\" -Value \"$FileSavePath\" -Force | Out-Null"
+        "New-ItemProperty -Path $registryKey -Name \"FileSavePath\" -Value \"$FileSavePath\" -Force | Out-Null"
     ],
     "shortcuts": [
         [
@@ -36,13 +36,13 @@
     "persist": "WeChat Files",
     "post_uninstall": [
         "Remove-Item -Path \"$env:APPDATA\\Tencent\\WeChat\\All Users\\config\\3ebffe94.ini\" -Force | Out-Null",
-        "Remove-ItemProperty -Path \"HKCU:Software\\Tencent\\WeChat\" -Name \"FileSavePath\" -Force | Out-Null"
+        "Remove-ItemProperty -Path \"HKCU:\\Software\\Tencent\\WeChat\" -Name \"FileSavePath\" -Force | Out-Null"
     ],
     "checkver": {
         "script": [
-            "$prefix = 'https://github.com/SpecterShell/Dumplings/raw/refs/heads/main/Tasks/Tencent.WeChat%23x64'",
+            "$prefix = 'https://raw.githubusercontent.com/SpecterShell/Dumplings/main/Tasks/Tencent.WeChat%23x64'",
             "$stateYamlUrl = $prefix + '/State.yaml'",
-            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl).Content",
+            "$stateContent = (Invoke-WebRequest -Uri $stateYamlUrl -UseBasicParsing).Content",
             "$logFileUrl = \"$prefix/$stateContent\"",
             "$logContent = Invoke-RestMethod -Uri $logFileUrl -UseBasicParsing",
             "Write-Output $logContent"
@@ -54,7 +54,7 @@
             "64bit": {
                 "url": "https://dldir1v6.qq.com/weixin/Windows/WeChatSetup.exe#/dl.7z",
                 "hash": {
-                    "url": "https://github.com/microsoft/winget-pkgs/raw/refs/heads/master/manifests/t/Tencent/WeChat/$version/Tencent.WeChat.installer.yaml",
+                    "url": "https://raw.githubusercontent.com/microsoft/winget-pkgs/master/manifests/t/Tencent/WeChat/$version/Tencent.WeChat.installer.yaml",
                     "regex": "InstallerSha256:\\s+([a-fA-F0-9]{64})"
                 }
             }
