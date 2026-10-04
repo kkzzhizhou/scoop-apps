@@ -3,91 +3,55 @@
     "description": "The ultimate automation scripting language for Windows.",
     "homepage": "https://www.autohotkey.com/",
     "license": "GPL-2.0-or-later",
-    "notes": [
-        "Install specific version of Interpreter(Default: Latest 1.x):",
-        "  - 'autohotkey /script \"$dir\\UX\\install-version.ahk\" [version]'",
-        "Uninstall Sub-versions of Interpreter:",
-        "  - 'autohotkey /script \"$dir\\UX\\ui-uninstall.ahk\"'",
-        "See also: https://github.com/ScoopInstaller/Extras/issues/10066"
-    ],
-    "url": "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.29/AutoHotkey_2.0.29.zip",
-    "hash": "b2d0200724a6b6ad22c965c939c5e5a2c64a35d1ccb455a3ca3f8ce415c5a296",
-    "post_install": [
-        "# Persistence",
-        "if (Test-Path \"$persist_dir\\installed-files.csv\") {",
-        "    Get-Content \"$persist_dir\\installed-files.csv\" | Add-Content \"$dir\\UX\\installed-files.csv\"",
-        "    Copy-Item \"$persist_dir\\installed-files\\*\" \"$dir\" -Recurse -ErrorAction SilentlyContinue",
-        "    # Remove old files",
-        "    Remove-Item \"$persist_dir\\installed-files.csv\" -Force",
-        "    Remove-Item \"$persist_dir\\installed-files\" -Force -Recurse",
-        "}"
-    ],
     "architecture": {
         "64bit": {
+            "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v2.0.29/AutoHotkey_2.0.29_setup.exe#/setup.exe",
+            "hash": "f978e5f40cfe0f90c7e52fa9a3b4604c822ffb80aa488f66e34d18d290641d2a",
+            "installer": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/S /x64 /uiAccess=0 /IsHostApp=1 /D=$dir\" -Verb RunAs",
+                "keep": true
+            },
+            "uninstaller": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/Uninstall\" -Verb RunAs"
+            },
             "bin": [
                 [
-                    "AutoHotkey64.exe",
+                    "autohotkeyu64.exe",
                     "autohotkey"
                 ],
-                [
-                    "AutoHotkey32.exe",
-                    "autohotkey32"
-                ]
+                "compiler/ahk2exe.exe"
             ]
         },
         "32bit": {
+            "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v2.0.29/AutoHotkey_2.0.29_setup.exe#/setup.exe",
+            "hash": "f978e5f40cfe0f90c7e52fa9a3b4604c822ffb80aa488f66e34d18d290641d2a",
+            "installer": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/S /U32 /uiAccess=0 /IsHostApp=1 /D=$dir\" -Verb RunAs",
+                "keep": true
+            },
+            "uninstaller": {
+                "script": "Start-Process -Wait \"$dir\\setup.exe\" \"/Uninstall\" -Verb RunAs"
+            },
             "bin": [
                 [
-                    "AutoHotkey32.exe",
+                    "autohotkeyu32.exe",
                     "autohotkey"
-                ]
+                ],
+                "compiler/ahk2exe.exe"
             ]
         }
     },
-    "shortcuts": [
-        [
-            "AutoHotkey32.exe",
-            "AutoHotkey Dash",
-            "UX\\ui-dash.ahk"
-        ],
-        [
-            "AutoHotkey32.exe",
-            "AutoHotkey Window Spy",
-            "UX\\WindowSpy.ahk"
-        ],
-        [
-            "Compiler\\Ahk2Exe.exe",
-            "Ahk2Exe"
-        ]
-    ],
-    "pre_uninstall": [
-        "# Persistence",
-        "ensure \"$persist_dir\" | Out-Null",
-        "ensure \"$persist_dir\\installed-files\" | Out-Null",
-        "$old_version = Select-CurrentVersion -AppName $app -Global:$global",
-        "if (Test-Path \"$dir\\UX\\installed-files.csv\") {",
-        "    $csv = Import-Csv \"$dir\\UX\\installed-files.csv\" | Where-Object 'Version' -ne $old_version",
-        "    if ($csv) {",
-        "        $export = @()",
-        "        $dirs = @()",
-        "        $csv | ForEach-Object {",
-        "            $current = (Get-Item \"$dir\\$($_.'Path')\" -ErrorAction SilentlyContinue).Directory.Name",
-        "            $export += \"$($_.'Hash'),$($_.'Version'),$($_.'Path'),$($_.'Description')\"",
-        "            if (!($dirs.Contains($current)) -and ($_.'Path' -notlike '*.lnk')) { $dirs += $current }",
-        "        }",
-        "        $export | Out-File \"$persist_dir\\installed-files.csv\" -Encoding ASCII",
-        "        $dirs | ForEach-Object { Copy-Item \"$dir\\$_\" \"$persist_dir\\installed-files\" -Recurse -ErrorAction SilentlyContinue }",
-        "    }",
-        "}"
-    ],
     "checkver": {
-        "github": "https://github.com/AutoHotkey/AutoHotkey"
+        "github": "https://github.com/lexikos/autohotkey_l"
     },
     "autoupdate": {
-        "url": "https://github.com/AutoHotkey/AutoHotkey/releases/download/v$version/AutoHotkey_$version.zip",
-        "hash": {
-            "url": "https://github.com/AutoHotkey/AutoHotkey/releases/tag/v$version",
-            "regex": "$sha256</code>[\\s]+AutoHotkey_$version\\.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/setup.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/Lexikos/AutoHotkey_L/releases/download/v$version/AutoHotkey_$version_setup.exe#/setup.exe"
+            }
         }
     }
 }
