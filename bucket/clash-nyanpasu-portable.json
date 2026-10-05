@@ -1,40 +1,66 @@
 {
-    "version": "1.6.1",
+    "version": "2.0.0-beta.1",
     "description": "Clash Nyanpasu! (∠・ω< )⌒☆",
-    "homepage": "https://github.com/libnyanpasu/clash-nyanpasu",
+    "homepage": "https://nyanpasu.org/",
     "license": {
         "identifier": "GPL-3.0 license",
         "url": "https://github.com/libnyanpasu/clash-nyanpasu/blob/main/LICENSE"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v1.6.1/Clash.Nyanpasu_1.6.1_x64_portable.zip",
-            "hash": "1dcb6dae8bf473a0c6fd3fac0cc1cfeb4cc98c9865ac9f3493f8e96da77565b4"
+            "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v2.0.0-beta.1/Clash.Nyanpasu_2.0.0-beta.1_x86_64_portable.zip",
+            "hash": "36b454058c08be9484d1c1db8cc6e6e7865d4dbe745dcfd2e98081838ef3e44f"
+        },
+        "arm64": {
+            "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v2.0.0-beta.1/Clash.Nyanpasu_2.0.0-beta.1_aarch64_portable.zip",
+            "hash": "4d51c6006e5710df05a7794aa07be6fa1d1449c094d09e985c820cc325b39005"
         }
     },
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
-            "New-Item \"$env:LOCALAPPDATA\\moe.elaina.clash.nyanpasu\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\\moe.elaina.clash.nyanpasu\" -Target \"$env:LOCALAPPDATA\\moe.elaina.clash.nyanpasu\"",
+            "Remove-Module -Name AppsUtils"
         ]
     },
     "uninstaller": {
-        "script": "Remove-Item \"$env:LOCALAPPDATA\\moe.elaina.clash.nyanpasu\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\moe.elaina.clash.nyanpasu\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\.config\\PORTABLE\")) {",
+        "    New-Item -Path \"$persist_dir\\.config\\PORTABLE\" -ItemType file | Out-Null",
+        "}"
+    ],
+    "bin": [
+        [
+            "Clash Nyanpasu.exe",
+            "ClashNyanpasu"
+        ]
+    ],
     "shortcuts": [
         [
             "Clash Nyanpasu.exe",
-            "Clash Nyanpasu"
+            "ClashNyanpasu"
         ]
     ],
+    "persist": ".config",
     "checkver": {
-        "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases.atom",
-        "regex": "/releases/tag/v([\\d.]+)"
+        "github": "https://api.github.com/repos/libnyanpasu/clash-nyanpasu/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\w.-]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v$version/Clash.Nyanpasu_$version_x64_portable.zip"
+                "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v$version/Clash.Nyanpasu_$version_x86_64_portable.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/libnyanpasu/clash-nyanpasu/releases/download/v$version/Clash.Nyanpasu_$version_aarch64_portable.zip"
             }
         }
     }
