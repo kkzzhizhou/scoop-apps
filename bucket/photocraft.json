@@ -1,0 +1,61 @@
+{
+    "version": "0.2.0",
+    "description": "Open-source image editor and clean-room reimplementation of Adobe Photoshop, written in pure Rust",
+    "homepage": "https://getartcraft.com/apps/photocraft",
+    "license": "MIT OR Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/storytold/photocraft/releases/download/v0.2.0/photocraft-0.2.0-windows-x64-portable.zip",
+            "hash": "64a621a59669b6bb5e0a8563d9c251740b5be804d62f642f57e48301c7c0a347",
+            "extract_dir": "photocraft-0.2.0-windows-x64-portable"
+        },
+        "32bit": {
+            "url": "https://github.com/storytold/photocraft/releases/download/v0.2.0/photocraft-0.2.0-windows-x86-portable.zip",
+            "hash": "518f77bc118b5096734083eda2098c69609a365556342a904aade21ee230b365",
+            "extract_dir": "photocraft-0.2.0-windows-x86-portable"
+        }
+    },
+    "bin": [
+        "photocraft.exe",
+        "photocraft-cli.exe"
+    ],
+    "persist": [
+        "config"
+    ],
+    "shortcuts": [
+        [
+            "photocraft.exe",
+            "PhotoCraft"
+        ]
+    ],
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\config\")) { New-Item -ItemType Directory -Path \"$persist_dir\\config\" | Out-Null }"
+    ],
+    "env_set": {
+        "PHOTOCRAFT_CONFIG_DIR": "$persist_dir\\config"
+    },
+    "notes": [
+        "PhotoCraft stores preferences, brush presets and recovery data outside the app directory by default (%APPDATA%\\Photocraft). This manifest sets PHOTOCRAFT_CONFIG_DIR to the persisted 'config' directory, so settings, presets and recovery files survive updates.",
+        "Launch the GUI with 'photocraft' (or the PhotoCraft Start Menu entry). 'photocraft-cli' is the headless interface (run/batch/commands/mcp) and is also on PATH.",
+        "Autoupdate uses the SHA256SUMS.txt published with each GitHub release."
+    ],
+    "checkver": {
+        "github": "https://github.com/storytold/photocraft"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/storytold/photocraft/releases/download/v$version/photocraft-$version-windows-x64-portable.zip",
+                "extract_dir": "photocraft-$version-windows-x64-portable"
+            },
+            "32bit": {
+                "url": "https://github.com/storytold/photocraft/releases/download/v$version/photocraft-$version-windows-x86-portable.zip",
+                "extract_dir": "photocraft-$version-windows-x86-portable"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt",
+            "find": "$basename"
+        }
+    }
+}
