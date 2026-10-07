@@ -1,0 +1,55 @@
+{
+    "version": "1.13.1",
+    "description": "Google Gemini desktop application",
+    "homepage": "https://gemini.google/desktop/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://policies.google.com/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dl.google.com/release2/Google%20DeepMind/addznku7or7dm5tq34obrljjxjxq_1.13.1/GeminiSetup-1.13.1_uncompressed.exe#/dl.7z",
+            "hash": "e660bfd7bf1bfffce65d8227bf8dc8caed34317110ec5139ae3ace5bcb5aaa94"
+        },
+        "arm64": {
+            "url": "https://dl.google.com/release2/Google%20DeepMind/adxgwi777onjspkiyhmhq4nmn7ca_1.13.1/GeminiSetup-1.13.1_uncompressed.exe#/dl.7z",
+            "hash": "0b1a7d5384b9d08c1a0512a38a86b5002f313e9197781a1efdd0d213b399901e"
+        }
+    },
+    "extract_dir": "app-1.13.1",
+    "bin": "Gemini.exe",
+    "shortcuts": [
+        [
+            "Gemini.exe",
+            "Gemini"
+        ],
+        [
+            "GeminiAppLauncher.exe",
+            "Gemini App Launcher"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$appid = '{533DD80C-942A-4464-B6A9-2E59428D784E}'",
+            "$headers = @{ 'x-goog-update-appid' = $appid; 'x-goog-update-updater' = 'GoogleUpdater/1.0' }",
+            "foreach ($arch in 'x64', 'arm64') {",
+            "    $body = @{ request = @{ os = @{ sp = ''; version = '10.0.26100'; arch = $arch; platform = 'win' }; app = @( @{ appid = $appid; ap = 'prod'; version = '1.0.0.0'; cohort = '1::'; enabled = $true; updatecheck = @{} } ) } } | ConvertTo-Json -Depth 8 -Compress",
+            "    $resp = Invoke-WebRequest -Uri 'https://update.googleapis.com/service/update2/json' -Method Post -Headers $headers -ContentType 'application/json' -Body $body -UseBasicParsing",
+            "    $raw = $resp.Content -replace '^[\\x29\\x5d\\x7d\\x27]+\\s*', ''",
+            "    (($raw | ConvertFrom-Json).gupdate.app[0].updatecheck.codebase)",
+            "}"
+        ],
+        "regex": "(?<path64>release2/[^/\\s]+/[^/\\s]+_(?<version>\\d+(?:\\.\\d+)+)/[^/\\s]+)\\s+\\S+?(?<patharm>release2/[^/\\s]+/[^/\\s]+_\\d+(?:\\.\\d+)+/[^/\\s]+)"
+    },
+    "autoupdate": {
+        "extract_dir": "app-$version",
+        "architecture": {
+            "64bit": {
+                "url": "https://dl.google.com/$matchPath64#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://dl.google.com/$matchPatharm#/dl.7z"
+            }
+        }
+    }
+}

@@ -1,26 +1,27 @@
 {
-    "version": "migration04-01",
+    "version": "migration05-01",
     "description": "A cross-platform advanced subtitle editor",
     "homepage": "https://github.com/arch1t3cht/Aegisub",
     "license": "BSD-3-Clause",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/arch1t3cht/Aegisub/releases/download/migration04-01/Windows.MSVC.Release.-.portable.zip",
-            "hash": "a7e5fc4268abf2e805d7b07dcc76285638e7f130fa8a4d4c38046211bb742934"
+            "url": "https://github.com/arch1t3cht/Aegisub/releases/download/migration05-01/Windows.MSVC.Release.-.portable.zip",
+            "hash": "61a66515fc54d217e20ecf341e59e05f79c2d521eb172691e01271f59d26955f"
         }
     },
     "pre_install": [
-        "Expand-7zipArchive -Path \"$dir\\aegisub-portable-64.zip\" -ExtractDir 'aegisub-portable' -Removal",
+        "Expand-7zipArchive -Path \"$dir\\aegisub-*portable*.zip\" -ExtractDir 'aegisub-portable' -Removal",
         "'config.json', 'hotkey.json' | ForEach {",
-        "   if (Test-Path \"$persist_dir\\$_\") {",
-        "       Copy-Item \"$persist_dir\\$_\" \"$dir\\\"",
+        "   if (-not (Test-Path -PathType Leaf \"$persist_dir\\$_\")) {",
+        "       New-Item -Path \"$persist_dir\\$_\" -ItemType File -Force",
         "   }",
+        "   Copy-Item \"$persist_dir\\$_\" \"$dir\\\"",
         "}"
     ],
     "pre_uninstall": [
         "# Manually persist files",
         "'config.json', 'hotkey.json' | ForEach {",
-        "   if (Test-Path \"$dir\\$_\") {",
+        "   if (Test-Path -PathType Leaf \"$dir\\$_\") {",
         "       ensure \"$persist_dir\" | Out-Null",
         "       Copy-Item \"$dir\\$_\" \"$persist_dir\\\"",
         "   }",
