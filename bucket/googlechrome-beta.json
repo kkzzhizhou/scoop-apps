@@ -1,4 +1,5 @@
 {
+    "##": "_edited_from: https://github.com/ScoopInstaller/Versions/blob/master/bucket/googlechrome-beta.json",
     "version": "156.0.8078.17",
     "description": "Fast, secure, and free web browser, built for the modern web.",
     "homepage": "https://www.google.com/chrome/beta",
@@ -10,17 +11,24 @@
         "64bit": {
             "url": "https://dl.google.com/release2/chrome/acddklhek2rnbpebk7h5gq6mwp5q_156.0.8078.17/156.0.8078.17_chrome_installer_uncompressed.exe#/dl.7z",
             "hash": "7b3d80c1ad35eddf560774eaff9fde1ef61cfaf716608abb19f5464b9057f56d"
-        },
-        "32bit": {
-            "url": "https://dl.google.com/release2/chrome/ac6mnoou26n3a32zjtlsraz76qhq_156.0.8078.17/156.0.8078.17_chrome_installer_uncompressed.exe#/dl.7z",
-            "hash": "c692e9fc85111999a3ba5779b03842e94fc5eaab0b839ece0a709a49bb16b8ad"
-        },
-        "arm64": {
-            "url": "https://dl.google.com/release2/chrome/achiifnetr2wn2duvahwozmixjwa_156.0.8078.16/156.0.8078.16_chrome_installer_uncompressed.exe#/dl.7z",
-            "hash": "ba5af0b4a3977be17d083ae31b139feb691f672344f81b8663e428f8a52c202d"
         }
     },
     "extract_dir": "Chrome-bin",
+    "post_install": [
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
     "bin": [
         [
             "chrome.exe",
@@ -30,53 +38,33 @@
     "shortcuts": [
         [
             "chrome.exe",
-            "Google Chrome (Beta)"
+            "Google Chrome (Beta)",
+            "--force-device-scale-factor=1.5"
         ]
+    ],
+    "persist": "User Data",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\Google\\Chrome\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
     ],
     "checkver": {
         "script": [
             "$AppID = '{8A69D345-D564-463C-AFF1-A69D9E530F96}'",
-            "$ArchParams  = @{",
-            "    'x64'   ='1.1-beta-arch_x64'",
-            "    'x86'   ='1.1-beta-arch_x86'",
-            "    'arm64' ='1.1-beta-arch_arm64'",
-            "}",
-            "$BodyTemplate = @(",
-            "    '<?xml version=\"1.0\" encoding=\"UTF-8\"?>',",
-            "    '<request protocol=\"3.0\">',",
-            "    '  <os platform=\"win\" version=\"10.0.22000.0\" arch=\"{0}\"/>',",
-            "    '  <app appid=\"{1}\" ap=\"{2}\" version=\"\">',",
-            "    '    <updatecheck/>',",
-            "    '  </app>',",
-            "    '</request>'",
-            ") -join \"`n\"",
-            "$ArchURLs = @{}",
-            "$Version = $null",
-            "forEach ($Arch in $ArchParams.Keys) {",
-            "    $Body = $BodyTemplate -f $Arch, $AppID, $ArchParams[$Arch]",
-            "    $Response = Invoke-RestMethod -Uri 'https://update.googleapis.com/service/update2' -Method Post -Body $Body",
-            "    if ($Arch -eq 'x64') {",
-            "        $Version = $Response.response.app.updatecheck.manifest.version",
-            "    }",
-            "    $BaseURL = $Response.SelectSingleNode(\"//url[starts-with(@codebase, 'https://dl.google.com/release2/chrome/')]\")",
-            "    $BaseURL.GetAttribute('codebase') -match '^https://dl\\.google\\.com/release2/chrome/(?<URL>[^/]+)/'",
-            "    $FileName = $Response.SelectSingleNode('//package').GetAttribute('name')",
-            "    $ArchURLs[$Arch] = \"$($Matches['URL'])/$FileName\"",
-            "}",
-            "Write-Output \"$Version,$($ArchURLs['x64']),$($ArchURLs['x86']),$($ArchURLs['arm64'])\""
+            "$Body = '<?xml version=\"1.0\" encoding=\"UTF-8\"?><request protocol=\"3.0\"><os platform=\"win\" version=\"10.0.22000.0\" arch=\"x64\"/><app appid=\"' + $AppID + '\" ap=\"1.1-beta-arch_x64\" version=\"\"><updatecheck/></app></request>'",
+            "$R = Invoke-RestMethod 'https://update.googleapis.com/service/update2' -Method Post -Body $Body",
+            "$Version = $R.response.app.updatecheck.manifest.version",
+            "$Base = $R.SelectSingleNode(\"//url[starts-with(@codebase, 'https://dl.google.com/release2/chrome/')]\")",
+            "$Base.GetAttribute('codebase') -match 'release2/chrome/([^/]+)/' | Out-Null",
+            "$File = $R.SelectSingleNode('//package').GetAttribute('name')",
+            "Write-Output \"$Version,$($Matches[1])/$File\""
         ],
-        "regex": "(?<version>[\\d.]+),(?<archx64>[^,]+),(?<archx86>[^,]+),(?<archarm64>[^,]+)"
+        "regex": "(?<version>[\\d.]+),(?<archx64>.+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
                 "url": "https://dl.google.com/release2/chrome/$matchArchx64#/dl.7z"
-            },
-            "32bit": {
-                "url": "https://dl.google.com/release2/chrome/$matchArchx86#/dl.7z"
-            },
-            "arm64": {
-                "url": "https://dl.google.com/release2/chrome/$matchArcharm64#/dl.7z"
             }
         }
     }

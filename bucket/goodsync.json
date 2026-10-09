@@ -5,10 +5,30 @@
     "license": "BSD-3-Clause",
     "url": "https://xmod-my.sharepoint.cn/:u:/g/personal/admin_xmod_partner_onmschina_cn/EdrLWZXBkBRCoUNnkh22WP0BAr3G7ejYM6urS7ctHXsCAw?download=1#/dl.7z",
     "persist": "Profile",
+    "post_install": [
+        "$marker = Join-Path $persist_dir 'Profile\\.scoop-license-initialized'",
+        "if ($cmd -eq 'install' -and !(Test-Path -LiteralPath $marker)) {",
+        "    if (!(Test-Path -LiteralPath \"$dir\\GoodSync.bat\" -PathType Leaf)) { throw 'GoodSync.bat is missing from the extracted package.' }",
+        "    $bat = Join-Path $dir 'GoodSync.bat'",
+        "    $encoding = [System.Text.Encoding]::GetEncoding(28591)",
+        "    $content = $encoding.GetString([System.IO.File]::ReadAllBytes($bat))",
+        "    $updated = $content -replace '(?im)^[ \\t]*start[ \\t]+GoodSync\\.exe[ \\t]*(?:\\r?\\n|$)', ''",
+        "    if ($updated -cne $content) { [System.IO.File]::WriteAllBytes($bat, $encoding.GetBytes($updated)) }",
+        "    Push-Location $dir -ErrorAction Stop",
+        "    try {",
+        "        & $env:ComSpec /d /c 'call GoodSync.bat'",
+        "        if ($LASTEXITCODE -ne 0) { throw \"GoodSync.bat failed (exit $LASTEXITCODE).\" }",
+        "        New-Item -ItemType Directory -Path (Split-Path $marker -Parent) -Force -ErrorAction Stop | Out-Null",
+        "        Set-Content -LiteralPath $marker -Value (Get-Date -Format o) -Encoding ASCII -ErrorAction Stop",
+        "    } finally {",
+        "        Pop-Location",
+        "    }",
+        "}"
+    ],
     "shortcuts": [
         [
-            "x64\\GoodSync2Go.exe",
-            "GoodSync2Go"
+            "x64\\GoodSync.exe",
+            "GoodSync"
         ]
     ]
 }
