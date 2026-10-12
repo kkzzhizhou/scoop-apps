@@ -1,0 +1,59 @@
+{
+    "version": "1.0.12",
+    "description": "红果短剧｜Windows 10/11 桌面版 + Android TV 测试版。电视 APK 4.03 MB，Android 5.0+ / ARM64，支持遥控、续播与换一部；免费使用，由渠道有数独立维护。",
+    "homepage": "https://github.com/waligoraamodio288-rgb/hongguo-desktop-releases",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/waligoraamodio288-rgb/hongguo-desktop-releases/releases/download/v1.0.12/hongguo-1.0.12-windows-x86_64-setup.exe#/dl.7z",
+            "hash": "d09e6f521985cc6ec349049affe7abea42b11f74ee224122e4d91c905a4bdbc2",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\cn.guoban.desktop-companion\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\cn.guoban.desktop-companion\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\cn.guoban.desktop-companion\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\cn.guoban.desktop-companion\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "hongguo-desktop-companion.exe",
+            "hongguo-desktop"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "hongguo-desktop-companion.exe",
+            "hongguo-desktop"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/waligoraamodio288-rgb/hongguo-desktop-releases/releases",
+        "jp": "$[*].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/hongguo-([\\d.]+)-windows"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/waligoraamodio288-rgb/hongguo-desktop-releases/releases/download/v$version/hongguo-$version-windows-x86_64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

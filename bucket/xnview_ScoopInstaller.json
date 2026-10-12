@@ -1,0 +1,43 @@
+{
+    "version": "2.52.5",
+    "description": "Photo viewer, image resizer & batch converter",
+    "homepage": "https://www.xnview.com/en/xnview-classic/",
+    "license": "Freeware|Proprietary",
+    "url": "https://download.xnview.com/versions/XnView_Classic/XnView-2.52.5-win-full.zip",
+    "hash": "5df81ce077e649e95fcb85443c298720c4f0684cc265315424cf49a74e13d71d",
+    "extract_dir": "XnView",
+    "pre_install": [
+        "# --- If xnview.ini exists as a folder, then remove it ---",
+        "if (Test-Path \"$persist_dir\\xnview.ini\" -PathType Container) {",
+        "    Remove-Item \"$persist_dir\\xnview.ini\" -Force -Recurse",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\xnview.ini\")) {",
+        "   New-Item \"$dir\\xnview.ini\" -ItemType File | Out-Null",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "# Manually copy because Xnview overwrites hardlink with a regular file, which breaks persist",
+            "if ((Test-Path \"$dir\\xnview.ini\") -and !(Get-Item \"$dir\\xnview.ini\").LinkType -and (Test-Path $persist_dir)) { Copy-Item \"$dir\\xnview.ini\" $persist_dir -Force }"
+        ]
+    },
+    "bin": "xnview.exe",
+    "shortcuts": [
+        [
+            "xnview.exe",
+            "XnView"
+        ]
+    ],
+    "persist": "xnview.ini",
+    "checkver": {
+        "url": "https://download.xnview.com/versions/XnView_Classic/",
+        "regex": "XnView-([\\d.]+)-win-full\\.zip"
+    },
+    "autoupdate": {
+        "url": "https://download.xnview.com/versions/XnView_Classic/XnView-$version-win-full.zip",
+        "hash": {
+            "url": "$baseurl/XnView_Classic-CHECKSUMS.txt",
+            "regex": "$sha256\\s+$basename"
+        }
+    }
+}

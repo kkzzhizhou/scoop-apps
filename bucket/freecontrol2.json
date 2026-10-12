@@ -1,0 +1,51 @@
+{
+    "version": "1.0.0",
+    "description": "在PC上控制Android设备",
+    "homepage": "https://github.com/pdone/FreeControl2",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/pdone/FreeControl2#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pdone/FreeControl2/releases/download/v1.0.0/FreeControl2_1.0.0.exe#/FreeControl2.exe",
+            "hash": "2a065f82f3b761341c56a4374543177b6cf9418c6097c54d414624449788fb8f"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.freecontrol2\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\FreeControl2\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.freecontrol2\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\FreeControl2\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "FreeControl2.exe",
+    "shortcuts": [
+        [
+            "FreeControl2.exe",
+            "FreeControl2"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/pdone/FreeControl2/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/pdone/FreeControl2/releases/download/v$version/FreeControl2_$version.exe#/FreeControl2.exe"
+            }
+        }
+    }
+}
