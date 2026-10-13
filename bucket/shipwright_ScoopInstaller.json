@@ -20,17 +20,19 @@
         "}"
     ],
     "post_install": [
-        "if (Test-Path \"$persist_dir\\shipofharkinian.json.bak\") {",
-        "    Copy-Item -Force \"$persist_dir\\shipofharkinian.json.bak\" \"$dir\\shipofharkinian.json\"",
-        "} else {",
-        "    New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\shipofharkinian.json\" | Out-Null",
+        "'shipofharkinian.json' | ForEach-Object {",
+        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
+        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
+        "   } else {",
+        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
+        "   }",
         "}"
     ],
     "bin": "soh.exe",
     "shortcuts": [
         [
             "soh.exe",
-            "The Legend of Zelda - Ocarina of Time [oot][soh]"
+            "Ship of Harkinian [win][oot]"
         ]
     ],
     "persist": [
@@ -40,14 +42,14 @@
     ],
     "uninstaller": {
         "script": [
-            "if (Test-Path \"$dir\\shipofharkinian.json\") {",
-            "    Copy-Item -Force \"$dir\\shipofharkinian.json\" \"$persist_dir\\shipofharkinian.json.bak\"",
+            "'shipofharkinian.json' | ForEach-Object {",
+            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
             "}"
         ]
     },
     "checkver": {
         "github": "https://github.com/HarbourMasters/Shipwright/",
-        "regex": "(?<majorName>(\\w+))\\s(?<minorName>(\\w+))\\s(?<version>([\\d\\.]+))",
+        "regex": "/(?<version>([\\d.]+))/SoH-(?<majorName>\\w+)-(?<minorName>\\w+)-Win64\\.zip",
         "replace": "${version}"
     },
     "autoupdate": {

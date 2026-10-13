@@ -1,5 +1,5 @@
 {
-    "version": "9.2.3",
+    "version": "9.3.0",
     "description": "A PC port of Legend of Zelda: Ocarina of Time",
     "homepage": "https://www.shipofharkinian.com",
     "license": "Unlicense",
@@ -10,8 +10,8 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/HarbourMasters/Shipwright/releases/download/9.2.3/SoH-Ackbar-Delta-Win64.zip",
-            "hash": "cc7bd5ada1332be50013976fc3db3289cacde1df57e7e6cf73d4a1df81313e30"
+            "url": "https://github.com/HarbourMasters/Shipwright/releases/download/9.3.0/SoH-Dewey-Alpha-Win64.zip",
+            "hash": "bf46cfc41be17f3b63901db46dac46ac2a63ed3851aa13e3ba6c9ec5d0ac2632"
         }
     },
     "pre_install": [
@@ -20,19 +20,17 @@
         "}"
     ],
     "post_install": [
-        "'shipofharkinian.json' | ForEach-Object {",
-        "   if (Test-Path \"$persist_dir\\$_.bak\") {",
-        "       Copy-Item -Force \"$persist_dir\\$_.bak\" \"$dir\\$_\"",
-        "   } else {",
-        "       New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\$_\" | Out-Null",
-        "   }",
+        "if (Test-Path \"$persist_dir\\shipofharkinian.json.bak\") {",
+        "    Copy-Item -Force \"$persist_dir\\shipofharkinian.json.bak\" \"$dir\\shipofharkinian.json\"",
+        "} else {",
+        "    New-Item -ErrorAction SilentlyContinue -ItemType File \"$dir\\shipofharkinian.json\" | Out-Null",
         "}"
     ],
     "bin": "soh.exe",
     "shortcuts": [
         [
             "soh.exe",
-            "Ship of Harkinian [win][oot]"
+            "The Legend of Zelda - Ocarina of Time [oot][soh]"
         ]
     ],
     "persist": [
@@ -42,14 +40,14 @@
     ],
     "uninstaller": {
         "script": [
-            "'shipofharkinian.json' | ForEach-Object {",
-            "   Copy-Item -Force \"$dir\\$_\" \"$persist_dir\\$_.bak\"",
+            "if (Test-Path \"$dir\\shipofharkinian.json\") {",
+            "    Copy-Item -Force \"$dir\\shipofharkinian.json\" \"$persist_dir\\shipofharkinian.json.bak\"",
             "}"
         ]
     },
     "checkver": {
-        "github": "https://github.com/HarbourMasters/Shipwright/",
-        "regex": "/(?<version>([\\d.]+))/SoH-(?<majorName>\\w+)-(?<minorName>\\w+)-Win64\\.zip",
+        "url": "https://api.github.com/repos/HarbourMasters/Shipwright/releases/latest",
+        "regex": "\"tag_name\"\\s*:\\s*\"(?<version>[\\d.]+)\"[\\s\\S]*?\"name\"\\s*:\\s*\"SoH-(?<majorName>\\w+)-(?<minorName>\\w+)-Win64\\.zip\"",
         "replace": "${version}"
     },
     "autoupdate": {
