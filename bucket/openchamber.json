@@ -1,18 +1,24 @@
 {
-    "version": "2.3.1",
-    "description": "A rich interface for OpenCode.",
-    "homepage": "https://github.com/openchamber/openchamber",
+    "version": "2.3.2",
+    "description": "Agentic Development Environment based on OpenCode AI agent",
+    "homepage": "https://openchamber.dev",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/openchamber/openchamber/releases/download/v2.3.1/OpenChamber-2.3.1-win-x64.exe#/dl.7z",
-            "hash": "c2b630cf4979d4fd6319927d4d46ca1688b1710d1eddc6a0dc005a17ec0c564f"
+            "url": "https://github.com/openchamber/openchamber/releases/download/v2.3.2/OpenChamber-2.3.2-win-x64.exe#/dl.7z",
+            "hash": "sha512:4e7efdffb5591f50e990dfb5cc83da15f12c17a4fc85c018904753d76ee11213191682e8b9e21ef667fb1e8be9e816896467791a78968ff071d637d7fb3b386f"
+        },
+        "arm64": {
+            "url": "https://github.com/openchamber/openchamber/releases/download/v2.3.2/OpenChamber-2.3.2-win-arm64.exe#/dl.7z",
+            "hash": "sha512:af34b7c376914942dac534bd4bea6ddbed6d5070801cea9b7c26df5fb575053b75320ba2e485a4fd953456377e591a5caad04571c20270fe79919cb3a3aa2325"
         }
     },
-    "pre_install": [
-        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-*.7z\" \"$dir\"",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Force -Recurse -ErrorAction Ignore"
-    ],
+    "installer": {
+        "script": [
+            "Get-Item \"$dir\\`$PLUGINSDIR\\app-*.7z\" | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
+            "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse -Force -ErrorAction SilentlyContinue"
+        ]
+    },
     "shortcuts": [
         [
             "OpenChamber.exe",
@@ -25,7 +31,18 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/openchamber/openchamber/releases/download/v$version/OpenChamber-$version-win-x64.exe#/dl.7z"
+                "url": "https://github.com/openchamber/openchamber/releases/download/v$version/OpenChamber-$version-win-x64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/openchamber/openchamber/releases/download/v$version/OpenChamber-$version-win-arm64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-arm64.yml",
+                    "regex": "sha512:\\s+$base64"
+                }
             }
         }
     }
