@@ -1,0 +1,58 @@
+{
+    "version": "1.0.2",
+    "description": "Ncrust - 一款基于 Kanesumi 设计的网易云音乐第三方跨平台客户端，支持无损音频播放、歌词滚动、本地曲库管理、系统媒体控制及多模式播放队列。多平台目前支持 Android 和 Windows 。",
+    "homepage": "https://github.com/GuitaristRin/Ncrust",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/GuitaristRin/Ncrust#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/GuitaristRin/Ncrust/releases/download/CrateStack-20261015A/ncrust-windows-x86_64-1.0.2.msix",
+                "https://github.com/GuitaristRin/Ncrust/releases/download/CrateStack-20261015A/ncrust-windows-x86_64-1.0.2.cer"
+            ],
+            "hash": [
+                "facadeffde96f3b6e76c4819a6a3f836655a9e55260ece64e978befd5e58f2c9",
+                "97f73d981a9e63b14f6d4b19df2e8556d911fab906af5d0b759356505db54ad2"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"需要管理员权限来安装证书和MSIX包。\"; break }",
+            "$msix = (Get-ChildItem \"$dir\\*.msix\").FullName",
+            "$cer = (Get-ChildItem \"$dir\\*.cer\").FullName",
+            "Import-Certificate -FilePath \"$cer\" -CertStoreLocation 'Cert:\\LocalMachine\\TrustedPeople'",
+            "Add-AppxPackage -Path \"$msix\" -ForceApplicationShutdown"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"Administrator rights are required to uninstall $app.\"; break }",
+            "Get-AppxPackage -Name 'Ncrust' | Remove-AppxPackage -AllUsers"
+        ]
+    },
+    "bin": "Ncrust.exe",
+    "shortcuts": [
+        [
+            "Ncrust.exe",
+            "Ncrust"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/GuitaristRin/Ncrust/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/(?<tag>[0-9A-Za-z-]+)/ncrust-windows-x86_64-([\\d.]+)\\.msix"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": [
+                    "https://github.com/GuitaristRin/Ncrust/releases/download/$matchTag/ncrust-windows-x86_64-$version.msix",
+                    "https://github.com/GuitaristRin/Ncrust/releases/download/$matchTag/ncrust-windows-x86_64-$version.cer"
+                ]
+            }
+        }
+    }
+}

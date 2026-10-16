@@ -1,5 +1,5 @@
 {
-    "version": "4.3.7",
+    "version": "4.4.0",
     "description": "A cross-platform fluent-design AI-boost multi-threaded downloader built with Python.",
     "homepage": "https://gd3.top/",
     "license": {
@@ -8,8 +8,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v4.3.7/Ghost-Downloader-v4.3.7-Windows-x86_64-Setup.exe",
-            "hash": "080f622d2125a718dcb00d7355826fc6cff041f9f6c6583cccd61a81cfe6ae8a"
+            "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v4.4.0/Ghost-Downloader-v4.4.0-Windows-x86_64-Setup.exe",
+            "hash": "e0111a934cf872a36f79e631bd2f57b37c1dfc8c98852700126b89d02a705b6b"
         },
         "arm64": {
             "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v4.3.7/Ghost-Downloader-v4.3.7-Windows-arm64-Setup.exe",
@@ -25,9 +25,18 @@
         ]
     ],
     "checkver": {
-        "github": "https://api.github.com/repos/XiaoYouChR/Ghost-Downloader-3/releases",
-        "jp": "$[0].tag_name",
-        "regex": "v([\\d.]+)"
+        "script": [
+            "$url = 'https://api.github.com/repos/XiaoYouChR/Ghost-Downloader-3/releases'",
+            "$cont = (Invoke-WebRequest $url).Content",
+            "$r = 'Ghost-Downloader-v([\\d.]+)-Windows-x86_64' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$version = $matches[1]",
+            "$r = 'Ghost-Downloader-v([\\d.]+)-Windows-arm64' ",
+            "if (!($cont -match $r)) { error \"Could not match $r in $url\"; continue }",
+            "$arm64 = $matches[1]",
+            "Write-Output $version $arm64"
+        ],
+        "regex": "([\\d.]+) (?<arm64>[\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
@@ -35,7 +44,7 @@
                 "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v$version/Ghost-Downloader-v$version-Windows-x86_64-Setup.exe"
             },
             "arm64": {
-                "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v$version/Ghost-Downloader-v$version-Windows-arm64-Setup.exe"
+                "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3/releases/download/v$matchArm64/Ghost-Downloader-v$matchArm64-Windows-arm64-Setup.exe"
             }
         }
     }
