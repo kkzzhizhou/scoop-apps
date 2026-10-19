@@ -17,7 +17,21 @@
         "New-Item -ItemType File -Path \"$dir\\BBDown.config\" -Force | Out-Null",
         "New-Item -ItemType File -Path \"$dir\\BBDownSubscriptions.json\" -Force | Out-Null",
         "New-Item -ItemType File -Path \"$dir\\BBDownSubscriptions.history.json\" -Force | Out-Null",
-        "New-Item -ItemType File -Path \"$dir\\BBDown.archives\" -Force | Out-Null"
+        "New-Item -ItemType File -Path \"$dir\\BBDown.archives\" -Force | Out-Null",
+        "# BBDown rewrites these two files via a temp file + File.Move (atomic replace), which",
+        "# replaces the file and therefore breaks the hard link made by 'persist'.",
+        "# Re-seed the store from the newest existing copy (normally the installed version",
+        "# dir) so installing a new version cannot resurrect stale subscription data.",
+        "foreach ($file in @('BBDownSubscriptions.json', 'BBDownSubscriptions.history.json')) {",
+        "    $store = Join-Path $persist_dir $file",
+        "    $candidates = @(Get-ChildItem \"$dir\\..\" -Directory -ErrorAction Ignore | Where-Object { $_.FullName -ne $dir } | ForEach-Object { Join-Path $_.FullName $file }) + $store",
+        "    $newest = $candidates | Where-Object { (Test-Path $_) -and (Get-Item $_).Length -gt 0 } | Sort-Object { (Get-Item $_).LastWriteTime } -Descending | Select-Object -First 1",
+        "    if ($newest -and $newest -ne $store) {",
+        "        New-Item -ItemType Directory -Path $persist_dir -Force | Out-Null",
+        "        Copy-Item $newest \"${store}.new\" -Force",
+        "        Move-Item \"${store}.new\" $store -Force",
+        "    }",
+        "}"
     ],
     "persist": [
         "BBDown.data",
@@ -27,6 +41,17 @@
         "BBDownSubscriptions.json",
         "BBDownSubscriptions.history.json",
         "BBDown.archives"
+    ],
+    "pre_uninstall": [
+        "# copy live subscription data back into the store before this version dir disappears",
+        "foreach ($file in @('BBDownSubscriptions.json', 'BBDownSubscriptions.history.json')) {",
+        "    $live = Get-Item (Join-Path $dir $file) -ErrorAction Ignore",
+        "    if ($live -and $live.Length -gt 0 -and $live.LinkType -ne 'HardLink') {",
+        "        New-Item -ItemType Directory -Path $persist_dir -Force | Out-Null",
+        "        Copy-Item $live.FullName (Join-Path $persist_dir \"${file}.new\") -Force",
+        "        Move-Item (Join-Path $persist_dir \"${file}.new\") (Join-Path $persist_dir $file) -Force",
+        "    }",
+        "}"
     ],
     "checkver": {
         "github": "https://github.com/aliveranme/BBDown"
