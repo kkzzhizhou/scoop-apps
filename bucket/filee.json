@@ -1,0 +1,53 @@
+{
+    "version": "1.12.0",
+    "description": "Free, open-source file converter. Convert 255 formats offline by drag & drop — images, PDF, Word, Excel, PowerPoint, HWP/HWPX, video, audio, e-books and archives. No upload, no Office needed.",
+    "homepage": "https://filee.sh/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/KnifeLemon/Filee#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/KnifeLemon/Filee/releases/download/v1.12.0/Filee-1.12.0-win-Setup.exe",
+            "hash": "3288794cf95c21254d22ade158ba7fcaa92ed64d445ebc197070370e806eb624"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Filee\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Filee\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Filee.exe",
+    "shortcuts": [
+        [
+            "Filee.exe",
+            "Filee"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/KnifeLemon/Filee/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/KnifeLemon/Filee/releases/download/v$version/Filee-$version-win-Setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/Filee-$version-SHA256SUMS.txt"
+        }
+    }
+}
