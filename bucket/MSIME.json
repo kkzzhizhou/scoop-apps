@@ -3,7 +3,15 @@
     "description": "水杉输入法 (Metasequoia IME) — 开源的 Windows 中文 / 日文 TSF 输入法",
     "homepage": "https://msime.app/",
     "license": "GPL-3.0-only",
-    "suggests": "extras/vcredist2022",
+    "##": [
+        "更新（scoop update）时不要运行厂商卸载器：unins000.exe 会把整个用户数据目录 %LOCALAPPDATA%\\metasequoiaime 删掉，使用后的 config.toml、用户词库 msime_user.db / user_dict.dat、skins / shuangpin / models 会一并丢失。",
+        "升级所需的清理由厂商安装器自己完成（msime_setup.iss 的 PrepareToInstall：停输入法进程、清旧 server / TSF 目录、CleanAppDataExceptUserFiles 保留用户文件并替换随包数据），即厂商「覆盖安装」的升级路径，所以更新前跑卸载器是多余的。",
+        "uninstaller.script 用 $cmd 判别当前子命令：'update' 时直接 return；其余情况（真卸载 'uninstall'，以及识别不到 $cmd 时）照旧运行厂商卸载器，方向安全 —— 真卸载仍按厂商本意清空用户数据。",
+        "$cmd 由 scoop 的 lib\\commands.ps1 里 function exec($cmd, $arguments) 提供，经动态作用域在 installer / uninstaller 等钩子中可见（本机 scoop v0.6.0 用 dummy 应用实测：更新时为 'update'，真卸载时为 'uninstall'）。"
+    ],
+    "suggest": {
+        "VC++ x64 运行库": "extras/vcredist2022"
+    },
     "architecture": {
         "64bit": {
             "url": "https://github.com/metasequoiaime/msime-windows/releases/download/v0.11.1/MetasequoiaIME_Setup_v0.11.1.exe#/MetasequoiaIME_Setup.exe",
@@ -14,12 +22,21 @@
         "script": "Start-Process -FilePath \"$dir\\MetasequoiaIME_Setup.exe\" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/SP-', \"/DIR=$dir\") -Wait"
     },
     "uninstaller": {
-        "script": "if (Test-Path \"$dir\\unins000.exe\") { Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait }"
+        "script": [
+            "if ($cmd -eq 'update') {",
+            "    Write-Host '更新模式：跳过厂商卸载器，保留 %LOCALAPPDATA%\\metasequoiaime 下的用户配置与词库。'",
+            "    return",
+            "}",
+            "if (Test-Path \"$dir\\unins000.exe\") {",
+            "    Start-Process -FilePath \"$dir\\unins000.exe\" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait",
+            "}"
+        ]
     },
     "notes": [
         "TSF 输入法，安装 / 卸载需管理员权限，建议用管理员终端执行 scoop 命令。",
         "安装后按 Win + 空格 切换，可能需要注销或重启生效。",
-        "缺 VC++ x64 运行库会闪退，可先 scoop install vcredist2022。"
+        "缺 VC++ x64 运行库会闪退，可先 scoop install vcredist2022。",
+        "scoop update 不会删除用户数据（%LOCALAPPDATA%\\metasequoiaime 里的配置、词库、皮肤、models）；scoop uninstall 会按厂商逻辑清空它。"
     ],
     "checkver": {
         "github": "https://github.com/metasequoiaime/msime-windows"

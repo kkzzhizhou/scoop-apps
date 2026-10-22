@@ -1,14 +1,19 @@
 {
-    "version": "3.46.11.413",
+    "version": "3.47.2.405",
     "description": "腾讯会议是腾讯云旗下的一款音视频会议软件",
     "homepage": "https://meeting.tencent.com",
     "license": "BSD-3-Clause",
-    "url": "https://updatecdn.meeting.qq.com/cos/ea5a12b3227f8be5c785cda6dbfb73f6/TencentMeeting_0300000000_3.46.11.413_x86_64.publish.officialwebsite.exe#/dl.7z",
+    "url": "https://updatecdn.meeting.qq.com/cos/0b276071624b252b08d7bf57a229d85c/TencentMeeting_0300000000_3.47.2.405.publish.officialwebsite.exe?sourceforge.net#/dl.7z",
     "installer": {
         "script": [
-            "Rename-Item \"$dir\\`$_22_\" \"$dir\\$version\"",
-            "Remove-Item \"$dir\\wemeetapp_new.exe\" -Force",
-            "Remove-Item \"$dir\\`$TEMP\", \"$dir\\`$WINDIR\", \"$dir\\`$PLUGINSDIR\" -Force -Recurse"
+            "$appdir = Get-ChildItem -LiteralPath $dir -Directory | Where-Object { $_.Name -like '$_*_' } | Select-Object -First 1",
+            "if ($appdir) {",
+            "    Rename-Item -LiteralPath $appdir.FullName -NewName $manifest.version",
+            "} elseif (!(Test-Path (Join-Path $dir $manifest.version))) {",
+            "    abort 'Could not find the Tencent Meeting application directory.'",
+            "}",
+            "Remove-Item -LiteralPath (Join-Path $dir 'WeMeetApp_new.exe') -Force -ErrorAction SilentlyContinue",
+            "Remove-Item -LiteralPath (Join-Path $dir '$TEMP'), (Join-Path $dir '$WINDIR'), (Join-Path $dir '$PLUGINSDIR') -Force -Recurse -ErrorAction SilentlyContinue"
         ]
     },
     "shortcuts": [
