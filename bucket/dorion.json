@@ -1,71 +1,42 @@
 {
-	"version": "6.14.0",
-	"description": "Tiny alternative Discord client with a smaller footprint, themes and plugins, multi-profile, and more!",
-	"homepage": "https://github.com/SpikeHD/Dorion",
-	"license": {
-		"identifier": "GPL-3.0",
-		"url": "https://github.com/SpikeHD/Dorion/blob/main/LICENSE"
-	},
-	"architecture": {
-		"64bit": {
-			"url": "https://github.com/SpikeHD/Dorion/releases/download/v6.14.0/Dorion_6.14.0_win64_portable.zip",
-			"hash": "2c21f643e507e456307d033e7b133076551adfc4b52b1754e8c44a5b0830b2f1"
-		},
-		"arm64": {
-			"url": "https://github.com/SpikeHD/Dorion/releases/download/v6.14.0/Dorion_6.14.0_win_arm64_portable.zip",
-			"hash": "6feef493403236d9775abe3cf14932927596a86251309a69c0e2d417d0d1e19a"
-		}
-	},
-	"pre_install": [
-		"$files = @('config.json', 'detectables.json')",
-		"if (-not (Test-Path -Path $persist_dir)) {",
-		"    New-Item -Path $persist_dir -ItemType Directory",
-		"}",
-		"foreach ($file in $files) {",
-		"    if (-not (Test-Path -Path (Join-Path $persist_dir $file))) {",
-		"        New-Item -Path (Join-Path $persist_dir $file)",
-		"    }",
-		"}"
-	],
-	"post_install": [
-		"$sourceFolders = @(\"~\\dorion\", \"$env:APPDATA\\dorion\")",
-		"$canMoveFolders = $false",
-		"foreach ($sourceFolder in $sourceFolders) {",
-		"    If (Test-Path -Path \"$sourceFolder\\*\") {$canMoveFolders = $true; break}",
-		"}",
-		"If ($canMoveFolders) {",
-		"    $confirm = Read-Host -Prompt \"Do you want to move the current data to '$persist_dir'? (Y/N)\"",
-		"    If ($confirm.ToUpper() -eq \"Y\") {",
-		"        foreach ($sourceFolder in $sourceFolders) {",
-		"            If (Test-Path -Path \"$sourceFolder\") {",
-		"                If (Test-Path -Path \"$sourceFolder\") {Move-Item -Path \"$sourceFolder\\*\" -Destination \"$persist_dir\" -Force}",
-		"                Remove-Item \"$sourceFolder\" -Force -Recurse",
-		"            }",
-		"        }",
-		"    }",
-		"}",
-		"Remove-Item \"$dir\\*.original\" -Force -Recurse"
-	],
-	"persist": [
-		"config.json",
-		"detectables.json",
-		"plugins",
-		"logs",
-		"themes",
-		"profiles",
-		"extensions"
-	],
-	"checkver": "github",
-	"autoupdate": {
-		"extract_dir": "Dorion_$version_win64_portable",
-		"architecture": {
-			"64bit": {
-				"url": "https://github.com/SpikeHD/Dorion/releases/download/v$version/Dorion_$version_win64_portable.zip"
-			},
-			"arm64": {
-				"url": "https://github.com/SpikeHD/Dorion/releases/download/v$version/Dorion_$version_win_arm64_portable.zip"
-			}
-		}
-	},
-	"shortcuts": [["Dorion.exe", "Dorion"]]
+    "version": "6.14.0",
+    "description": "Tiny alternative Discord client",
+    "homepage": "https://spikehd.github.io/projects/dorion/",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.14.0/Dorion_6.14.0_win64_portable.zip",
+            "hash": "2c21f643e507e456307d033e7b133076551adfc4b52b1754e8c44a5b0830b2f1"
+        },
+        "arm64": {
+            "url": "https://github.com/SpikeHD/Dorion/releases/download/v6.14.0/Dorion_6.14.0_win_arm64_portable.zip",
+            "hash": "6feef493403236d9775abe3cf14932927596a86251309a69c0e2d417d0d1e19a"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\updater*\" -Force",
+    "shortcuts": [
+        [
+            "Dorion.exe",
+            "Dorion"
+        ]
+    ],
+    "persist": [
+        "profiles",
+        "themes",
+        "plugins",
+        "config.json"
+    ],
+    "checkver": {
+        "github": "https://github.com/SpikeHD/Dorion"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/SpikeHD/Dorion/releases/download/v$version/Dorion_$version_win64_portable.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/SpikeHD/Dorion/releases/download/v$version/Dorion_$version_win_arm64_portable.zip"
+            }
+        }
+    }
 }

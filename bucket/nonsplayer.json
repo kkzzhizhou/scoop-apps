@@ -1,0 +1,60 @@
+{
+    "version": "1.7.0",
+    "description": "Multiple music streaming services & High performance. 跨平台、多音源的音乐播放器",
+    "homepage": "https://github.com/Miaoyww/NonsPlayer",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/Miaoyww/NonsPlayer#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Miaoyww/NonsPlayer/releases/download/v1.7.0/Nons_1.7.0_x64-setup.exe#/dl.7z",
+            "hash": "2ffc7d22f9eb89783475f9f32ee65c0cb843323b5a3c184a790173e9219cac69",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Nons\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\Nons\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Nons\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Nons\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Nons.exe",
+            "NonsPlayer"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Nons.exe",
+            "NonsPlayer"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Miaoyww/NonsPlayer/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Miaoyww/NonsPlayer/releases/download/v$version/Nons_$version_x64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}
