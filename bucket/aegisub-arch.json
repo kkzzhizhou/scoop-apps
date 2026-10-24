@@ -1,0 +1,53 @@
+{
+    "version": "migration06-01",
+    "description": "A cross-platform advanced subtitle editor",
+    "homepage": "https://github.com/arch1t3cht/Aegisub",
+    "license": "BSD-3-Clause",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/arch1t3cht/Aegisub/releases/download/migration06-01/Windows.MSVC.Release.-.portable.zip",
+            "hash": "a0417ee80c286531f368be7f708770e4ee74c4657b329e62a59c2ea7e3e10d1c"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive -Path \"$dir\\aegisub-*portable*.zip\" -ExtractDir 'aegisub-portable' -Removal",
+        "'config.json', 'hotkey.json' | ForEach {",
+        "   if (-not (Test-Path -PathType Leaf \"$persist_dir\\$_\")) {",
+        "       New-Item -Path \"$persist_dir\\$_\" -ItemType File -Force",
+        "   }",
+        "   Copy-Item \"$persist_dir\\$_\" \"$dir\\\"",
+        "}"
+    ],
+    "pre_uninstall": [
+        "# Manually persist files",
+        "'config.json', 'hotkey.json' | ForEach {",
+        "   if (Test-Path -PathType Leaf \"$dir\\$_\") {",
+        "       ensure \"$persist_dir\" | Out-Null",
+        "       Copy-Item \"$dir\\$_\" \"$persist_dir\\\"",
+        "   }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "aegisub.exe",
+            "Aegisub"
+        ]
+    ],
+    "persist": [
+        "config",
+        "config.json",
+        "hotkey.json"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/arch1t3cht/Aegisub/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "([\\w\\-_]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/arch1t3cht/Aegisub/releases/download/$version/Windows.MSVC.Release.-.portable.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,101 @@
+{
+    "version": "2.3.73738",
+    "description": "Trae IDE integrates seamlessly into your workflow, collaborating with you to maximize performance and efficiency.",
+    "homepage": "https://www.trae.ai/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.trae.ai/terms-of-service"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://lf-cdn.trae.com.cn/obj/trae-com-cn/pkg/app/releases/stable/2.3.73738/win32/TraeCode-Setup-x64.exe",
+            "hash": "a9a92424b6fa8c6816c443465a4300db6420f7eba442a248b1ec56d48603cbee"
+        }
+    },
+    "innosetup": true,
+    "extract_dir": "{code_GetDestDir}",
+    "shortcuts": [
+        [
+            "Trae.exe",
+            "Trae"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-config",
+                "source": "UserProfile/.trae",
+                "target": "$persist_dir/home/config",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/Trae",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "programs",
+                "source": "LocalAppData/Programs/trae",
+                "target": "$persist_dir/programs",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "post_install": [
+        "$homeConfig = Join-Path $persist_dir 'home\\config'",
+        "$extensionsDir = Join-Path $homeConfig 'extensions'",
+        "$roamingDir = Join-Path $persist_dir 'roaming'",
+        "$programsDir = Join-Path $persist_dir 'programs'",
+        "foreach ($path in @($homeConfig, $extensionsDir, $roamingDir, $programsDir)) { if (-not (Test-Path $path)) { New-Item -ItemType Directory -Path $path -Force | Out-Null } }",
+        "$appDataPath = Join-Path $env:AppData 'Trae'",
+        "if (Test-Path $appDataPath) {",
+        "  $item = Get-Item $appDataPath -ErrorAction SilentlyContinue",
+        "  if ($item -and -not $item.LinkType) {",
+        "    Copy-Item \"$appDataPath\\*\" $roamingDir -Force -Recurse -ErrorAction SilentlyContinue",
+        "    Remove-Item $appDataPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "  }",
+        "}",
+        "$localProgramsPath = Join-Path $env:LocalAppData 'Programs\\trae'",
+        "if (Test-Path $localProgramsPath) {",
+        "  $item = Get-Item $localProgramsPath -ErrorAction SilentlyContinue",
+        "  if ($item -and -not $item.LinkType) {",
+        "    Copy-Item \"$localProgramsPath\\*\" $programsDir -Force -Recurse -ErrorAction SilentlyContinue",
+        "    Remove-Item $localProgramsPath -Recurse -Force -ErrorAction SilentlyContinue",
+        "  }",
+        "}",
+        "$userProfilePath = Join-Path $env:USERPROFILE '.trae'",
+        "if (Test-Path $userProfilePath) {",
+        "  $item = Get-Item $userProfilePath -ErrorAction SilentlyContinue",
+        "  if ($item -and -not $item.LinkType) {",
+        "    Copy-Item \"$userProfilePath\\*\" $homeConfig -Force -Recurse -ErrorAction SilentlyContinue",
+        "    Remove-Item $userProfilePath -Recurse -Force -ErrorAction SilentlyContinue",
+        "  }",
+        "}",
+        "$extensionsFile = Join-Path $extensionsDir 'extensions.json'",
+        "if (Test-Path $extensionsFile) {",
+        "  info 'Adjusting path in extensions file...'",
+        "  (Get-Content $extensionsFile) -replace '(?<=trae(/|\\\\)).*?(?=(/|\\\\)home(/|\\\\)config(/|\\\\)extensions)', $version | Set-Content $extensionsFile",
+        "}"
+    ],
+    "persist": "data",
+    "checkver": {
+        "url": "https://api.trae.ai/icube/api/v1/native/version/trae/latest",
+        "jsonpath": "$.data.manifest.win32.download[0].x64",
+        "regex": "(?<url>.*stable/(?<version>[\\d.]+)/win32.*.exe)",
+        "replace": "${version}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl"
+            }
+        }
+    }
+}

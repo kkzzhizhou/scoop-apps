@@ -1,0 +1,26 @@
+{
+	"version": "v7-preview.18",
+	"description": "CUDA on AMD GPUs.",
+	"homepage": "https://github.com/vosen/ZLUDA",
+	"license": {
+		"identifier": "Apache-2.0",
+		"url": "https://github.com/vosen/ZLUDA/blob/master/LICENSE-APACHE"
+	},
+	"url": "https://github.com/vosen/ZLUDA/releases/download/v7-preview.18/zluda-windows-d623f19.zip",
+	"hash": "b2c04be0756947bf3f48add458bec1ba9f851703828a7fd014704d3be7388256",
+	"extract_dir": "zluda",
+	"bin": ["zluda.exe", "zluda_precompile.exe", "ptxas.exe"],
+	"checkver": {
+		"script": [
+			"$rel_list = Invoke-RestMethod -Uri 'https://api.github.com/repos/vosen/ZLUDA/releases'",
+			"$rel = $rel_list | Sort-Object {$_.published_at} | Select-Object -last 1",
+			"$asset = $rel.assets | Where-Object { $_.name -match 'windows' } | Select-Object -first 1",
+			"Write-Output $rel.tag_name $asset.browser_download_url $asset.digest"
+		],
+		"regex": "(?<version>[\\w\\d.-]+)\\s(?<url>[^\\s]+)\\s(?<hash>[^\\s]+)?"
+	},
+	"autoupdate": {
+		"url": "$matchUrl",
+		"hash": "$matchHash"
+	}
+}

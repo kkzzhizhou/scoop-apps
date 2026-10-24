@@ -1,0 +1,69 @@
+{
+    "homepage": "https://www.python.org/",
+    "version": "3.12.4",
+    "description": "A programming language that lets you work quickly and integrate systems more effectively.",
+    "architecture": {
+        "32bit": {
+            "url": "https://www.python.org/ftp/python/3.12.4/python-3.12.4-embed-win32.zip",
+            "hash": "8b7367acbc95ae3365d000598351a2c8c3d0c3db32cfdd6a8ee52941d840ba09"
+        },
+        "64bit": {
+            "url": "https://www.python.org/ftp/python/3.12.4/python-3.12.4-embed-amd64.zip",
+            "hash": "15fea3c9367653a85086fe37216b4d1a1c78688fa5e1587e1db0b0f658856564"
+        }
+    },
+    "pre_install": [
+        "$scripts = \"$persist_dir\\Scripts\"",
+        "$pip = \"$persist_dir\\Scripts\\pip.exe\"",
+        "$python = \"$dir\\python.exe\"",
+        "$p = \"$dir\\python*._pth\"",
+        "$getPip = \"$dir\\get-pip.py\"",
+        "$url = \"https://bootstrap.pypa.io/get-pip.py\"",
+        "if (-not ((Test-Path $scripts) -and (Test-Path $pip))) {",
+        "   Write-Host 'Installing pip...'",
+        "   Invoke-WebRequest -Uri $url -OutFile $getPip | Out-Null",
+        "   & $python $getPip",
+        "} else { Write-Host 'pip already installed' }",
+        "Rename-Item $p python._pth.bak"
+    ],
+    "env_add_path": "$dir\\Scripts",
+    "env_set": {
+        "PY_PIP": "$dir\\Scripts",
+        "PY_LIBS": "$dir\\Lib;$dir\\Lib\\site-packages"
+    },
+    "bin": [
+        "python.exe",
+        [
+            "python.exe",
+            "pip",
+            "-m pip"
+        ],
+        [
+            "python.exe",
+            "wheel",
+            "-m wheel"
+        ]
+    ],
+    "persist": [
+        "Lib",
+        "Scripts"
+    ],
+    "checkver": {
+        "url": "https://www.python.org/downloads/windows/",
+        "regex": "Latest Python 3 Release - Python ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version-embed-win32.zip"
+            },
+            "64bit": {
+                "url": "https://www.python.org/ftp/python/$version/python-$version-embed-amd64.zip"
+            }
+        },
+        "hash": {
+            "url": "https://www.python.org/downloads/release/python-$cleanVersion/",
+            "regex": "(?sm)$basename.*?$md5"
+        }
+    }
+}

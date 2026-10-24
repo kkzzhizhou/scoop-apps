@@ -1,0 +1,108 @@
+{
+	"homepage": "https://bitsum.com/",
+	"description": "Real-Time CPU Optimization and Automation",
+	"version": "19.0.0.63-beta+rel.23.10.2026.1642",
+	"license": "Freemium",
+	"architecture": {
+		"64bit": {
+			"url": "https://dl.bitsum.com/files/beta/processlassosetup64.exe#/dl.7z",
+			"hash": "52a415e33b8110bf4737024afe8a0f8ab6626aab6ebb98ccd32480fa8d4913f5"
+		},
+		"32bit": {
+			"url": "https://dl.bitsum.com/files/beta/processlassosetup32.exe#/dl.7z",
+			"hash": "130b14842df2624528ae3e1fe8d7823136c63f232f562270d2397256e2f78504"
+		}
+	},
+	"extract_to": "Process Lasso",
+	"shortcuts": [["Process Lasso/ProcessLassoLauncher.exe", "Process Lasso"]],
+	"persist": ["Process Lasso/config", "Process Lasso/logs"],
+	"installer": {
+		"script": "Remove-Item \"$dir/Process Lasso/`$PLUGINSDIR\" -Recurse"
+	},
+	"checkver": {
+		"script": [
+			"# Get stable and beta x64/x86 releases from the official download page",
+			"$download_page = Invoke-WebRequest -Uri 'https://bitsum.com/download-process-lasso/' -UseBasicParsing",
+			"$html = $download_page.Content",
+			"function Get-Release($channel, $arch) {",
+			"    $section_pattern = '<tbody id=\"pl-dl-body-' + $channel + '\">(?<body>.*?)</tbody>'",
+			"    $section = [regex]::Match($html, $section_pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)",
+			"    if (-not $section.Success) { return $null }",
+			"    $row_pattern = '<tr data-arch=\"' + $arch + '\".*?</tr>'",
+			"    $row = [regex]::Match($section.Groups['body'].Value, $row_pattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)",
+			"    if (-not $row.Success) { return $null }",
+			"    $version = [regex]::Match($row.Value, 'data-arch=\"' + $arch + '\".*?</td>\\s*<td>(?<version>[\\d.]+)</td>').Groups['version'].Value",
+			"    $date = [regex]::Match($row.Value, '<time datetime=\"(?<date>[\\d-]+)\"').Groups['date'].Value",
+			"    $hash = [regex]::Match($row.Value, 'data-sha=\"(?<hash>[a-f0-9]{64})\"').Groups['hash'].Value",
+			"    $path = [regex]::Match($row.Value, 'href=\"https://dl\\.bitsum\\.com/files/(?<path>[^\"]*processlassosetup(?:64|32)\\.exe)\"').Groups['path'].Value",
+			"    if (-not $version -or -not $date -or -not $hash -or -not $path) {",
+			"        throw \"Unable to parse the Process Lasso $channel $arch release row\"",
+			"    }",
+			"    return [pscustomobject]@{ Version = $version; Date = $date; Hash = $hash; Path = $path; Arch = $arch }",
+			"}",
+			"$stable_x64 = Get-Release 'stable' 'x64'",
+			"$stable_x86 = Get-Release 'stable' 'x86'",
+			"$beta_x64 = Get-Release 'beta' 'x64'",
+			"$beta_x86 = Get-Release 'beta' 'x86'",
+			"if (-not $stable_x64 -and -not $beta_x64) {",
+			"    throw 'No Process Lasso x64 release rows found on the official download page'",
+			"}",
+			"",
+			"# The download page has the date; the current-version file supplies the time",
+			"$current_version_details = Invoke-WebRequest -Uri 'https://bitsum.com/current_version_processlasso.txt' -UseBasicParsing",
+			"$time_match = [regex]::Match($current_version_details.Content, '(?<time>\\d{1,2}:\\d{2}\\s*(?:AM|PM))')",
+			"if (-not $time_match.Success) {",
+			"    throw 'Unable to parse the release time from current_version_processlasso.txt'",
+			"}",
+			"$release_time = [DateTime]::ParseExact($time_match.Groups['time'].Value, 'h:mm tt', [Globalization.CultureInfo]::InvariantCulture).ToString('HHmm')",
+			"",
+			"function Compare-Version($v1, $v2) {",
+			"    if (-not $v1) { return -1 }",
+			"    if (-not $v2) { return 1 }",
+			"    $parts1 = $v1 -split '\\.'",
+			"    $parts2 = $v2 -split '\\.'",
+			"    $max = [Math]::Max($parts1.Length, $parts2.Length)",
+			"    for ($i = 0; $i -lt $max; $i++) {",
+			"        $n1 = if ($i -lt $parts1.Length) { [int]$parts1[$i] } else { 0 }",
+			"        $n2 = if ($i -lt $parts2.Length) { [int]$parts2[$i] } else { 0 }",
+			"        if ($n1 -gt $n2) { return 1 }",
+			"        if ($n1 -lt $n2) { return -1 }",
+			"    }",
+			"    return 0",
+			"}",
+			"",
+			"$selected_x64 = $stable_x64",
+			"$selected_x86 = $stable_x86",
+			"$url_segment = ''",
+			"$is_beta = $false",
+			"if ($beta_x64 -and (-not $stable_x64 -or (Compare-Version $beta_x64.Version $stable_x64.Version) -gt 0)) {",
+			"    $selected_x64 = $beta_x64",
+			"    $selected_x86 = $beta_x86",
+			"    $url_segment = 'beta/'",
+			"    $is_beta = $true",
+			"}",
+			"if (-not $selected_x64 -or -not $selected_x86) { throw 'Both Process Lasso x64 and x86 release rows are required' }",
+			"",
+			"if ($is_beta) {",
+			"    $release_date = [DateTime]::ParseExact($selected_x64.Date, 'yyyy-MM-dd', [Globalization.CultureInfo]::InvariantCulture).ToString('dd.MM.yyyy')",
+			"    $semver = \"$($selected_x64.Version)-beta+rel.$release_date.$release_time\"",
+			"} else {",
+			"    $semver = $selected_x64.Version",
+			"}",
+			"Write-Output \"$url_segment $semver $($selected_x64.Hash) $($selected_x86.Hash)\""
+		],
+		"regex": "(?<url>[\\w/]*)\\s(?<version>[\\d\\w.\\-\\+]+)\\s(?<x64hash>[a-f0-9]{64})\\s(?<x86hash>[a-f0-9]{64})"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://dl.bitsum.com/files/$matchUrlprocesslassosetup64.exe#/dl.7z",
+				"hash": "$matchX64hash"
+			},
+			"32bit": {
+				"url": "https://dl.bitsum.com/files/$matchUrlprocesslassosetup32.exe#/dl.7z",
+				"hash": "$matchX86hash"
+			}
+		}
+	}
+}

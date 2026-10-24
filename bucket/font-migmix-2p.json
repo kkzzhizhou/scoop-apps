@@ -1,0 +1,57 @@
+{
+    "version": "20200307",
+    "description": "a font, MPlus and IPA Gothic mixed",
+    "license": {
+        "identifier": "IPA",
+        "url": "https://mix-mplus-ipa.osdn.jp/migmix/IPA_Font_License_Agreement_v1.0.txt"
+    },
+    "homepage": "https://mix-mplus-ipa.osdn.jp/",
+    "url": "https://osdn.net/frs/redir.php?m=auto&f=mix-mplus-ipa%2F72510%2Fmigmix-2p-20200307.zip#/dl.zip",
+    "hash": "f12e07527e7e8c1a8d75127c9f5577b5fc71d5a61faadab92b43f2fdfff224a9",
+    "extract_dir": "migmix-2p-20200307",
+    "installer": {
+        "script": [
+            "if ($global -and !(is_admin)) { error \"Administrator rights are required to install $app.\"; return }",
+            "$fontInstallDir = if ($global) { (Join-Path $env:windir Fonts) } else { (Join-Path $env:LOCALAPPDATA Microsoft Windows Fonts) }",
+            "$registryRoot = if ($global) { \"HKLM:\" } else { \"HKCU:\" }",
+            "$registryBranch = (Join-Path SOFTWARE Microsoft 'Windows NT' CurrentVersion Fonts)",
+            "$registryKey = (Join-Path $registryRoot $registryBranch)",
+            "",
+            "Get-ChildItem $dir -Filter '*.ttf' `",
+            "| ForEach-Object {",
+            "    $regName = $_.Name.Replace($_.Extension, ' (TrueType)')",
+            "    $value = if ($global) { $_.Name } else { (Join-Path $fontInstallDir $_.Name) }",
+            "    New-ItemProperty -Path $registryKey -Name $regName -Value $value -Force | Out-Null",
+            "    Copy-Item $_.FullName -Destination $fontInstallDir",
+            "}"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if ($global -and !(is_admin)) { error \"Administrator rights are required to uninstall $app.\"; return }",
+            "$fontInstallDir = if ($global) { (Join-Path $env:windir Fonts) } else { (Join-Path $env:LOCALAPPDATA Microsoft Windows Fonts) }",
+            "$registryRoot = if ($global) { \"HKLM:\" } else { \"HKCU:\" }",
+            "$registryBranch = (Join-Path SOFTWARE Microsoft 'Windows NT' CurrentVersion Fonts)",
+            "$registryKey = (Join-Path $registryRoot $registryBranch)",
+            "",
+            "Get-ChildItem $dir -Filter '*.ttf' `",
+            "| ForEach-Object {",
+            "    $regName = $_.Name.Replace($_.Extension, ' (TrueType)')",
+            "    Remove-ItemProperty -Path $registryKey -Name $regName -Force -ErrorAction SilentlyContinue",
+            "    Remove-Item (Join-Path $fontInstallDir $_.Name) -Force -ErrorAction SilentlyContinue",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://osdn.net/projects/mix-mplus-ipa/",
+        "regex": "<a href=\"/projects/mix-mplus-ipa/releases/(?<release>[\\d]+)\">migmix ([0-9]+)</a>"
+    },
+    "autoupdate": {
+        "url": "https://osdn.net/frs/redir.php?m=auto&f=mix-mplus-ipa%2F$matchRelease%2Fmigmix-2p-$version.zip#/dl.zip",
+        "hash": {
+            "url": "https://osdn.net/projects/mix-mplus-ipa/downloads/$matchRelease/migmix-2p-$version.zip/",
+            "regex": "<dd>$sha256</dd>"
+        },
+        "extract_dir": "migmix-2p-$version"
+    }
+}

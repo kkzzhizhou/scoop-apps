@@ -1,0 +1,106 @@
+{
+    "version": "0.9.1",
+    "description": "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
+    "homepage": "https://github.com/chen08209/FlClash",
+    "license": "GPL-3.0-only",
+    "notes": [
+        "Once you set up TUN mode successfully,",
+        "the older versions of FlClash may be hard to remove by running 'scoop cleanup flclash'.",
+        "In that case, run Register-FlClashService with privilege.",
+        "This command will modify the FlClashHelperService with a flexible path to the executable.",
+        "Also, FlClash may be hard to uninstall due the running FlClashHelperService,",
+        "just run Stop-FlClashService with privilege."
+    ],
+    "pre_install": [
+        "$targetPath1 = \"$dir\\Stop-FlClashService.ps1\"",
+        "$targetPath2 = \"$dir\\Register-FlClashService.ps1\"",
+        "$scriptContent1 = @'",
+        "$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
+        "if ($isAdmin) {",
+        "    sc.exe stop FlClashHelperService",
+        "} elseif (Get-Command sudo -ErrorAction SilentlyContinue) {",
+        "    sudo run sc.exe stop FlClashHelperService",
+        "} else {",
+        "    Write-Warning \"This command needs to be executed with privilege. Either use sudo or start a terminal with privilege.\"",
+        "}",
+        "'@",
+        "$scriptContent2 = $scriptContent1.Replace('sc.exe stop FlClashHelperService', 'sc.exe config FlClashHelperService binPath=\"$dir\\FlClashHelperService.exe\"')",
+        "Set-Content -Path $targetPath1 -Value $scriptContent1 -Encoding utf8",
+        "Set-Content -Path $targetPath2 -Value $scriptContent2 -Encoding utf8"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.1/FlClash-0.9.1-windows-amd64.zip",
+            "hash": "f943ceb96fdf0bce8ddf080292f6009631b3be29250b7438701b7e8162840f21"
+        },
+        "arm64": {
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.1/FlClash-0.9.1-windows-arm64.zip",
+            "hash": "dc717766d5117139f234087438433f80062170bc511a58fef5e77faf125e5e9d"
+        }
+    },
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\com.follow\\clash\"",
+        "$persistPath = \"$persist_dir\\Roaming\"",
+        "function Test-PersistJunction($item, $target) {",
+        "    if (-not $item) { return $false }",
+        "    $linkTarget = if ($item.PSObject.Properties['LinkTarget'] -and $item.LinkTarget) { $item.LinkTarget } else { $item.Target }",
+        "    if ($linkTarget -is [array]) { $linkTarget = $linkTarget[0] }",
+        "    if (-not $linkTarget) { return $false }",
+        "    return $linkTarget.ToString().TrimEnd('\\', '/') -ieq $target.TrimEnd('\\', '/')",
+        "}",
+        "function Remove-PersistTarget($path) {",
+        "    $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
+        "    if ($item) {",
+        "        Remove-Item -LiteralPath $path -Force -Recurse -ErrorAction Stop",
+        "    }",
+        "}",
+        "$appData = Get-Item -LiteralPath $appDataPath -Force -ErrorAction SilentlyContinue",
+        "$isJunction = [bool]($appData -and ($appData.Attributes -band [System.IO.FileAttributes]::ReparsePoint))",
+        "if (-not ($isJunction -and (Test-PersistJunction $appData $persistPath))) {",
+        "    $persistHasData = (Test-Path -LiteralPath $persistPath) -and (Get-ChildItem -LiteralPath $persistPath -Force -ErrorAction SilentlyContinue | Select-Object -First 1)",
+        "    if (-not $persistHasData) {",
+        "        New-Item -ItemType Directory -Path (Split-Path -Path $persistPath -Parent) -Force -ErrorAction Stop | Out-Null",
+        "        Remove-PersistTarget $persistPath",
+        "        if ($appData -and -not $isJunction) {",
+        "            Move-Item -LiteralPath $appDataPath -Destination $persistPath -Force -ErrorAction Stop",
+        "            $appData = $null",
+        "        } else {",
+        "            New-Item -Path $persistPath -ItemType Directory -Force -ErrorAction Stop | Out-Null",
+        "        }",
+        "    }",
+        "    if ($appData -and -not $isJunction) {",
+        "        $bakName = \"clash.bak_$(Get-Date -Format 'yyyyMMddHHmmss')\"",
+        "        Rename-Item -LiteralPath $appDataPath -NewName $bakName -Force -ErrorAction Stop",
+        "        Write-Host \"Existing FlClash user data has been backed up to: $bakName\" -ForegroundColor Yellow",
+        "    }",
+        "    if ($isJunction) {",
+        "        [System.IO.Directory]::Delete($appDataPath)",
+        "    }",
+        "    New-Item -ItemType Junction -Path $appDataPath -Target $persistPath -ErrorAction Stop | Out-Null",
+        "}"
+    ],
+    "bin": [
+        "Stop-FlClashService.ps1",
+        "Register-FlClashService.ps1"
+    ],
+    "shortcuts": [
+        [
+            "FlClash.exe",
+            "FlClash"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-amd64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-arm64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
+        }
+    }
+}

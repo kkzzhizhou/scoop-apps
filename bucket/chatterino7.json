@@ -1,43 +1,45 @@
 {
-    "version": "7.5.5",
+    "version": "39945101671",
+    "description": "Chat client for https://twitch.tv",
     "homepage": "https://github.com/SevenTV/chatterino7",
-    "description": "A fork of Chatterino 2 with 7TV subscriber features.",
     "license": "MIT",
+    "suggest": {
+        "vcredist-aio": "extras/vcredist-aio"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/SevenTV/chatterino7/releases/download/v7.5.5/Chatterino7.Portable.zip",
-            "hash": "665e7e3d61bf40c2cea0397e54f42c9c2d9ae3ef4c1252148f407a3258b90aa9"
+            "url": "https://github.com/SevenTV/chatterino7/releases/download/nightly-build/chatterino-windows-x86-64-Qt-6.12.0.zip",
+            "hash": "3c7a7975452d3de5a8d6ae1d5d2236feba0d51bbc3a2bf5c07ebef77dff30618"
         }
     },
     "extract_dir": "Chatterino2",
-    "bin": [
-        [
-            "chatterino.exe",
-            "chatterino7"
-        ]
+    "pre_install": [
+        "Get-ChildItem \"$dir/chatterino.exe\" | Rename-Item -NewName { $_.name.Replace('o', 'o7') }",
+        "'externally-packaged' | Out-File -Encoding utf8 -Append \"$dir/modes\""
     ],
     "shortcuts": [
         [
-            "chatterino.exe",
+            "chatterino7.exe",
             "Chatterino7"
         ]
     ],
-    "persist": [
-        "Settings",
-        "Cache",
-        "Logs",
-        "Misc",
-        "ProfileAvatars"
-    ],
-    "checkver": "github",
+    "bin": "chatterino7.exe",
+    "checkver": {
+        "script": [
+            "try {",
+            "    $null = (Invoke-WebRequest https://raw.githubusercontent.com/SevenTV/chatterino7/chatterino7/.github/workflows/build.yml).Content -cmatch 'os: windows-latest\\s+qt-version: ([\\d.]+)'",
+            "    $Matches[1],",
+            "    (Invoke-RestMethod 'https://api.github.com/repositories/342454835/actions/workflows/build.yml/runs?branch=chatterino7&status=success&per_page=1' -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })).workflow_runs[0].id -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(?<qt>[\\d.]+) (\\d+)\\Z"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/SevenTV/chatterino7/releases/download/v$version/Chatterino7.Portable.zip"
+                "url": "https://github.com/SevenTV/chatterino7/releases/download/nightly-build/chatterino-windows-x86-64-Qt-$matchQt.zip"
             }
-        },
-        "hash": {
-            "url": "$baseurl/sha256-checksums.txt"
         }
     }
 }

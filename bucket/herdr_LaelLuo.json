@@ -1,0 +1,97 @@
+{
+    "version": "0.9.3",
+    "description": "A persistent terminal workspace manager for AI coding agents.",
+    "homepage": "https://github.com/herdrdev/herdr",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/herdrdev/herdr/releases/download/v0.9.3/herdr-windows-x86_64.zip",
+            "hash": "c75b1fa49f7a3ba4b8b11789912a6147e4214a3b6fd3556d0f80076c8887d795"
+        }
+    },
+    "bin": "herdr.exe",
+    "pre_install": [
+        "$ErrorActionPreference = 'Stop'",
+        "if ($PSVersionTable.PSVersion.Major -lt 7) { throw 'Install or update Herdr from PowerShell 7 (pwsh), which supports non-admin symbolic links with Windows Developer Mode. No Herdr data has been changed.' }",
+        "# 先检查所有入口，避免公共映射助手迁移并删除既有数据。",
+        "function Get-HerdrPathEntry([string]$Path) {",
+        "    [void][System.IO.Path]::GetFullPath($Path)",
+        "    try { return Get-Item -LiteralPath $Path -Force -ErrorAction Stop }",
+        "    catch {",
+        "        if ($_.CategoryInfo.Category -ne 'ObjectNotFound') { throw }",
+        "        $parent = Split-Path -Parent $Path",
+        "        $name = Split-Path -Leaf $Path",
+        "        if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $Path) { throw }",
+        "        $parentEntry = Get-HerdrPathEntry $parent",
+        "        if ($null -eq $parentEntry) { return $null }",
+        "        if (-not $parentEntry.PSIsContainer) { throw \"Herdr path parent is not a directory: $parent\" }",
+        "        $entries = @(Get-ChildItem -LiteralPath $parent -Force -ErrorAction Stop | Where-Object Name -EQ $name)",
+        "        if ($entries.Count -gt 0) { throw \"Cannot inspect existing Herdr path: $Path\" }",
+        "        return $null",
+        "    }",
+        "}",
+        "$herdrPaths = @(",
+        "    @{ Source = (Join-Path $env:APPDATA 'herdr'); Target = (Join-Path $persist_dir 'roaming') },",
+        "    @{ Source = (Join-Path $env:LOCALAPPDATA 'herdr'); Target = (Join-Path $persist_dir 'local') }",
+        ")",
+        "foreach ($pair in $herdrPaths) {",
+        "    $item = Get-HerdrPathEntry $pair.Source",
+        "    $target = Get-HerdrPathEntry $pair.Target",
+        "    if ($null -ne $target -and (-not $target.PSIsContainer -or $target.LinkType)) {",
+        "        throw \"Herdr persist target must be a real directory: $($pair.Target)\"",
+        "    }",
+        "    if ($null -eq $item) { continue }",
+        "    if ($item.LinkType -ne 'SymbolicLink' -or @($item.Target).Count -ne 1) {",
+        "        throw \"Herdr data already exists at $($pair.Source). Back it up and resolve this path before installing; Scoop will not migrate or delete it.\"",
+        "    }",
+        "    $actualPath = [string]$item.Target",
+        "    if (-not [System.IO.Path]::IsPathRooted($actualPath)) {",
+        "        $actualPath = Join-Path (Split-Path -Parent $pair.Source) $actualPath",
+        "    }",
+        "    $actual = [System.IO.Path]::GetFullPath($actualPath).TrimEnd('\\', '/')",
+        "    $expected = [System.IO.Path]::GetFullPath($pair.Target).TrimEnd('\\', '/')",
+        "    if ($null -eq $target -or -not $actual.Equals($expected, [System.StringComparison]::OrdinalIgnoreCase)) {",
+        "        throw \"Herdr path is a foreign or broken link: $($pair.Source). Resolve it before installing; Scoop will preserve it.\"",
+        "    }",
+        "}"
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "roaming",
+                "source": "AppData/herdr",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "local",
+                "source": "LocalAppData/herdr",
+                "target": "$persist_dir/local",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "module": "scripts/herdr-portable.psm1"
+        }
+    },
+    "notes": [
+        "Install/update from PowerShell 7 (pwsh); non-admin symbolic links require Windows Developer Mode.",
+        "Run 'herdr' in a terminal. Update with 'scoop update herdr'.",
+        "Do not use 'herdr update' for this installation: its standalone installer creates a separate copy and changes PATH.",
+        "Default config and state are persisted from AppData/herdr and LocalAppData/herdr. Ordinary uninstall keeps Scoop persist data.",
+        "Existing data directories or foreign/broken links stop installation and are preserved. Back up and resolve those paths first; no automatic migration is performed.",
+        "XDG_CONFIG_HOME, XDG_STATE_HOME and HERDR_CONFIG_PATH overrides are respected; custom data paths remain user-managed."
+    ],
+    "checkver": {
+        "github": "https://github.com/herdrdev/herdr"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/herdrdev/herdr/releases/download/v$version/herdr-windows-x86_64.zip"
+            }
+        }
+    }
+}

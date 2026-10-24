@@ -1,0 +1,65 @@
+{
+    "version": "2023.9.256",
+    "description": "Conveniently manage all your cloud services as a network drive using the standard file explorer.",
+    "homepage": "https://www.raidrive.com/",
+    "license": {
+        "identifier": "Freeware",
+        "url": "https://www.raidrive.com/about/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_2023.9.256_x64.msi",
+            "hash": "c4c4ecae27ccefee187766833a57d3aab3ee2af44bbd41c27ab0a32d3828dc17"
+        },
+        "32bit": {
+            "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_2023.9.256_x86.msi",
+            "hash": "3d80bbfa9606648964a5cc01fe4313c873fe011b8e7189bc392affc5937f0f71"
+        },
+        "arm64": {
+            "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_2023.9.256_arm64.msi",
+            "hash": "59bdb7ce31e54c72cf5854dc57a53cd52f2fe5b015211f7540f66b0813374837"
+        }
+    },
+    "##": "https://www.advancedinstaller.com/user-guide/exe-setup-file.html",
+    "bin": "raidrive.exe",
+    "shortcuts": [
+        [
+            "raidrive.exe",
+            "RaiDrive"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$url  = 'https://www.raidrive.com/download'",
+            "$cont = $(Invoke-WebRequest($url)).CONTENT",
+            "IF(($cont -MATCH 'id=\"pack_windows_x64\" href=\"https://app.raidrive.com/download/raidrive/release/RaiDrive_([\\d\\.]+)_x64.msi\"')) {",
+            "    $x64_version = $matches[1]",
+            "} ELSE {",
+            "    ERROR 'NO x64 match found!'",
+            "}",
+            "",
+            "IF(($cont -MATCH 'id=\"pack_windows_x86\" href=\"https://app.raidrive.com/download/raidrive/release/RaiDrive_([\\d\\.]+)_x86.msi\"')) {",
+            "    $x86_version = $matches[1]",
+            "} ELSE {",
+            "    ERROR 'NO x86 match found!'",
+            "}",
+            "",
+            "IF($x64_version -NE $x86_version) { ERROR '  Version for 64-bit and 32-bit does not match, aborting autoupdate'; CONTINUE }",
+            "Write-Output $x64_version"
+        ],
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_$version_x64.msi"
+            },
+            "32bit": {
+                "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_$version_x86.msi"
+            },
+            "arm64": {
+                "url": "https://app.raidrive.com/download/raidrive/release/RaiDrive_$version_arm64.msi"
+            }
+        }
+    }
+}

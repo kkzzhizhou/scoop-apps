@@ -1,31 +1,38 @@
 {
-    "version": "3.0.5",
-    "description": "A shell extension for conveniently calculating and checking file hashes from file properties",
+    "version": "3.1.1",
+    "description": "OpenHashTab is a shell extension for conveniently calculating and checking file hashes from file properties.",
     "homepage": "https://github.com/namazso/OpenHashTab",
-    "license": "GPL-3.0-only",
-    "notes": "Due to Scoop's limitations, innounp is listed as a dependency though it is only required for installation.",
-    "depends": [
-        "innounp",
-        "sudo"
-    ],
-    "url": "https://github.com/namazso/OpenHashTab/releases/download/v3.0.5/OpenHashTab_setup.exe",
-    "hash": "98fb1f2d230dfa0a26915c5b314881fbb9fa76b9edbb720fdeaca35f3cb35f95",
-    "installer": {
-        "script": [
-            "Expand-InnoArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\" -Removal",
-            "if ([Environment]::Is64BitOperatingSystem) {",
-            "    Move-Item \"$dir\\OpenHashTab,2.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
-            "} else {",
-            "    Move-Item \"$dir\\OpenHashTab,1.dll\" -Destination \"$dir\\OpenHashTab.dll\"",
-            "}",
-            "sudo \"$env:COMSPEC\" /c \"regsvr32 \"$dir\\OpenHashTab.dll\"\""
-        ]
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "arm64": {
+            "url": "https://github.com/namazso/OpenHashTab/releases/download/3.1.1/OpenHashTab_User_ARM64.msi#/setup.msi_",
+            "hash": "eb47ce2824dd5446030f405f15e773a94bc8b719128be7bf502aead7aa063bad"
+        },
+        "64bit": {
+            "url": "https://github.com/namazso/OpenHashTab/releases/download/3.1.1/OpenHashTab_User_x64.msi#/setup.msi_",
+            "hash": "bf7cf26ab12428bdf3f4b7a130f73c34d7f20e586b5673b604281c0f80ada30f"
+        },
+        "32bit": {
+            "url": "https://github.com/namazso/OpenHashTab/releases/download/3.1.1/OpenHashTab_User_x86.msi#/setup.msi_",
+            "hash": "943187a51e71a413b2c6b1fbd2cfb0844d21f121d22b86440fab3aa66fa6a4bc"
+        }
     },
+    "pre_install": "Invoke-ExternalCommand msiexec.exe \"/i $([char][byte]34)$dir\\setup.msi_$([char][byte]34) /qn /norestart INSTALLDIR=$([char][byte]34)$dir$([char][byte]34)\"",
     "uninstaller": {
-        "script": "regsvr32 /u /s \"$dir\\OpenHashTab.dll\""
+        "script": "Invoke-ExternalCommand msiexec.exe \"/x $([char][byte]34)$dir\\setup.msi_$([char][byte]34) /qn /norestart\""
     },
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/namazso/OpenHashTab/releases/download/v$version/OpenHashTab_setup.exe"
+        "architecture": {
+            "arm64": {
+                "url": "https://github.com/namazso/OpenHashTab/releases/download/$version/OpenHashTab_User_ARM64.msi#/setup.msi_"
+            },
+            "64bit": {
+                "url": "https://github.com/namazso/OpenHashTab/releases/download/$version/OpenHashTab_User_x64.msi#/setup.msi_"
+            },
+            "32bit": {
+                "url": "https://github.com/namazso/OpenHashTab/releases/download/$version/OpenHashTab_User_x86.msi#/setup.msi_"
+            }
+        }
     }
 }

@@ -4,45 +4,43 @@
     "homepage": "https://obsproject.com",
     "license": "GPL-2.0-only",
     "architecture": {
-        "arm64": {
-            "url": "https://github.com/obsproject/obs-studio/releases/download/33.0.0-rc3/OBS-Studio-33.0.0-rc3-Windows-arm64.zip",
-            "hash": "1d0347968388ad7f187701bfa13e3748211e575bd4332bc4951d8e16e456ad57",
-            "shortcuts": [
-                [
-                    "bin\\64bit\\obs64.exe",
-                    "OBS Studio (Preview)"
-                ]
-            ]
-        },
         "64bit": {
             "url": "https://github.com/obsproject/obs-studio/releases/download/33.0.0-rc3/OBS-Studio-33.0.0-rc3-Windows-x64.zip",
-            "hash": "92db35465aec0f70ab11d033674be724603780620603f87a7c56e95ed990aa28",
-            "shortcuts": [
-                [
-                    "bin\\64bit\\obs64.exe",
-                    "OBS Studio (Preview)"
-                ]
-            ]
+            "hash": "92db35465aec0f70ab11d033674be724603780620603f87a7c56e95ed990aa28"
+        },
+        "arm64": {
+            "url": "https://github.com/obsproject/obs-studio/releases/download/33.0.0-rc3/OBS-Studio-33.0.0-rc3-Windows-arm64.zip",
+            "hash": "1d0347968388ad7f187701bfa13e3748211e575bd4332bc4951d8e16e456ad57"
         }
     },
     "pre_install": "if (!(Test-Path \"$persist_dir\\portable_mode.txt\")) { New-Item \"$dir\\portable_mode.txt\" | Out-Null }",
+    "shortcuts": [
+        [
+            "bin\\64bit\\obs64.exe",
+            "OBS Studio"
+        ]
+    ],
     "persist": [
         "config",
         "portable_mode.txt"
     ],
     "checkver": {
         "github": "https://api.github.com/repos/obsproject/obs-studio/releases",
-        "jsonpath": "$[0].tag_name",
-        "regex": "\\A([\\d.]+(?:-(?:rc|beta)\\d+)?)\\Z"
+        "regex": "obs-studio/releases/download/([\\d.]+-[\\w]+)/OBS-Studio-([\\d.]+-[\\w]+)",
+        "jp": "$.[*].assets.[*].browser_download_url"
     },
     "autoupdate": {
         "architecture": {
-            "arm64": {
-                "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$version-Windows-arm64.zip"
-            },
             "64bit": {
                 "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$version-Windows-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/obsproject/obs-studio/releases/download/$version/OBS-Studio-$version-Windows-arm64.zip"
             }
+        },
+        "hash": {
+            "url": "https://github.com/obsproject/obs-studio/releases/$version",
+            "regex": "(?sm)$basename.*?$sha256"
         }
     }
 }

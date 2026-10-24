@@ -1,0 +1,70 @@
+{
+	"version": "158.0.1",
+	"description": "Firefox-based web browser optimized with CSIR PGO while preserving Firefox compatibility",
+	"homepage": "https://tete009.pages.dev/software",
+	"license": "MPL-2.0",
+	"architecture": {
+		"64bit": {
+			"url": "https://downloads.sourceforge.net/project/skykakapo/158.0.1/skykakapo-158.0.1-2026102011.en-US.win64-sse3-cspgo.7z",
+			"hash": "sha1:e9dfbfd3a46063b441444ef5f5fd7a05352955d1"
+		}
+	},
+	"pre_install": [
+		"$buildDirs = @(Get-ChildItem -LiteralPath $dir -Directory | Where-Object { $_.Name -like 'skykakapo-*' })",
+		"if ($buildDirs.Count -ne 1) { throw \"Expected exactly one SkyKakapo build directory, found $($buildDirs.Count)\" }",
+		"Get-ChildItem -LiteralPath $buildDirs[0].FullName -Force | Move-Item -Destination $dir -Force",
+		"Remove-Item -LiteralPath $buildDirs[0].FullName -Recurse -Force",
+		"$persistIni = Join-Path $persist_dir 'tmemutil.ini'",
+		"$installIni = Join-Path $dir 'tmemutil.ini'",
+		"if (Test-Path -LiteralPath $persistIni -PathType Container) { Remove-Item -LiteralPath $persistIni -Recurse -Force }",
+		"if (Test-Path -LiteralPath $persistIni -PathType Leaf) {",
+		"    Remove-Item -LiteralPath $installIni -Force -ErrorAction SilentlyContinue",
+		"} else {",
+		"    @(",
+		"        '[General]',",
+		"        'Portable=1',",
+		"        'PortableDataPath=PortableData',",
+		"        '',",
+		"        '[Env]',",
+		"        'MOZ_LEGACY_PROFILES=1',",
+		"        'TT_DISABLE_START_MENU_SHORTCUT_CREATION=1'",
+		"    ) | Set-Content -LiteralPath $installIni -Encoding ASCII",
+		"}"
+	],
+	"bin": "skykakapo.exe",
+	"shortcuts": [["skykakapo.exe", "SkyKakapo"]],
+	"persist": ["tmemutil.ini", "PortableData"],
+	"checkver": {
+		"script": [
+			"$page = Invoke-WebRequest -Uri 'https://tete009.pages.dev/en-US/software' -UseBasicParsing",
+			"$html = [System.Net.WebUtility]::HtmlDecode($page.Content)",
+			"$release = [regex]::Match($html, '(?is)<h[1-6][^>]*>(?:(?!</h[1-6]>).)*?SkyKakapo\\s+(?<version>\\d+(?:\\.\\d+)+)\\b(?:(?!</h[1-6]>).)*?</h[1-6]>')",
+			"if (-not $release.Success) { throw 'Failed to find the stable SkyKakapo release' }",
+			"$rest = $html.Substring($release.Index + $release.Length)",
+			"$nextHeading = [regex]::Match($rest, '(?is)<h[1-6]\\b')",
+			"$block = if ($nextHeading.Success) { $rest.Substring(0, $nextHeading.Index) } else { $rest }",
+			"$version = $release.Groups['version'].Value",
+			"$sfFolderMatch = [regex]::Match($block, 'sourceforge\\.net/projects/skykakapo/files/(?<folder>[^/\\\"?#\\s]+)')",
+			"if (-not $sfFolderMatch.Success) { throw 'Failed to find the SkyKakapo SourceForge folder' }",
+			"$folder = $sfFolderMatch.Groups['folder'].Value",
+			"$fileMatch = [regex]::Match($block, '<!--\\s*(?<filename>skykakapo-[^>]+\\.7z)\\s*-->')",
+			"$filename = if ($fileMatch.Success) {",
+			"    $fileMatch.Groups['filename'].Value",
+			"} else {",
+			"    $rss = Invoke-WebRequest -Uri \"https://sourceforge.net/projects/skykakapo/rss?path=/$folder\" -UseBasicParsing",
+			"    $rssMatch = [regex]::Match($rss.Content, '(?i)/projects/skykakapo/files/[^/]+/([^/]+\\.7z)/download')",
+			"    if (-not $rssMatch.Success) { throw 'Failed to find the SkyKakapo filename from RSS' }",
+			"    $rssMatch.Groups[1].Value",
+			"}",
+			"Write-Output \"$version $folder $filename\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s+(?<folder>\\S+)\\s+(?<filename>\\S+)"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://downloads.sourceforge.net/project/skykakapo/$matchFolder/$matchFilename"
+			}
+		}
+	}
+}

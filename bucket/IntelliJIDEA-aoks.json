@@ -1,0 +1,58 @@
+{
+    "##": "see https://github.com/ScoopInstaller/Extras/blob/master/bucket/idea-ultimate.json",
+    "version": "2026.2.3-262.10968.63",
+    "description": "Cross-Platform IDE for Java by JetBrains.",
+    "homepage": "https://www.jetbrains.com/idea/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://www.jetbrains.com/store/license.html"
+    },
+    "url": "https://download.jetbrains.com/idea/idea-2026.2.3.win.zip",
+    "hash": "d113b117d72afe512626c478cbf952f6d1a234af5a1cb22cbf6089df55958f51",
+    "extract_to": "IDE",
+    "pre_install": "Get-ChildItem \"$persist_dir\\IDE\\bin\\idea*.exe.vmoptions\" -ErrorAction SilentlyContinue | Copy-Item -Destination \"$dir\\IDE\\bin\"",
+    "installer": {
+        "script": "& \"$bucketsdir\\extras\\scripts\\jetbrains\\portable.ps1\" \"$dir\" \"$persist_dir\""
+    },
+    "architecture": {
+        "64bit": {
+            "bin": [
+                [
+                    "IDE\\bin\\idea64.exe",
+                    "idea"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "IDE\\bin\\idea64.exe",
+                    "JetBrains\\IntelliJ IDEA"
+                ]
+            ]
+        },
+        "32bit": {
+            "bin": "IDE\\bin\\idea.exe",
+            "shortcuts": [
+                [
+                    "IDE\\bin\\idea.exe",
+                    "JetBrains\\IntelliJ IDEA"
+                ]
+            ]
+        }
+    },
+    "persist": [
+        "IDE\\bin\\idea.properties",
+        "profile"
+    ],
+    "pre_uninstall": "Get-ChildItem \"$dir\\IDE\\bin\\idea*.exe.vmoptions\" -ErrorAction SilentlyContinue | Copy-Item -Destination \"$persist_dir\\IDE\\bin\"",
+    "checkver": {
+        "url": "https://data.services.jetbrains.com/products/releases?code=II&latest=true&platform=zip&type=release",
+        "regex": "version\":\"(?<ver>[\\d.]+)\".*\"build\":\"(?<build>[\\d.]+)\"",
+        "replace": "${ver}-${build}"
+    },
+    "autoupdate": {
+        "url": "https://download.jetbrains.com/idea/idea-$matchVer.win.zip",
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

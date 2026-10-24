@@ -1,0 +1,33 @@
+{
+    "version": "3.9.28.5423",
+    "description": "StartAllBack: 为Windows 11恢复经典开始菜单和任务栏。",
+    "homepage": "https://www.startallback.com/",
+    "license": "Proprietary",
+    "url": "https://github.com/maboloshi/scoop-private/releases/download/v1.0/StartAllBack3.9.28.5423-Stable-Repack.exe#/dl.7z",
+    "hash": "c368bbd000489b26223293c3c84e3fcaf2754cfb8a2ecf4afff1428bf0e3e7c2",
+    "installer": {
+        "script": [
+            "$installType = if ($global) { '/elevated' } else { '' }",
+            "Write-Host \"`n正在安装 StartAllBack (安装类型: $(if ($global) { '全局' } else { '当前用户' }))...\" -ForegroundColor Cyan",
+            "Invoke-ExternalCommand -FilePath \"$dir\\StartAllBackCfg.exe\" -ArgumentList @('/install', '/silent', $installType)"
+        ]
+    },
+    "shortcuts": [
+        [
+            "StartAllBackCfg.exe",
+            "StartAllBack 配置"
+        ]
+    ],
+    "uninstaller": {
+        "script": [
+            "$installType = if ($global) { '/elevated' } else { '' }",
+            "$root = if ($global) { 'HKLM' } else { 'HKCU' }",
+            "Write-Host \"`n正在卸载 StartAllBack...\" -ForegroundColor Cyan",
+            "if (Test-Path \"$dir\\StartAllBackCfg.exe\") {",
+            "    Invoke-ExternalCommand -FilePath \"$dir\\StartAllBackCfg.exe\" -ArgumentList @('/uninstall', '/silent', $installType)",
+            "}",
+            "Write-Host \"`n如果需要删除所有设置，请运行\" -ForegroundColor Yellow",
+            "Write-Host \"reg delete $root\\Software\\StartIsBack /f\" -ForegroundColor Yellow"
+        ]
+    }
+}

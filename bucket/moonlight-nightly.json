@@ -1,0 +1,53 @@
+{
+    "version": "2942",
+    "description": "GameStream client for PCs (Windows, Mac, Linux, and Steam Link)",
+    "homepage": "https://moonlight-stream.org",
+    "license": "GPL-3.0-only",
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://ci.appveyor.com/api/buildjobs/2hqjtn2000y6md4l/artifacts/MoonlightPortable-x64-r2942.zip",
+            "hash": "fbde492bb69e2474f80c139121f6ae36a9fb87030cc3e2161b99ab7d49280b46"
+        },
+        "arm64": {
+            "url": "https://ci.appveyor.com/api/buildjobs/2hqjtn2000y6md4l/artifacts/MoonlightPortable-arm64-r2942.zip",
+            "hash": "4ed498c41020d4d6511aae16ceb7effea297ee8e1f3a688b48acbe85ac761270"
+        }
+    },
+    "pre_install": "if (!(Test-Path \"$persist_dir$($cfg = '/Moonlight Game Streaming Project')\")) { $null = New-Item -ItemType Directory \"$dir$cfg\" }",
+    "bin": "Moonlight.exe",
+    "shortcuts": [
+        [
+            "Moonlight.exe",
+            "Moonlight"
+        ]
+    ],
+    "persist": "Moonlight Game Streaming Project",
+    "checkver": {
+        "script": [
+            "$build = (Invoke-RestMethod https://ci.appveyor.com/api/projects/cgutman/moonlight-qt).Build",
+            "$buildNumber = $build.buildNumber",
+            "foreach ($job in $build.Jobs) {",
+            "    if ($job.osType -eq 'Windows') {",
+            "        if ($job.status -ne 'success') { return '' }",
+            "        $jobId = $job.jobId",
+            "        break",
+            "    }",
+            "}",
+            "$buildNumber, $jobId -join ' '"
+        ],
+        "regex": "\\A(\\d+) (?<job>[a-z\\d]+)\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob/artifacts/MoonlightPortable-x64-r$version.zip"
+            },
+            "arm64": {
+                "url": "https://ci.appveyor.com/api/buildjobs/$matchJob/artifacts/MoonlightPortable-arm64-r$version.zip"
+            }
+        }
+    }
+}

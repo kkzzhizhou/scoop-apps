@@ -1,0 +1,43 @@
+{
+    "version": "6007474693",
+    "description": "Chat client for twitch.tv. Only nightlies are supported (fork of Chatterino 2).",
+    "homepage": "https://github.com/2547techno/technorino",
+    "license": "MIT",
+    "notes": "DON'T USE UNLESS YOU'RE BELOW WINDOWS 8 OR EARLIER, UNSAFE! This build suffers from the libwebp buffer overflow exploit!",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/2547techno/technorino/releases/download/nightly-build/EXPERIMENTAL-chatterino-windows-x86-64-Qt-6.5.0.zip",
+            "hash": "908a8e4d7d08b4313e0ea663eb6a4c30eec2ba8bf96f49229e562e98ff90c50c",
+            "extract_dir": "Chatterino2",
+            "pre_install": [
+                "Get-ChildItem \"$dir/chatterino.exe\" | Rename-Item -NewName { $_.name.Replace('chatterino', 'technorino-portable') }",
+                "$modes = \"$dir/modes\"",
+                "$PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'",
+                "Invoke-Expression \"'portable' >$(if (Test-Path $modes) { '>' }) `$modes\""
+            ]
+        }
+    },
+    "persist": [
+        "Logs",
+        "Misc",
+        "Settings"
+    ],
+    "shortcuts": [
+        [
+            "technorino-portable.exe",
+            "technorino-portable"
+        ]
+    ],
+    "bin": "technorino-portable.exe",
+    "checkver": {
+        "url": "https://api.github.com/repositories/604452497/actions/workflows/build.yml/runs?branch=technorino&status=success",
+        "jsonpath": "$.workflow_runs[0].id"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/2547techno/technorino/releases/download/nightly-build/chatterino-windows-old-x86-64-Qt-5.15.2.zip"
+            }
+        }
+    }
+}

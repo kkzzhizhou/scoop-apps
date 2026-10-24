@@ -1,0 +1,63 @@
+{
+    "version": "2.5.5",
+    "description": "Autonomous AI development environment from Google that brings agent-centric workflows into the IDE.",
+    "homepage": "https://antigravity.google/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://antigravity.google/terms"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.5.5-4923483625488384/windows-x64/Antigravity%20IDE.exe#/Antigravity_installer.exe",
+            "hash": "a8c25631fd5e43bf217a6cf510ca796441817f4ad9c50b1d892282c7366edc4a"
+        }
+    },
+    "innosetup": true,
+    "extract_dir": "{code_GetDestDir}",
+    "shortcuts": [
+        [
+            "Antigravity.exe",
+            "Google Antigravity"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-config",
+                "source": "UserProfile/.antigravity",
+                "target": "$persist_dir/home/config",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/Antigravity",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "script": [
+            "# Download page is now an Astro static page; the Antigravity IDE windows-x64",
+            "# link is embedded directly in the HTML (no longer inside a main-*.js bundle).",
+            "$download = Invoke-WebRequest -Uri 'https://antigravity.google/download' -UseBasicParsing",
+            "if ($download.Content -notmatch '(?m)https://edgedl\\.me\\.gvt1\\.com/edgedl/release2/[^\"/]+/antigravity/stable/[0-9]+\\.[0-9]+\\.[0-9]+-[0-9]+/windows-x64/Antigravity(?:%20|\\+)IDE\\.exe') {",
+            "  throw 'Failed to locate Antigravity IDE windows-x64 download URL on download page.'",
+            "}",
+            "Write-Output $matches[0]"
+        ],
+        "regex": "(?<url>https://edgedl\\.me\\.gvt1\\.com/edgedl/release2/[^\"/]+/antigravity/stable/(?<version>[0-9]+\\.[0-9]+\\.[0-9]+)-[0-9]+/windows-x64/Antigravity(?:%20|\\+)IDE\\.exe)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchUrl#/Antigravity_installer.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "version": "1.98.60",
+    "description": "Secure, Fast & Private Web Browser with Adblocker",
+    "homepage": "https://brave.com",
+    "license": {
+        "identifier": "Freeware,BSD-3-Clause,GPL-3.0-only,...",
+        "url": "https://github.com/brave/brave-browser/blob/master/LICENSE"
+    },
+    "notes": [
+        "Brave 默认程序启动缩放参数需手动设置（Windows 的 UserChoice 保护不允许脚本自动完成）。",
+        "步骤：",
+        "  1. 打开 设置 > 应用 > 默认应用，将 Brave 设为默认浏览器。",
+        "  2. 运行脚本: $dir\\Set-Brave-Scale.ps1",
+        "     或右键该文件 > 使用 PowerShell 运行。",
+        "脚本作用：为 BraveHTML / BraveFile 的 shell\\open\\command 追加 --force-device-scale-factor=1.5。",
+        "如需改缩放比例，编辑脚本顶部的 $scale 变量。"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.98.60/brave-v1.98.60-win32-x64.zip",
+            "hash": "2c937c91f5061fb1034097c932112b06f429d5bdd08bc5e32921b88609d011e7"
+        }
+    },
+    "post_install": [
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}",
+        "# 分发缩放设置脚本，供用户手动运行",
+        "Copy-Item \"$bucketsdir\\$bucket\\scripts\\$app\\Set-Brave-Scale.ps1\" \"$dir\""
+    ],
+    "bin": [
+        [
+            "brave.exe",
+            "brave"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "brave.exe",
+            "Brave",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "persist": "User Data",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "url": "https://brave-browser-downloads.s3.brave.com/latest/release-windows-x64.version",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-x64.zip"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}

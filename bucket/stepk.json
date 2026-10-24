@@ -1,0 +1,50 @@
+{
+    "version": "1.05a",
+    "description": "STEP_K: a mp3 tag editor with spreadsheet-like operations",
+    "homepage": "https://kobarin.sakura.ne.jp/",
+    "license": "GPL-2.0-only",
+    "url": "https://dforest.watch.impress.co.jp/library/s/step_k/11685/STEP_K_105a.exe#/dl.7z",
+    "hash": "408d4e52f8b24c4afcc886cce0ee9740324f87e63da9e18be27df11feb4d19d1",
+    "extract_dir": "STEP_K_105a",
+    "pre_install": [
+        "ensure $persist_dir | Out-Null",
+        "$target = Join-Path $persist_dir 'SuperTagEditor.ini'",
+        "if (-not (Test-Path $target)) { New-Item -Path $target -ItemType File | Out-Null }"
+    ],
+    "architecture": {
+        "64bit": {
+            "installer": {
+                "script": "Move-Item -Path (Join-Path $dir x64 | Join-Path -ChildPath *) -Destination $dir"
+            }
+        },
+        "32bit": {
+            "installer": {
+                "script": "Move-Item -Path (Join-Path $dir x86 | Join-Path -ChildPath *) -Destination $dir"
+            }
+        }
+    },
+    "post_install": "'x86', 'x64' | ForEach-Object { Remove-Item -Path (Join-Path $dir $_) -Recurse }",
+    "bin": [
+        [
+            "SuperTagEditor.exe",
+            "STEP_K"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "SuperTagEditor.exe",
+            "STEP_K"
+        ]
+    ],
+    "persist": [
+        "SuperTagEditor.ini"
+    ],
+    "checkver": {
+        "url": "https://forest.watch.impress.co.jp/library/software/step_k/",
+        "regex": "<dd>v(.+)（.+</dd>"
+    },
+    "autoupdate": {
+        "url": "https://dforest.watch.impress.co.jp/library/s/step_k/11685/STEP_K_$cleanVersion.exe#/dl.7z",
+        "extract_dir": "STEP_K_$cleanVersion"
+    }
+}

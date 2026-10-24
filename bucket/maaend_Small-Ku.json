@@ -1,0 +1,43 @@
+{
+	"version": "2.35.0",
+	"description": "《明日方舟：终末地》游戏小助手 (Arknights: Endfield game assistant)",
+	"homepage": "https://github.com/MaaEnd/MaaEnd",
+	"license": {
+		"identifier": "AGPL-3.0",
+		"url": "https://github.com/MaaEnd/MaaEnd/blob/main/LICENSE"
+	},
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/MaaEnd/MaaEnd/releases/download/v2.35.0/MaaEnd-win-x86_64-v2.35.0.zip",
+			"hash": "6f5ee18b9a3af9ac9e315461615896f21f188af53d09d87b97d14dd0d86e9b52"
+		},
+		"arm64": {
+			"url": "https://github.com/MaaEnd/MaaEnd/releases/download/v2.35.0/MaaEnd-win-aarch64-v2.35.0.zip",
+			"hash": "dba278fd7fb19b7f66e1216c3297b94760bf6ed952affc86d86a8d427a2436b0"
+		}
+	},
+	"checkver": {
+		"script": [
+			"$rel_info = Invoke-RestMethod -Uri 'https://api.github.com/repos/MaaEnd/MaaEnd/releases/latest'",
+			"$latest_x64 = $rel_info.assets | Where-Object {$_.name -match 'win-x86_64'} | Select-Object -first 1",
+			"$latest_arm64 = $rel_info.assets | Where-Object {$_.name -match 'win-aarch64'} | Select-Object -first 1",
+			"$version = $rel_info.tag_name -replace '^v', ''",
+			"Write-Output \"$version $($latest_x64.digest.Replace('sha256:','')) $($latest_arm64.digest.Replace('sha256:',''))\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s(?<x64hash>[^\\s]+)?\\s(?<armhash>[^\\s]+)?"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/MaaEnd/MaaEnd/releases/download/v$version/MaaEnd-win-x86_64-v$version.zip",
+				"hash": "$matchX64hash"
+			},
+			"arm64": {
+				"url": "https://github.com/MaaEnd/MaaEnd/releases/download/v$version/MaaEnd-win-aarch64-v$version.zip",
+				"hash": "$matchArmhash"
+			}
+		}
+	},
+	"persist": ["cache", "config", "debug"],
+	"shortcuts": [["MaaEnd.exe", "MaaEnd"]]
+}

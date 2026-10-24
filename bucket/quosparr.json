@@ -1,0 +1,49 @@
+{
+    "version": "1.8.3",
+    "description": "Native menu bar / system tray app that monitors Codex, Grok, and Claude Code subscription quota",
+    "homepage": "https://github.com/Licoy/Quosparr",
+    "license": "AGPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Licoy/Quosparr/releases/download/v1.8.3/quosparr-1.8.3-windows-amd64.tar.gz",
+            "hash": "daa4022b5417525888bfd030b1741e26d1da68db362ea7fe580a47bdc8867711"
+        },
+        "arm64": {
+            "url": "https://github.com/Licoy/Quosparr/releases/download/v1.8.3/quosparr-1.8.3-windows-arm64.tar.gz",
+            "hash": "529fe9504b21938f25e430d26badce296bc069741d187475f95001b05063e0f0"
+        }
+    },
+    "bin": "Quosparr.exe",
+    "persist": ".quosparr",
+    "pre_install": "if (!(Test-Path \"$dir\\.quosparr\")) { New-Item -ItemType Directory -Path \"$dir\\.quosparr\" | Out-Null }",
+    "shortcuts": [
+        [
+            "Quosparr.exe",
+            "Quosparr"
+        ]
+    ],
+    "notes": [
+        "Quosparr is a portable single-file build: the tar.gz archives contain only Quosparr.exe (self-contained, ships the SQLite runtime for its architecture; no extract_dir needed).",
+        "The app stores all of its data and configuration in %USERPROFILE%\\.quosparr (accounts auth.json, preferences, widget snapshot). That location is outside Scoop's $dir, so it cannot be persisted; the .quosparr persist entry only pre-creates the in-app directory.",
+        "QUOSPARR_TEST_HOME and QUOSPARR_PREFS_DOMAIN are developer/test-only isolation hooks and are deliberately not set: redirecting the app home would break reads of ~/.codex, ~/.grok and ~/.claude credentials.",
+        "NSIS per-user installers Quosparr.Setup.<version>.<arch>.exe (silent flag /S, installs to %LOCALAPPDATA%\\Programs\\Quosparr) are also published if an installer is preferred.",
+        "Autoupdate hashes come from the release SHA256SUMS file."
+    ],
+    "checkver": {
+        "github": "https://github.com/Licoy/Quosparr"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Licoy/Quosparr/releases/download/v$version/quosparr-$version-windows-amd64.tar.gz"
+            },
+            "arm64": {
+                "url": "https://github.com/Licoy/Quosparr/releases/download/v$version/quosparr-$version-windows-arm64.tar.gz"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS",
+            "find": "$basename"
+        }
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "version": "3.12.1",
+    "description": "智谱 ZCode - GLM 官方适配的 AI 编程开发工具（IDE）。",
+    "homepage": "https://zcode.z.ai/cn",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://cdn-zcode.z.ai/zcode/electron/releases/3.12.1/windows-x64/ZCode-3.12.1-win-x64.exe#/dl.7z",
+            "hash": "2c17d5dbcffd1974fd635cc6131b4be4823e2e8c6f45088b96cac5222c40feda"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninstall*\" -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "post_install": [
+        "# 快捷方式必须指真实版本目录：经 current junction 启动会让 ZCode 内置电脑操作助手(CUA broker)的 asar 路径逃逸检查失败(invalid-runtime-manifest)；post_install 时 $dir 即真实版本目录",
+        "$realExe = Join-Path $dir 'ZCode.exe'",
+        "$sh = New-Object -ComObject WScript.Shell",
+        "$programs = [Environment]::GetFolderPath('Programs')",
+        "$mainLnk = Join-Path $programs 'ZCode.lnk'",
+        "$l = $sh.CreateShortcut($mainLnk)",
+        "$l.TargetPath = $realExe",
+        "$l.WorkingDirectory = $dir",
+        "$l.Arguments = '--remote-debugging-port=9222'",
+        "$l.Save()",
+        "Get-ChildItem $programs -Recurse -Filter 'ZCode.lnk' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -ne $mainLnk } | ForEach-Object {",
+        "    $s = $sh.CreateShortcut($_.FullName)",
+        "    $s.TargetPath = $realExe",
+        "    $s.WorkingDirectory = $dir",
+        "    $s.Arguments = '--remote-debugging-port=9222'",
+        "    $s.Save()",
+        "}",
+        "info \"[ZCode] 快捷方式已指向真实版本目录（带 --remote-debugging-port=9222）: $realExe\""
+    ],
+    "pre_uninstall": [
+        "# 只删指向本应用目录的主快捷方式；scoop 自建的 Scoop Apps 快捷方式由 scoop 卸载流程清理",
+        "$appRoot = Split-Path $dir -Parent",
+        "$lnkPath = Join-Path ([Environment]::GetFolderPath('Programs')) 'ZCode.lnk'",
+        "if (Test-Path $lnkPath) {",
+        "    $l = (New-Object -ComObject WScript.Shell).CreateShortcut($lnkPath)",
+        "    if ($l.TargetPath -like \"$appRoot\\*\") { Remove-Item $lnkPath -Force }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "ZCode.exe",
+            "ZCode"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home",
+                "source": "UserProfile/.zcode",
+                "target": "$persist_dir/home",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/ZCode",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/@zcodedesktop-updater",
+                "target": "$persist_dir/local/zcode-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true
+        }
+    },
+    "checkver": {
+        "script": [
+            "$ProgressPreference = 'SilentlyContinue'",
+            "$dlBase = 'https://cdn-zcode.z.ai/zcode/electron/releases/{0}/windows-x64/ZCode-{0}-win-x64.exe'",
+            "function Test-ZCodeVer([string]$v) {",
+            "    try {",
+            "        $r = Invoke-WebRequest -Uri ($dlBase -f $v) -Method Head -UseBasicParsing -TimeoutSec 15",
+            "        return ($r.StatusCode -eq 200 -or $r.StatusCode -eq 206)",
+            "    } catch { return $false }",
+            "}",
+            "# changelog 页面作基线(页面滞后无妨,CDN 探测向上补齐)",
+            "$seed = '3.3.5'",
+            "try {",
+            "    $html = (Invoke-WebRequest -Uri 'https://zcode.z.ai/cn/changelog' -UseBasicParsing -TimeoutSec 30).Content",
+            "    if ($html -match 'font-mono text-sm\">([\\d.]+)</span>') { $seed = $Matches[1] }",
+            "} catch { }",
+            "$s = [version]$seed",
+            "$best = $seed",
+            "$minor = $s.Minor",
+            "while ($minor -le ($s.Minor + 8)) {",
+            "    $any = $false",
+            "    for ($patch = 0; $patch -le 20; $patch++) {",
+            "        $v = \"$($s.Major).$minor.$patch\"",
+            "        if (Test-ZCodeVer $v) {",
+            "            $any = $true",
+            "            if ([version]$v -gt [version]$best) { $best = $v }",
+            "        }",
+            "    }",
+            "    if (-not $any) { break }",
+            "    $minor++",
+            "}",
+            "$nm = \"$($s.Major + 1).0.0\"",
+            "if ((Test-ZCodeVer $nm) -and [version]$nm -gt [version]$best) { $best = $nm }",
+            "$best"
+        ],
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://cdn-zcode.z.ai/zcode/electron/releases/$version/windows-x64/ZCode-$version-win-x64.exe#/dl.7z"
+            }
+        }
+    }
+}

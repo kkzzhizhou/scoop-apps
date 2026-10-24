@@ -1,0 +1,74 @@
+{
+    "##": "License is included in zip archive as 'free software license.nfo'",
+    "version": "2.9",
+    "description": "Move and resize Windows windows just like Linux!",
+    "homepage": "https://corz.org/windows/software/accessories/KDE-resizing-moving-for-Windows.php",
+    "license": "\"corz-style\" license version 1.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://corz.org/engine?section=windows/accessories&download=KDE%20Mover-Sizer%20for%20Windows%20x64.zip",
+            "hash": "md5:34d40215c5023ebeb8dfdc86b4bdd82f",
+            "extract_dir": "KDE Mover-Sizer for Windows x64"
+        },
+        "32bit": {
+            "url": "https://corz.org/engine?section=windows/accessories&download=KDE%20Mover-Sizer%20for%20Windows.zip",
+            "hash": "md5:b14b27a7556b2c2e7dd8a1fff9b2a107",
+            "extract_dir": "KDE Mover-Sizer for Windows"
+        }
+    },
+    "bin": "KDE Mover-Sizer.exe",
+    "shortcuts": [
+        [
+            "KDE Mover-Sizer.exe",
+            "KDE Mover-Sizer"
+        ]
+    ],
+    "pre_install": [
+        "ensure $persist_dir | Out-Null",
+        "$target = Join-Path $persist_dir 'KDE_Mover-Sizer.ini'",
+        "if (-not (Test-Path $target)) { New-Item -Path $target -ItemType File | Out-Null }",
+        "",
+        "Move-Item -Path (Join-Path $dir 'AutoHotKey Source' | Join-Path -ChildPath *) -Destination $dir",
+        "Remove-Item -Path (Join-Path $dir 'AutoHotKey Source') -Recurse"
+    ],
+    "persist": "KDE_Mover-Sizer.ini",
+    "checkver": {
+        "script": [
+            "# We need to download the zip archive and retrieve a 'readme' inside to get the version number.",
+            "$destDir = New-TemporaryFile | ForEach-Object { Remove-Item $_; mkdir $_ }",
+            "$destPath = Join-Path $destDir 'KDE Mover-Sizer.nfo'",
+            "$zipPath = Join-Path $destDir dl.zip",
+            "$url = 'https://corz.org/engine?section=windows/accessories&download=KDE%20Mover-Sizer%20for%20Windows%20x64.zip'",
+            "Invoke-WebRequest -Uri $url -OutFile $zipPath",
+            "",
+            "Add-Type -Assembly System.IO.Compression.FileSystem",
+            "$zip = [IO.Compression.ZipFile]::OpenRead($zipPath)",
+            "$file = ($zip.Entries | Where-Object { $_.Name -eq 'KDE Mover-Sizer.nfo' })[0]",
+            "[IO.Compression.ZipFileExtensions]::ExtractToFile($file, $destPath)",
+            "$zip.Dispose()",
+            "Get-Content $destPath",
+            "Remove-Item $destDir -Recurse"
+        ],
+        "regex": "KDE Mover-Sizer for Windows\\s*v([0-9.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://corz.org/engine?section=windows/accessories&download=KDE%20Mover-Sizer%20for%20Windows%20x64.zip",
+                "extract_dir": "KDE Mover-Sizer for Windows x64",
+                "hash": {
+                    "url": "https://corz.org/windows/software/accessories/KDE-resizing-moving-for-Windows.php",
+                    "regex": "$md5 \\*KDE Mover-Sizer for Windows x64.zip"
+                }
+            },
+            "32bit": {
+                "url": "https://corz.org/engine?section=windows/accessories&download=KDE%20Mover-Sizer%20for%20Windows.zip",
+                "extract_dir": "KDE Mover-Sizer for Windows",
+                "hash": {
+                    "url": "https://corz.org/windows/software/accessories/KDE-resizing-moving-for-Windows.php",
+                    "regex": "$md5 \\*KDE Mover-Sizer for Windows.zip"
+                }
+            }
+        }
+    }
+}

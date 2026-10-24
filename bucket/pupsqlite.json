@@ -1,0 +1,45 @@
+{
+    "version": "2.0.10.1",
+    "description": "PupSQLite: Sqlite viewer and editor",
+    "homepage": "https://www.eonet.ne.jp/~pup/software.html",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://www.dropbox.com/s/osdjzws0hxp1h0d/pupsqlite64_ver_2001001.zip?dl=1#/dl.zip",
+            "hash": "66dbbd4a47ece511d43dcb665fbaf690f24754fe590207fb52e4fe2514b4ef0c"
+        },
+        "32bit": {
+            "url": "https://www.dropbox.com/s/l7slsrkg523fdlw/pupsqlite32_ver_2001001.zip?dl=1#/dl.zip",
+            "hash": "6ebc4856a5ba93674b1d5aa36afe648724f8c08396a7ba4a02c5c55f6ee4bfbc"
+        }
+    },
+    "persist": "system",
+    "bin": "PupSQLite.exe",
+    "shortcuts": [
+        [
+            "PupSQLite.exe",
+            "PupSQLite"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$web = Invoke-WebRequest -Uri https://www.eonet.ne.jp/~pup/software.html",
+            "$pattern = '(?<=<span class=\"version\">ver )([0-9.]+)(?=<span>)'",
+            "$ver = ($web.Content | Select-String -Pattern $pattern).Matches.Value",
+            "$link64 = ($web.Links | ? {$_.href -like '*pupsqlite64*'}).href",
+            "$link32 = ($web.Links | ? {$_.href -like '*pupsqlite32*'}).href",
+            "Write-Output \"$ver $link64 $link32\""
+        ],
+        "regex": "^([^ ]+) (?<link64>[^ ]+) (?<link32>[^ ]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchLink64#/dl.zip"
+            },
+            "32bit": {
+                "url": "$matchLink32#/dl.zip"
+            }
+        }
+    }
+}

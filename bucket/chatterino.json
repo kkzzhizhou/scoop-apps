@@ -1,45 +1,42 @@
 {
-    "version": "2.5.6",
-    "description": "Twitch chat client",
-    "homepage": "https://chatterino.com",
+    "version": "39605148901",
+    "description": "Chat client for https://twitch.tv",
+    "homepage": "https://github.com/Chatterino/chatterino2",
     "license": "MIT",
     "suggest": {
-        "vcredist": [
-            "extras/vcredist2013",
-            "extras/vcredist2022"
-        ]
+        "vcredist-aio": "extras/vcredist-aio"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Chatterino/chatterino2/releases/download/v2.5.6/Chatterino.Portable.zip",
-            "hash": "7256ef095959a1e56ffee9573260d79878d87d24dff8486025b7da241b99bc3d"
+            "url": "https://github.com/Chatterino/chatterino2/releases/download/nightly-build/chatterino-windows-x86-64-Qt-6.8.3.zip",
+            "hash": "3a444214801bd9d4f2366c45c3651b4c752a3856d2cbd3d729b38fe5050f2945"
         }
     },
-    "extract_dir": "chatterino2",
-    "bin": "chatterino.exe",
+    "extract_dir": "Chatterino2",
+    "pre_install": "'externally-packaged' | Out-File -Encoding utf8 -Append \"$dir/modes\"",
     "shortcuts": [
         [
             "chatterino.exe",
             "Chatterino"
         ]
     ],
-    "persist": [
-        "Cache",
-        "Logs",
-        "Misc",
-        "ProfileAvatars",
-        "Settings",
-        "Themes"
-    ],
+    "bin": "chatterino.exe",
     "checkver": {
-        "github": "https://github.com/Chatterino/chatterino2"
+        "script": [
+            "try {",
+            "    $null = (Invoke-WebRequest https://raw.githubusercontent.com/Chatterino/chatterino2/master/.github/workflows/build.yml).Content -cmatch 'os: windows-latest\\s+qt-version: ([\\d.]+)'",
+            "    $Matches[1],",
+            "    (Invoke-RestMethod 'https://api.github.com/repositories/77624593/actions/workflows/build.yml/runs?branch=master&status=success&per_page=1' -Headers $(if ($auth = Get-GitHubToken) { @{authorization=\"Bearer $auth\"} })).workflow_runs[0].id -join ' '",
+            "}",
+            "catch { '' }"
+        ],
+        "regex": "\\A(?<qt>[\\d.]+) (\\d+)\\Z"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Chatterino/chatterino2/releases/download/v$version/Chatterino.Portable.zip"
+                "url": "https://github.com/Chatterino/chatterino2/releases/download/nightly-build/chatterino-windows-x86-64-Qt-$matchQt.zip"
             }
-        },
-        "extract_dir": "chatterino$majorVersion"
+        }
     }
 }

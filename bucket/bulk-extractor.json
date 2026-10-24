@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "description": "A high-performance digital forensics exploitation tool.",
+    "homepage": "https://github.com/simsong/bulk_extractor",
+    "license": {
+        "identifier": "MIT,CC0-1.0",
+        "url": "https://raw.githubusercontent.com/simsong/bulk_extractor/main/LICENSE.md"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://digitalcorpora.s3.amazonaws.com/downloads/bulk_extractor/bulk_extractor-2.0.0-windows.zip",
+            "hash": "58ece0b769bb0785e2e46c23e2bb5bae3e31cd885ba9f249a67f6acccc9c5978",
+            "extract_dir": "win64"
+        }
+    },
+    "pre_install": "Rename-Item \"$dir/bulk_extractor64.exe\" bulk_extractor.exe",
+    "bin": "bulk_extractor.exe",
+    "checkver": {
+        "script": [
+            "foreach ($key in ((Invoke-RestMethod 'https://digitalcorpora.s3.amazonaws.com/?list-type=2&delimiter=%2F&prefix=downloads%2Fbulk_extractor%2F').ListBucketResult.Contents | Sort-Object LastModified -Descending).Key) {",
+            "    if ($key.EndsWith('-windows.zip')) {",
+            "        $key",
+            "        break",
+            "    }",
+            "}"
+        ],
+        "regex": "\\Adownloads/bulk_extractor/bulk_extractor-([\\d.]+)-windows.zip\\Z"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://digitalcorpora.s3.amazonaws.com/downloads/bulk_extractor/bulk_extractor-$version-windows.zip"
+            }
+        }
+    }
+}

@@ -1,0 +1,58 @@
+{
+    "version": "0.20.39",
+    "description": "A Windows GUI based on Clash",
+    "homepage": "https://github.com/maboloshi/scoop-private/releases/tag/v1.0",
+    "license": "MIT",
+    "notes": [
+        "1. Integrated third-party Chinese language package.",
+        "2. Clash for Windows data are now saved into '$persist_dir' and persisted by Scoop."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": [
+                "https://github.com/maboloshi/scoop-private/releases/download/v1.0/Clash.for.Windows-0.20.39-win.7z",
+                "https://github.com/maboloshi/scoop-private/releases/download/v1.0/Clash.for.Windows.0.20.39-app.7z"
+            ],
+            "hash": [
+                "88db22840497c067c073ab2415fff6fe71f633d64af2fca62c37859ffba1640c",
+                "30a229c392966415cf0b68da8c12dfcb31e3505813897a38623da41c560bf904"
+            ]
+        }
+    },
+    "extract_to": [
+        "",
+        "resources"
+    ],
+    "post_install": [
+        "if ((Test-Path \"$env:USERPROFILE\\.config\\clash\") -and !(Get-ChildItem \"$persist_dir\\data\" -Force -ErrorAction SilentlyContinue)) {",
+        "    info '[Portable Mode]: Copying user config data . . .'",
+        "    Copy-Item -Path \"$env:USERPROFILE\\.config\\clash\\*\" -Destination \"$persist_dir\\data\" -Force -Recurse",
+        "}",
+        "# 数据迁移",
+        "$link = \"$env:APPDATA\\clash_win\"",
+        "$target = ensure \"$persist_dir\\clash_win\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "Clash for Windows.exe",
+            "Clash for Windows",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "persist": "data",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:APPDATA\\clash_win\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ]
+}

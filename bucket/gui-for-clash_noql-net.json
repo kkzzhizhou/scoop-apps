@@ -1,0 +1,60 @@
+{
+    "version": "1.28.1",
+    "description": "GUI for Clash",
+    "homepage": "https://github.com/GUI-for-Cores/GUI.for.Clash",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/GUI-for-Cores/GUI.for.Clash/releases/download/v1.28.1/GUI.for.Clash-windows-amd64.zip",
+            "hash": "4fabf74a6edc0909d146fb5c084202cd53ec326430f479e8c3acc726aa79e794",
+            "installer": {
+                "script": [
+                    ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+                    "New-AppLink -App 'mihomo' -Target \"$persist_dir\\data\\mihomo\" -Name 'mihomo-windows-amd64'"
+                ]
+            }
+        },
+        "arm64": {
+            "url": "https://github.com/GUI-for-Cores/GUI.for.Clash/releases/download/v1.28.1/GUI.for.Clash-windows-arm64.zip",
+            "hash": "ca14e54cb5bfe3ef79a9e36b0353052bd086c54b53eb17d41fbf1ae91b8dde58",
+            "installer": {
+                "script": [
+                    ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+                    "New-AppLink -App 'mihomo' -Target \"$persist_dir\\data\\mihomo\" -Name 'mihomo-windows-arm64'"
+                ]
+            }
+        }
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/GUI-for-Cores/GUI.for.Clash/releases/download/v$version/GUI.for.Clash-windows-amd64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/GUI-for-Cores/GUI.for.Clash/releases/download/v$version/GUI.for.Clash-windows-arm64.zip"
+            }
+        }
+    },
+    "depends": "mihomo",
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\data\\user.yaml\") -or !(Get-Item \"$persist_dir\\data\\user.yaml\").Length) {",
+        "    New-Item \"$persist_dir\\data\\user.yaml\" -ItemType File -Force -ErrorAction SilentlyContinue | Out-Null",
+        "    Set-Content -Path \"$persist_dir\\data\\user.yaml\" -Value \"lang: zh`nkernel:`n  branch: main`nrollingRelease: false\"",
+        "}"
+    ],
+    "pre_uninstall": [
+        "$bucket = $install.bucket",
+        ". \"$bucketsdir\\$bucket\\bin\\utils.ps1\"",
+        "Stop-App",
+        "Remove-Item \"$env:APPDATA\\GUI.for.Clash.exe\" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null"
+    ],
+    "persist": "data",
+    "bin": "GUI.for.Clash.exe",
+    "shortcuts": [
+        [
+            "GUI.for.Clash.exe",
+            "GUI.for.Clash"
+        ]
+    ]
+}

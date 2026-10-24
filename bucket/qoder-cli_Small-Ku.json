@@ -1,0 +1,29 @@
+{
+	"version": "1.1.78",
+	"description": "Qoder CLI - A powerful command-line interface for Qoder AI services.",
+	"homepage": "https://qoder.com",
+	"license": "MIT",
+	"architecture": {
+		"64bit": {
+			"url": "https://qoder-ide.oss-accelerate.aliyuncs.com/qodercli/releases/1.1.78/qodercli-windows-x64-legacy.zip",
+			"hash": "855b22843b479b7a90979b30162f7e0453b7500707801924cbac21fd489f4fae"
+		}
+	},
+	"bin": "qodercli.exe",
+	"checkver": {
+		"script": [
+			"$json = Invoke-RestMethod -Uri 'https://download.qoder.com/qodercli/channels/manifest.json'",
+			"$file = $json.files | Where-Object { $_.os -eq 'windows' -and $_.arch -eq 'amd64' } | Select-Object -First 1",
+			"Write-Output \"$($json.latest) $($file.url) $($file.sha256)\""
+		],
+		"regex": "(?<version>[\\d.]+)\\s+(?<url>[^\\s]+)\\s+(?<hash>[^\\s]+)"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "$matchUrl",
+				"hash": "$matchHash"
+			}
+		}
+	}
+}

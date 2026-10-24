@@ -1,0 +1,74 @@
+{
+    "homepage": "https://getwacup.com/",
+    "version": "1.99.55.25130",
+    "description": "The WinAmp Community Update Project (WACUP) is designed to work only with the patched Winamp 5.666 release to provide bug fixes, updates of existing features and most importantly new features with the goal to eventually become it's own highly Winamp compatible media player.",
+    "architecture": {
+        "32bit": {
+            "url": "https://getwacup.com/preview/WACUP_Preview_v1_99_55_25130_x86.exe",
+            "hash": "8f8a09b86c33362b61b1fff54af3dcb0a54e386c521416d43718572113ac1898"
+        },
+        "64bit": {
+            "url": "https://getwacup.com/preview_x64/WACUP_Preview_v1_99_55_25130_x64.exe",
+            "hash": "a6352c11c50a78a43e9b239a7d8b8cb6b5785950a990fc9173dab2e1ac0a5d12"
+        }
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/Profile Directory",
+        "create $dir/paths.ini File \"[WACUP]`ninidir=.\\Profile`nportable=1\""
+    ],
+    "installer": {
+        "script": [
+            "push-location $dir",
+            "sudo ./$fname /S /PORTABLE /D=$dir",
+            "$processName = \"wacup\"",
+            "Stop-Process -Name $processName -ErrorAction SilentlyContinue",
+            "do {",
+            "    $process = Get-Process $processName -ErrorAction SilentlyContinue",
+            "    Start-Sleep 1",
+            "} until ($process -ne $Null)",
+            "$process | Stop-Process -ErrorAction SilentlyContinue",
+            "pop-location"
+        ]
+    },
+    "bin": "wacup.exe",
+    "shortcuts": [
+        [
+            "wacup.exe",
+            "Winamp"
+        ]
+    ],
+    "persist": [
+        "Profile",
+        "paths.ini"
+    ],
+    "depends": "gsudo",
+    "notes": "Requires elevation for now",
+    "checkver": {
+        "url": "https://getwacup.com/",
+        "regex": "Preview v(?<version>[\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://getwacup.com/preview/WACUP_Preview_v$underscoreVersion_x86.exe",
+                "hash": {
+                    "url": "https://getwacup.com/preview/WACUP_Preview_v$underscoreVersion_x86.exe.sha256",
+                    "regex": "$sha256"
+                }
+            },
+            "64bit": {
+                "url": "https://getwacup.com/preview_x64/WACUP_Preview_v$underscoreVersion_x64.exe",
+                "hash": {
+                    "url": "https://getwacup.com/preview_x64/WACUP_Preview_v$underscoreVersion_x64.exe.sha256",
+                    "regex": "$sha256"
+                }
+            }
+        }
+    }
+}

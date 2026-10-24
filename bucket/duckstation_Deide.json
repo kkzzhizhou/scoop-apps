@@ -1,0 +1,80 @@
+{
+    "homepage": "https://www.duckstation.org/",
+    "version": "0.1-11894",
+    "description": "Sony Playstation emulator",
+    "license": {
+        "identifier": "CC-BY-NC-ND-4.0",
+        "url": "https://github.com/stenzek/duckstation/blob/master/LICENSE"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/stenzek/duckstation/releases/download/v0.1-11894/duckstation-windows-x64-release.zip",
+            "hash": "5ba3b9624b3073d3398c2cb8185ba3a014ff9e84f9c486627e0e8aa56371d352",
+            "bin": [
+                [
+                    "duckstation-qt-x64-ReleaseLTCG.exe",
+                    "duckstation"
+                ]
+            ],
+            "shortcuts": [
+                [
+                    "duckstation-qt-x64-ReleaseLTCG.exe",
+                    "Playstation"
+                ]
+            ]
+        }
+    },
+    "suggest": {
+        "Microsoft Visual C++ Runtime 2022": "extras/vcredist2022"
+    },
+    "pre_install": [
+        "function create($Path, $Type, $Content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value ($content -join \"`n\") -Force | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "$settings = \"$dir\\settings.ini\"",
+        "$portable = \"$dir\\portable.txt\"",
+        "create $settings -Type File -Content ('[Main]', 'SettingsVersion = 3', \"`n`n[AutoUpdater]\", 'CheckAtStartup = false')",
+        "create $portable -Type File"
+    ],
+    "pre_uninstall": "Copy-Item \"$dir\\settings.ini\" \"$persist_dir\" -ErrorAction SilentlyContinue -Force",
+    "persist": [
+        "portable.txt",
+        "settings.ini",
+        "bios",
+        "cache",
+        "cheats",
+        "covers",
+        "gameicons",
+        "gamesettings",
+        "inputprofiles",
+        "memcards",
+        "patches",
+        "resources",
+        "savestates",
+        "screenshots",
+        "shaders",
+        "subchannels",
+        "textures",
+        "videos"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/stenzek/duckstation/releases",
+        "jsonpath": {
+            "version": "$.[2].name",
+            "download": "$.[2].assets[?(@.name == 'duckstation-windows-x64-release.zip')].browser_download_url",
+            "hash": "$.[2].assets[?(@.name == 'duckstation-windows-x64-release.zip')].digest"
+        },
+        "regex": "v(.+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload",
+                "hash": "$matchHash"
+            }
+        }
+    }
+}

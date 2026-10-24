@@ -1,0 +1,69 @@
+{
+    "version": "157.0.4341.16",
+    "description": "The chromium based Microsoft Edge browser (Beta Channel)",
+    "homepage": "https://www.microsoft.com/en-us/edge",
+    "license": "Freeware",
+    "architecture": {
+        "64bit": {
+            "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=64&channel=beta&version=157.0.4341.16&dl#/MicrosoftEdge-157.0.4341.16-x64.7z",
+            "hash": "e9dbabc72f453a3067a8d8b4240e4761d75a7e54289de0d400c339092e497621"
+        },
+        "arm64": {
+            "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=arm64&channel=beta&version=157.0.4341.16&dl#/MicrosoftEdge-157.0.4341.16-arm64.7z",
+            "hash": "60cba74c5cec563676747bbc8dc7f49afe1720eba668b521608b03cbc2d0c04d"
+        }
+    },
+    "installer": {
+        "script": "Expand-7zipArchive -Path \"$dir\\MSEDGE.7z\" -ExtractDir \"Chrome-bin\\$version\" -Removal"
+    },
+    "post_install": [
+        "# 数据迁移",
+        "$link = \"$env:LocalAppData\\Microsoft\\Edge Beta\\User Data\"",
+        "$target = ensure \"$persist_dir\\User Data\"",
+        "if (!(Get-Item $link -Force -ErrorAction SilentlyContinue).LinkType) {",
+        "    if ((Test-Path $link) -and (Get-ChildItem $target -Force -ErrorAction SilentlyContinue)) {",
+        "        Remove-Item -Path \"$link.original\" -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Force $link \"$link.original\"",
+        "    } elseif (Test-Path $link) {",
+        "        Remove-Item -Path $target -Force -Recurse -ErrorAction SilentlyContinue",
+        "        Move-Item -Path $link -Destination $target -Force",
+        "    }",
+        "    New-DirectoryJunction $link $target | Out-Null",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "msedge.exe",
+            "Microsoft Edge Beta",
+            "--force-device-scale-factor=1.5"
+        ]
+    ],
+    "persist": "User Data",
+    "post_uninstall": [
+        "# 删除数据软连接",
+        "$link = \"$env:LocalAppData\\Microsoft\\Edge Beta\\User Data\"",
+        "Remove-Item -Path $link -Force -Recurse -ErrorAction SilentlyContinue"
+    ],
+    "checkver": {
+        "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=64&channel=beta",
+        "jsonpath": "$.Version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=64&channel=beta&version=$version&dl#/MicrosoftEdge-$version-x64.7z",
+                "hash": {
+                    "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=64&channel=beta&version=$version",
+                    "jsonpath": "$.Hashes.Sha256"
+                }
+            },
+            "arm64": {
+                "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=arm64&channel=beta&version=$version&dl#/MicrosoftEdge-$version-arm64.7z",
+                "hash": {
+                    "url": "https://dorado-api.chawyehsu.deno.net/edge?arch=arm64&channel=beta&version=$version",
+                    "jsonpath": "$.Hashes.Sha256"
+                }
+            }
+        }
+    }
+}
