@@ -1,95 +1,27 @@
 {
-    "version": "3.14.9",
+    "version": "3.14.10",
     "description": "A programming language that lets you work quickly and integrate systems more effectively.",
     "homepage": "https://www.python.org/",
     "license": "Python-2.0",
     "notes": "Allow applications and third-party installers to find python by running: \"$dir\\install-pep-514.reg\"",
     "architecture": {
         "64bit": {
-            "url": "https://www.python.org/ftp/python/3.14.9/python-3.14.9-amd64.exe#/setup.exe",
-            "hash": "a247a0b612244a803f507b39fb7121e3602e4160d59c3b99d98e735289c53394"
-        },
-        "32bit": {
-            "url": "https://www.python.org/ftp/python/3.14.9/python-3.14.9.exe#/setup.exe",
-            "hash": "55616c5b63219f66aeb79d3053dc8a8d770c29da8a15ab6ff8cb36412fda654b"
-        },
-        "arm64": {
-            "url": "https://www.python.org/ftp/python/3.14.9/python-3.14.9-arm64.exe#/setup.exe",
-            "hash": "4508e6a54c69566b8faec461d84d85eebee65c39a15eb910bc2ad873d09b022b"
+            "url": "https://registry.npmmirror.com/-/binary/python/3.14.10/python-3.14.10-amd64.exe#/setup.exe",
+            "hash": "92480239264744fe0386a1bd8275786fefa126e3129e56a68e22b52c73329965"
         }
     },
-    "pre_install": [
-        "$py_root = \"$dir\".Replace('\\', '\\\\')",
-        "$py_archLabel = '64-bit'",
-        "$bit = '64'",
-        "if ($architecture -eq '32bit') {",
-        "    $py_archLabel = '32-bit'",
-        "    $bit = '32'",
-        "}",
-        "if ($architecture -eq 'arm64') { $py_archLabel = 'ARM64' }",
-        "'install-pep-514.reg', 'uninstall-pep-514.reg' | ForEach-Object {",
-        "    $py_version = ($version -split '\\.')[0..1] -join '.'",
-        "    $content = Get-Content \"$bucketsdir\\main\\scripts\\python\\$_\"",
-        "    $content = $content.Replace('$py_root', $py_root)",
-        "    $content = $content.Replace('$py_version', $py_version)",
-        "    $content = $content.Replace('$py_fullversion', $version)",
-        "    $content = $content.Replace('$py_cleanVersion', $version -replace '\\.')",
-        "    $content = $content.Replace('$py_archLabel', $py_archLabel)",
-        "    $content = $content.Replace('$py_arch', \"$bit\")",
-        "    if ($global) {",
-        "       $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "    }",
-        "    Set-Content \"$dir\\$_\" $content -Encoding Ascii",
-        "}"
-    ],
     "installer": {
-        "script": [
-            "Expand-DarkArchive \"$dir\\setup.exe\" \"$dir\\_tmp\"",
-            "@('path.msi', 'pip.msi') | ForEach-Object {",
-            "    Remove-Item \"$dir\\_tmp\\AttachedContainer\\$_\"",
-            "}",
-            "(Get-ChildItem \"$dir\\_tmp\\AttachedContainer\\*.msi\").FullName | ForEach-Object {",
-            "    # appendpath.msi does not contain any file, which causes 'msiexec /a' to fail",
-            "    if($((Get-Item $_).Basename) -eq 'appendpath') { return }",
-            "    Expand-MsiArchive $_ \"$dir\" ",
-            "}",
-            "Remove-Item \"$dir\\_tmp\", \"$dir\\setup.exe\" -Force -Recurse",
-            "if ($global) {",
-            "    $pathext = (Get-EnvVar -Name PATHEXT -Global) -replace ';.PYW?', ''",
-            "    Set-EnvVar -Name PATHEXT -Value \"$pathext;.PY;.PYW\" -Global",
-            "}"
+        "args": [
+            "/quiet",
+            "InstallAllUsers=0",
+            "TargetDir=$dir",
+            "PrependPath=1",
+            "Shortcuts=0"
         ]
     },
     "post_install": [
         "python -E -s -m ensurepip -U --default-pip | Out-Null",
         "Write-Output \"$([char]0x1b)[0m\" # Reset ansi to prevent color leak from installer"
-    ],
-    "env_add_path": [
-        "Scripts",
-        "."
-    ],
-    "bin": [
-        [
-            "python.exe",
-            "python3"
-        ],
-        [
-            "python.exe",
-            "python314"
-        ],
-        "Lib\\idlelib\\idle.bat",
-        [
-            "Lib\\idlelib\\idle.bat",
-            "idle3"
-        ],
-        [
-            "Lib\\idlelib\\idle.bat",
-            "idle314"
-        ]
-    ],
-    "persist": [
-        "Scripts",
-        "Lib\\site-packages"
     ],
     "uninstaller": {
         "script": [
@@ -99,6 +31,25 @@
             "}"
         ]
     },
+    "bin": [
+        [
+            "python.exe",
+            "python3"
+        ],
+        "Lib\\idlelib\\idle.bat",
+        [
+            "Lib\\idlelib\\idle.bat",
+            "idle3"
+        ]
+    ],
+    "env_add_path": [
+        "Scripts",
+        "."
+    ],
+    "persist": [
+        "Scripts",
+        "Lib\\site-packages"
+    ],
     "checkver": {
         "url": "https://www.python.org/downloads/windows/",
         "regex": "python-(3\\.14\\.[\\d.]+)-"
@@ -106,18 +57,12 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://www.python.org/ftp/python/$version/python-$version-amd64.exe#/setup.exe"
-            },
-            "32bit": {
-                "url": "https://www.python.org/ftp/python/$version/python-$version.exe#/setup.exe"
-            },
-            "arm64": {
-                "url": "https://www.python.org/ftp/python/$version/python-$version-arm64.exe#/setup.exe"
+                "url": "https://registry.npmmirror.com/-/binary/python/$version/python-$version-amd64.exe#/setup.exe"
             }
         },
         "hash": {
             "url": "https://www.python.org/downloads/release/python-$cleanVersion/",
-            "regex": "(?sm)$basename.*?$md5"
+            "regex": "(?sm)$basename.*?$sha256"
         }
     }
 }

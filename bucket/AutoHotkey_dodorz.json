@@ -1,5 +1,5 @@
 {
-    "version": "2.0.30",
+    "version": "2.0.31",
     "description": "The ultimate automation scripting language for Windows.",
     "homepage": "https://www.autohotkey.com/",
     "license": "GPL-2.0-or-later",
@@ -10,9 +10,18 @@
         "  - 'autohotkey /script \"$dir\\UX\\ui-uninstall.ahk\"'",
         "See also: https://github.com/ScoopInstaller/Extras/issues/10066"
     ],
-    "url": "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.30/AutoHotkey_2.0.30.zip",
-    "hash": "1e0ece7ecb2d5646e55758150472677996a57f9db5c83d2996d8b47b9e2f31a4",
+    "url": "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.31/AutoHotkey_2.0.31.zip",
+    "hash": "ca1a595aca4528755d8d4cd7fed23d497a37bd9a0b6892072612d68dee1bd00a",
+    "extract_to": "installer",
+    "installer": {
+        "script": [
+            "$ahk = @('/script', \"`\"$dir\\installer\\UX\\install.ahk`\"\", '/to', \"`\"$dir`\"\", '/user', '/silent')",
+            "if ($global) { $ahk = @('/script', \"`\"$dir\\installer\\UX\\install.ahk`\"\", '/to', \"`\"$dir`\"\", '/silent') }",
+            "Start-Process \"$dir\\installer\\AutoHotkey32.exe\" -ArgumentList $ahk -Wait"
+        ]
+    },
     "post_install": [
+        "Remove-Item \"$dir\\installer\" -Force -Recurse",
         "# Persistence",
         "if (Test-Path \"$persist_dir\\installed-files.csv\") {",
         "    Get-Content \"$persist_dir\\installed-files.csv\" | Add-Content \"$dir\\UX\\installed-files.csv\"",
@@ -26,41 +35,25 @@
         "64bit": {
             "bin": [
                 [
-                    "AutoHotkey64.exe",
+                    "UX\\AutohotkeyUX.exe",
                     "autohotkey"
                 ],
                 [
-                    "AutoHotkey32.exe",
+                    "v2\\AutoHotkey32.exe",
                     "autohotkey32"
                 ]
             ]
         },
         "32bit": {
             "bin": [
-                [
-                    "AutoHotkey32.exe",
-                    "autohotkey"
-                ]
+                "UX\\AutohotkeyUX.exe",
+                "autohotkey"
             ]
         }
     },
-    "shortcuts": [
-        [
-            "AutoHotkey32.exe",
-            "AutoHotkey Dash",
-            "UX\\ui-dash.ahk"
-        ],
-        [
-            "AutoHotkey32.exe",
-            "AutoHotkey Window Spy",
-            "UX\\WindowSpy.ahk"
-        ],
-        [
-            "Compiler\\Ahk2Exe.exe",
-            "Ahk2Exe"
-        ]
-    ],
     "pre_uninstall": [
+        "# Close running AutoHotkey processes so the uninstaller can delete/replace its files",
+        "Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -like 'AutoHotkey*' } | Stop-Process -Force -ErrorAction SilentlyContinue",
         "# Persistence",
         "ensure \"$persist_dir\" | Out-Null",
         "ensure \"$persist_dir\\installed-files\" | Out-Null",
@@ -80,6 +73,13 @@
         "    }",
         "}"
     ],
+    "uninstaller": {
+        "script": [
+            "$ahk = @('/script', \"`\"$dir\\UX\\install.ahk`\"\", '/to', \"`\"$dir`\"\", '/uninstall', '/silent')",
+            "if (!$global) { $ahk = @('/script', \"`\"$dir\\UX\\install.ahk`\"\", '/to', \"`\"$dir`\"\", '/user', '/uninstall', '/silent') }",
+            "Start-Process \"$dir\\UX\\AutoHotkeyUX.exe\" -ArgumentList $ahk -Wait"
+        ]
+    },
     "checkver": {
         "github": "https://github.com/AutoHotkey/AutoHotkey"
     },
