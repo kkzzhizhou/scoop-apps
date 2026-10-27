@@ -1,0 +1,73 @@
+{
+    "homepage": "https://www.veracrypt.fr/",
+    "description": "Free open-source disk encryption software.",
+    "license": "Apache-2.0",
+    "version": "1.26.30",
+    "url": "https://github.com/veracrypt/VeraCrypt/releases/download/VeraCrypt_1.26.30/VeraCrypt.Portable.1.26.30.exe#/VeraCrypt.Portable.exe",
+    "hash": "8891f597054ca9dc2d9182d607b02278fa728d6be2d5116330a02de3dffa8da3",
+    "pre_install": [
+        "$file = \"$dir\\VeraCrypt.Portable.exe\"",
+        "$bytes = [System.IO.File]::ReadAllBytes($file)",
+        "$text = [System.Text.Encoding]::GetEncoding(28591).GetString($bytes)",
+        "$start = $text.LastIndexOf('VCINSTRT')",
+        "if ($start -lt 0) { error 'Invalid VeraCrypt portable package' }",
+        "$uncompressed = ([uint64]$bytes[$start + 8] -shl 24) -bor ([uint64]$bytes[$start + 9] -shl 16) -bor ([uint64]$bytes[$start + 10] -shl 8) -bor [uint64]$bytes[$start + 11]",
+        "$compressed = ([uint64]$bytes[$start + 12] -shl 24) -bor ([uint64]$bytes[$start + 13] -shl 16) -bor ([uint64]$bytes[$start + 14] -shl 8) -bor [uint64]$bytes[$start + 15]",
+        "$lzma = New-Object byte[] ($compressed + 8)",
+        "[Array]::Copy($bytes, $start + 16, $lzma, 0, 5)",
+        "[Array]::Copy([BitConverter]::GetBytes([uint64]$uncompressed), 0, $lzma, 5, 8)",
+        "[Array]::Copy($bytes, $start + 21, $lzma, 13, $compressed - 5)",
+        "[System.IO.File]::WriteAllBytes(\"$dir\\package.lzma\", $lzma)",
+        "Expand-7ZipArchive \"$dir\\package.lzma\" \"$dir\" -Removal",
+        "$data = [System.IO.File]::ReadAllBytes(\"$dir\\package\")",
+        "$pos = 0",
+        "while ($pos -lt $data.Length) {",
+        "    $nameLength = ([int]$data[$pos] -shl 8) -bor [int]$data[$pos + 1]",
+        "    $pos += 2",
+        "    $name = [System.Text.Encoding]::Unicode.GetString($data, $pos, $nameLength * 2)",
+        "    $pos += $nameLength * 2",
+        "    $length = ([int]$data[$pos + 4] -shl 24) -bor ([int]$data[$pos + 5] -shl 16) -bor ([int]$data[$pos + 6] -shl 8) -bor [int]$data[$pos + 7]",
+        "    $pos += 8",
+        "    if ($name -like '*.zip') {",
+        "        $zip = \"$dir\\$name\"",
+        "        $buffer = New-Object byte[] $length",
+        "        [Array]::Copy($data, $pos, $buffer, 0, $length)",
+        "        [System.IO.File]::WriteAllBytes($zip, $buffer)",
+        "        Expand-7ZipArchive $zip \"$dir\" -Removal",
+        "    } else {",
+        "        $stream = [System.IO.File]::Create((Join-Path $dir $name))",
+        "        $stream.Write($data, $pos, $length)",
+        "        $stream.Close()",
+        "    }",
+        "    $pos += $length",
+        "}",
+        "Remove-Item \"$dir\\package\", \"$dir\\VeraCrypt.Portable.exe\" -Force",
+        "$arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }",
+        "$other = if ($arch -eq 'x64') { 'arm64' } else { 'x64' }",
+        "Move-Item \"$dir\\VeraCrypt-$arch.exe\" \"$dir\\VeraCrypt.exe\"",
+        "Move-Item \"$dir\\VeraCrypt Format-$arch.exe\" \"$dir\\VeraCrypt Format.exe\"",
+        "Move-Item \"$dir\\VeraCryptExpander-$arch.exe\" \"$dir\\VeraCryptExpander.exe\"",
+        "Remove-Item \"$dir\\VeraCrypt-$other.exe\", \"$dir\\VeraCrypt Format-$other.exe\", \"$dir\\VeraCryptExpander-$other.exe\", \"$dir\\veracrypt-$other.sys\", \"$dir\\veracrypt-$other.cat\" -Force -ErrorAction SilentlyContinue"
+    ],
+    "bin": [
+        "VeraCrypt.exe",
+        [
+            "VeraCrypt Format.exe",
+            "veracrypt-format"
+        ],
+        [
+            "VeraCryptExpander.exe",
+            "veracrypt-expander"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "VeraCrypt.exe",
+            "VeraCrypt"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/veracrypt/VeraCrypt",
+        "regex": "VeraCrypt_([\\d.]+)"
+    }
+}

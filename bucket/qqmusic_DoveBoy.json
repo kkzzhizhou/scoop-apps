@@ -1,14 +1,14 @@
 {
     "##": "QQ音乐",
-    "version": "21.92",
+    "version": "22.7.6",
     "description": "[QQ音乐] - 一款带有精彩音乐推荐功能的播放器，是国内内容丰富之一的音乐平台",
     "homepage": "https://y.qq.com",
     "license": {
         "identifier": "Proprietary",
         "url": "http://y.qq.com/y/static/tips/service_tips.html"
     },
-    "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_2192.exe&sign=1-d6866199d19e35c8a07c9faf1eca71659cb525d1a0fd7063015a2fce964162bc-68d8e14c#/dl.7z",
-    "hash": "f6c6d0d41b886590d8a840033b249a1d86d63bf01173a5dc8071790cac092f07",
+    "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_2276.exe&sign=1-03d1626d56fe81ef0fcf53ee86c85de39fd69a2a5cce0bd7b16fffa433f1c72e-6acd9f48#/dl.7z",
+    "hash": "0215bd092602540947b89cf34c528544c776f4d48c13135ea0c713518eb6bb3c",
     "installer": {
         "script": [
             "# simulate instok check",
@@ -37,15 +37,20 @@
     "persist": "Plugins",
     "checkver": {
         "script": [
-            "$api = 'https://u6.y.qq.com/cgi-bin/musicu.fcg'",
-            "$body = '{\"comm\":{\"ct\":\"19\",\"cv\":\"2022\",\"tmeAppID\":\"qqmusic\"},\"platform.uniteUpdate.UniteUpdateSvr.QueryUpdate\":{\"method\":\"QueryUpdate\",\"module\":\"platform.uniteUpdate.UniteUpdateSvr\",\"param\":{\"chid\":\"1001\",\"osVer\":1}}}'",
-            "$Response = (Invoke-RestMethod $api -Method POST -Body $body) | ConvertTo-Json -Compress",
-            "return $Response"
+            "$url = 'https://y.qq.com/download/download.js'",
+            "$res = Invoke-WebRequest -Uri $url -UseBasicParsing",
+            "$content = $res.Content",
+            "$jsonString = $content -replace '^MusicJsonCallback\\(|\\)$', ''",
+            "$data = $jsonString | ConvertFrom-Json",
+            "$json = $data.data | Where-Object { $_.Ftitle -match \"Windows PC\" }",
+            "$version = $json.Fversion -replace '^最新版:', ''",
+            "$downloadUrl = $json.Flink1",
+            "$str = \"$($version)_____$($downloadUrl)\"",
+            "Write-Output $str"
         ],
-        "regex": "QQMusic_Setup_(?<version>(?<major>\\d{2})(?<minor>\\d{2})).exe",
-        "replace": "${major}.${minor}"
+        "regex": "([\\d.]+)_____https://c.y.qq.com/(?<url>.+)"
     },
     "autoupdate": {
-        "url": "https://c.y.qq.com/cgi-bin/file_redirect.fcg?bid=dldir&file=ecosfile%2Fmusic_clntupate%2Fpc%2Fother%2FQQMusic_Setup_$cleanVersion.exe&sign=1-d6866199d19e35c8a07c9faf1eca71659cb525d1a0fd7063015a2fce964162bc-68d8e14c#/dl.7z"
+        "url": "https://c.y.qq.com/$matchUrl#/dl.7z"
     }
 }

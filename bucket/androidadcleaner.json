@@ -1,0 +1,53 @@
+{
+    "version": "0.2.3",
+    "description": "关掉国产安卓手机系统里的广告、热搜、资讯推荐和营销推送。不 root，可还原，支持 AI 智能体一键执行。",
+    "homepage": "https://github.com/rddmwmddr/android-ad-cleaner",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/rddmwmddr/android-ad-cleaner#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/rddmwmddr/android-ad-cleaner/releases/download/v0.2.3/AndroidAdCleaner-0.2.3-windows-setup.exe",
+            "hash": "e5dd6d02d55f1613f8802b7edbf5e24f85ac3c7dd7636d045cd3fd61a0caf1a4"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\AndroidAdCleaner\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\AndroidAdCleaner\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "AndroidAdCleaner.exe",
+    "shortcuts": [
+        [
+            "AndroidAdCleaner.exe",
+            "AndroidAdCleaner"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/rddmwmddr/android-ad-cleaner/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/rddmwmddr/android-ad-cleaner/releases/download/v$version/AndroidAdCleaner-$version-windows-setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}
