@@ -1,35 +1,65 @@
 {
-    "version": "0.1.19",
-    "description": "A native third-party NetEase Cloud Music desktop client built with Go and MyGo.",
+    "version": "0.1.20",
+    "description": "MyGo 云音乐 - 第三方网易云音乐原生客户端",
     "homepage": "https://music.egoist.dev/",
-    "license": "AGPL-3.0-only",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/egoist/mygo-cloudmusic#AGPL-3.0-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v0.1.19/mygo-cloudmusic-0.1.19-windows-amd64.tar.gz",
-            "hash": "fa8116bd081befa425523a59c17d33a0b84525af26ddab1c1223a2d7cb5bcad0"
+            "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v0.1.20/mygo-cloudmusic-setup-0.1.20-amd64.exe#/dl.7z",
+            "hash": "03cda32b08e9ee92b14d7751813f82db4fcc57f5cd4a72bc21d440f539a62069"
         },
         "arm64": {
-            "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v0.1.19/mygo-cloudmusic-0.1.19-windows-arm64.tar.gz",
-            "hash": "090702295d5a0049e09b2c4beaff414d41ca9ae5d1892b5b9a1caccd51844918"
+            "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v0.1.20/mygo-cloudmusic-setup-0.1.20-arm64.exe#/dl.7z",
+            "hash": "38f3a10977e1d84e6a1a61ef8e4999c1597ef030130799aaa18897128c30b96e"
         }
     },
+    "pre_install": [
+        "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+        "Get-ChildItem \"$dir\\MyGo*.exe\" | Rename-Item -NewName 'MyGoCloudMusic.exe'"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\MyGo 云音乐\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\MyGo 云音乐\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\MyGo 云音乐\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\MyGo 云音乐\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "MyGoCloudMusic.exe",
     "shortcuts": [
         [
-            "MyGo 云音乐.exe",
-            "MyGo 云音乐"
+            "MyGoCloudMusic.exe",
+            "MyGo云音乐"
         ]
     ],
     "checkver": {
-        "github": "https://github.com/egoist/mygo-cloudmusic"
+        "github": "https://api.github.com/repos/egoist/mygo-cloudmusic/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v$version/mygo-cloudmusic-$version-windows-amd64.tar.gz"
+                "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v$version/mygo-cloudmusic-setup-$version-amd64.exe#/dl.7z"
             },
             "arm64": {
-                "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v$version/mygo-cloudmusic-$version-windows-arm64.tar.gz"
+                "url": "https://github.com/egoist/mygo-cloudmusic/releases/download/v$version/mygo-cloudmusic-setup-$version-arm64.exe#/dl.7z"
             }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
         }
     }
 }

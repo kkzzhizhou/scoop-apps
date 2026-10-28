@@ -1,19 +1,35 @@
 {
     "version": "0.8.0",
-    "description": "Free desktop video editor with no subscription, watermark, or account",
+    "description": "Drift is a free, open-source, beginner-friendly desktop video editor built with Qt 6 and FFmpeg.",
     "homepage": "https://cutwire.org/drift",
-    "license": "GPL-3.0-or-later",
-    "notes": [
-        "Settings, addons, models and caches are stored per-user under %APPDATA%\\Drift (outside the install dir), so they are not managed by Scoop persist.",
-        "Developer overrides for bundled addon roots: DRIFT_EFFECTS_DIR, DRIFT_TRANSITIONS_DIR, DRIFT_AUDIO_EFFECTS_DIR."
-    ],
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/CutWire-Studios/Drift#GPL-3.0-1-ov-file"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CutWire-Studios/Drift/releases/download/v0.8.0/Drift-Portable-0.8.0-x64.zip",
-            "hash": "1ab3739481a9e1e0f3c342b7338a589752dfc86fcc61401a6bda07ec1ef5388f"
+            "url": "https://github.com/CutWire-Studios/Drift/releases/download/v0.8.0/Drift-Setup-0.8.0-x64.exe",
+            "hash": "333be4077bacd80c242af3013a83d0b3a697ca77fe455dcfbb62325b891bda0f"
         }
     },
-    "extract_dir": "Drift",
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\CutWire Drift\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\CutWire Drift\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\CutWire Drift\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\CutWire Drift\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
     "bin": "drift.exe",
     "shortcuts": [
         [
@@ -21,18 +37,19 @@
             "Drift"
         ]
     ],
-    "suggest": {
-        "vcredist": "extras/vcredist2022"
-    },
     "checkver": {
-        "github": "https://github.com/CutWire-Studios/Drift"
+        "github": "https://api.github.com/repos/CutWire-Studios/Drift/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/CutWire-Studios/Drift/releases/download/v$version/Drift-Portable-$version-x64.zip",
-                "extract_dir": "Drift"
+                "url": "https://github.com/CutWire-Studios/Drift/releases/download/v$version/Drift-Setup-$version-x64.exe"
             }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
         }
     }
 }

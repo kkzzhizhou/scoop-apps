@@ -1,0 +1,53 @@
+{
+    "version": "3.2.0",
+    "description": "多功能工具箱 · 桌面端开源版 | 音视频/图片/PDF/AI 一站式处理",
+    "homepage": "https://github.com/ZihangDong/toolknit-desktop",
+    "license": {
+        "identifier": "PolyForm Noncommercial License 1.0.0",
+        "url": "https://github.com/ZihangDong/toolknit-desktop#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ZihangDong/toolknit-desktop/releases/download/v3.2.0/toolknit-desktop_3.2.0_x64-setup.exe#/dl.7z",
+            "hash": "d3f01e7358d0bec52917a77ca4479f6b6e779646ae6d5cf62aa129537259059b"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\com.toolknit.desktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\com.toolknit.desktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "toolknit-desktop.exe",
+    "shortcuts": [
+        [
+            "toolknit-desktop.exe",
+            "toolknit-desktop"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/ZihangDong/toolknit-desktop/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ZihangDong/toolknit-desktop/releases/download/v$version/toolknit-desktop_$version_x64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/$basename.sha256"
+        }
+    }
+}
