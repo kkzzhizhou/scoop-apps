@@ -1,0 +1,26 @@
+{
+    "version": "pc-re-rel-1.4.2",
+    "description": "Automates Stripe checkout retries, logs card decline reasons, identifies successful transactions",
+    "homepage": "https://autohitter.org",
+    "license": "Proprietary",
+    "notes": "Choose this folder to load unpacked: \"$dir\\extension\\\"",
+    "url": "https://codeberg.org/autohitter/pc-re-rel-1.4.2/raw/branch/main/v1.4.2%20re-release.zip",
+    "hash": "173004fb5cd36b1f1d0c88296737f720800d561c3aa4d0f49651511e132e3aaa",
+    "extract_to": "extension",
+    "checkver": {
+        "script": [
+            "$repoListPage = Invoke-WebRequest -Uri 'https://codeberg.org/autohitter' -UseBasicParsing",
+            "$latestRepo = $repoListPage.Links | Where-Object { $_.href -match '/autohitter/([\\w.-]+)$' } | Select-Object -First 1",
+            "$repoName = $matches[1]",
+            "$repoPage = Invoke-WebRequest -Uri \"https://codeberg.org/autohitter/$repoName/src/branch/main\" -UseBasicParsing",
+            "$zipFile = $repoPage.Links | Where-Object { $_.href -match '\\.zip$' } | Select-Object -First 1",
+            "$zipUrl = $zipFile.href -replace '^/', 'https://codeberg.org/'",
+            "$zipName = $zipUrl -split '/' | Select-Object -Last 1",
+            "Write-Output \"$repoName $zipName\""
+        ],
+        "regex": "([\\w.-]+)\\s(.*)"
+    },
+    "autoupdate": {
+        "url": "https://codeberg.org/autohitter/$match1/raw/branch/main/$match2"
+    }
+}

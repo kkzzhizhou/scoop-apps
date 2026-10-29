@@ -1,5 +1,5 @@
 {
-    "version": "1.98.60-102",
+    "version": "1.98.62",
     "description": "Secure, Fast & Private Web Browser with Adblocker",
     "homepage": "https://brave.com",
     "license": {
@@ -8,38 +8,61 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/portapps/brave-portable/releases/download/1.98.60-102/brave-portable-win64-1.98.60-102.7z",
-            "hash": "c01b60c6b92c68bee7ed0636524cf5640ca00263f37f4eb42d26b49a695c050d"
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.98.62/brave-v1.98.62-win32-x64.zip",
+            "hash": "1bd30af14e3026f986a374a4eb2dae7b1f36de01a411fb58ba41adde10032781"
+        },
+        "32bit": {
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.98.62/brave-v1.98.62-win32-ia32.zip",
+            "hash": "b512abf613d37173a93404f929853b86313ae3e63ed45f851816cbb4341940ce"
+        },
+        "arm64": {
+            "url": "https://github.com/brave/brave-browser/releases/download/v1.98.62/brave-v1.98.62-win32-arm64.zip",
+            "hash": "3a0973bf7a9a9d530d3cb7bd5c4a6879d470a91d8e73f4b63450e1baa2501e5b"
         }
     },
     "bin": [
-        "brave-portable.exe",
         [
-            "brave-portable.exe",
-            "brave"
+            "brave.exe",
+            "brave",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
     "shortcuts": [
         [
-            "brave-portable.exe",
-            "Brave"
+            "brave.exe",
+            "Brave",
+            "--user-data-dir=\"$dir\\User Data\""
         ]
     ],
-    "persist": [
-        "data",
-        "log",
-        "reg"
+    "post_install": [
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$persist_dir\\data\")) {",
+        "    info '[Portable Mode]: Copying user data from portapps data directory . . .'",
+        "    Copy-Item \"$persist_dir\\data\\*\" \"$dir\\User Data\" -Recurse",
+        "}",
+        "if (!(Test-Path \"$dir\\User Data\\*\") -and (Test-Path \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\")) {",
+        "    info '[Portable Mode]: Copying user data from local application data directory . . .'",
+        "    Copy-Item \"$env:LocalAppData\\BraveSoftware\\Brave-Browser\\User Data\\*\" \"$dir\\User Data\" -Recurse",
+        "}"
     ],
+    "persist": "User Data",
     "checkver": {
-        "url": "https://portapps.io/app/brave-portable/feed.xml",
-        "xpath": "(//title[text()[contains(.,'win64') and contains(.,'.7z')]])[1]",
-        "regex": "win64-([\\d.-]+)\\.7z"
+        "url": "https://brave-browser-downloads.s3.brave.com/latest/release-windows-x64.version",
+        "regex": "([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/portapps/brave-portable/releases/download/$version/brave-portable-win64-$version.7z"
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-x64.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-ia32.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/brave/brave-browser/releases/download/v$version/brave-v$version-win32-arm64.zip"
             }
+        },
+        "hash": {
+            "url": "$url.sha256"
         }
     }
 }

@@ -1,27 +1,28 @@
 {
-    "$schema": "https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/schema.json",
-    "version": "25.12.11",
-    "description": "Messaging application providing fast, stable, convenient, and private connection for users anytime, anywhere. ",
-    "license": "Freeware",
-    "homepage": "https://zalo.me/pc",
-    "url": "https://res-download-pc.zadn.vn/win/ZaloSetup-25.12.11.exe#/dl.7z",
-    "hash": "db5b20cd41d597c9eeddaa9ae283c83307424edd054824e157ea2aa401be9d19",
-    "installer": {
-        "script": [
-            "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
-            "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse"
-        ]
-    },
-    "bin": "Zalo.exe",
+    "version": "26.10.20",
+    "description": "Messaging application",
+    "homepage": "https://zalo.me/en/product/zalo",
+    "license": "Proprietary",
+    "url": "https://res-download-pc.zadn.vn/win/ZaloSetup-26.10.20.exe#/dl.7z",
+    "hash": "8f2ee2c549c2b99e5acbe6af0063856a6b412331b23c23a5b8f2601ac20f99b7",
+    "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
+    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall Zalo.exe\" -Recurse -Force",
     "shortcuts": [
         [
             "Zalo.exe",
             "Zalo"
         ]
     ],
+    "post_uninstall": "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Zalo.lnk\" -ErrorAction SilentlyContinue",
     "checkver": {
-        "script": "try { (Invoke-WebRequest -Uri https://zalo.me/download/zalo-pc -MaximumRedirection 0 -UserAgent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:127.0) Gecko/20100101 Firefox/127.0\" -ErrorAction SilentlyContinue).Headers.Location.OriginalString } catch { $_.Exception.Response.Headers.Location.OriginalString }",
-        "regex": "ZaloSetup-([\\d\\.]+)\\.exe"
+        "script": [
+            "try {",
+            "    $Response = Invoke-WebRequest -Uri 'https://zalo.me/download/zalo-pc' -MaximumRedirection 0",
+            "} catch {",
+            "    Write-Output $_.Exception.Response.Headers.Location",
+            "}"
+        ],
+        "regex": "([\\d.]+).exe"
     },
     "autoupdate": {
         "url": "https://res-download-pc.zadn.vn/win/ZaloSetup-$version.exe#/dl.7z"

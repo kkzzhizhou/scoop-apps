@@ -1,0 +1,55 @@
+{
+    "version": "0",
+    "description": "Play millions of songs and podcasts on your device",
+    "homepage": "https://spotify.com",
+    "license": "Proprietary",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.scdn.co/SpotifyFullSetupX64.exe",
+            "hash": "46e61f81688bab5d7a59f01225522d1d50511293b0e63f225d97fdd61a9dd323"
+        },
+        "arm64": {
+            "url": "https://download.scdn.co/SpotifyFullSetupARM64.exe",
+            "hash": "3cccfb64565350b00dffb10bfdea8f9c369d33e0e38a5202e9995178081a13cc"
+        }
+    },
+    "pre_install": [
+        "Start-Process \"$dir\\$fname\" -ArgumentList @('/extract', \"$dir\") -Wait",
+        "$update = \"$env:LOCALAPPDATA\\Spotify\\Update\"",
+        "Remove-Item $update -Recurse -Force -ErrorAction SilentlyContinue",
+        "New-Item $update | Out-Null",
+        "Set-ItemProperty $update -Name IsReadOnly -Value $true",
+        "$Ace = New-Object System.Security.AccessControl.FileSystemAccessRule(\"${env:USERNAME}\", \"Modify\", \"Deny\")",
+        "$Acl = New-Object System.Security.AccessControl.FileSecurity",
+        "$Acl.AddAccessRule($Ace)",
+        "Set-Acl $update -AclObject $Acl"
+    ],
+    "post_install": "Remove-Item \"$dir\\$fname\"",
+    "shortcuts": [
+        [
+            "Spotify.exe",
+            "Spotify"
+        ]
+    ],
+    "checkver": {
+        "script": [
+            "$dl_url = 'https://download.scdn.co/SpotifyFullSetupX64.exe'",
+            "$dl = cache_path 'spotify' 'unknown' $dl_url",
+            "Invoke-WebRequest $dl_url -OutFile $dl",
+            "$ver = (Get-Item $dl).VersionInfo.FileVersion",
+            "Move-Item -Force $dl (cache_path 'spotify' $ver $dl_url)",
+            "$ver"
+        ],
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://download.scdn.co/SpotifyFullSetupX64.exe"
+            },
+            "arm64": {
+                "url": "https://download.scdn.co/SpotifyFullSetupARM64.exe"
+            }
+        }
+    }
+}

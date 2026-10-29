@@ -1,25 +1,69 @@
 {
-    "version": "0.1.0-beta.160",
+    "version": "0.1.0-beta.161",
     "description": "The Native Terminal Emulator with a builtin AI Harness",
-    "homepage": "https://github.com/nowledge-co/con-terminal",
+    "homepage": "https://con.nowledge.co/",
     "license": "MIT",
+    "notes": "We recommend turning off automatic updates within the app.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/nowledge-co/con-terminal/releases/download/v0.1.0-beta.160/con-0.1.0-beta.160-windows-x86_64.zip",
-            "hash": "14b7fc7ad4d2301b6434095aba0358e1c4d04b57b01246a8636e8790e49025c2"
+            "url": "https://github.com/nowledge-co/con-terminal/releases/download/v0.1.0-beta.161/con-0.1.0-beta.161-windows-x86_64.zip",
+            "hash": "2e556426e69bc5b539f63af9a30621f91130032d03589f4f7645508186575d49"
         }
     },
-    "bin": "con-app.exe",
+    "post_install": [
+        "$appDataPath = \"$env:APPDATA\\con-terminal\"",
+        "$persistPath = \"$persist_dir\\Roaming\"",
+        "function Test-PersistJunction($item, $target) {",
+        "    if (-not $item) { return $false }",
+        "    $linkTarget = if ($item.PSObject.Properties['LinkTarget'] -and $item.LinkTarget) { $item.LinkTarget } else { $item.Target }",
+        "    if ($linkTarget -is [array]) { $linkTarget = $linkTarget[0] }",
+        "    if (-not $linkTarget) { return $false }",
+        "    return $linkTarget.ToString().TrimEnd('\\', '/') -ieq $target.TrimEnd('\\', '/')",
+        "}",
+        "function Remove-PersistTarget($path) {",
+        "    $item = Get-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue",
+        "    if ($item) {",
+        "        Remove-Item -LiteralPath $path -Force -Recurse -ErrorAction Stop",
+        "    }",
+        "}",
+        "$appData = Get-Item -LiteralPath $appDataPath -Force -ErrorAction SilentlyContinue",
+        "$isJunction = [bool]($appData -and ($appData.Attributes -band [System.IO.FileAttributes]::ReparsePoint))",
+        "if (-not ($isJunction -and (Test-PersistJunction $appData $persistPath))) {",
+        "    $persistHasData = (Test-Path -LiteralPath $persistPath) -and (Get-ChildItem -LiteralPath $persistPath -Force -ErrorAction SilentlyContinue | Select-Object -First 1)",
+        "    if (-not $persistHasData) {",
+        "        New-Item -ItemType Directory -Path (Split-Path -Path $persistPath -Parent) -Force -ErrorAction Stop | Out-Null",
+        "        Remove-PersistTarget $persistPath",
+        "        if ($appData -and -not $isJunction) {",
+        "            Move-Item -LiteralPath $appDataPath -Destination $persistPath -Force -ErrorAction Stop",
+        "            $appData = $null",
+        "        } else {",
+        "            New-Item -Path $persistPath -ItemType Directory -Force -ErrorAction Stop | Out-Null",
+        "        }",
+        "    }",
+        "    if ($appData -and -not $isJunction) {",
+        "        $bakName = \"con-terminal.bak_$(Get-Date -Format 'yyyyMMddHHmmss')\"",
+        "        Rename-Item -LiteralPath $appDataPath -NewName $bakName -Force -ErrorAction Stop",
+        "        Write-Host \"Existing con-terminal user data has been backed up to: $bakName\" -ForegroundColor Yellow",
+        "    }",
+        "    if ($isJunction) {",
+        "        [System.IO.Directory]::Delete($appDataPath)",
+        "    }",
+        "    New-Item -ItemType Junction -Path $appDataPath -Target $persistPath -ErrorAction Stop | Out-Null",
+        "}"
+    ],
+    "bin": [
+        "con-app.exe",
+        "con-cli.exe"
+    ],
     "shortcuts": [
         [
             "con-app.exe",
-            "Con Terminal"
+            "Con"
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/nowledge-co/con-terminal/releases/latest",
-        "jsonpath": "tag_name",
-        "regex": "v([\\d.]+(?:-beta\\.\\d+))"
+        "url": "https://github.com/nowledge-co/con-terminal/releases/latest",
+        "re": "/tag/v?([\\d\\w.-]+)"
     },
     "autoupdate": {
         "architecture": {

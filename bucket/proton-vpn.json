@@ -1,0 +1,47 @@
+{
+    "version": "5.1.9",
+    "description": "Fast and secure VPN",
+    "homepage": "https://protonvpn.com",
+    "license": "GPL-3.0",
+    "notes": "Register service by running: $dir\\service.ps1",
+    "architecture": {
+        "64bit": {
+            "url": "https://vpn.protondownload.com/download/ProtonVPN_v5.1.9_x64.exe",
+            "hash": "8454eba06a37c0a636ec8dcfe6a7a823a68a78ee8fe2eeda2d651cd5cd6c3d70"
+        },
+        "arm64": {
+            "url": "https://vpn.protondownload.com/download/ProtonVPN_v5.1.9_arm64.exe",
+            "hash": "c3ead12469da97513e599789504a71dda0890d7be0ec074824599da35661cf1c"
+        }
+    },
+    "innosetup": true,
+    "post_install": [
+        "New-Item \"$dir\\version\" -ItemType Junction -Target \"$dir\\v$version\" | Out-Null",
+        "Copy-Item \"$bucketsdir\\$bucket\\scripts\\$app\\service.ps1\" \"$dir\"",
+        "$shortcut = \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Scoop Apps\\Proton\\Proton VPN.lnk\"",
+        "$bytes = [System.IO.File]::ReadAllBytes($shortcut)",
+        "$bytes[0x15] = $bytes[0x15] -bor 0x20",
+        "[System.IO.File]::WriteAllBytes($shortcut, $bytes)"
+    ],
+    "shortcuts": [
+        [
+            "ProtonVPN.Launcher.exe",
+            "Proton\\Proton VPN"
+        ]
+    ],
+    "persist": "version\\ServiceData",
+    "checkver": {
+        "url": "https://protonvpn.com/download/windows/x64/v1/version.json",
+        "jsonpath": "$..[?(@.CategoryName == 'Stable')].Version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://vpn.protondownload.com/download/ProtonVPN_v$version_x64.exe"
+            },
+            "arm64": {
+                "url": "https://vpn.protondownload.com/download/ProtonVPN_v$version_arm64.exe"
+            }
+        }
+    }
+}

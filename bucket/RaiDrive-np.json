@@ -1,0 +1,36 @@
+{
+    "version": "2026.10.0",
+    "description": "Mount a cloud storage like a USB drive",
+    "homepage": "https://www.raidrive.com",
+    "license": "Freeware",
+    "url": "https://app.raidrive.com/download/raidrive.mount/release/RaiDrive.Mount_2026.10.0_x64.msi#/raidrive-installer.exe",
+    "hash": "319624d6fdcdaa84f3165fdb06656c52fc4ad9efa4f47cb04840bd368836d9ed",
+    "installer": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Move-Item \"$dir\\raidrive-installer.exe\" \"$dir\\raidrive.msi\"",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/i', \"$dir\\raidrive.msi\", \"APPDIR=$dir\", '/qn', '/norestart') -RunAs -Activity 'Running installer...' | Out-Null"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
+            "Invoke-ExternalCommand msiexec -ArgumentList @('/x', \"$dir\\raidrive.msi\", '/qn', '/norestart') -RunAs -Activity 'Running uninstaller...' | Out-Null"
+        ]
+    },
+    "bin": "RaiDrive.Mount.exe",
+    "shortcuts": [
+        [
+            "RaiDrive.Mount.exe",
+            "RaiDrive"
+        ]
+    ],
+    "persist": "RaiDrive",
+    "checkver": {
+        "url": "https://www.raidrive.com/release-notes/2026",
+        "regex": "([\\d.]+).*Latest"
+    },
+    "autoupdate": {
+        "url": "https://app.raidrive.com/download/raidrive.mount/release/RaiDrive.Mount_$version_x64.msi#/raidrive-installer.exe"
+    }
+}

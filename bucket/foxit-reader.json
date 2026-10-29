@@ -1,30 +1,28 @@
 {
-    "##": "Using cdn06.foxitsoftware.com (hosted on Cloudflare) for better speed worldwide. Please keep foxit-reader and foxit-pdf-reader in sync.",
-    "version": "2026.2.1",
-    "description": "Fast and feature rich PDF reader that offers a delightful reading experience.",
-    "homepage": "https://www.foxit.com/pdf-reader/",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://www.foxit.com/pdf-editor/eula.html"
-    },
+    "version": "2026.1.0.36452",
+    "description": "Free PDF reader & viewer",
+    "homepage": "https://foxit.com/pdf-reader",
+    "license": "Freeware",
     "architecture": {
         "64bit": {
-            "url": "https://cdn06.foxitsoftware.com/product/reader/desktop/win/2026.2.1/FoxitPDFReader202621_L10N_Setup_Prom_x64.exe",
-            "hash": "b5436a6c210c6a8b0120e7af7823bcd12747883ce6248dc6c21f5b8688413442"
+            "url": "https://cdn01.foxitsoftware.com/product/reader/desktop/win/2026.1.0/FoxitPDFReader20261_L10N_Setup_x64.exe",
+            "hash": "d0b784bc77b4f228c8f5328a0c52a69017bae227535eb3bb720f83c6d62b5dd4"
         },
         "32bit": {
-            "url": "https://cdn06.foxitsoftware.com/product/reader/desktop/win/2026.2.1/FoxitPDFReader202621_L10N_Setup_Prom_x86.exe",
-            "hash": "28f1f17cf730252292e3808850971ca2af31883bec4d9e983bd57fa118ac6c9f"
+            "url": "https://cdn01.foxitsoftware.com/product/reader/desktop/win/2026.1.0/FoxitPDFReader20261_L10N_Setup_x86.exe",
+            "hash": "471b75d8e34ea8fe8181bfa6c56dc12399112ee76cdf5e11facdb38e750fdc7b"
         }
     },
-    "installer": {
-        "script": [
-            "Expand-DarkArchive -Path \"$dir\\$fname\" -DestinationPath \"$dir\\extracted\" -Removal",
-            "Expand-MsiArchive -Path \"$dir\\extracted\\AttachedContainer\\FoxitSetup.msi\" -DestinationPath $dir -ExtractDir 'Foxit Software\\Foxit PDF Reader'",
-            "Remove-Item -LiteralPath \"$dir\\extracted\" -Force -Recurse"
-        ]
-    },
-    "bin": "FoxitPDFReader.exe",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\$fname\" -ExtractDir '.rsrc\\1033\\PAYLOAD' -DestinationPath \"$dir\\msi\" -Removal",
+        "$succ = Invoke-ExternalCommand msiexec -ArgumentList @('/a', \"$dir\\msi\\500\", '/p', \"$dir\\msi\\700\", '/qn', \"TARGETDIR=$dir\\extracted\") -LogPath \"$dir\\install.log\"",
+        "if(-not $succ) {",
+        "    error \"Failed to extract files from `\"$dir\\msi`\".`nLog file:`n  $(friendly_path `\"$dir\\install.log`\")`n$(new_issue_msg $app $bucket 'decompress error')\"",
+        "    break",
+        "}",
+        "Move-Item \"$dir\\extracted\\Foxit Software\\Foxit PDF Reader\\*\" \"$dir\""
+    ],
+    "post_install": "Remove-Item \"$dir\\msi\", \"$dir\\extracted\", \"$dir\\install.log\" -Recurse -Force",
     "shortcuts": [
         [
             "FoxitPDFReader.exe",
@@ -32,21 +30,16 @@
         ]
     ],
     "checkver": {
-        "script": [
-            "$Uri = [System.Net.HttpWebRequest]::Create(",
-            "    'https://www.foxit.com/downloads/latest.html?product=Foxit-Reader&platform=Windows&operating_type=64&package_type=exe&language=ML'",
-            ").GetResponse().ResponseUri.AbsoluteUri",
-            "$Uri, $Uri.Replace('x64', 'x86') -join ', '"
-        ],
-        "regex": "/win/(?<version>[\\d.]+)/(?<fname64>FoxitPDFReader.*\\.exe), .*/win/\\k<version>/(?<fname32>FoxitPDFReader.*\\.exe)"
+        "url": "https://foxit.com/pdf-reader/version-history",
+        "regex": "Version ([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://cdn06.foxitsoftware.com/product/reader/desktop/win/$version/$matchFname64"
+                "url": "https://cdn01.foxitsoftware.com/product/reader/desktop/win/$matchHead/FoxitPDFReader$majorVersion$minorVersion_L10N_Setup_x64.exe"
             },
             "32bit": {
-                "url": "https://cdn06.foxitsoftware.com/product/reader/desktop/win/$version/$matchFname32"
+                "url": "https://cdn01.foxitsoftware.com/product/reader/desktop/win/$matchHead/FoxitPDFReader$majorVersion$minorVersion_L10N_Setup_x86.exe"
             }
         }
     }

@@ -1,38 +1,41 @@
 {
-    "version": "1.0.9259-28",
-    "description": "Free Voice and Text Chat",
+    "version": "1.0.9266",
+    "description": "Voice, video and text communication platform",
     "homepage": "https://discord.com",
-    "license": {
-        "identifier": "Freeware",
-        "url": "https://discord.com/terms"
-    },
+    "license": "Freeware",
+    "notes": "Register notification by running: $dir\\makelnk.ps1",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/portapps/discord-portable/releases/download/1.0.9259-28/discord-portable-win64-1.0.9259-28.7z",
-            "hash": "b6dd79ea0a99c87366e43bbef73eb139eae36459ade233288404fa8e0488cd84"
+            "url": "https://stable.dl2.discordapp.net/distro/app/stable/win/x64/1.0.9266/DiscordSetup.exe#/dl.7z",
+            "hash": "972c5ff1a4778c9c231dcb6b80c2dc5aa50db30060192338d5c82c4ebb3261a6"
         }
     },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\Discord-$version-full.nupkg\" -ExtractDir 'lib\\net45' -DestinationPath \"$dir\\app-$version\" -Removal",
+        "Move-Item \"$dir\\app-$version\\installer.db\" \"$dir\"",
+        "Move-Item \"$dir\\app-$version\\app.ico\" \"$dir\"",
+        "New-Item \"$dir\\packages\" -ItemType Directory | Out-Null",
+        "Move-Item \"$dir\\RELEASES\" \"$dir\\packages\"",
+        "Copy-Item \"$bucketsdir\\$bucket\\scripts\\$app\\makelnk.ps1\" \"$dir\""
+    ],
     "shortcuts": [
         [
-            "discord-portable.exe",
-            "Discord"
+            "Update.exe",
+            "Discord",
+            "--processStart Discord.exe",
+            "app.ico"
         ]
     ],
-    "persist": [
-        "data",
-        "log"
-    ],
+    "post_uninstall": "Remove-Item \"$env:APPDATA\\Microsoft\\Windows\\Start Menu\\Programs\\Discord.lnk\" -ErrorAction SilentlyContinue",
     "checkver": {
-        "github": "https://github.com/portapps/discord-portable"
+        "url": "https://updates.discord.com/distributions/app/manifests/latest?channel=stable&platform=win&arch=x64",
+        "regex": "x64/([\\d.]+)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/portapps/discord-portable/releases/download/$version/discord-portable-win64-$version.7z"
+                "url": "https://stable.dl2.discordapp.net/distro/app/stable/win/x64/$version/DiscordSetup.exe#/dl.7z"
             }
-        },
-        "hash": {
-            "url": "$baseurl/checksums.txt"
         }
     }
 }

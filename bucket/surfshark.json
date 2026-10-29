@@ -1,0 +1,47 @@
+{
+    "version": "6.21.0",
+    "description": "VPN & all-in-one cybersecurity suites",
+    "homepage": "https://surfshark.com",
+    "license": "Proprietary",
+    "notes": "Register service by running: $dir\\service.ps1",
+    "architecture": {
+        "64bit": {
+            "url": "https://downloads.surfshark.com/windows/stable64/6.21.0.999/SurfsharkSetup.exe",
+            "hash": "ec786721abf5436dc9365ebb6280f10d8edf09fbcfc1b9b20ebd9b6ae2407850"
+        },
+        "arm64": {
+            "url": "https://downloads.surfshark.com/windows/stable64/6.21.0.999/arm64/SurfsharkSetup.exe",
+            "hash": "826db2144a26ddcbb41e902f8da81f06b6c8b77a0bdeb086ee7da5b3e6aede8f"
+        }
+    },
+    "pre_install": [
+        "if (!(is_admin)) { \"$app requires admin rights to $cmd\"; break }",
+        "Start-Process \"$dir\\$fname\" -ArgumentList @('/extract', \"$dir\") -Wait -Verb RunAs",
+        "Get-ChildItem \"$dir\" -Directory | ForEach-Object { Move-Item \"$_\\*\" \"$dir\"; Remove-Item $_ -Force }"
+    ],
+    "post_install": [
+        "Remove-Item \"$dir\\$fname\"",
+        "Copy-Item \"$bucketsdir\\$bucket\\scripts\\$app\\service.ps1\" \"$dir\""
+    ],
+    "shortcuts": [
+        [
+            "Surfshark.exe",
+            "Surfshark"
+        ]
+    ],
+    "post_uninstall": "Remove-Item \"$env:PUBLIC\\Desktop\\Surfshark.lnk\" -ErrorAction SilentlyContinue",
+    "checkver": {
+        "url": "https://downloads.surfshark.com/windows/stable64/meta/windows-changelog.txt",
+        "regex": "Surfshark ([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://downloads.surfshark.com/windows/stable64/$version.999/SurfsharkSetup.exe"
+            },
+            "arm64": {
+                "url": "https://downloads.surfshark.com/windows/stable64/$version.999/arm64/SurfsharkSetup.exe"
+            }
+        }
+    }
+}

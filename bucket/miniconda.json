@@ -1,62 +1,56 @@
 {
-    "version": "26.9.4-0",
-    "homepage": "https://conda.io/miniconda.html",
-    "description": "Miniconda is a free minimal installer for conda.",
+    "version": "py314_26.9.4-0",
+    "description": "Free, miniature installation of Anaconda Distribution",
+    "homepage": "https://docs.anaconda.com/miniconda",
     "license": "BSD-3-Clause",
+    "notes": [
+        "From 4.6.0, conda has built the support for Cmd, Powershell or other shells",
+        "Use \"conda init powershell\" or \"conda init __your_favorite_shell__\""
+    ],
     "architecture": {
         "64bit": {
             "url": "https://repo.anaconda.com/miniconda/Miniconda3-py314_26.9.4-0-Windows-x86_64.exe",
             "hash": "4e5646825a87ac9ea86969fdaf7181e89b66b42e3f9107e4e6a61f65d76ae518"
         }
     },
-    "installer": {
-        "script": [
-            "# https://github.com/ScoopInstaller/Scoop/pull/5065",
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
-            "Move-Item \"$dir\\$fname\" \"$dir\\..\\setup.exe\" | Out-Null",
-            "Invoke-ExternalCommand2 -Path \"$dir\\..\\setup.exe\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', '/NoShortcuts=1', \"/D=$dir\") | Out-Null",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name dorado) scripts/DoradoUtils.psm1)",
-            "Invoke-ExternalCommand2 -Path \"$dir\\Uninstall-Miniconda3.exe\" -ArgumentList @('/S') | Out-Null",
-            "Remove-Module -Name DoradoUtils"
-        ]
-    },
-    "bin": "scripts\\conda.exe",
-    "post_install": [
-        "Remove-Item \"$dir\\..\\setup.exe\" -Force | Out-Null",
-        "# Set auto_activate_base to false",
-        "(& $dir\\scripts\\conda.exe config --system --set auto_activate_base false) | Out-Null",
-        "# Invoke hook for current shell session",
-        "(& $dir\\scripts\\conda.exe shell.powershell hook) | Out-String | Invoke-Expression"
+    "pre_install": [
+        "if ($dir -match ' ') { error 'The installation directory cannot include a space'; break}",
+        "Move-Item \"$dir\\$fname\" \"$dir\\..\\$fname\"",
+        "Start-Process \"$dir\\..\\$fname\" -ArgumentList @('/S', '/InstallationType=JustMe', '/RegisterPython=0', '/AddToPath=0', '/NoRegistry=1', \"/D=$dir\") -Wait"
+    ],
+    "post_install": "Remove-Item \"$dir\\..\\$fname\"",
+    "env_add_path": [
+        "scripts",
+        "Library\\bin"
+    ],
+    "bin": [
+        "python.exe",
+        "pythonw.exe"
+    ],
+    "persist": "envs",
+    "pre_uninstall": [
+        "# Workaround for https://github.com/ScoopInstaller/Scoop/issues/4075#issuecomment-3010866414",
+        "Invoke-ExternalCommand cmd -ArgumentList @('/c', 'rmdir', '/s', '/q', \"`\"$dir\\envs`\"\")",
+        "Start-Process \"$dir\\Uninstall-Miniconda*.exe\" -ArgumentList '/S' -Wait",
+        "if (!(Test-Path \"$dir\\envs\")) { New-Item \"$dir\\envs\" -ItemType Directory | Out-Null }"
     ],
     "checkver": {
-        "url": "https://repo.anaconda.com/miniconda/",
-        "re": "Miniconda3-py(?<pyversion>31[\\d]+)_([\\d.]+(-\\d+)?)-Windows"
+        "script": [
+            "$page = (Invoke-WebRequest 'https://repo.anaconda.com/miniconda' -UseBasicParsing).Content;",
+            "if ($page -match '(?s)Miniconda\\d+-latest-Windows-x86_64\\.exe.+?([a-fA-F0-9]{64})') {",
+            "    $latestHash = $matches[1];",
+            "    if ($page -match \"(?s)Miniconda(?<major>\\d+)-(?<version>py[\\w.-]+)-Windows-x86_64\\.exe(?:(?!Miniconda).)+?$latestHash\") {",
+            "        return \"Miniconda$($matches['major'])-$($matches['version'])-Windows-x86_64.exe\";",
+            "    }",
+            "}"
+        ],
+        "regex": "(?<major>[\\d]+)-(?<version>py[\\w.-]+)-Windows"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://repo.anaconda.com/miniconda/Miniconda3-py$matchPyversion_$version-Windows-x86_64.exe"
+                "url": "https://repo.anaconda.com/miniconda/Miniconda$matchMajor-$matchVersion-Windows-x86_64.exe"
             }
-        },
-        "hash": {
-            "url": "$baseurl",
-            "regex": "(?sm)$basename.*?<td>$sha256</td>"
         }
-    },
-    "notes": [
-        "This variant does not add the default venv into your PATH unless you activate it with 'conda activate base'.",
-        "You may choose to install the one from the official bucket if you do not care about python PATH pollution.",
-        "",
-        "Conda base env is not persisted by Scoop, packages installed to the base env will be removed when upgrading the app.",
-        "We advice to setup 'envs_dirs' to use a seperated path like '~/.conda/envs' and avoid using the base env.",
-        "https://conda.io/projects/conda/en/latest/user-guide/configuration/use-condarc.html#specify-environment-directories-envs-dirs",
-        "",
-        "To enable conda tab-completion autoload, you can add the following code to your PowerShell $PROFILE:",
-        "(& conda 'shell.powershell' 'hook') | Out-String | Invoke-Expression"
-    ]
+    }
 }
