@@ -6,13 +6,24 @@
     "hash": "44e045ed5350758616d664c5af631e7f2cd10165f5bf2bd82cbf3a0bb8f63462",
     "installer": {
         "script": [
-            "$env:ChocolateyInstall=\"$dir\" ",
+            "$env:ChocolateyInstall = \"$dir\"",
+            "$target = if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { 'Machine' } else { 'User' }",
+            "[Environment]::SetEnvironmentVariable('ChocolateyInstall', \"$dir\", $target)",
+            "$installer = Join-Path $env:TEMP 'scoop-chocolatey-install.ps1'",
+            "Copy-Item \"$dir\\install.ps1\" $installer -Force",
+            "Remove-Item \"$dir\\install.ps1\" -Force",
+            "if (!(Get-ChildItem -LiteralPath \"$dir\" -Force)) { Remove-Item -LiteralPath \"$dir\" -Force }",
             "Set-ExecutionPolicy Bypass -Scope Process -Force;",
             "[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;",
-            "iex(\"$dir\\install.ps1\")",
+            "& $installer",
+            "Remove-Item $installer -Force -ErrorAction SilentlyContinue",
+            "if (!(Test-Path \"$dir\")) { New-Item \"$dir\" -ItemType Directory -Force | Out-Null }",
             " . $profile"
         ]
     },
+    "post_uninstall": [
+        "@('User', 'Machine') | ForEach-Object { if ([Environment]::GetEnvironmentVariable('ChocolateyInstall', $_) -eq \"$dir\") { try { [Environment]::SetEnvironmentVariable('ChocolateyInstall', $null, $_) } catch {} } }"
+    ],
     "bin": [
         "bin/choco.exe",
         "bin/chocolatey.exe",
