@@ -1,0 +1,55 @@
+{
+    "version": "20261028.1",
+    "description": "Native client for Herdr on macOS, Linux, and Windows, built with Rust and GPUI. View terminal sessions, workspaces, Git worktrees, and agent activity through your local Herdr daemon.",
+    "homepage": "https://herdrui.dev",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/penso/herdr-gpui/releases/download/v20261028.1/Herdr-20261028.1-x86_64-pc-windows-msvc.zip",
+            "hash": "8f952291a1c5a822d0aecdb90dbb42f4aff7a44c5889a077c37e6023b3d9cec0",
+            "extract_dir": "Herdr-20261028.1-x86_64-pc-windows-msvc"
+        },
+        "arm64": {
+            "url": "https://github.com/penso/herdr-gpui/releases/download/v20261028.1/Herdr-20261028.1-aarch64-pc-windows-msvc.zip",
+            "hash": "67cb1cb9b0f7bdc539f249b04e9c531f2bded2b392dfcabe7502175a47a9f131",
+            "extract_dir": "Herdr-20261028.1-aarch64-pc-windows-msvc"
+        }
+    },
+    "bin": "herdr-gpui.exe",
+    "persist_external": [
+        [
+            "$env:LocalAppData\\herdr\\gpui",
+            "gpui-state",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir"
+    ],
+    "shortcuts": [
+        [
+            "herdr-gpui-launcher.exe",
+            "Herdr UI"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/penso/herdr-gpui"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/penso/herdr-gpui/releases/download/v$version/Herdr-$version-x86_64-pc-windows-msvc.zip",
+                "extract_dir": "Herdr-$version-x86_64-pc-windows-msvc"
+            },
+            "arm64": {
+                "url": "https://github.com/penso/herdr-gpui/releases/download/v$version/Herdr-$version-aarch64-pc-windows-msvc.zip",
+                "extract_dir": "Herdr-$version-aarch64-pc-windows-msvc"
+            }
+        }
+    }
+}
