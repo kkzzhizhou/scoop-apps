@@ -1,0 +1,100 @@
+{
+    "version": "0.1.6",
+    "description": "Desktop control plane for coding agents",
+    "homepage": "https://t3.codes/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/T3-Code-0.1.6-x64.exe#/dl.7z",
+            "hash": "8cff5c90fdc976c0bdef86074a8cde9c3784af8de2091759514cd9f8f1457405",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse -Force -ErrorAction SilentlyContinue"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/T3-Code-0.1.6-arm64.exe#/dl.7z",
+            "hash": "4655d6c5ee307145ae046739ca6149004f61eacbbcd4375daf8db7ed5d5afc35",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Recurse -Force -ErrorAction SilentlyContinue"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "T3 Code (Beta).exe",
+            "T3 Code"
+        ]
+    ],
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home",
+                "source": "UserProfile/.t3",
+                "target": "$persist_dir/home",
+                "strategy": "junction"
+            },
+            {
+                "label": "active-profile",
+                "source": "AppData/t3code-v2",
+                "target": "$persist_dir/roaming/t3code-v2",
+                "strategy": "junction"
+            },
+            {
+                "label": "legacy-alpha-profile",
+                "source": "AppData/T3 Code (Alpha)",
+                "target": "$persist_dir/roaming/T3 Code (Alpha)",
+                "strategy": "junction"
+            },
+            {
+                "label": "legacy-t3code-profile",
+                "source": "AppData/t3code",
+                "target": "$persist_dir/roaming/t3code",
+                "strategy": "junction"
+            },
+            {
+                "label": "updater",
+                "source": "LocalAppData/t3code-updater",
+                "target": "$persist_dir/local/t3code-updater",
+                "strategy": "symlink",
+                "ensureTarget": true,
+                "targetType": "file"
+            }
+        ],
+        "options": {
+            "log": true,
+            "module": "scripts/t3-code-portable.psm1",
+            "preInstall": true,
+            "postUninstall": true
+        }
+    },
+    "checkver": {
+        "github": "https://api.github.com/repos/pingdotgg/t3code/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "^v(?<version>[0-9.]+)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/pingdotgg/t3code/releases/download/v$version/T3-Code-$version-x64.exe#/dl.7z",
+                "hash": {
+                    "url": "https://api.github.com/repos/pingdotgg/t3code/releases/tags/v$version",
+                    "jsonpath": "$.assets[?(@.name == 'T3-Code-$version-x64.exe')].digest"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/pingdotgg/t3code/releases/download/v$version/T3-Code-$version-arm64.exe#/dl.7z",
+                "hash": {
+                    "url": "https://api.github.com/repos/pingdotgg/t3code/releases/tags/v$version",
+                    "jsonpath": "$.assets[?(@.name == 'T3-Code-$version-arm64.exe')].digest"
+                }
+            }
+        }
+    },
+    "notes": [
+        "Use 'scoop update t3-code' to update this package.",
+        "T3 Code also supports in-app updates; those are blocked so Scoop remains the update source.",
+        "The optional 't3' command is enabled separately from T3 Code Settings."
+    ]
+}

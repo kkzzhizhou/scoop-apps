@@ -1,0 +1,257 @@
+function Resolve-T3CodePath([string]$Path, [hashtable]$Context) {
+    if ($Path -match '^UserProfile/(.+)$') { return Join-Path $env:USERPROFILE $matches[1] }
+    if ($Path -match '^AppData/(.+)$') { return Join-Path $env:APPDATA $matches[1] }
+    if ($Path -match '^LocalAppData/(.+)$') { return Join-Path $env:LOCALAPPDATA $matches[1] }
+    if ($Path -match '^\$persist_dir[/\\](.+)$') { return Join-Path $Context.PersistDir $matches[1] }
+    throw "Unsupported T3 Code mapping path: $Path"
+}
+
+function Get-T3CodeEntry([string]$Path) {
+    try { return Get-Item -LiteralPath $Path -Force -ErrorAction Stop }
+    catch {
+        $parent = Split-Path -Parent $Path
+        if (-not $parent -or -not (Test-Path -LiteralPath $parent -PathType Container)) { return $null }
+        $name = Split-Path -Leaf $Path
+        $matches = @(Get-ChildItem -LiteralPath $parent -Force -ErrorAction Stop | Where-Object Name -EQ $name)
+        if ($matches.Count -eq 0) { return $null }
+        throw "Cannot inspect T3 Code path: $Path"
+    }
+}
+
+function Test-T3CodeReparse($Entry) {
+    return $null -ne $Entry -and (($Entry.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+}
+
+function Assert-T3CodeStopped {
+    $ErrorActionPreference = 'Stop'
+    $names = @('T3 Code (Beta)', 'T3 Code (Alpha)', 't3-resource-monitor')
+    try {
+        $running = @(Get-Process -ErrorAction Stop | Where-Object { $names -contains $_.ProcessName })
+    } catch {
+        throw "Cannot verify that T3 Code is stopped: $($_.Exception.Message)"
+    }
+    if ($running.Count -gt 0) {
+        throw "Close all T3 Code processes before Scoop changes its files or data: $($running.ProcessName -join ', ')"
+    }
+}
+
+function Get-T3CodeTree([string]$Root) {
+    $ErrorActionPreference = 'Stop'
+    $rootPath = [IO.Path]::GetFullPath($Root).TrimEnd('\', '/')
+    $items = @(Get-ChildItem -LiteralPath $rootPath -Force -Recurse -ErrorAction Stop)
+    $tree = foreach ($item in $items) {
+        if (Test-T3CodeReparse $item) { throw "Reparse point inside T3 Code data is not supported: $($item.FullName)" }
+        $relative = $item.FullName.Substring($rootPath.Length).TrimStart('\', '/') -replace '\\', '/'
+        if ($item.PSIsContainer) {
+            "D|$relative"
+        } else {
+            $hash = (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256 -ErrorAction Stop).Hash
+            "F|$relative|$hash"
+        }
+    }
+    return @($tree | Sort-Object -CaseSensitive)
+}
+
+function Assert-T3CodeTreesEqual([string]$Left, [string]$Right) {
+    $a = @(Get-T3CodeTree $Left)
+    $b = @(Get-T3CodeTree $Right)
+    if ($a.Count -ne $b.Count) { throw "T3 Code directory verification failed: $Left <> $Right" }
+    for ($i = 0; $i -lt $a.Count; $i++) {
+        if (-not [string]::Equals($a[$i], $b[$i], [StringComparison]::OrdinalIgnoreCase)) {
+            throw "T3 Code directory verification failed: $Left <> $Right"
+        }
+    }
+}
+
+function Assert-T3CodeRealDirectory([string]$Path, $Entry) {
+    if ($null -ne $Entry -and (-not $Entry.PSIsContainer -or (Test-T3CodeReparse $Entry))) {
+        throw "T3 Code path must be a real directory: $Path"
+    }
+}
+
+function Test-T3CodeOwnedJunction($Entry, [string]$Source, [string]$Target) {
+    if ($null -eq $Entry -or $Entry.LinkType -ne 'Junction' -or @($Entry.Target).Count -ne 1) { return $false }
+    $actual = [string]$Entry.Target
+    if (-not [IO.Path]::IsPathRooted($actual)) { $actual = Join-Path (Split-Path -Parent $Source) $actual }
+    $actual = [IO.Path]::GetFullPath($actual).TrimEnd('\', '/')
+    $expected = [IO.Path]::GetFullPath($Target).TrimEnd('\', '/')
+    return $actual.Equals($expected, [StringComparison]::OrdinalIgnoreCase)
+}
+
+function Ensure-T3CodeParent([string]$Path) {
+    $parent = Split-Path -Parent $Path
+    $entry = Get-T3CodeEntry $parent
+    if ($null -eq $entry) { New-Item -ItemType Directory -Path $parent -Force -ErrorAction Stop | Out-Null; return }
+    if (-not $entry.PSIsContainer -or (Test-T3CodeReparse $entry)) { throw "T3 Code parent must be a real directory: $parent" }
+}
+
+function Copy-T3CodeTree([string]$Source, [string]$Stage) {
+    New-Item -ItemType Directory -Path $Stage -ErrorAction Stop | Out-Null
+    foreach ($item in Get-ChildItem -LiteralPath $Source -Force -ErrorAction Stop) {
+        Copy-Item -LiteralPath $item.FullName -Destination $Stage -Recurse -Force -ErrorAction Stop
+    }
+}
+
+function New-T3CodeJunction([string]$Source, [string]$Target) {
+    Ensure-T3CodeParent $Source
+    New-Item -ItemType Junction -Path $Source -Target $Target -ErrorAction Stop | Out-Null
+    if (-not (Test-T3CodeOwnedJunction (Get-T3CodeEntry $Source) $Source $Target)) {
+        throw "T3 Code junction verification failed: $Source -> $Target"
+    }
+}
+
+function Install-T3CodeDirectoryMapping($Mapping, [hashtable]$Context) {
+    $ErrorActionPreference = 'Stop'
+    $source = Resolve-T3CodePath $Mapping.Source $Context
+    $target = Resolve-T3CodePath $Mapping.Target $Context
+    $backup = "${source}.scoop-t3-code-backup"
+    $stage = "${target}.scoop-t3-code-stage"
+    $sourceEntry = Get-T3CodeEntry $source
+    $targetEntry = Get-T3CodeEntry $target
+    $backupEntry = Get-T3CodeEntry $backup
+    $stageEntry = Get-T3CodeEntry $stage
+
+    if ($null -ne $sourceEntry -and (Test-T3CodeReparse $sourceEntry)) {
+        if (-not (Test-T3CodeOwnedJunction $sourceEntry $source $target) -or $null -eq $targetEntry) {
+            throw "T3 Code source is an external, damaged, or unexpected reparse point: $source"
+        }
+        Assert-T3CodeRealDirectory $target $targetEntry
+        Assert-T3CodeRealDirectory $backup $backupEntry
+        return
+    }
+    Assert-T3CodeRealDirectory $source $sourceEntry
+    Assert-T3CodeRealDirectory $target $targetEntry
+    Assert-T3CodeRealDirectory $backup $backupEntry
+    Assert-T3CodeRealDirectory $stage $stageEntry
+
+    if ($null -ne $sourceEntry) {
+        if ($null -ne $backupEntry) { throw "T3 Code source backup already exists; resolve it before retrying: $backup" }
+        if ($null -ne $targetEntry) {
+            if ($null -ne $stageEntry) { throw "T3 Code target and staging data both exist; resolve the staging path before retrying: $stage" }
+            Assert-T3CodeTreesEqual $source $target
+        } elseif ($null -ne $stageEntry) {
+            Assert-T3CodeTreesEqual $source $stage
+        } else {
+            Ensure-T3CodeParent $target
+            $before = @(Get-T3CodeTree $source)
+            Copy-T3CodeTree $source $stage
+            $after = @(Get-T3CodeTree $source)
+            $copied = @(Get-T3CodeTree $stage)
+            if ((Compare-Object $before $after -CaseSensitive) -or (Compare-Object $before $copied -CaseSensitive)) {
+                throw "T3 Code copy verification failed; source and staging data were preserved: $source, $stage"
+            }
+            $stageEntry = Get-T3CodeEntry $stage
+        }
+
+        if ($null -eq $targetEntry) {
+            if ($null -eq $stageEntry) { throw "T3 Code staging directory is missing: $stage" }
+            if ($null -eq $backupEntry) { Move-Item -LiteralPath $source -Destination $backup -ErrorAction Stop }
+            Move-Item -LiteralPath $stage -Destination $target -ErrorAction Stop
+        } else {
+            if ($null -eq $backupEntry) { Move-Item -LiteralPath $source -Destination $backup -ErrorAction Stop }
+        }
+    } elseif ($null -ne $backupEntry -and $null -eq $targetEntry) {
+        if ($null -eq $stageEntry) {
+            Ensure-T3CodeParent $target
+            Copy-T3CodeTree $backup $stage
+            Assert-T3CodeTreesEqual $backup $stage
+            $stageEntry = Get-T3CodeEntry $stage
+        } else {
+            Assert-T3CodeTreesEqual $backup $stage
+        }
+        Move-Item -LiteralPath $stage -Destination $target -ErrorAction Stop
+        $targetEntry = Get-T3CodeEntry $target
+    } elseif ($null -ne $stageEntry) {
+        throw "T3 Code staging data exists without a verifiable source: $stage"
+    }
+
+    $targetEntry = Get-T3CodeEntry $target
+    if ($null -eq $targetEntry) {
+        Ensure-T3CodeParent $target
+        New-Item -ItemType Directory -Path $target -ErrorAction Stop | Out-Null
+        $targetEntry = Get-T3CodeEntry $target
+    }
+    Assert-T3CodeRealDirectory $target $targetEntry
+
+    $sourceEntry = Get-T3CodeEntry $source
+    if ($null -eq $sourceEntry) { New-T3CodeJunction $source $target }
+    elseif (-not (Test-T3CodeOwnedJunction $sourceEntry $source $target)) { throw "T3 Code source changed during migration: $source" }
+}
+
+function Install-T3CodeFileMapping($Mapping, [hashtable]$Context) {
+    $source = Resolve-T3CodePath $Mapping.Source $Context
+    $target = Resolve-T3CodePath $Mapping.Target $Context
+    $targetEntry = Get-T3CodeEntry $target
+    $sourceEntry = Get-T3CodeEntry $source
+    if ($null -ne $targetEntry -and ($targetEntry.PSIsContainer -or (Test-T3CodeReparse $targetEntry))) {
+        throw "T3 Code updater blocker target must be a regular file: $target"
+    }
+    if ($null -ne $sourceEntry) {
+        if ($sourceEntry.LinkType -ne 'SymbolicLink' -or @($sourceEntry.Target).Count -ne 1) {
+            throw "Existing T3 Code updater data is not modified; resolve this path before installing: $source"
+        }
+        $actual = [IO.Path]::GetFullPath([string]$sourceEntry.Target)
+        $expected = [IO.Path]::GetFullPath($target)
+        if (-not $actual.Equals($expected, [StringComparison]::OrdinalIgnoreCase) -or $null -eq $targetEntry) {
+            throw "T3 Code updater blocker link does not belong to this manifest: $source"
+        }
+        return
+    }
+    if ($null -eq $targetEntry) {
+        Ensure-T3CodeParent $target
+        New-Item -ItemType File -Path $target -ErrorAction Stop | Out-Null
+    }
+    Ensure-T3CodeParent $source
+    New-Item -ItemType SymbolicLink -Path $source -Target $target -ErrorAction Stop | Out-Null
+}
+
+function Invoke-PortableMappings {
+    param(
+        [ValidateSet('PreInstall', 'Install', 'Uninstall', 'PostUninstall')] [string]$Action,
+        [hashtable]$Context,
+        [array]$Mappings,
+        [switch]$Log
+    )
+    $ErrorActionPreference = 'Stop'
+    if ($Action -in @('PreInstall', 'Install', 'Uninstall', 'PostUninstall')) { Assert-T3CodeStopped }
+
+    foreach ($mapping in $Mappings) {
+        if ($Action -eq 'PreInstall') {
+            if ($mapping.TargetType -eq 'file') { Install-T3CodeFileMapping $mapping $Context }
+            else { Install-T3CodeDirectoryMapping $mapping $Context }
+        } elseif ($Action -eq 'Install' -or $Action -eq 'Uninstall') {
+            if ($mapping.TargetType -eq 'file') { Install-T3CodeFileMapping $mapping $Context }
+            else {
+                $source = Resolve-T3CodePath $mapping.Source $Context
+                $target = Resolve-T3CodePath $mapping.Target $Context
+                $entry = Get-T3CodeEntry $source
+                $targetEntry = Get-T3CodeEntry $target
+                Assert-T3CodeRealDirectory $target $targetEntry
+                if (-not (Test-T3CodeOwnedJunction $entry $source $target)) {
+                    throw "T3 Code portable mapping is incomplete or foreign: $source"
+                }
+                $backup = Get-T3CodeEntry "${source}.scoop-t3-code-backup"
+                Assert-T3CodeRealDirectory "${source}.scoop-t3-code-backup" $backup
+            }
+        } else {
+            $source = Resolve-T3CodePath $mapping.Source $Context
+            $target = Resolve-T3CodePath $mapping.Target $Context
+            $entry = Get-T3CodeEntry $source
+            if ($mapping.TargetType -eq 'file') {
+                if ($null -ne $entry) {
+                    if ($entry.LinkType -ne 'SymbolicLink' -or @($entry.Target).Count -ne 1 -or -not ([IO.Path]::GetFullPath([string]$entry.Target)).Equals([IO.Path]::GetFullPath($target), [StringComparison]::OrdinalIgnoreCase)) {
+                        throw "T3 Code updater link is not owned by this manifest: $source"
+                    }
+                    Remove-Item -LiteralPath $source -Force -ErrorAction Stop
+                }
+            } elseif ($null -ne $entry) {
+                if (-not (Test-T3CodeOwnedJunction $entry $source $target)) { throw "T3 Code junction is not owned by this manifest: $source" }
+                Remove-Item -LiteralPath $source -Force -ErrorAction Stop
+            }
+        }
+
+        if ($Log -and $Action -eq 'PreInstall') { info "[T3 Code Portable] Prepared $($mapping.Label)" }
+    }
+}
+
+Export-ModuleMember -Function Invoke-PortableMappings
