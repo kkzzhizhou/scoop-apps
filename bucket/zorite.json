@@ -1,0 +1,64 @@
+{
+    "version": "0.13.0",
+    "description": "A daily-journal note app for the desktop, organized like Logseq but edited like an ordinary document rather than an outliner.",
+    "homepage": "https://github.com/packetThrower/zorite",
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/packetThrower/zorite/releases/download/v0.13.0/Zorite-Windows-amd64-0.13.0.zip",
+            "hash": "c6511eeaa0bbadbd42f4f4776e051347a70b2609868d78954605e3c261012a55"
+        },
+        "arm64": {
+            "url": "https://github.com/packetThrower/zorite/releases/download/v0.13.0/Zorite-Windows-arm64-0.13.0.zip",
+            "hash": "df92fa3f2005c7d7422f98110173287e41604a5dd69f5ef711660399737d5f88"
+        }
+    },
+    "bin": [
+        [
+            "zorite.exe",
+            "zorite"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "zorite.exe",
+            "Zorite"
+        ]
+    ],
+    "persist_external": [
+        [
+            "$env:AppData\\zorite",
+            "data",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir -PersistDir $persist_dir"
+    ],
+    "checkver": {
+        "github": "https://github.com/packetThrower/zorite"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/packetThrower/zorite/releases/download/v$version/Zorite-Windows-amd64-$version.zip",
+                "hash": {
+                    "url": "$baseurl/SHA256SUMS",
+                    "regex": "([a-fA-F0-9]{64})\\s+\\S*Zorite-Windows-amd64-$version\\.zip$"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/packetThrower/zorite/releases/download/v$version/Zorite-Windows-arm64-$version.zip",
+                "hash": {
+                    "url": "$baseurl/SHA256SUMS",
+                    "regex": "([a-fA-F0-9]{64})\\s+\\S*Zorite-Windows-arm64-$version\\.zip$"
+                }
+            }
+        }
+    }
+}

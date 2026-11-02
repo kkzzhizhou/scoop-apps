@@ -1,0 +1,66 @@
+{
+    "version": "0.4.382",
+    "description": "GUI client for herdr: Claude Code, Codex and pi agent sessions as clean chats.",
+    "homepage": "https://alma.now",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/yetone/alma-releases/releases/download/v0.4.382/alma-0.4.382-win-x64.exe#/dl.7z",
+            "hash": "sha512:c656a83e1a4f5628fce3e71e22c9148210fe4b9aa5fe6ed1677833beda779bfc73e671250e7ba9200e936f1064ebd8b33d65897ff68cf07ab5867012544e2d1a",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse"
+            ]
+        }
+    },
+    "persist_external": [
+        [
+            "$env:AppData\\alma",
+            "data",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.config\\alma",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.alma",
+            "activity",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.cache\\alma",
+            "cache",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir -PersistDir $persist_dir"
+    ],
+    "shortcuts": [
+        [
+            "Alma.exe",
+            "Alma"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/yetone/alma-releases"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/yetone/alma-releases/releases/download/v$version/alma-$version-win-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "$basename\\s+sha512:\\s+$base64"
+        }
+    }
+}

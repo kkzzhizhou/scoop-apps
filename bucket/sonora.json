@@ -1,0 +1,64 @@
+{
+    "version": "0.47.0",
+    "description": "A native music streaming client, built with Rust and GPUI.",
+    "homepage": "https://sonorahq.org/",
+    "license": "GPL-3.0-or-later",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sonorahq/sonora/releases/download/v0.47.0/sonora-v0.47.0-x86_64-pc-windows-msvc.exe#/sonora.exe",
+            "hash": "82e4ab84872cdb1da58da16dc6e822bfbc5d8eb25c29862d4a7da5cd31abb723"
+        },
+        "arm64": {
+            "url": "https://github.com/sonorahq/sonora/releases/download/v0.47.0/sonora-v0.47.0-aarch64-pc-windows-msvc.exe#/sonora.exe",
+            "hash": "ca1becdd1929e6fb94513d59abdc6de8a057f2f8c43e890b8a544b30d34ad9ad"
+        }
+    },
+    "bin": "sonora.exe",
+    "shortcuts": [
+        [
+            "sonora.exe",
+            "Sonora"
+        ]
+    ],
+    "persist_external": [
+        [
+            "$env:AppData\\sonora",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:LocalAppData\\sonora",
+            "data",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir -PersistDir $persist_dir"
+    ],
+    "checkver": {
+        "github": "https://github.com/sonorahq/sonora"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sonorahq/sonora/releases/download/v$version/sonora-v$version-x86_64-pc-windows-msvc.exe#/sonora.exe",
+                "hash": {
+                    "url": "$baseurl/SHA256SUMS",
+                    "regex": "$sha256\\s+$basename"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/sonorahq/sonora/releases/download/v$version/sonora-v$version-aarch64-pc-windows-msvc.exe#/sonora.exe",
+                "hash": {
+                    "url": "$baseurl/SHA256SUMS",
+                    "regex": "$sha256\\s+$basename"
+                }
+            }
+        }
+    }
+}

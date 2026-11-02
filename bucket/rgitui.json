@@ -16,18 +16,38 @@
             "rgitui"
         ]
     ],
+    "persist_external": [
+        [
+            "$env:AppData\\rgitui",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:LocalAppData\\rgitui",
+            "cache",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall -Manifest $manifest -PersistDir $persist_dir -Dir $dir"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall -Manifest $manifest -Dir $dir -PersistDir $persist_dir"
+    ],
     "checkver": {
         "github": "https://github.com/noahbclarkson/rgitui"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/noahbclarkson/rgitui/releases/download/v$version/rgitui-$version-x86_64-windows.zip"
+                "url": "https://github.com/noahbclarkson/rgitui/releases/download/v$version/rgitui-$version-x86_64-windows.zip",
+                "hash": {
+                    "url": "$baseurl/SHA256SUMS.txt",
+                    "regex": "$sha256\\s+$basename"
+                }
             }
-        },
-        "hash": {
-            "url": "$baseurl/SHA256SUMS.txt",
-            "find": "$basename"
         }
     }
 }
