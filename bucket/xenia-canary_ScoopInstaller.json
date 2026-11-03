@@ -1,6 +1,6 @@
 {
-    "version": "96ce1ac",
-    "description": "Microsoft Xbox 360 emulator",
+    "version": "20261103005833-a0e0308",
+    "description": "Xbox 360 Emulator Research Project (development version)",
     "homepage": "https://github.com/xenia-canary/xenia-canary",
     "license": {
         "identifier": "BSD-3-Clause",
@@ -11,8 +11,8 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/xenia-canary/xenia-canary/releases/download/96ce1ac/xenia_canary_windows.7z",
-            "hash": "ee99aeddf6a18a6ca9b624b1dce0193a7c8d0e8f8a2af2d9a12f154ad5d10f5c"
+            "url": "https://github.com/xenia-canary/xenia-canary/releases/download/a0e0308/xenia_canary_windows.7z",
+            "hash": "c4c06dbc3e5c385d7e056d11e0c5e262db2959bff4546c2cb0510c43f56e2adb"
         }
     },
     "pre_install": [
@@ -36,7 +36,7 @@
     "shortcuts": [
         [
             "xenia_canary.exe",
-            "Microsoft Xbox 360 [x360][xenia] (canary)"
+            "Xenia Canary"
         ]
     ],
     "persist": [
@@ -50,13 +50,20 @@
         "xenia-canary.config.toml"
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/xenia-canary/xenia-canary/releases/latest",
-        "regex": "\"tag_name\"\\s*:\\s*\"(?<version>[a-f0-9]+)\""
+        "url": "https://github.com/xenia-canary/xenia-canary/releases.atom",
+        "script": [
+            "$xml = [xml]$page",
+            "$updated = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].updated",
+            "$title = ($xml.feed.entry | Where-Object {$_.title -ne 'canary_experimental'} | Sort-Object -Descending { $_.updated })[0].title",
+            "Write-Output \"$updated $title\""
+        ],
+        "regex": "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T(?<hour>\\d{2}):(?<minute>\\d{2}):(?<second>\\d{2})Z (?<commit>[a-f0-9]+)_canary_experimental",
+        "replace": "${year}${month}${day}${hour}${minute}${second}-${commit}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$version/xenia_canary_windows.7z"
+                "url": "https://github.com/xenia-canary/xenia-canary/releases/download/$matchCommit/xenia_canary_windows.7z"
             }
         }
     }
