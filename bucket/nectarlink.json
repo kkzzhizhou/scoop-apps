@@ -1,0 +1,61 @@
+{
+    "version": "0.1.4",
+    "description": "Your Android phone and your Windows PC, working as one. Local-first, end-to-end encrypted, no account.",
+    "homepage": "https://github.com/thtbee/nectarlink",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/thtbee/nectarlink#License-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/thtbee/nectarlink/releases/download/v0.1.4/Nectarlink-0.1.4-x64-setup.exe#/dl.7z",
+            "hash": "afdf6d9c1b94647a7888735193cfab24f6bb3236c98b8da51533ee0ffb516528"
+        }
+    },
+    "pre_install": [
+        "Get-ChildItem -Path \"$dir\\`$_2_\" -Force | Move-Item -Destination \"$dir\\\" -Force",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Nectarlink\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Nectarlink\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "nectarlink-desktop.exe",
+            "NectarLink"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "nectarlink-desktop.exe",
+            "NectarLink"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/thtbee/nectarlink/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/thtbee/nectarlink/releases/download/v$version/Nectarlink-$version-x64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

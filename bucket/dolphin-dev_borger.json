@@ -1,6 +1,6 @@
 {
-    "version": "2609-170",
-    "description": "A Nintendo GameCube and Wii emulator, with enhancements and Netplay. (development version)",
+    "version": "2609-173",
+    "description": "A Nintendo GameCube and Wii emulator",
     "homepage": "https://dolphin-emu.org/",
     "license": {
         "identifier": "GPL-2.0-or-later",
@@ -11,13 +11,13 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://dl.dolphin-emu.org/builds/ec/3a/dolphin-master-2609-170-x64.7z",
-            "hash": "0491b52f4cf135bfa0f13e42236b02d8138213603ecb0d4c4bd536b57a3dc7b3",
+            "url": "https://dl.dolphin-emu.org/builds/d9/61/dolphin-master-2609-173-x64.7z",
+            "hash": "61419292816046299415c8c72a30d2292ff7b5f8bf25b2086bf614fd16730d57",
             "extract_dir": "Dolphin-x64"
         },
         "arm64": {
-            "url": "https://dl.dolphin-emu.org/builds/06/d1/dolphin-master-2609-170-arm64.7z",
-            "hash": "68821819d674cd4c8968eca7a3279bfcb9f8e5cfe409e9d4712893bc095a8633",
+            "url": "https://dl.dolphin-emu.org/builds/d1/c8/dolphin-master-2609-173-arm64.7z",
+            "hash": "611617a427b8d458750b11d97a97233e74cbfe3e02d157a74630dc1e478b341d",
             "extract_dir": "Dolphin-ARM64"
         }
     },
@@ -43,13 +43,24 @@
     "shortcuts": [
         [
             "Dolphin.exe",
-            "Dolphin (Development)"
+            "Nintendo GameCube & Wii [ngc][dolphin] (dev)"
         ]
     ],
     "persist": "User",
     "checkver": {
         "url": "https://dolphin-emu.org/update/latest/dev",
-        "regex": "\"shortrev\":\\s*\"(?<version>[\\w-]+)\"(?=[\\s\\S]*builds/(?<prefix1>[a-f0-9]{2}/[a-f0-9]{2})/dolphin-master-\\k<version>-x64\\.7z)(?=[\\s\\S]*builds/(?<prefix2>[a-f0-9]{2}/[a-f0-9]{2})/dolphin-master-\\k<version>-arm64\\.7z)"
+        "script": [
+            "$release = Invoke-RestMethod $url",
+            "$windowsX64 = $release.artifacts | Where-Object { $_.system -eq 'Windows x64' } | Select-Object -First 1",
+            "$windowsArm64 = $release.artifacts | Where-Object { $_.system -eq 'Windows arm64' } | Select-Object -First 1",
+            "if (!$windowsX64 -or !$windowsArm64) { throw 'Could not find both Windows builds in the latest Dolphin metadata' }",
+            "if ($windowsX64.url -notmatch '/builds/(?<prefix1>[a-f0-9]{2}/[a-f0-9]{2})/') { throw 'Could not find the Windows x64 build path' }",
+            "$prefix1 = $Matches.prefix1",
+            "if ($windowsArm64.url -notmatch '/builds/(?<prefix2>[a-f0-9]{2}/[a-f0-9]{2})/') { throw 'Could not find the Windows ARM64 build path' }",
+            "$prefix2 = $Matches.prefix2",
+            "return \"$($release.shortrev) $prefix1 $prefix2\""
+        ],
+        "regex": "(?<version>[\\w-]+) (?<prefix1>[a-f0-9]{2}/[a-f0-9]{2}) (?<prefix2>[a-f0-9]{2}/[a-f0-9]{2})"
     },
     "autoupdate": {
         "architecture": {

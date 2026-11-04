@@ -16,6 +16,14 @@
             "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{code_GetInstallDir}' -Removal"
         ]
     },
+    "post_install": [
+        "$installContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\wu\\install-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "$uninstallContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\wu\\uninstall-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$installContext -or !$uninstallContext) { throw 'wu context menu templates not found in bucket/scripts!' }",
+        "$appPath = $dir.Replace('\\', '\\\\')",
+        "(Get-Content $installContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\install-context.reg\" -Encoding Ascii",
+        "(Get-Content $uninstallContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\uninstall-context.reg\" -Encoding Ascii"
+    ],
     "bin": [
         [
             "bin\\wu.exe",
@@ -29,8 +37,9 @@
         ]
     ],
     "notes": [
-        "Please manually disable the auto-update feature in Wu's settings to prevent the updater from installing the program in unintended locations.",
-        "This manifest unpacks the installer instead of running it, so the installer's registry-based options (context menu, file associations, PATH) are not applied."
+        "Please disable auto-update in Wu's settings.",
+        "Context menu items: reg import \"$dir\\install-context.reg\"",
+        "Remove items: reg import \"$dir\\uninstall-context.reg\""
     ],
     "checkver": "github",
     "autoupdate": {
