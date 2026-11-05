@@ -1,0 +1,61 @@
+{
+    "version": "0.1.0-beta-202611041952",
+    "description": "WebHTV PC 是一个桌面播放器，支持 WebHTV / TVBox / 猫源配置协议和 Spider 运行时。",
+    "homepage": "https://github.com/Silent1566/webhtv-pc",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Silent1566/webhtv-pc/releases/download/v0.1.0-beta-202611041952/webhtv-pc-0.1.0-beta-windows-x64.zip",
+            "hash": "a27212ac9881e3e1a786e3bff1f190f619c96b478e5409310fde500f6d1db931",
+            "extract_dir": "WebHTV-PC-0.1.0-beta-windows-x64"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\webhtv-pc\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\webhtv-pc\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\webhtv-pc\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\webhtv-pc\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "webhtv_pc.exe",
+            "webhtv"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "webhtv_pc.exe",
+            "webhtv"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Silent1566/webhtv-pc/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)/webhtv-pc-([\\d.]+)-beta-windows",
+        "replace": "${1}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Silent1566/webhtv-pc/releases/download/v$match1/webhtv-pc-$match2-beta-windows-x64.zip",
+                "extract_dir": "WebHTV-PC-$match2-beta-windows-x64"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

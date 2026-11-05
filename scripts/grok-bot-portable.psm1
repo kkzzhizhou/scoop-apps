@@ -1,0 +1,331 @@
+# Grok Bot portable mappings (roaming: safe auto-migrate; programs: delete NSIS tree then link).
+# Unlike scripts/portable.psm1, never Copy then silently Remove-Item the only source.
+# Unlike the previous refuse-only module, roaming ordinary directories are migrated with verify+backup.
+
+function Get-GrokBotProcessName {
+    if ($env:GROK_BOT_PORTABLE_PROCESS_NAME) { return $env:GROK_BOT_PORTABLE_PROCESS_NAME }
+    return 'Grok Bot'
+}
+
+function Assert-GrokBotNotRunning {
+    if ($env:GROK_BOT_PORTABLE_SKIP_PROCESS_CHECK -eq '1') { return }
+    $name = Get-GrokBotProcessName
+    $procs = @(Get-Process -Name $name -ErrorAction SilentlyContinue)
+    if ($procs.Count -gt 0) {
+        throw "Grok Bot is running (process '$name', count=$($procs.Count)). Quit the app before install/update/uninstall. Scoop will not stop the process."
+    }
+}
+
+function Get-GrokBotPathEntry([string]$Path) {
+    [void][System.IO.Path]::GetFullPath($Path)
+    try { return Get-Item -LiteralPath $Path -Force -ErrorAction Stop }
+    catch {
+        if ($_.CategoryInfo.Category -ne 'ObjectNotFound') { throw }
+        $parent = Split-Path -Parent $Path
+        $name = Split-Path -Leaf $Path
+        if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $Path) { throw }
+        $parentEntry = Get-GrokBotPathEntry $parent
+        if ($null -eq $parentEntry) { return $null }
+        if (-not $parentEntry.PSIsContainer) { throw "Grok Bot path parent is not a directory: $parent" }
+        $entries = @(Get-ChildItem -LiteralPath $parent -Force -ErrorAction Stop | Where-Object Name -EQ $name)
+        if ($entries.Count -gt 0) { throw "Cannot inspect existing Grok Bot path: $Path" }
+        return $null
+    }
+}
+
+function Resolve-GrokBotMappingPath([string]$Path, [hashtable]$Context) {
+    if ($Path -match '^AppData/(.+)$') { return Join-Path $env:APPDATA $matches[1] }
+    if ($Path -match '^LocalAppData/(.+)$') { return Join-Path $env:LOCALAPPDATA $matches[1] }
+    if ($Path -match '^\$persist_dir[/\\](.+)$') { return Join-Path $Context.PersistDir $matches[1] }
+    if ([System.IO.Path]::IsPathRooted($Path)) { return $Path }
+    throw "Unsupported Grok Bot mapping path: $Path"
+}
+
+function Test-GrokBotReparse($Item) {
+    return $null -ne $Item -and (($Item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0)
+}
+
+function Test-GrokBotOwnedLink($Item, [string]$Source, [string]$Target) {
+    if ($null -eq $Item -or $Item.LinkType -ne 'SymbolicLink' -or @($Item.Target).Count -ne 1) { return $false }
+    $actualPath = [string]$Item.Target
+    if (-not [System.IO.Path]::IsPathRooted($actualPath)) { $actualPath = Join-Path (Split-Path -Parent $Source) $actualPath }
+    $actual = [System.IO.Path]::GetFullPath($actualPath).TrimEnd('\', '/')
+    $expected = [System.IO.Path]::GetFullPath($Target).TrimEnd('\', '/')
+    return $actual.Equals($expected, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Assert-GrokBotRealDirectory([string]$Path, $Entry) {
+    if ($null -ne $Entry -and (-not $Entry.PSIsContainer -or (Test-GrokBotReparse $Entry))) {
+        throw "Grok Bot path must be a real directory: $Path"
+    }
+}
+
+function Ensure-GrokBotParent([string]$Path) {
+    $parent = Split-Path -Parent $Path
+    if ([string]::IsNullOrWhiteSpace($parent)) { return }
+    $entry = Get-GrokBotPathEntry $parent
+    if ($null -eq $entry) {
+        New-Item -ItemType Directory -Path $parent -Force -ErrorAction Stop | Out-Null
+        return
+    }
+    if (-not $entry.PSIsContainer -or (Test-GrokBotReparse $entry)) {
+        throw "Grok Bot parent must be a real directory: $parent"
+    }
+}
+
+function Ensure-GrokBotDirectory([string]$Path) {
+    $entry = Get-GrokBotPathEntry $Path
+    if ($null -eq $entry) {
+        Ensure-GrokBotParent $Path
+        New-Item -ItemType Directory -Path $Path -ErrorAction Stop | Out-Null
+        $entry = Get-GrokBotPathEntry $Path
+    }
+    Assert-GrokBotRealDirectory $Path $entry
+}
+
+function Get-GrokBotTree([string]$Root) {
+    $ErrorActionPreference = 'Stop'
+    $rootPath = [System.IO.Path]::GetFullPath($Root).TrimEnd('\', '/')
+    $items = @(Get-ChildItem -LiteralPath $rootPath -Force -Recurse -ErrorAction Stop)
+    $tree = foreach ($item in $items) {
+        if (Test-GrokBotReparse $item) { throw "Reparse point inside Grok Bot data is not supported: $($item.FullName)" }
+        $relative = $item.FullName.Substring($rootPath.Length).TrimStart('\', '/') -replace '\\', '/'
+        if ($item.PSIsContainer) {
+            "D|$relative"
+        } else {
+            $hash = (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256 -ErrorAction Stop).Hash
+            "F|$relative|$hash"
+        }
+    }
+    return @($tree | Sort-Object -CaseSensitive)
+}
+
+function Assert-GrokBotTreesEqual([string]$Left, [string]$Right) {
+    $a = @(Get-GrokBotTree $Left)
+    $b = @(Get-GrokBotTree $Right)
+    if ($a.Count -ne $b.Count) { throw "Grok Bot directory verification failed: $Left <> $Right" }
+    for ($i = 0; $i -lt $a.Count; $i++) {
+        if (-not [string]::Equals($a[$i], $b[$i], [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Grok Bot directory verification failed: $Left <> $Right"
+        }
+    }
+}
+
+function Test-GrokBotDirectoryHasContent([string]$Path) {
+    $entry = Get-GrokBotPathEntry $Path
+    if ($null -eq $entry) { return $false }
+    Assert-GrokBotRealDirectory $Path $entry
+    return (@(Get-ChildItem -LiteralPath $Path -Force -ErrorAction Stop).Count -gt 0)
+}
+
+function Get-GrokBotBackupPath([string]$Source) {
+    $base = "${Source}.scoop-grok-bot-backup"
+    if ($null -eq (Get-GrokBotPathEntry $base)) { return $base }
+    $stamp = Get-Date -Format 'yyyyMMddHHmmss'
+    $candidate = "${base}-$stamp"
+    if ($null -ne (Get-GrokBotPathEntry $candidate)) {
+        throw "Grok Bot backup path already exists; resolve it before retrying: $candidate"
+    }
+    return $candidate
+}
+
+function Copy-GrokBotTree([string]$Source, [string]$Destination) {
+    New-Item -ItemType Directory -Path $Destination -ErrorAction Stop | Out-Null
+    foreach ($item in Get-ChildItem -LiteralPath $Source -Force -ErrorAction Stop) {
+        Copy-Item -LiteralPath $item.FullName -Destination $Destination -Recurse -Force -ErrorAction Stop
+    }
+}
+
+function New-GrokBotSymlink([string]$Source, [string]$Target) {
+    Ensure-GrokBotParent $Source
+    New-Item -ItemType SymbolicLink -Path $Source -Target $Target -ErrorAction Stop | Out-Null
+    if (-not (Test-GrokBotOwnedLink (Get-GrokBotPathEntry $Source) $Source $Target)) {
+        throw "Grok Bot symlink verification failed: $Source -> $Target"
+    }
+}
+
+function Test-GrokBotNsisProgramsTree([string]$Path) {
+    $exe = Join-Path $Path 'Grok Bot.exe'
+    $uninst = Join-Path $Path 'Uninstall Grok Bot.exe'
+    $resources = Join-Path $Path 'resources'
+    $asar = Join-Path $resources 'app.asar'
+    $hasExe = $null -ne (Get-GrokBotPathEntry $exe)
+    $hasUninst = $null -ne (Get-GrokBotPathEntry $uninst)
+    $hasAsar = $null -ne (Get-GrokBotPathEntry $asar)
+    $hasResourcesDir = $false
+    $resEntry = Get-GrokBotPathEntry $resources
+    if ($null -ne $resEntry -and $resEntry.PSIsContainer -and -not (Test-GrokBotReparse $resEntry)) { $hasResourcesDir = $true }
+    return ($hasExe -and ($hasUninst -or $hasAsar -or $hasResourcesDir))
+}
+
+function Install-GrokBotRoamingMapping([hashtable]$Pair, [switch]$Log) {
+    $source = $Pair.Source
+    $target = $Pair.Target
+    $stage = "${target}.scoop-grok-bot-stage"
+    $sourceEntry = Get-GrokBotPathEntry $source
+    $targetEntry = Get-GrokBotPathEntry $target
+    $stageEntry = Get-GrokBotPathEntry $stage
+
+    if ($null -ne $sourceEntry -and (Test-GrokBotReparse $sourceEntry)) {
+        if (-not (Test-GrokBotOwnedLink $sourceEntry $source $target) -or $null -eq $targetEntry) {
+            throw "Grok Bot roaming source is an external, damaged, or unexpected reparse point: $source"
+        }
+        Assert-GrokBotRealDirectory $target $targetEntry
+        if ($null -ne $stageEntry) {
+            throw "Grok Bot staging data left behind; resolve before retrying: $stage"
+        }
+        return
+    }
+
+    Assert-GrokBotRealDirectory $source $sourceEntry
+    Assert-GrokBotRealDirectory $target $targetEntry
+    Assert-GrokBotRealDirectory $stage $stageEntry
+
+    $targetHasContent = Test-GrokBotDirectoryHasContent $target
+
+    if ($null -ne $sourceEntry) {
+        if ($targetHasContent) {
+            try { Assert-GrokBotTreesEqual $source $target }
+            catch {
+                throw "Grok Bot roaming persist already has data that differs from the existing AppData directory. Refusing to merge. Resolve manually: source=$source target=$target"
+            }
+            $backup = Get-GrokBotBackupPath $source
+            Move-Item -LiteralPath $source -Destination $backup -ErrorAction Stop
+            if ($Log) { Write-Host "[Portable Mode] Renamed identical roaming source to backup: $backup" }
+        } else {
+            if ($null -ne $stageEntry) {
+                try { Assert-GrokBotTreesEqual $source $stage }
+                catch {
+                    throw "Grok Bot staging data does not match source; preserved both: $source, $stage"
+                }
+            } else {
+                Ensure-GrokBotParent $target
+                $before = @(Get-GrokBotTree $source)
+                try {
+                    Copy-GrokBotTree $source $stage
+                    Assert-GrokBotTreesEqual $source $stage
+                    $after = @(Get-GrokBotTree $source)
+                    if (Compare-Object $before $after -CaseSensitive) {
+                        throw "Grok Bot source changed during copy; source and staging preserved: $source, $stage"
+                    }
+                } catch {
+                    if ($null -ne (Get-GrokBotPathEntry $stage)) {
+                        Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+                    }
+                    throw
+                }
+            }
+            $backup = Get-GrokBotBackupPath $source
+            Move-Item -LiteralPath $source -Destination $backup -ErrorAction Stop
+            if ($null -eq (Get-GrokBotPathEntry $target)) {
+                Move-Item -LiteralPath $stage -Destination $target -ErrorAction Stop
+            } else {
+                # Target appeared empty dir meanwhile: verify empty then replace via stage content move
+                if (Test-GrokBotDirectoryHasContent $target) {
+                    throw "Grok Bot persist target gained content during migration; staging preserved: $stage"
+                }
+                Remove-Item -LiteralPath $target -Force -ErrorAction Stop
+                Move-Item -LiteralPath $stage -Destination $target -ErrorAction Stop
+            }
+            if ($Log) { Write-Host "[Portable Mode] Migrated roaming to persist; backup=$backup" }
+        }
+    } elseif ($null -ne $stageEntry) {
+        throw "Grok Bot staging data exists without a verifiable source: $stage"
+    }
+
+    Ensure-GrokBotDirectory $target
+    $sourceEntry = Get-GrokBotPathEntry $source
+    if ($null -eq $sourceEntry) {
+        New-GrokBotSymlink $source $target
+    } elseif (-not (Test-GrokBotOwnedLink $sourceEntry $source $target)) {
+        throw "Grok Bot roaming source changed during migration: $source"
+    }
+}
+
+function Install-GrokBotProgramsMapping([hashtable]$Pair, [switch]$Log) {
+    $source = $Pair.Source
+    $target = $Pair.Target
+    $sourceEntry = Get-GrokBotPathEntry $source
+
+    if ($null -ne $sourceEntry -and (Test-GrokBotReparse $sourceEntry)) {
+        if (-not (Test-GrokBotOwnedLink $sourceEntry $source $target)) {
+            throw "Grok Bot Programs path is an unexpected reparse point: $source"
+        }
+        Ensure-GrokBotDirectory $target
+        return
+    }
+
+    if ($null -ne $sourceEntry) {
+        Assert-GrokBotRealDirectory $source $sourceEntry
+        if (-not (Test-GrokBotNsisProgramsTree $source)) {
+            throw "Grok Bot Programs directory does not look like an NSIS/Electron install tree (expected 'Grok Bot.exe' plus Uninstall/resources). Refusing to delete: $source"
+        }
+        try {
+            Remove-Item -LiteralPath $source -Recurse -Force -ErrorAction Stop
+        } catch {
+            $left = Get-GrokBotPathEntry $source
+            if ($null -ne $left) {
+                throw "Failed to delete Grok Bot Programs tree (possibly file locks). Path may be partially removed — inspect and clear manually before retrying: $source. Error: $($_.Exception.Message)"
+            }
+            throw
+        }
+        if ($null -ne (Get-GrokBotPathEntry $source)) {
+            throw "Grok Bot Programs tree still present after delete; refusing to create link over a partial directory: $source"
+        }
+        if ($Log) { Write-Host "[Portable Mode] Deleted NSIS Programs tree: $source" }
+    }
+
+    Ensure-GrokBotDirectory $target
+    $sourceEntry = Get-GrokBotPathEntry $source
+    if ($null -eq $sourceEntry) {
+        New-GrokBotSymlink $source $target
+    } elseif (-not (Test-GrokBotOwnedLink $sourceEntry $source $target)) {
+        throw "Grok Bot Programs source changed during install: $source"
+    }
+}
+
+function Invoke-PortableMappings {
+    param(
+        [ValidateSet('PreInstall', 'Install', 'Uninstall', 'PostUninstall')] [string]$Action,
+        [hashtable]$Context,
+        [array]$Mappings,
+        [switch]$Log
+    )
+    $ErrorActionPreference = 'Stop'
+    Assert-GrokBotNotRunning
+
+    $pairs = @($Mappings | ForEach-Object {
+        if ($_.Strategy -ne 'symlink' -or ($_.TargetType -and $_.TargetType -ne 'directory')) {
+            throw 'Grok Bot only supports directory symlink mappings.'
+        }
+        @{
+            Source = (Resolve-GrokBotMappingPath $_.Source $Context)
+            Target = (Resolve-GrokBotMappingPath $_.Target $Context)
+            Label  = $_.Label
+        }
+    })
+
+    if ($Action -in @('PreInstall', 'Install')) {
+        foreach ($pair in $pairs) {
+            $isPrograms = ($pair.Label -eq 'programs') -or ($pair.Source -match '[\\/]Programs[\\/]Grok Bot$')
+            if ($isPrograms) { Install-GrokBotProgramsMapping $pair -Log:$Log }
+            else { Install-GrokBotRoamingMapping $pair -Log:$Log }
+            if (-not (Test-GrokBotOwnedLink (Get-GrokBotPathEntry $pair.Source) $pair.Source $pair.Target)) {
+                throw "Grok Bot mapping was not created: $($pair.Source)"
+            }
+            if ($Log) { Write-Host "[Portable Mode] Linked $($pair.Label) -> $($pair.Target)" }
+        }
+    } else {
+        foreach ($pair in $pairs) {
+            $item = Get-GrokBotPathEntry $pair.Source
+            if ($null -ne $item) {
+                if (-not (Test-GrokBotOwnedLink $item $pair.Source $pair.Target)) {
+                    throw "Grok Bot link is not owned by this manifest: $($pair.Source)"
+                }
+                Remove-Item -LiteralPath $pair.Source -Force -ErrorAction Stop
+                if ($null -ne (Get-GrokBotPathEntry $pair.Source)) { throw "Grok Bot link was not removed: $($pair.Source)" }
+                if ($Log) { Write-Host "[Portable Mode] Removed symbolic link: $($pair.Source)" }
+            }
+        }
+    }
+}

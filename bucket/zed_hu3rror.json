@@ -1,0 +1,76 @@
+{
+    "homepage": "https://zed.dev/",
+    "description": "A high-performance, multiplayer code editor from the creators of Atom and Tree-sitter",
+    "version": "1.27.0",
+    "license": "AGPL-3.0, Apache-2.0, GPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zed-industries/zed/releases/download/v1.27.0/Zed-x86_64.exe",
+            "hash": "6a39f9a78a6aac805f5aedcf03384b4b49349e9282903f27ebafcb18dde538ca"
+        },
+        "arm64": {
+            "url": "https://github.com/zed-industries/zed/releases/download/v1.27.0/Zed-aarch64.exe",
+            "hash": "2d0a4e690560f67bb86836f599a8bec5eefc7fc6e8741d89c23740344bda761a"
+        }
+    },
+    "depends": "innounp",
+    "installer": {
+        "script": [
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{app}'",
+            "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{code_GetInstallDir}' -Removal"
+        ]
+    },
+    "persist_external": [
+        [
+            "$env:AppData\\Zed",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:LocalAppData\\Zed",
+            "data",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        "$installContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\zed\\install-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "$uninstallContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\zed\\uninstall-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$installContext -or !$uninstallContext) { warn 'zed context menu templates not found in bucket/scripts; skipping context menu setup' } else {",
+        "$appPath = $dir.Replace('\\', '\\\\')",
+        "(Get-Content $installContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\install-context.reg\" -Encoding Ascii",
+        "(Get-Content $uninstallContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\uninstall-context.reg\" -Encoding Ascii",
+        "}",
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall"
+    ],
+    "bin": "bin\\zed.exe",
+    "shortcuts": [
+        [
+            "Zed.exe",
+            "Zed"
+        ]
+    ],
+    "notes": [
+        "Please disable auto-update in Zed's settings (\"auto_update\": false), or the updater installs a second copy outside Scoop's directory.",
+        "Context menu: reg import \"$dir\\install-context.reg\"",
+        "Remove context menu: reg import \"$dir\\uninstall-context.reg\" (run before uninstalling)",
+        "Settings and databases are kept in persist\\zed via persist_external - purge with: scoop uninstall zed -p"
+    ],
+    "checkver": {
+        "github": "https://github.com/zed-industries/zed"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zed-industries/zed/releases/download/v$version/Zed-x86_64.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/zed-industries/zed/releases/download/v$version/Zed-aarch64.exe"
+            }
+        }
+    }
+}

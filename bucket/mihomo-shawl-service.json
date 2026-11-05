@@ -36,19 +36,16 @@
         }
     },
     "pre_install": [
-        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
-        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
+        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-service\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found under scripts/mihomo-shawl-service in any bucket!' }",
         "& \"$helper\" -Phase pre_install -Dir \"$dir\" -PersistDir \"$persist_dir\""
     ],
     "post_install": [
-        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
-        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
-        "& \"$helper\" -Phase post_install -Dir \"$dir\" -OriginalDir \"$original_dir\" -PersistDir \"$persist_dir\""
+        "& \"$dir\\mihomo-shawl-setup.ps1\" -Phase post_install -Dir \"$dir\" -OriginalDir \"$original_dir\" -PersistDir \"$persist_dir\""
     ],
     "pre_uninstall": [
-        "$helper = (Resolve-Path \"$bucketsdir\\*\\scripts\\mihomo-shawl-setup.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
-        "if (!$helper) { throw 'mihomo-shawl-setup.ps1 not found in bucket/scripts!' }",
-        "& \"$helper\" -Phase uninstall -Dir \"$dir\" -PersistDir \"$persist_dir\""
+        "if (!(Test-Path \"$dir\\mihomo-shawl-setup.ps1\")) { throw 'installed copy missing; run: scoop update mihomo-shawl-service --force' }",
+        "& \"$dir\\mihomo-shawl-setup.ps1\" -Phase uninstall -Dir \"$dir\" -PersistDir \"$persist_dir\""
     ],
     "persist": [
         "config",

@@ -16,20 +16,34 @@
             "Expand-InnoArchive -Path \"$dir\\$fname\" -ExtractDir '{code_GetInstallDir}' -Removal"
         ]
     },
+    "persist_external": [
+        [
+            "$env:AppData\\Wu",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:LocalAppData\\Wu",
+            "data",
+            "directory"
+        ]
+    ],
     "post_install": [
         "$installContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\wu\\install-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
         "$uninstallContext = (Resolve-Path \"$bucketsdir\\*\\scripts\\wu\\uninstall-context.reg\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
-        "if (!$installContext -or !$uninstallContext) { throw 'wu context menu templates not found in bucket/scripts!' }",
+        "if (!$installContext -or !$uninstallContext) { warn 'wu context menu templates not found in bucket/scripts; skipping context menu setup' } else {",
         "$appPath = $dir.Replace('\\', '\\\\')",
         "(Get-Content $installContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\install-context.reg\" -Encoding Ascii",
-        "(Get-Content $uninstallContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\uninstall-context.reg\" -Encoding Ascii"
+        "(Get-Content $uninstallContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\uninstall-context.reg\" -Encoding Ascii",
+        "}",
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalInstall"
     ],
-    "bin": [
-        [
-            "bin\\wu.exe",
-            "wu"
-        ]
+    "pre_uninstall": [
+        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "Invoke-PersistExternalUninstall"
     ],
+    "bin": "bin\\wu.exe",
     "shortcuts": [
         [
             "Wu.exe",
@@ -37,9 +51,10 @@
         ]
     ],
     "notes": [
-        "Please disable auto-update in Wu's settings.",
-        "Context menu items: reg import \"$dir\\install-context.reg\"",
-        "Remove items: reg import \"$dir\\uninstall-context.reg\""
+        "Please disable auto-update in Wu's settings, or the updater installs a second copy outside Scoop's directory.",
+        "Context menu: reg import \"$dir\\install-context.reg\"",
+        "Remove context menu: reg import \"$dir\\uninstall-context.reg\" (run before uninstalling)",
+        "Settings and databases are kept in persist\\wu via persist_external - purge with: scoop uninstall wu -p"
     ],
     "checkver": "github",
     "autoupdate": {

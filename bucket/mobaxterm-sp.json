@@ -47,10 +47,8 @@
     },
     "post_install": [
         "Write-Host 'Running MobaXtermX.exe license generator...' -ForegroundColor Green",
-        "$bucketDir = Find-BucketDirectory -Root -Name $bucket",
-        "if ($bucketDir) {",
-        "    $execPath = Join-Path \"$bucketDir\\scripts\" 'MobaXtermX.exe'",
-        "    if (Test-Path $execPath) {",
+        "$execPath = (Resolve-Path \"$bucketsdir\\*\\scripts\\mobaxterm-sp\\MobaXtermX.exe\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if ($execPath) {",
         "        $username = $env:USERNAME",
         "        $tempDir = [System.IO.Path]::GetTempPath()",
         "        $currentDir = Get-Location",
@@ -65,11 +63,8 @@
         "            Write-Host \"Error: License file generation failed.\" -ForegroundColor Red",
         "        }",
         "        Set-Location -Path $currentDir",
-        "    } else {",
-        "        Write-Host \"Error: MobaXtermX.exe not found in scripts folder.\" -ForegroundColor Red",
-        "    }",
         "} else {",
-        "    Write-Host \"Error: Could not find bucket directory.\" -ForegroundColor Red",
+        "    Write-Host \"Error: MobaXtermX.exe not found under scripts\\mobaxterm-sp in any bucket.\" -ForegroundColor Red",
         "}"
     ]
 }
