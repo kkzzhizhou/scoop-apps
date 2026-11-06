@@ -13,7 +13,9 @@
     ],
     "pre_install": [
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalInstall",
         "Start-Process \"$dir\\GoodSync-v10-Setup.exe\" -Wait -ArgumentList '/S' -Verb RunAs",
         "Stop-Process -Name 'gs-server' -Force -ErrorAction SilentlyContinue",
@@ -23,7 +25,9 @@
         "if (!(is_admin)) { error \"$app requires admin rights to $cmd\"; break }",
         "Stop-Process -Name 'gs-server' -Force -ErrorAction SilentlyContinue",
         "Start-Process \"$env:ProgramFiles\\Siber Systems\\GoodSync\\gs-runner.exe\" -Wait -ArgumentList @('/stop-remove-services', '/S') -Verb RunAs",
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalUninstall"
     ]
 }

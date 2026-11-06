@@ -1,0 +1,65 @@
+{
+    "version": "20261104.1",
+    "description": "Native client for Sheprd (formerly Herdr UI) on macOS, Linux, and Windows, built with Rust and GPUI. View terminal sessions, workspaces, Git worktrees, and agent activity through your local daemon.",
+    "homepage": "https://sheprd.org",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sheprd-labs/sheprd/releases/download/v20261104.1/Sheprd-20261104.1-x86_64-pc-windows-msvc.zip",
+            "hash": "dc73aacb25dcaafdcd05f63b34b5623e741f9fe0b87474ed35cf2d7795955b82",
+            "extract_dir": "Sheprd-20261104.1-x86_64-pc-windows-msvc"
+        },
+        "arm64": {
+            "url": "https://github.com/sheprd-labs/sheprd/releases/download/v20261104.1/Sheprd-20261104.1-aarch64-pc-windows-msvc.zip",
+            "hash": "413061e7de168aff4632dd676ba6d5d565d010cdbea009a1467fd6bab972b02a",
+            "extract_dir": "Sheprd-20261104.1-aarch64-pc-windows-msvc"
+        }
+    },
+    "bin": [
+        "sheprd.exe",
+        [
+            "herdr-gpui.exe",
+            "herdr-gpui"
+        ]
+    ],
+    "persist_external": [
+        [
+            "$env:LocalAppData\\herdr\\gpui",
+            "gpui-state",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalUninstall"
+    ],
+    "shortcuts": [
+        [
+            "sheprd-launcher.exe",
+            "Sheprd"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/sheprd-labs/sheprd"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sheprd-labs/sheprd/releases/download/v$version/Sheprd-$version-x86_64-pc-windows-msvc.zip",
+                "extract_dir": "Sheprd-$version-x86_64-pc-windows-msvc"
+            },
+            "arm64": {
+                "url": "https://github.com/sheprd-labs/sheprd/releases/download/v$version/Sheprd-$version-aarch64-pc-windows-msvc.zip",
+                "extract_dir": "Sheprd-$version-aarch64-pc-windows-msvc"
+            }
+        }
+    }
+}

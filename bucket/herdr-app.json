@@ -1,44 +1,27 @@
 {
     "version": "0.1.13",
-    "description": "Desktop app for terminals and coding agents: keep work in spaces, see which agents need you, and leave terminals running when the window closes",
+    "description": "Desktop app for terminals and coding agents.",
     "homepage": "https://herdr.dev",
     "license": "Apache-2.0",
-    "suggest": {
-        "herdr-core": "muggle/herdr-core"
-    },
+    "depends": "main/herdr-core",
     "architecture": {
         "64bit": {
             "url": "https://releases.herdr.dev/app/0.1.13/herdr-app-windows-x86_64.tar.gz",
-            "hash": "72cb26f92a6b77e1125fecd2b18f87cc69a18c2da766a8ed8a5bcbd7b16c6012",
-            "extract_dir": "herdr-app"
+            "hash": "72cb26f92a6b77e1125fecd2b18f87cc69a18c2da766a8ed8a5bcbd7b16c6012"
         }
     },
+    "env_set": {
+        "HERDR_APP_HOME": "$dir\\data"
+    },
+    "extract_dir": "herdr-app",
     "bin": "herdr-app.exe",
-    "persist_external": [
-        [
-            "$env:UserProfile\\.config\\herdr-app",
-            "app-home",
-            "directory"
-        ]
-    ],
-    "post_install": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalInstall"
-    ],
-    "pre_uninstall": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
-        "Invoke-PersistExternalUninstall"
-    ],
     "shortcuts": [
         [
             "herdr-app.exe",
             "Herdr"
         ]
     ],
-    "notes": [
-        "Herdr runs terminals through herdr-core: it uses the one on PATH (`scoop install herdr-core`), or installs its own into %LOCALAPPDATA%\\Programs\\herdr-core on first start",
-        "Release builds update themselves from releases.herdr.dev inside their own folder"
-    ],
+    "persist": "data",
     "checkver": {
         "url": "https://releases.herdr.dev/app/latest.json",
         "jsonpath": "$.version"
@@ -49,7 +32,7 @@
                 "url": "https://releases.herdr.dev/app/$version/herdr-app-windows-x86_64.tar.gz",
                 "hash": {
                     "url": "https://releases.herdr.dev/app/latest.json",
-                    "jsonpath": "$.targets['windows-x86_64'].sha256"
+                    "jsonpath": "$.targets.windows-x86_64.sha256"
                 }
             }
         }

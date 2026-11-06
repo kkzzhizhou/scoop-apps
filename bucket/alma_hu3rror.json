@@ -1,12 +1,12 @@
 {
-    "version": "0.4.449",
+    "version": "0.4.473",
     "description": "GUI client for herdr: Claude Code, Codex and pi agent sessions as clean chats.",
     "homepage": "https://alma.now",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/yetone/alma-releases/releases/download/v0.4.449/alma-0.4.449-win-x64.exe#/dl.7z",
-            "hash": "sha512:44dd3969547550bd4189867df325efb4a971c5ac758370809845da21e48f265580d9ef072404344c382b827205ec67882c5fbe5124e41a149f79670ed4b1b1cb",
+            "url": "https://github.com/yetone/alma-releases/releases/download/v0.4.473/alma-0.4.473-win-x64.exe#/dl.7z",
+            "hash": "sha512:6d1ada83f90fb1015e5c49fbd0bcc008fb6acb882fdb439ddb99203f89485f35fa3e5e611dd2e949fd429b1e60cfb7d13a93b311e01a76fcda22a4800c086af4",
             "pre_install": [
                 "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
                 "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse"
@@ -36,11 +36,15 @@
         ]
     ],
     "post_install": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalInstall"
     ],
     "pre_uninstall": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalUninstall"
     ],
     "shortcuts": [

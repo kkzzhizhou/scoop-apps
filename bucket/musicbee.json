@@ -1,23 +1,19 @@
 {
-    "version": "3.6.9668",
+    "version": "3.7.9796",
     "description": "The ultimate music player to easily manage, find, and play music, podcasts, web radio stations, etc",
     "homepage": "https://getmusicbee.com",
     "license": {
         "identifier": "Freeware",
         "url": "https://musicbee.fandom.com/wiki/FAQ#Are_there_any_limitations_on_using_MusicBee.3F"
     },
-    "url": "https://www.videohelp.com/download/MusicBeePortable_3_6.zip",
-    "hash": "aff35dc919b4a620847ca0c5269d1d75e93bf96bcabcbbdc0d058ce3e1d82c5d",
-    "pre_install": "(Get-ChildItem \"$dir\" 'MusicBee*.exe').FullName | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
-    "post_install": [
-        "# If plugins, skins, eq presets, etc. have updates, ensure they're copied after persisting.",
-        "@('BBplugin', 'Equaliser', 'Plugins', 'Skins') | ForEach-Object {",
-        "    if (Test-Path \"$dir\\$_.original\") {",
-        "        Copy-Item \"$dir\\$_.original\\*\" \"$persist_dir\\$_\" -Force -Recurse",
-        "        Remove-Item \"$dir\\$_.original\" -Force -Recurse | Out-Null",
-        "    }",
-        "}",
-        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse"
+    "url": "https://www.videohelp.com/download/MusicBeePortable_3_7.zip",
+    "hash": "a37671cf62a5386a77e821ebb57f9ea971be25dbbac747f522bda421c5176324",
+    "pre_install": [
+        "(Get-ChildItem \"$dir\" 'MusicBee*.exe').FullName | Expand-7zipArchive -DestinationPath \"$dir\" -Removal",
+        "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse",
+        "foreach ($user_folders in 'BBplugin', 'Equaliser', 'Plugins', 'Skins') {",
+        "   Copy-Item \"$persist_dir\\$user_folders\\*\" \"$dir\\$user_folders\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}"
     ],
     "bin": "MusicBee.exe",
     "shortcuts": [
@@ -27,16 +23,18 @@
         ]
     ],
     "persist": [
-        "AppData",
-        "BBplugin",
-        "Equaliser",
         "Library",
-        "Plugins",
-        "Skins"
+        "AppData"
+    ],
+    "pre_uninstall": [
+        "foreach ($user_folders in 'BBplugin', 'Equaliser', 'Plugins', 'Skins') {",
+        "   Copy-Item \"$dir\\$user_folders\\*\" \"$persist_dir\\$user_folders\" -ErrorAction 'SilentlyContinue' -Recurse",
+        "}"
     ],
     "checkver": {
         "url": "https://www.videohelp.com/software/MusicBee",
-        "regex": "([\\d.]+) Portable"
+        "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "regex": "MusicBee\\s+([\\d.]+)"
     },
     "autoupdate": {
         "url": "https://www.videohelp.com/download/MusicBeePortable_$majorVersion_$minorVersion.zip"

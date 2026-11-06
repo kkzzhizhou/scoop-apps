@@ -1,12 +1,12 @@
 {
     "homepage": "https://github.com/dstrml/wu",
     "description": "A fast, native code editor and agent workspace, a Rust fork of Zed",
-    "version": "1.1.16",
+    "version": "1.1.17",
     "license": "GPL-3.0-or-later",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/dstrml/wu/releases/download/v1.1.16/Wu-x86_64.exe",
-            "hash": "6901f8545d8e3e249ea6d86425b6677d534366a38dbb533da06880686da5d53c"
+            "url": "https://github.com/dstrml/wu/releases/download/v1.1.17/Wu-x86_64.exe",
+            "hash": "17a82c3390e748f0a35fb9c5981a4e87f19ba78dcb63931b90141415c3c3c398"
         }
     },
     "depends": "innounp",
@@ -36,11 +36,15 @@
         "(Get-Content $installContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\install-context.reg\" -Encoding Ascii",
         "(Get-Content $uninstallContext -Raw).Replace('{{dir}}', $appPath) | Set-Content \"$dir\\uninstall-context.reg\" -Encoding Ascii",
         "}",
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalInstall"
     ],
     "pre_uninstall": [
-        ". \"$(Find-BucketDirectory -Root -Name (coalesce $bucket 'muggle'))/scripts/persist-external.ps1\"",
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
         "Invoke-PersistExternalUninstall"
     ],
     "bin": "bin\\wu.exe",

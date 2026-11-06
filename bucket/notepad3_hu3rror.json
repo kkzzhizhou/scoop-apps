@@ -4,7 +4,7 @@
     "homepage": "https://www.rizonesoft.com/downloads/notepad3/",
     "license": "BSD-3-Clause",
     "notes": [
-        "To add Notepad3 to right-click context menu, run:",
+        "To add Notepad3 to right-click context menu, run (a bucket must ship the notepad3 context menu templates):",
         "reg import \"$dir\\install-context.reg\""
     ],
     "architecture": {
@@ -20,18 +20,17 @@
     "post_install": [
         "$appdir = \"$dir\\Notepad3.exe\".Replace('\\', '\\\\')",
         "'install-context.reg', 'uninstall-context.reg' | ForEach-Object {",
-        "    if (Test-Path \"$bucketsdir\\extras\\scripts\\$app\\$_\") {",
-        "        $content = Get-Content \"$bucketsdir\\extras\\scripts\\$app\\$_\"",
-        "        $content = $content.Replace('$appdir', $appdir)",
-        "        if ($global) {",
-        "            $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
-        "        }",
+        "    $template = (Resolve-Path \"$bucketsdir/*/scripts/${app}/$_\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "    if (!$template) { warn 'Notepad3 context menu template not found; skipping context menu setup'; return }",
+        "    $content = (Get-Content $template -Raw).Replace('$appdir', $appdir)",
+        "    if ($global) {",
+        "        $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE')",
         "    }",
-        "    $content | Set-Content -Path \"$dir\\$_\" -Encoding ascii",
+        "    Set-Content -Path \"$dir\\$_\" -Value $content -Encoding ascii",
         "}"
     ],
     "uninstaller": {
-        "script": "if ($cmd -eq 'uninstall') { reg import \"$dir\\uninstall-context.reg\" }"
+        "script": "if ($cmd -eq 'uninstall' -and (Test-Path \"$dir\\uninstall-context.reg\")) { reg import \"$dir\\uninstall-context.reg\" }"
     },
     "bin": [
         "Notepad3.exe",

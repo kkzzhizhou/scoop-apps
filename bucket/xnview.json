@@ -1,36 +1,43 @@
 {
     "version": "2.52.7",
-    "homepage": "https://www.xnview.com/",
-    "url": "https://download.xnview.com/XnView-win-full.zip",
+    "description": "Photo viewer, image resizer & batch converter",
+    "homepage": "https://www.xnview.com/en/xnview-classic/",
     "license": "Freeware|Proprietary",
+    "url": "https://download.xnview.com/versions/XnView_Classic/XnView_Classic-2.52.7-win-full.zip",
     "hash": "83c2da6831b0930e4d25b1aa29d59fb9c3d1f2cfd12ac144c6e2af4317c09b6e",
     "extract_dir": "XnView",
+    "pre_install": [
+        "# --- If xnview.ini exists as a folder, then remove it ---",
+        "if (Test-Path \"$persist_dir\\xnview.ini\" -PathType Container) {",
+        "    Remove-Item \"$persist_dir\\xnview.ini\" -Force -Recurse",
+        "}",
+        "if (!(Test-Path \"$persist_dir\\xnview.ini\")) {",
+        "   New-Item \"$dir\\xnview.ini\" -ItemType File | Out-Null",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "# Manually copy because Xnview overwrites hardlink with a regular file, which breaks persist",
+            "if ((Test-Path \"$dir\\xnview.ini\") -and !(Get-Item \"$dir\\xnview.ini\").LinkType -and (Test-Path $persist_dir)) { Copy-Item \"$dir\\xnview.ini\" $persist_dir -Force }"
+        ]
+    },
+    "bin": "xnview.exe",
     "shortcuts": [
         [
             "xnview.exe",
             "XnView"
         ]
     ],
-    "pre_install": [
-        "if (-not (Test-Path \"$persist_dir\\xnview.ini\")) { New-Item \"$dir\\xnview.ini\" -Type File | Out-Null }",
-        "if (-not (Test-Path \"$persist_dir\\bookmark.ini\")) { New-Item \"$dir\\bookmark.ini\" -Type File | Out-Null }",
-        "if (-not (Test-Path \"$persist_dir\\category.db\")) { New-Item \"$dir\\category.db\" -Type File | Out-Null }"
-    ],
-    "persist": [
-        "xnview.ini",
-        "bookmark.ini",
-        "category.db",
-        "cache"
-    ],
+    "persist": "xnview.ini",
     "checkver": {
-        "url": "https://www.xnview.com/xnview_update.txt",
-        "regex": "version=([\\d.]+)"
+        "url": "https://download.xnview.com/versions/XnView_Classic/",
+        "regex": "XnView_Classic-([\\d.]+)-win-full\\.zip"
     },
     "autoupdate": {
-        "url": "https://download.xnview.com/XnView-win-full.zip",
+        "url": "https://download.xnview.com/versions/XnView_Classic/XnView_Classic-$version-win-full.zip",
         "hash": {
-            "url": "https://www.xnview.com/en/xnview/",
-            "regex": "$basename:\\s+$sha256"
+            "url": "$baseurl/XnView_Classic-CHECKSUMS.txt",
+            "regex": "$sha256\\s+XnView(|_Classic)-$version-win-full.zip"
         }
     }
 }
