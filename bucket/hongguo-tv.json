@@ -1,0 +1,54 @@
+{
+    "version": "0.2.151",
+    "description": "红果短剧 Android TV 及webOS、Mac、Windows 、Linux正式安装包、版本信息与更新说明 Android TV,webOS,Mac,Windows,Linux app for Hongguo short dramas.",
+    "homepage": "https://github.com/aston314/hongguo-tv-releases",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/aston314/hongguo-tv-releases/releases/download/desktop-v0.2.151/hongguo-desktop-0.2.151-windows-x64.zip",
+            "hash": "9508f90a37adcd6a6e941a44ec54af3437f43ef49e303c0a4f49df3153f1be3c"
+        }
+    },
+    "pre_install": "Get-ChildItem \"$dir\\红果*.exe\" | Rename-Item -NewName 'hongguo-tv.exe'",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\HongguoDesktop\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata\" -Target \"$env:APPDATA\\HongguoDesktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Hongg红果uoDesktop\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\HongguoDesktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "hongguo-tv.exe",
+    "shortcuts": [
+        [
+            "hongguo-tv.exe",
+            "hongguo-tv"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/aston314/hongguo-tv-releases/releases",
+        "jp": "$[*].tag_name",
+        "regex": "desktop-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/aston314/hongguo-tv-releases/releases/download/desktop-v$version/hongguo-desktop-$version-windows-x64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/hongguo-desktop-$version-windows-x64.zip.sha256"
+        }
+    }
+}

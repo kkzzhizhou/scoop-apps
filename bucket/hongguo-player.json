@@ -1,0 +1,48 @@
+{
+    "version": "1.2.24",
+    "description": "红果短剧电脑版 · 不用安卓模拟器，直接在 Windows / macOS 上刷红果短剧",
+    "homepage": "https://hongguo.235698.xyz/",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/yangbin1322/hongguo-player/releases/download/v1.2.24/hongguo-v1.2.24-windows-amd64.exe#/hongguo-player.exe",
+            "hash": "c9dd0726d59d4ce63974524705e2d23539ee980f699ae207f29f7e2d1d0d3c19"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\hgplayer\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\hgplayer\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "hongguo-player.exe",
+    "shortcuts": [
+        [
+            "hongguo-player.exe",
+            "hongguo-player"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/yangbin1322/hongguo-player/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/yangbin1322/hongguo-player/releases/download/v$version/hongguo-v$version-windows-amd64.exe#/hongguo-player.exe"
+            }
+        }
+    }
+}
