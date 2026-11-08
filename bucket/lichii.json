@@ -1,0 +1,55 @@
+{
+    "version": "117",
+    "description": "Experimental Nintendo Switch and Switch 2 emulator",
+    "homepage": "https://lichiiemulator.app/",
+    "license": {
+        "identifier": "GPL-3.0",
+        "url": "https://github.com/zortos293/Lichii/blob/nx2/LICENSE.txt"
+    },
+    "notes": [
+        "Lichii requires legally obtained game files, keys, and firmware to function. These are not included.",
+        "Lichii is experimental. Back up your saves before testing builds."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/zortos293/Lichii/releases/download/build-117/lichii-windows-x86_64.zip",
+            "hash": "da8d154c277d79b05b94f2102b532440d2d6d5c6c462643e75d65689f30ef7dc"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\lichii\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\lichii\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\lichii\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": "eden-cli.exe",
+    "shortcuts": [
+        [
+            "lichii.exe",
+            "Nintendo Switch 2 [nsw2][lichii]"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "url": "https://api.github.com/repos/zortos293/Lichii/releases?per_page=20",
+        "jsonpath": "$[0].tag_name",
+        "regex": "build-([\\d]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/zortos293/Lichii/releases/download/build-$version/lichii-windows-x86_64.zip",
+                "hash": {
+                    "url": "https://api.github.com/repos/zortos293/Lichii/releases/tags/build-$version",
+                    "jsonpath": "$.assets[?(@.name == '$basename')].digest",
+                    "mode": "json"
+                }
+            }
+        }
+    }
+}

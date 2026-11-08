@@ -1,0 +1,54 @@
+{
+    "version": "0237a9b88",
+    "description": "Open-source Nintendo Switch emulator",
+    "homepage": "https://citron-neo.org/",
+    "license": {
+        "identifier": "GPL-3.0-or-later",
+        "url": "https://github.com/citron-neo/emulator/blob/main/LICENSE"
+    },
+    "notes": [
+        "Citron requires legally obtained game files, keys, and firmware to function. These are not included.",
+        "Citron is experimental. Back up your saves before testing builds."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/citron-neo/emulator/releases/latest/download/Citron-windows-nightly-0237a9b88-x64-msvc.zip",
+            "hash": "0d2c9bf3dabacfc7a729df38a6f97d5f88417ffab05ffb064cf930135f6d1acb"
+        }
+    },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\citron\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\citron\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\citron\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "bin": "citron-cmd.exe",
+    "shortcuts": [
+        [
+            "citron.exe",
+            "Nintendo Switch [nsw][citron]"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "url": "https://api.github.com/repos/citron-neo/emulator/releases/latest",
+        "regex": "Citron-windows-nightly-(?<version>[a-f0-9]+)-x64-msvc\\.zip"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/citron-neo/emulator/releases/latest/download/Citron-windows-nightly-$version-x64-msvc.zip",
+                "hash": {
+                    "url": "https://api.github.com/repos/citron-neo/emulator/releases/latest",
+                    "jsonpath": "$.assets[?(@.name == '$basename')].digest",
+                    "mode": "json"
+                }
+            }
+        }
+    }
+}

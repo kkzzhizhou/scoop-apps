@@ -1,0 +1,48 @@
+{
+    "version": "4.1",
+    "description": "Fritchii is a fork of Lichii for Nintendo Switch emulation",
+    "homepage": "https://github.com/Frizti/Fritchii",
+    "license": "GPL-3.0",
+    "notes": [
+        "Fritchii requires legally obtained game files, keys, and firmware to function. These are not included.",
+        "Fritchii is experimental. Back up your saves before testing builds."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Frizti/Fritchii/releases/download/fritchii-v4.1/Fritchii-v4.1-Windows-x64.zip",
+            "hash": "181C7CF276421263EB8B4AB118814A0FD29FFB92A3CADA915FBDA3B5B18A2F30"
+        }
+    },
+    "extract_dir": "Fritchii-v4.1",
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\")) {",
+        "   New-item \"$persist_dir\" -ItemType Directory | Out-Null",
+        "   New-item \"$persist_dir\\user\" -ItemType Directory | Out-Null",
+        "   if (Test-Path \"$env:APPDATA\\fritchii\") {",
+        "       Write-host \"Migrating AppData...\" -ForegroundColor yellow",
+        "       Copy-Item -Path \"$env:APPDATA\\fritchii\\*\" -Destination \"$persist_dir\\user\" -Recurse",
+        "       Remove-Item -Path \"$env:APPDATA\\fritchii\" -Recurse",
+        "   }",
+        "}"
+    ],
+    "shortcuts": [
+        [
+            "lichii.exe",
+            "Nintendo Switch 2 [nsw2][fritchii]"
+        ]
+    ],
+    "persist": "user",
+    "checkver": {
+        "url": "https://api.github.com/repos/Frizti/Fritchii/releases?per_page=20",
+        "jsonpath": "$[?(@.prerelease == true)].tag_name",
+        "regex": "fritchii-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Frizti/Fritchii/releases/download/fritchii-v$version/Fritchii-v$version-Windows-x64.zip"
+            }
+        },
+        "extract_dir": "Fritchii-v$version"
+    }
+}

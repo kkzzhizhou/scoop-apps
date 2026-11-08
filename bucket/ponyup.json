@@ -1,0 +1,49 @@
+{
+    "version": "0.16.3",
+    "description": "The Pony toolchain multiplexer",
+    "homepage": "https://github.com/ponylang/ponyup",
+    "license": "BSD-2-Clause",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ponylang/ponyup/releases/download/0.16.3/ponyup-x86-64-pc-windows-msvc.zip",
+            "hash": "660ab012750e8216547681cbc92cb434cf2d694dcadd2010cf78f05d43f60c61"
+        },
+        "arm64": {
+            "url": "https://github.com/ponylang/ponyup/releases/download/0.16.3/ponyup-arm64-pc-windows-msvc.zip",
+            "hash": "ce268d1ce17336f83b2cc2e02a76c9f446bd63efad57e47566ad4ec0deb44985"
+        }
+    },
+    "bin": [
+        [
+            "bin\\ponyup.exe",
+            "ponyup",
+            "-p \"$persist_dir\""
+        ]
+    ],
+    "persist": "ponyup",
+    "env_add_path": "ponyup\\bin",
+    "notes": [
+        "Install the Pony compiler with: ponyup update ponyc release",
+        "Install Corral with: ponyup update corral release"
+    ],
+    "post_install": [
+        "$prefix = Join-Path $persist_dir 'ponyup'",
+        "New-Item -ItemType Directory -Path (Join-Path $prefix 'bin') -Force | Out-Null",
+        "$platformArch = if ($architecture -eq 'arm64') { 'arm64' } else { 'x86_64' }",
+        "$platform = \"$platformArch-pc-windows-msvc\"",
+        "& (Join-Path $dir 'bin\\ponyup.exe') -p $persist_dir default $platform",
+        "if ($LASTEXITCODE -ne 0) { throw 'Ponyup failed to initialize its platform.' }",
+        "Set-Content -Path (Join-Path $prefix '.lock') -Value \"ponyup-release-$version-$platformArch-windows\""
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ponylang/ponyup/releases/download/$version/ponyup-x86-64-pc-windows-msvc.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/ponylang/ponyup/releases/download/$version/ponyup-arm64-pc-windows-msvc.zip"
+            }
+        }
+    }
+}
