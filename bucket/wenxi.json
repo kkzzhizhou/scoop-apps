@@ -1,0 +1,58 @@
+{
+    "version": "2.2.5+225",
+    "description": "文析助手，一个跨平台的聚合网盘解析与管理软件，目前支持17家主流网盘解析。已支持安卓，iOS，Windows，macOS端",
+    "homepage": "https://github.com/z7786/wenxi",
+    "license": {
+        "identifier": "AGPL-3.0 license",
+        "url": "https://github.com/z7786/wenxi#AGPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/z7786/wenxi/releases/download/v2.2.5%2B225/asterlink-2.2.5+225-windows-x64-setup.exe",
+            "hash": "6be2fe87b5d53cac8c16bc11b392fca8fa67364c1a46ab8342c225e40d872a58"
+        },
+        "arm64": {
+            "url": "https://github.com/z7786/wenxi/releases/download/v2.2.5%2B225/asterlink-2.2.5+225-windows-arm64-setup.exe",
+            "hash": "a1c77ce56124403c161cbc012437be479dff2ae4aab1c7b6d4542a1b4400330c"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.asterlink\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.asterlink\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "asterlink.exe",
+    "shortcuts": [
+        [
+            "asterlink.exe",
+            "AsterLink"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/z7786/wenxi/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/(?<tag>[^/]+)/asterlink-([\\d.]+)%2B([\\d]+)-windows",
+        "replace": "${1}+${2}"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/z7786/wenxi/releases/download/$matchTag/asterlink-$match1+$match2-windows-x64-setup.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/z7786/wenxi/releases/download/$matchTag/asterlink-$match1+$match2-windows-arm64-setup.exe"
+            }
+        }
+    }
+}

@@ -1,13 +1,13 @@
 {
-    "version": "0.63.7",
+    "version": "0.64.1.20261106",
     "description": "Translation for Trilium Notes. Trilium Notes 中文适配, 体验优化",
     "homepage": "https://github.com/Nriver/trilium-translation",
     "license": "AGPL-3.0-or-later",
     "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/trilium-cn.json",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Nriver/trilium-translation/releases/download/v0.63.7_20240530/trilium-cn-windows-x64.zip",
-            "hash": "21e8993a34351d4b1f1342d10550bb35acf0746c66021bf00aa3534275ad16c2"
+            "url": "https://github.com/Nriver/trilium-translation/releases/download/v0.64.1_20261106/trilium-windows-x64-0.64.1-cn.7z",
+            "hash": "53b7bab79b469fc73e1e78dc28089d7592c4f798522630d1a4a1e9316d4f7727"
         }
     },
     "extract_dir": "trilium-windows-x64",
@@ -37,14 +37,26 @@
     },
     "persist": "trilium-data",
     "checkver": {
-        "url": "https://api.github.com/repos/Nriver/trilium-translation/releases/latest",
-        "jsonpath": "$.tag_name",
-        "regex": "v(?<version>[\\d.]+)_(?<extra>[\\d.]+)"
+        "url": "https://api.github.com/repos/Nriver/trilium-translation/releases?per_page=100",
+        "script": [
+            "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
+            "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^v(?<version>\\d+\\.\\d+\\.\\d+)_(?<date>\\d{8})$') { continue }",
+            "    $v, $date = $Matches.version, $Matches.date",
+            "    $asset = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq \"trilium-windows-x64-$v-cn.7z\" })",
+            "    if ($asset.Count -eq 1) { [PSCustomObject]@{ Version = [version]\"$v.$date\"; Url = $asset[0].browser_download_url } }",
+            "}",
+            "$selected = $candidates | Sort-Object Version -Descending | Select-Object -First 1",
+            "if (!$selected) { throw 'No stable Trilium Windows x64 7z found in the first 100 releases.' }",
+            "if ($selected.Version -lt [version]$json.version) { throw 'Refusing to downgrade Trilium because a newer asset is unavailable.' }",
+            "$selected.Url"
+        ],
+        "regex": "^https://github\\.com/(?<url>Nriver/trilium-translation/releases/download/v(?<version>\\d+\\.\\d+\\.\\d+)_(?<date>\\d{8})/trilium-windows-x64-\\k<version>-cn\\.7z)$",
+        "replace": "${version}.${date}"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/Nriver/trilium-translation/releases/download/v$version_$matchExtra/trilium-cn-windows-x64.zip"
+                "url": "https://github.com/$matchUrl"
             }
         }
     }

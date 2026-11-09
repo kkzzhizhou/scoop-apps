@@ -1,5 +1,5 @@
 {
-    "version": "2.9.2",
+    "version": "26.11.1",
     "description": "Termix is a web-based server management platform with SSH terminal, tunneling, and file editing capabilities",
     "homepage": "https://termix.site/",
     "license": {
@@ -9,12 +9,12 @@
     "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/termix.json https://github.com/vicrack/scoop-bucket",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/Termix-SSH/Termix/releases/download/release-2.9.2-tag/termix_windows_ia32_portable.zip",
-            "hash": "202223dc58bd0dc5ab288c5ea955bdf79945619cdf45d269e779015ff0b0586f"
+            "url": "https://github.com/Termix-SSH/Termix/releases/download/v26.11.1/termix_windows_ia32_portable.zip",
+            "hash": "138e04a8b1173cebfabbb899a87484c963bf7373b02e1736d56927f2455d69f6"
         },
         "64bit": {
-            "url": "https://github.com/Termix-SSH/Termix/releases/download/release-2.9.2-tag/termix_windows_x64_portable.zip",
-            "hash": "f861efabf89cca08f27a6d2778bce76417b13aa439b35ad1ba6337bfe4270228"
+            "url": "https://github.com/Termix-SSH/Termix/releases/download/v26.11.1/termix_windows_x64_portable.zip",
+            "hash": "0ec768c3a93452c6ddc7b38407ce3cb1569f2b0b13b1426e55c9008473b6e39c"
         }
     },
     "shortcuts": [
@@ -24,17 +24,30 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/Termix-SSH/Termix/releases/latest",
-        "jsonpath": "$.tag_name",
-        "regex": "release-([\\d.]+)-tag"
+        "url": "https://api.github.com/repos/Termix-SSH/Termix/releases?per_page=100",
+        "script": [
+            "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
+            "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^(?:v(?<modern>\\d+\\.\\d+\\.\\d+)|release-(?<legacy>\\d+\\.\\d+\\.\\d+)-tag)$') { continue }",
+            "    $v = if ($Matches.modern) { $Matches.modern } else { $Matches.legacy }",
+            "    $x86 = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq 'termix_windows_ia32_portable.zip' })",
+            "    $x64 = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq 'termix_windows_x64_portable.zip' })",
+            "    if ($x86.Count -eq 1 -and $x64.Count -eq 1) { [PSCustomObject]@{ Version = [version]$v; Tag = $release.tag_name; X86 = $x86[0].browser_download_url; X64 = $x64[0].browser_download_url } }",
+            "}",
+            "$selected = $candidates | Sort-Object Version -Descending | Select-Object -First 1",
+            "if (!$selected) { throw 'No stable Termix release with both Windows portable assets found in the first 100 releases.' }",
+            "if ($selected.Version -lt [version]$json.version) { throw 'Refusing to downgrade Termix because a newer asset is unavailable.' }",
+            "\"$($selected.Version) $($selected.Tag) $($selected.X86) $($selected.X64)\""
+        ],
+        "regex": "^(?<version>[\\d.]+) (?<tag>(?:v[\\d.]+|release-[\\d.]+-tag)) https://github\\.com/(?<x86>Termix-SSH/Termix/releases/download/\\k<tag>/termix_windows_ia32_portable\\.zip) https://github\\.com/(?<x64>Termix-SSH/Termix/releases/download/\\k<tag>/termix_windows_x64_portable\\.zip)$",
+        "replace": "${version}"
     },
     "autoupdate": {
         "architecture": {
             "32bit": {
-                "url": "https://github.com/Termix-SSH/Termix/releases/download/release-$version-tag/termix_windows_ia32_portable.zip"
+                "url": "https://github.com/$matchX86"
             },
             "64bit": {
-                "url": "https://github.com/Termix-SSH/Termix/releases/download/release-$version-tag/termix_windows_x64_portable.zip"
+                "url": "https://github.com/$matchX64"
             }
         }
     }

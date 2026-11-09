@@ -1,0 +1,52 @@
+{
+    "version": "0.7.0",
+    "description": "红果短剧第三方桌面软件非官方，极致小巧（约6M）、免安装、免登录、无广告、跨平台（支持Windows、MacOS和Linux）、跨设备。免费使用！",
+    "homepage": "https://xorg.ac.cn/",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kiroswu/hongguo-shortdramabox/releases/download/v0.7.0/ShortDramaBox-v0.7.0-windows-amd64.exe#/hongguo-shortdramabox.exe",
+            "hash": "edc0dfd04dc45d561981e3242a516126c478e40299df64b290664fafe76c284f"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\cn.ShortDramaBox.desktop\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata1\" -Target \"$env:LOCALAPPDATA\\shortDramaBox\"",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\userdata2\" -Target \"$env:APPDATA\\.shortDramaBox\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\cn.ShortDramaBox.desktop\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\shortDramaBox\"",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\.shortDramaBox\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "hongguo-shortdramabox.exe",
+    "shortcuts": [
+        [
+            "hongguo-shortdramabox.exe",
+            "hongguo-shortdramabox"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/kiroswu/hongguo-shortdramabox/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/kiroswu/hongguo-shortdramabox/releases/download/v$version/ShortDramaBox-v$version-windows-amd64.exe#/hongguo-shortdramabox.exe"
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "version": "0.1.22",
+    "description": "A native desktop music player with local playback and plugin support, built with Go and MyGo.",
+    "homepage": "https://github.com/egoist/mygo-music",
+    "license": "AGPL-3.0-only",
+    "notes": [
+        "To open mygo-music:// plugin links for the current Windows user, run:",
+        "reg import \"$dir\\install-uri.reg\"",
+        "This replaces any existing mygo-music protocol handler for that user, including when installed globally."
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/egoist/mygo-music/releases/download/v0.1.22/mygo-music-0.1.22-windows-amd64.tar.gz",
+            "hash": "240e602f10d68e684500d5203c5483ef75ba0c38feb3234e341fdff292ce0061"
+        },
+        "arm64": {
+            "url": "https://github.com/egoist/mygo-music/releases/download/v0.1.22/mygo-music-0.1.22-windows-arm64.tar.gz",
+            "hash": "63fad91be83e5b491b75be7b188b26383f41013a2c4a458750cbd7604ee60ded"
+        }
+    },
+    "shortcuts": [
+        [
+            "MyGo Music.exe",
+            "MyGo Music"
+        ]
+    ],
+    "post_install": [
+        "$exe = \"$dir\\MyGo Music.exe\".Replace('\\', '\\\\').Replace('\"', '\\\"')",
+        "$registration = @(",
+        "    'Windows Registry Editor Version 5.00',",
+        "    '',",
+        "    '[HKEY_CURRENT_USER\\Software\\Classes\\mygo-music]',",
+        "    '@=\"URL:MyGo Music\"',",
+        "    '\"URL Protocol\"=\"\"',",
+        "    '',",
+        "    '[HKEY_CURRENT_USER\\Software\\Classes\\mygo-music\\DefaultIcon]',",
+        "    ('@=\"\\\"{0}\\\",0\"' -f $exe),",
+        "    '',",
+        "    '[HKEY_CURRENT_USER\\Software\\Classes\\mygo-music\\shell\\open\\command]',",
+        "    ('@=\"\\\"{0}\\\" \\\"%1\\\"\"' -f $exe)",
+        ")",
+        "$registration | Set-Content -LiteralPath \"$dir\\install-uri.reg\" -Encoding Unicode",
+        "$key = 'HKCU:\\Software\\Classes\\mygo-music'",
+        "$command = Get-ItemPropertyValue -LiteralPath \"$key\\shell\\open\\command\" -Name '(default)' -ErrorAction SilentlyContinue",
+        "$ownedCommand = '^\"' + [regex]::Escape((appdir $app $global)) + '\\\\[^\\\\]+\\\\MyGo Music\\.exe\" \"%1\"$'",
+        "if ($command -and $command -match $ownedCommand) {",
+        "    reg.exe import \"$dir\\install-uri.reg\"",
+        "    if ($LASTEXITCODE -ne 0) { throw 'Failed to update the MyGo Music URI registration.' }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": [
+            "if ($cmd -eq 'uninstall') {",
+            "    $key = 'HKCU:\\Software\\Classes\\mygo-music'",
+            "    $command = Get-ItemPropertyValue -LiteralPath \"$key\\shell\\open\\command\" -Name '(default)' -ErrorAction SilentlyContinue",
+            "    $ownedCommand = '^\"' + [regex]::Escape((appdir $app $global)) + '\\\\[^\\\\]+\\\\MyGo Music\\.exe\" \"%1\"$'",
+            "    if ($command -and $command -match $ownedCommand) {",
+            "        Remove-Item -LiteralPath $key -Recurse -ErrorAction Stop",
+            "    }",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/egoist/mygo-music/releases/download/v$version/mygo-music-$version-windows-amd64.tar.gz"
+            },
+            "arm64": {
+                "url": "https://github.com/egoist/mygo-music/releases/download/v$version/mygo-music-$version-windows-arm64.tar.gz"
+            }
+        }
+    }
+}

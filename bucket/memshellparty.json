@@ -1,63 +1,56 @@
 {
-    "version": "2.10.0",
+    "version": "3.0.0",
     "description": "一款专注于 Java 主流 Web 中间件的内存马快速生成工具，致力于简化安全研究人员和红队成员的工作流程，提升攻防效率",
     "homepage": "https://party.memshell.news",
     "license": "MIT",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/memshellparty.json https://github.com/vicrack/scoop-bucket",
+    "notes": [
+        "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/memshellparty.json https://github.com/vicrack/scoop-bucket",
+        "The boot (Web) distribution requires JDK 17 or newer. Set JDK_17_HOME, JDK_19_HOME, JDK_21_HOME, JDK_25_HOME or JAVA_HOME to a compatible JDK."
+    ],
     "suggest": {
         "JDK": [
             "java/oraclejdk",
             "java/openjdk"
         ]
     },
-    "url": "https://github.com/ReaJason/MemShellParty/releases/download/v2.10.0/boot-2.10.0.jar",
-    "hash": "e2943af510a4460000c209334fb7a63134210d098faaacfe06793611fce757ce",
+    "url": "https://github.com/MemShellParty/MemShellParty/releases/download/v3.0.0/memshell-party-boot-3.0.0.jar",
+    "hash": "f4765fce60cc6d3ddf29b2f3b07e617bf8438e83407289c33a2dc0cc8594e30d",
     "pre_install": [
-        "",
         "$batContent = @\"",
         "@echo off",
         "setlocal EnableDelayedExpansion",
-        "",
         "set \"jdk_path=\"",
-        "set \"addOpens=\"",
-        "",
-        "set \"common_addOpens=--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.desktop/sun.awt=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED\"",
-        "",
-        "for %%J in (JDK_19_HOME JDK_17_HOME JDK_11_HOME) do (",
-        "if defined %%J (",
-        "set \"jdk_path=!%%J!\\bin\\\"",
-        "set \"addOpens=%common_addOpens%\"",
+        "for %%J in (JDK_25_HOME JDK_21_HOME JDK_19_HOME JDK_17_HOME) do (",
+        "    if not defined jdk_path if defined %%J if exist \"!%%J!\\bin\\java.exe\" set \"jdk_path=!%%J!\\bin\\\"",
         ")",
-        ")",
-        "",
-        "if not defined jdk_path if defined JAVA_HOME (",
-        "set \"jdk_path=%JAVA_HOME%\\bin\\\"",
-        ")",
-        "",
+        "if not defined jdk_path if defined JAVA_HOME set \"jdk_path=%JAVA_HOME%\\bin\\\"",
         "if not exist \"%jdk_path%java.exe\" (",
-        "echo ERROR: Java executable not found in %jdk_path%.",
-        "exit /b 1",
+        "    echo ERROR: JDK 17 or newer is required. Set JAVA_HOME or JDK_17_HOME.",
+        "    exit /b 1",
         ")",
-        "",
-        "set \"javafx_args=\"",
-        "if defined JAVAFX_HOME (",
-        "if exist \"%JAVAFX_HOME%\\lib\" (",
-        "set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"",
-        ") else (",
-        "echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.",
+        "set \"java_version=\"",
+        "for /f \"tokens=3\" %%V in ('call \"%jdk_path%java.exe\" -version 2^>^&1 ^| findstr /i \"version\"') do if not defined java_version set \"java_version=%%~V\"",
+        "set \"java_major=\"",
+        "for /f \"tokens=1,2 delims=.-+\" %%A in (\"%java_version%\") do (",
+        "    set \"java_major=%%A\"",
+        "    if \"%%A\"==\"1\" set \"java_major=%%B\"",
         ")",
+        "echo %java_major%| findstr /r \"^[0-9][0-9]*$\" >nul",
+        "if errorlevel 1 (",
+        "    echo ERROR: Unable to verify Java version. JDK 17 or newer is required.",
+        "    exit /b 1",
         ")",
-        "",
-        "@pushd %~dp0",
-        "@\"%jdk_path%java.exe\" %javafx_args% %addOpens% -jar \"boot-$version.jar\" %*",
-        "@popd",
-        "",
-        "endlocal",
+        "if %java_major% LSS 17 (",
+        "    echo ERROR: Java %java_major% is too old. JDK 17 or newer is required.",
+        "    exit /b 1",
+        ")",
+        "pushd \"%~dp0\"",
+        "\"%jdk_path%java.exe\" --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED --add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.runtime=ALL-UNNAMED -jar \"memshell-party-boot-$version.jar\" %*",
+        "set \"exit_code=%errorlevel%\"",
+        "popd",
+        "exit /b %exit_code%",
         "\"@",
-        "",
-        "$path = \"$dir/memshellparty.bat\"",
-        "Set-Content -Path $path -Value $batContent -Encoding Ascii",
-        ""
+        "Set-Content -Path \"$dir/memshellparty.bat\" -Value $batContent -Encoding Ascii"
     ],
     "bin": "memshellparty.bat",
     "shortcuts": [
@@ -67,9 +60,23 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/ReaJason/MemShellParty"
+        "url": "https://api.github.com/repos/MemShellParty/MemShellParty/releases?per_page=100",
+        "script": [
+            "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
+            "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^v(?<version>\\d+\\.\\d+\\.\\d+)$') { continue }",
+            "    $v = $Matches.version",
+            "    $asset = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq \"memshell-party-boot-$v.jar\" })",
+            "    if ($asset.Count -eq 1) { [PSCustomObject]@{ Version = [version]$v; Url = $asset[0].browser_download_url } }",
+            "}",
+            "$selected = $candidates | Sort-Object Version -Descending | Select-Object -First 1",
+            "if (!$selected) { throw 'No stable MemShellParty boot JAR found in the first 100 releases.' }",
+            "if ($selected.Version -lt [version]$json.version) { throw 'Refusing to downgrade MemShellParty because a newer asset is unavailable.' }",
+            "$selected.Url"
+        ],
+        "regex": "^https://github\\.com/(?<url>MemShellParty/MemShellParty/releases/download/v(?<version>[\\d.]+)/memshell-party-boot-\\k<version>\\.jar)$",
+        "replace": "${version}"
     },
     "autoupdate": {
-        "url": "https://github.com/ReaJason/MemShellParty/releases/download/v$version/boot-$version.jar"
+        "url": "https://github.com/$matchUrl"
     }
 }

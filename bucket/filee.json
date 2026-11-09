@@ -1,53 +1,39 @@
 {
     "version": "2.3.0",
-    "description": "Free, open-source file converter. Convert 255 formats offline by drag & drop — images, PDF, Word, Excel, PowerPoint, HWP/HWPX, video, audio, e-books and archives. No upload, no Office needed.",
-    "homepage": "https://filee.sh/",
-    "license": {
-        "identifier": "MIT license",
-        "url": "https://github.com/KnifeLemon/Filee#MIT-1-ov-file"
-    },
+    "description": "A free, open-source file converter you use by dragging.",
+    "homepage": "https://filee.sh",
+    "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/KnifeLemon/Filee/releases/download/v2.3.0/Filee-2.3.0-win-Setup.exe",
-            "hash": "2eade31c9bb262706b2dd2a986c1c20999b57cd166f37f702a054c431e0bc400"
+            "url": "https://github.com/KnifeLemon/Filee/releases/download/v2.3.0/Filee-2.3.0-win-Portable.zip",
+            "hash": "fc9b303a26f2c3be26350f728cfec8863293b5ed455ddb8a98056a6c82fd9ce2"
         }
     },
-    "innosetup": true,
-    "installer": {
-        "script": [
-            "# handle runtime cache",
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
-            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Filee\"",
-            "Remove-Module -Name AppsUtils"
-        ]
-    },
-    "uninstaller": {
-        "script": [
-            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
-            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Filee\"",
-            "Remove-Module -Name AppsUtils"
-        ]
-    },
-    "bin": "Filee.exe",
+    "bin": "cli\\filee.cmd",
     "shortcuts": [
         [
             "Filee.exe",
             "Filee"
         ]
     ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    Remove-Item -LiteralPath 'HKCU:\\Software\\Classes\\*\\shell\\Filee' -Recurse -Force -ErrorAction SilentlyContinue",
+        "    Get-AppxPackage -Name 'Filee.ExplorerMenu' | Remove-AppxPackage -ErrorAction SilentlyContinue",
+        "}"
+    ],
     "checkver": {
-        "github": "https://api.github.com/repos/KnifeLemon/Filee/releases",
-        "jp": "$[0].tag_name",
-        "regex": "v([\\d.]+)"
+        "github": "https://github.com/KnifeLemon/Filee"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/KnifeLemon/Filee/releases/download/v$version/Filee-$version-win-Setup.exe"
+                "url": "https://github.com/KnifeLemon/Filee/releases/download/v$version/Filee-$version-win-Portable.zip"
             }
         },
         "hash": {
-            "url": "$baseurl/Filee-$version-SHA256SUMS.txt"
+            "url": "$baseurl/Filee-$version-SHA256SUMS.txt",
+            "regex": "$sha256\\s+$basename"
         }
     }
 }

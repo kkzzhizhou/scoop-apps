@@ -1,72 +1,51 @@
 {
-    "version": "2.0.7",
+    "version": "2.0.8",
     "description": "密探渗透测试工具包含资产信息收集，子域名爆破，搜索语法，资产测绘（FOFA，Hunter，quake, ZoomEye），指纹识别，敏感信息采集，文件扫描、密码字典等功能",
     "homepage": "https://github.com/kkbo8005/mitan",
     "license": "Freeware",
-    "notes": "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/mitan.json",
+    "notes": [
+        "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/mitan.json",
+        "Mitan 2.x uses the native Rust/Tauri application, not the legacy Java/JavaFX launcher. Windows requires Microsoft Edge WebView2 Runtime; if it is not already installed, install extras/webview2."
+    ],
     "suggest": {
-        "JDK": [
-            "java/oraclejdk",
-            "java/openjdk"
-        ]
+        "WebView2": "extras/webview2"
     },
-    "url": "https://github.com/kkbo8005/mitan/releases/download/2.0.7/windows_x64-setup.exe#/dl.7z",
-    "hash": "76126fcb940bbe38568aae8b5ac067cdf8d5305b889f554f201092259d0f498a",
-    "pre_install": [
-        "",
-        "$batContent = @\"",
-        "@echo off",
-        "@setlocal",
-        "",
-        "set \"jdk_path=\"",
-        "",
-        "if defined JDK_19_HOME (",
-        "set \"jdk_path=%JDK_19_HOME%\\bin\\\"",
-        ") else if defined JDK_17_HOME (",
-        "set \"jdk_path=%JDK_17_HOME%\\bin\\\"",
-        ")  else if defined JDK_11_HOME (",
-        "set \"jdk_path=%JDK_11_HOME%\\bin\\\"",
-        ") else if defined JAVA_HOME (",
-        "set \"jdk_path=%JAVA_HOME%\\bin\\\"",
-        ")",
-        "",
-        "if not exist \"%jdk_path%\\javaw.exe\" (",
-        "echo ERROR: Java executable not found in %jdk_path%.",
-        "exit /b 1",
-        ")",
-        "",
-        "set \"javafx_args=\"",
-        "if defined JAVAFX_HOME (",
-        "if exist \"%JAVAFX_HOME%\\lib\" (",
-        "set \"javafx_args=--module-path %JAVAFX_HOME%\\lib --add-modules javafx.controls,javafx.fxml\"",
-        ") else (",
-        "echo WARNING: JAVAFX_HOME is defined but the lib directory is missing.",
-        ")",
-        ")",
-        "",
-        "@pushd %~dp0",
-        "@start \"\" \"%jdk_path%javaw.exe\" %javafx_args% -jar \"mitan-jar-with-dependencies.jar\" %*",
-        "@popd",
-        "",
-        "endlocal",
-        "\"@",
-        "",
-        "$path = \"$dir/mitan.bat\"",
-        "Set-Content -Path $path -Value $batContent -Encoding Ascii",
-        ""
-    ],
-    "bin": [
-        "mitan.bat",
-        "start.bat"
-    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/kkbo8005/mitan/releases/download/2.0.8/mitan_x86_64-pc-windows-msvc-setup.exe#/dl.7z",
+            "hash": "b5bbafe9b2e475d777da1ea645cd5ef198202e3a12ec5807ab95cd263715bb4c"
+        }
+    },
+    "pre_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninstall.exe\" -Force -Recurse -ErrorAction SilentlyContinue",
+    "bin": "mitan.exe",
     "shortcuts": [
         [
-            "mitan.bat",
+            "mitan.exe",
             "Mitan"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/kkbo8005/mitan/releases?per_page=100",
+        "script": [
+            "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
+            "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^(?<version>\\d+\\.\\d+\\.\\d+)$') { continue }",
+            "    $v = $Matches.version",
+            "    $asset = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq 'mitan_x86_64-pc-windows-msvc-setup.exe' })",
+            "    if ($asset.Count -eq 1) { [PSCustomObject]@{ Version = [version]$v; Url = $asset[0].browser_download_url } }",
+            "}",
+            "$selected = $candidates | Sort-Object Version -Descending | Select-Object -First 1",
+            "if (!$selected) { throw 'No stable Mitan Windows x64 installer found in the first 100 releases.' }",
+            "if ($selected.Version -lt [version]$json.version) { throw 'Refusing to downgrade Mitan because a newer asset is unavailable.' }",
+            "$selected.Url"
+        ],
+        "regex": "^https://github\\.com/(?<url>kkbo8005/mitan/releases/download/(?<version>[\\d.]+)/mitan_x86_64-pc-windows-msvc-setup\\.exe)$",
+        "replace": "${version}"
+    },
     "autoupdate": {
-        "url": "https://github.com/kkbo8005/mitan/releases/download/$version/windows_x64-setup.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/$matchUrl#/dl.7z"
+            }
+        }
     }
 }

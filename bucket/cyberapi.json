@@ -1,28 +1,48 @@
 {
-    "version": "0.1.21",
-    "description": "API tool based on tauri, it is smaller and faster",
+    "version": "0.6.1",
+    "description": "Native HTTP API client built with Rust and GPUI",
     "homepage": "https://github.com/vicanso/cyberapi",
     "license": "Apache-2.0",
-    "notes": "config location: C:\\Users\\<your username>\\AppData\\Local\\com.bigtree.cyberapi - https://github.com/ViCrack/scoop-bucket/blob/master/bucket/cyberapi.json",
+    "notes": [
+        "https://github.com/ViCrack/scoop-bucket/blob/master/bucket/cyberapi.json",
+        "Data is stored in %APPDATA%\\CyberAPI. Back up the legacy Tauri data in %LOCALAPPDATA%\\com.bigtree.cyberapi before upgrading; the new frontend does not migrate all WebView settings or response history."
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/vicanso/cyberapi/releases/download/v0.1.21/CyberAPI_0.1.21_x64_zh-CN.msi",
-            "hash": "e388288ed2a3e511e14356f513f61529fad594696b91c9c2104bda621778d5bf"
+            "url": "https://github.com/vicanso/cyberapi/releases/download/v0.6.1/cyberapi-0.6.1-x86_64-pc-windows-msvc.zip",
+            "hash": "1674fa0cc473bdff06262caddae2a76c381bd9dd060f778291864e8732862a36"
         }
     },
-    "extract_dir": "PFiles\\CyberAPI",
+    "extract_dir": "cyberapi-0.6.1-x86_64-pc-windows-msvc",
     "shortcuts": [
         [
-            "CyberAPI.exe",
+            "cyberapi.exe",
             "CyberAPI"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "url": "https://api.github.com/repos/vicanso/cyberapi/releases?per_page=100",
+        "script": [
+            "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
+            "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^v(?<version>\\d+\\.\\d+\\.\\d+)$') { continue }",
+            "    $v = $Matches.version",
+            "    $asset = @($release.assets | Where-Object { $_.state -eq 'uploaded' -and $_.name -ceq \"cyberapi-$v-x86_64-pc-windows-msvc.zip\" })",
+            "    if ($asset.Count -eq 1) { [PSCustomObject]@{ Version = [version]$v; Url = $asset[0].browser_download_url } }",
+            "}",
+            "$selected = $candidates | Sort-Object Version -Descending | Select-Object -First 1",
+            "if (!$selected) { throw 'No stable CyberAPI Windows x64 desktop ZIP found in the first 100 releases.' }",
+            "if ($selected.Version -lt [version]$json.version) { throw 'Refusing to downgrade CyberAPI because a newer asset is unavailable.' }",
+            "$selected.Url"
+        ],
+        "regex": "^https://github\\.com/(?<url>vicanso/cyberapi/releases/download/v(?<version>[\\d.]+)/cyberapi-\\k<version>-x86_64-pc-windows-msvc\\.zip)$",
+        "replace": "${version}"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/vicanso/cyberapi/releases/download/v$version/CyberAPI_$version_x64_zh-CN.msi"
+                "url": "https://github.com/$matchUrl"
             }
-        }
+        },
+        "extract_dir": "cyberapi-$version-x86_64-pc-windows-msvc"
     }
 }
