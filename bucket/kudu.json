@@ -1,0 +1,72 @@
+{
+    "version": "3.13.0",
+    "description": "Free Windows, Mac and Linux cleaner, scanner, and more.",
+    "homepage": "https://usekudu.com/",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/AdventDevInc/kudu#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/AdventDevInc/kudu/releases/download/v3.13.0/Kudu-Setup-3.13.0.exe#/dl.7z",
+            "hash": "sha512:9fb2c41e770eed748fa6db4fb04bf54256c282aee4acacd44aec8aa2b4478f31162857b19be876df455bd9587b05fa053dd6fe32868b43f2c11cbbb0ed239ee1",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        },
+        "arm64": {
+            "url": "https://github.com/AdventDevInc/kudu/releases/download/v3.13.0/Kudu-Setup-3.13.0-arm64.exe#/dl.7z",
+            "hash": "sha512:997657f4670395023d9a7432785863b69f6d7465fc3113cf520b6f44643acaacd3c7d57c5b3c6fb0c2a6cf77b52819a23f366bdb2d7f66c3600884b02bafba65",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-arm64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\kudu\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\kudu\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Kudu.exe",
+    "shortcuts": [
+        [
+            "Kudu.exe",
+            "Kudu"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/AdventDevInc/kudu/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/AdventDevInc/kudu/releases/download/v$version/Kudu-Setup-$version.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest.yml",
+                    "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/AdventDevInc/kudu/releases/download/v$version/Kudu-Setup-$version-arm64.exe#/dl.7z",
+                "hash": {
+                    "url": "$baseurl/latest-arm64.yml",
+                    "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+                }
+            }
+        }
+    }
+}

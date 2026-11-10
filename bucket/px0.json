@@ -1,0 +1,60 @@
+{
+    "version": "0.1.21",
+    "description": "Review workbench and speed-first IDE for AI-generated code, served in the browser",
+    "homepage": "https://px0.ai/",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/px0-ai/px0/releases/download/v0.1.21/px0-0.1.21-windows-amd64.exe#/px0.exe",
+            "hash": "99224c4dd586dc482021f4dfda397bd66435530a0cf1dbba9b928f574b696109"
+        },
+        "32bit": {
+            "url": "https://github.com/px0-ai/px0/releases/download/v0.1.21/px0-0.1.21-windows-386.exe#/px0.exe",
+            "hash": "1e4bacce1aedb5e74a54550a5882cc8b5292511c305b82e5b6e37c25e93d7a8d"
+        },
+        "arm64": {
+            "url": "https://github.com/px0-ai/px0/releases/download/v0.1.21/px0-0.1.21-windows-arm64.exe#/px0.exe",
+            "hash": "c554340ea45d8037053105a4b1da954c17118b21b7ca858cee8ad64677f0057a"
+        }
+    },
+    "bin": "px0.exe",
+    "persist_external": [
+        [
+            "$env:USERPROFILE\\.px0",
+            "data",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalUninstall"
+    ],
+    "notes": [
+        "Run `px0` with no arguments in a terminal for the review workbench, or `px0 <path>` to inspect a directory or file",
+        "px0 replaces its own executable on startup when a newer release exists; pass `-no-update` to keep the Scoop-managed version"
+    ],
+    "checkver": {
+        "github": "https://github.com/px0-ai/px0"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/px0-ai/px0/releases/download/v$version/px0-$version-windows-amd64.exe#/px0.exe"
+            },
+            "32bit": {
+                "url": "https://github.com/px0-ai/px0/releases/download/v$version/px0-$version-windows-386.exe#/px0.exe"
+            },
+            "arm64": {
+                "url": "https://github.com/px0-ai/px0/releases/download/v$version/px0-$version-windows-arm64.exe#/px0.exe"
+            }
+        }
+    }
+}

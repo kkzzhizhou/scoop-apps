@@ -1,0 +1,62 @@
+{
+    "version": "0.5.2",
+    "description": "misterdownloadmanager: The ultimate open-source, clean-room download manager written from scratch in pure Rust for Windows, Mac, and Linux",
+    "homepage": "https://misterdownloadmanager.com/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/anefzaoui/misterdownloadmanager/tree/main#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/anefzaoui/misterdownloadmanager/releases/download/v0.5.2/MisterDownloadManager-0.5.2-setup.exe",
+            "hash": "a8c9586fd6e9c6385e3b85242bb658e029be1b9d81ed0911200e272c380ec31d"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\misterdownloadmanager\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\misterdownloadmanager\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "misterdownloadmanager.exe",
+            "MisterDownloadManager"
+        ],
+        [
+            "misterdownloadmanager-cli.exe",
+            "misterdownloadmanager-cli"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "misterdownloadmanager.exe",
+            "MisterDownloadManager"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/anefzaoui/misterdownloadmanager/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/anefzaoui/misterdownloadmanager/releases/download/v$version/MisterDownloadManager-$version-setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

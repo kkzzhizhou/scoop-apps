@@ -1,27 +1,40 @@
 {
-    "##": "Recordly",
     "version": "1.4.0",
-    "description": "制作精致、专业级的屏幕录制视频",
-    "homepage": "https://github.com/webadderallorg/Recordly",
-    "license": {
-        "identifier": "AGPL-3.0-only",
-        "url": "https://github.com/webadderallorg/Recordly/blob/main/LICENSE.md"
+    "description": "Open-source screen recorder and editor for walkthroughs, demos, product videos, and more.",
+    "homepage": "https://recordly.dev",
+    "license": "AGPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/webadderallorg/Recordly/releases/download/v1.4.0/Recordly-windows-x64.exe#/dl.7z",
+            "hash": "08f20bafb0d6cf82399b6e4d8d12f58cbf1821a1d93abdd1e944bb9727b66b20",
+            "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\""
+        }
     },
-    "url": "https://github.com/webadderallorg/Recordly/releases/download/v1.4.0/Recordly-windows-x64.exe#/dl.7z",
-    "hash": "08f20bafb0d6cf82399b6e4d8d12f58cbf1821a1d93abdd1e944bb9727b66b20",
-    "pre_install": [
-        "Move-Item \"$dir\\`$PLUGINSDIR\\app-64.7z\" $dir -Force",
-        "Remove-Item $dir\\* -Exclude app-64.7z -Force -Recurse",
-        "Expand-7zipArchive \"$dir\\app-64.7z\" $dir -Removal"
+    "post_install": [
+        "Remove-Item \"$dir\\`$*\" -Force -Recurse",
+        "# Disable built-in update mechanism to prevent conflicts with Scoop-managed updates",
+        "$yaml = \"$dir\\resources\\app-update.yml\"",
+        "(Get-Content $yaml -Encoding ASCII).replace('publishAutoUpdate: true', 'publishAutoUpdate: false') | Set-Content $yaml -Encoding ASCII"
     ],
+    "bin": "Recordly.exe",
     "shortcuts": [
         [
             "Recordly.exe",
             "Recordly"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "github": "https://github.com/webadderallorg/Recordly"
+    },
     "autoupdate": {
-        "url": "https://github.com/webadderallorg/Recordly/releases/download/v$version/Recordly-windows-x64.exe#/dl.7z"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/webadderallorg/Recordly/releases/download/v$version/Recordly-windows-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt",
+            "regex": "$sha256\\s+$basename"
+        }
     }
 }
