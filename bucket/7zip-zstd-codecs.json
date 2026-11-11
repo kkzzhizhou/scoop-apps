@@ -1,0 +1,63 @@
+{
+    "version": "26.05-v1.5.7-R1",
+    "description": "Additional Codecs for 7-Zip including Zstandard, Brotli, Lz4, Lz5 and Lizard",
+    "homepage": "https://github.com/mcmilk/7-Zip-zstd",
+    "license": "LGPL-2.1-only",
+    "suggest": {
+        "7-Zip": "main/7zip"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/Codecs-x64.7z",
+            "hash": "58617cda5a1797628d0dad48928859a8626055b1066ac9a6ca78c951882d7172"
+        },
+        "32bit": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/Codecs-x86.7z",
+            "hash": "d46058ded53910a7dba3a5180d88a1dbe7a629034c463a63f272cdca2d45fea4"
+        },
+        "arm64": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/Codecs-arm64.7z",
+            "hash": "def6e68e480dec38c14cb91d996212d8ca7f887952af402495cdaaf30b26a990"
+        }
+    },
+    "installer": {
+        "script": [
+            "$7zipDir = $(appdir 7zip $global)",
+            "if (Test-Path \"$7zipDir\\current\") {",
+            "    $DestDir = \"$7zipDir\\current\\Codecs\"",
+            "    if (-not (Test-Path \"$DestDir\")) {",
+            "        New-Item \"$DestDir\" -ItemType Directory -Force | Out-Null",
+            "    }",
+            "    Write-Host \"Copying Codec files to 7-Zip directory...\" -ForegroundColor Cyan",
+            "    Start-Sleep -Milliseconds 500",
+            "    try {",
+            "        Copy-Item \"$dir\\*\" \"$DestDir\" -Recurse -Force -ErrorAction Stop",
+            "    } catch {",
+            "        Write-Warning \"First copy attempt failed: $_. Retrying in 2 seconds...\"",
+            "        Start-Sleep -Seconds 2",
+            "        Copy-Item \"$dir\\*\" \"$DestDir\" -Recurse -Force",
+            "    }",
+            "} else {",
+            "    Write-Warning \"7-Zip installation not found. Please install 7zip first.\"",
+            "}"
+        ]
+    },
+    "checkver": {
+        "url": "https://api.github.com/repositories/61958135/releases",
+        "jsonpath": "$[0].tag_name",
+        "regex": "^v(?<version>.*)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/Codecs-x64.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/Codecs-x86.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/Codecs-arm64.7z"
+            }
+        }
+    }
+}

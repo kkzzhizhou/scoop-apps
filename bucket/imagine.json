@@ -1,16 +1,18 @@
 {
-    "version": "2.8.0",
-    "description": "(1MB Tiny) Freeware Image & Animation Viewer for Windows",
+    "version": "2.8.0-20261103-2c3bb43",
+    "description": "Fast, compact image and animation viewer. Can be used as a standalone application or integrated as a Total Commander Lister plugin.",
     "homepage": "https://www.nyam.pe.kr/dev/imagine/",
     "license": {
         "identifier": "Freeware",
         "url": "https://www.nyam.pe.kr/dev/imagine/#license"
     },
-    "pre_install": "if (!(Test-Path \"$persist_dir\\Imagine.ini\")) { New-Item \"$dir\\Imagine.ini\" | Out-Null }",
+    "suggest": {
+        "Total Commander Plugin Host": "extras/totalcommander"
+    },
     "architecture": {
         "64bit": {
-            "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=x64&unicode=1&full=0&setup=0&version=2.8.0#/dl.zip",
-            "hash": "2c7869e1f8396d60239b18d893cf9f28fbd094c06e70d4672c9d01b38fc9caaa",
+            "url": "https://raw.githubusercontent.com/nyam1003/imagine/2c3bb435aba6e61c57c3a6b4c92f548c66db776a/x64/Imagine_2.8.0_x64_Unicode_Full.zip",
+            "hash": "0ad05a7bbfe65675e332b6f22cb693e8e4537d62e8a211c713f0ac1f9aa39738",
             "bin": [
                 "Imagine64.exe",
                 [
@@ -26,8 +28,8 @@
             ]
         },
         "32bit": {
-            "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=x86&unicode=1&full=0&setup=0&version=2.8.0#/dl.zip",
-            "hash": "5fef6317cea085ed76459ee086603974ae93cc339bdee723af04af9aa6f5edbb",
+            "url": "https://raw.githubusercontent.com/nyam1003/imagine/2c3bb435aba6e61c57c3a6b4c92f548c66db776a/Imagine_2.8.0_Unicode_Full.zip",
+            "hash": "a60f890154ca2536ffa099e0ae868022a614552cfd385b16c76576076605238b",
             "bin": "Imagine.exe",
             "shortcuts": [
                 [
@@ -37,8 +39,8 @@
             ]
         },
         "arm64": {
-            "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=arm64&unicode=1&full=0&setup=0&version=2.8.0#/dl.zip",
-            "hash": "4c920b968431554f82108c68108cab873f040ccc3fddbe7a96c2bb65fbe97c24",
+            "url": "https://raw.githubusercontent.com/nyam1003/imagine/2c3bb435aba6e61c57c3a6b4c92f548c66db776a/arm64/Imagine_2.8.0_arm64_Unicode_Full.zip",
+            "hash": "5f406748389698dc4b0fcbc0e42ff8d4dd59274868eac153933ae0af7d6238d2",
             "bin": [
                 "ImagineA64.exe",
                 [
@@ -54,22 +56,53 @@
             ]
         }
     },
+    "pre_install": [
+        "if (!(Test-Path \"$persist_dir\\Imagine.ini\")) { New-Item \"$persist_dir\\Imagine.ini\" -Force | Out-Null }",
+        "",
+        "$tc_procs = Get-Process -Name \"totalcmd\", \"totalcmd64\" -ErrorAction SilentlyContinue",
+        "if ($tc_procs) {",
+        "    Write-Host \"[Error] Total Commander is currently running!\" -ForegroundColor Red",
+        "    Write-Host \"Installation aborted to protect directory structure. Please close Total Commander and try again.\" -ForegroundColor Yellow",
+        "    exit 1",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$TCDir = $(appdir totalcommander $global)",
+            "",
+            "if ($TCDir -and (Test-Path \"$TCDir\\current\")) {",
+            "    Write-Host \"Found Total Commander, integrating plugin...\" -ForegroundColor Cyan",
+            "    ",
+            "    $PluginDir = \"$TCDir\\current\\plugins\\Wlx\\Imagine\"",
+            "    if (!(Test-Path \"$PluginDir\")) { New-Item \"$PluginDir\" -ItemType Directory -Force | Out-Null }",
+            "    ",
+            "    Copy-Item \"$dir\\*\" \"$PluginDir\" -Recurse -Force -Exclude \"Imagine.ini\", \"PlugInst.inf\"",
+            "    Write-Host \"Imagine plugin installed to: $PluginDir\" -ForegroundColor Green",
+            "} else {",
+            "    Write-Host \"Total Commander (Scoop) not found. Installing as standalone application only.\" -ForegroundColor Yellow",
+            "}"
+        ]
+    },
     "persist": [
         "Imagine.ini",
         "PlugInst.inf",
         "Plugin"
     ],
-    "checkver": "v(\\d[\\d.]+)",
+    "checkver": {
+        "url": "https://api.github.com/repos/nyam1003/imagine/commits/main",
+        "regex": "(?s)\"sha\":\\s*\"(?<sha>[0-9a-f]{7})(?<longsha>[0-9a-f]{33})\".*?\"date\":\\s*\"(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})T.*?\"filename\":\\s*\"Imagine_(?<version>[\\d.]+)_Unicode_Full\\.zip\"",
+        "replace": "${version}-${year}${month}${day}-${sha}"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=x64&unicode=1&full=0&setup=0&version=$version#/dl.zip"
+                "url": "https://raw.githubusercontent.com/nyam1003/imagine/$matchSha$matchLongsha/x64/Imagine_$matchVersion_x64_Unicode_Full.zip"
             },
             "32bit": {
-                "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=x86&unicode=1&full=0&setup=0&version=$version#/dl.zip"
+                "url": "https://raw.githubusercontent.com/nyam1003/imagine/$matchSha$matchLongsha/Imagine_$matchVersion_Unicode_Full.zip"
             },
             "arm64": {
-                "url": "https://www.nyam.pe.kr/dev/imagine/download.php?arch=arm64&unicode=1&full=0&setup=0&version=$version#/dl.zip"
+                "url": "https://raw.githubusercontent.com/nyam1003/imagine/$matchSha$matchLongsha/arm64/Imagine_$matchVersion_arm64_Unicode_Full.zip"
             }
         }
     }

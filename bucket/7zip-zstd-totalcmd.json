@@ -1,0 +1,98 @@
+{
+    "version": "26.05-v1.5.7-R1",
+    "description": "Replace Total Commander's tc7z.dll, supporting 7-Zip's Zstandard (Zstd, Brotli, Lz4, Lz5, Lizard) formats.",
+    "homepage": "https://github.com/mcmilk/7-Zip-zstd",
+    "license": "LGPL-2.1-or-later",
+    "depends": "extras/totalcommander",
+    "pre_install": [
+        "$tc_procs = Get-Process -Name \"totalcmd\", \"totalcmd64\" -ErrorAction SilentlyContinue",
+        "if ($tc_procs) {",
+        "    Write-Host \"[Error] Total Commander is currently running!\" -ForegroundColor Red",
+        "    Write-Host \"Installation aborted to protect directory structure. Please close Total Commander and try again.\" -ForegroundColor Yellow",
+        "    exit 1",
+        "}"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/TotalCmd.7z",
+            "hash": "22fe757f6106cb16d341ed286dc81ccddc3caccca0b5cd089ce50cb6632acab7",
+            "installer": {
+                "script": [
+                    "$TCDir = $(appdir totalcommander $global)",
+                    "if (Test-Path \"$TCDir\\current\") {",
+                    "    Start-Sleep -Milliseconds 500",
+                    "    try {",
+                    "        Copy-Item \"$dir\\tc7z64.dll\" \"$TCDir\\current\" -Force -ErrorAction Stop",
+                    "    } catch {",
+                    "        Write-Warning \"First copy attempt failed: $_. Retrying in 2 seconds...\"",
+                    "        Start-Sleep -Seconds 2",
+                    "        Copy-Item \"$dir\\tc7z64.dll\" \"$TCDir\\current\" -Force",
+                    "    }",
+                    "} else {",
+                    "    Write-Warning \"Total Commander (scoop) not found. Skipped injection.\"",
+                    "}"
+                ]
+            }
+        },
+        "32bit": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/TotalCmd.7z",
+            "hash": "22fe757f6106cb16d341ed286dc81ccddc3caccca0b5cd089ce50cb6632acab7",
+            "installer": {
+                "script": [
+                    "$TCDir = $(appdir totalcommander $global)",
+                    "if (Test-Path \"$TCDir\\current\") {",
+                    "    Start-Sleep -Milliseconds 500",
+                    "    try {",
+                    "        Copy-Item \"$dir\\tc7z.dll\" \"$TCDir\\current\" -Force -ErrorAction Stop",
+                    "    } catch {",
+                    "        Write-Warning \"First copy attempt failed: $_. Retrying in 2 seconds...\"",
+                    "        Start-Sleep -Seconds 2",
+                    "        Copy-Item \"$dir\\tc7z.dll\" \"$TCDir\\current\" -Force",
+                    "    }",
+                    "} else {",
+                    "    Write-Warning \"Total Commander (scoop) not found. Skipped injection.\"",
+                    "}"
+                ]
+            }
+        },
+        "arm64": {
+            "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v26.05-v1.5.7-R1/TotalCmd.7z",
+            "hash": "22fe757f6106cb16d341ed286dc81ccddc3caccca0b5cd089ce50cb6632acab7",
+            "installer": {
+                "script": [
+                    "$TCDir = $(appdir totalcommander $global)",
+                    "if (Test-Path \"$TCDir\\current\") {",
+                    "    Start-Sleep -Milliseconds 500",
+                    "    try {",
+                    "        Copy-Item \"$dir\\tc7zarm64.dll\" \"$TCDir\\current\" -Force -ErrorAction Stop",
+                    "    } catch {",
+                    "        Write-Warning \"First copy attempt failed: $_. Retrying in 2 seconds...\"",
+                    "        Start-Sleep -Seconds 2",
+                    "        Copy-Item \"$dir\\tc7zarm64.dll\" \"$TCDir\\current\" -Force",
+                    "    }",
+                    "} else {",
+                    "    Write-Warning \"Total Commander (scoop) not found. Skipped injection.\"",
+                    "}"
+                ]
+            }
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repositories/61958135/releases",
+        "jsonpath": "$[0].tag_name",
+        "regex": "^v(?<version>.*)$"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/TotalCmd.7z"
+            },
+            "32bit": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/TotalCmd.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/mcmilk/7-Zip-zstd/releases/download/v$version/TotalCmd.7z"
+            }
+        }
+    }
+}

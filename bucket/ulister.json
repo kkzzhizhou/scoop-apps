@@ -1,0 +1,50 @@
+{
+    "version": "4.5.0.0",
+    "description": "Total Commander Lister plugin,uLister is a powerful document viewer which can open more than 500 file formats.",
+    "homepage": "https://github.com/evgen0xb/uLister",
+    "license": "GPL-3.0-1-ov-file",
+    "suggest": {
+        "Total Commander Plugin Host": "extras/totalcommander"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/evgen0xb/uLister/releases/download/4.5.0.0/wlx-ulister.cab",
+            "hash": "225ab17690c184ee58d2622c4d95ea619901a30a89995d25fe402144772f7745"
+        }
+    },
+    "pre_install": [
+        "$tc_procs = Get-Process -Name \"totalcmd\", \"totalcmd64\" -ErrorAction SilentlyContinue",
+        "if ($tc_procs) {",
+        "    Write-Host \"[Error] Total Commander is currently running!\" -ForegroundColor Red",
+        "    Write-Host \"Installation aborted to protect directory structure. Please close Total Commander and try again.\" -ForegroundColor Yellow",
+        "    exit 1",
+        "}",
+        "expand.exe \"$dir\\wlx-ulister.cab\" -F:* \"$dir\" | Out-Null",
+        "Remove-Item \"$dir\\wlx-ulister.cab\""
+    ],
+    "installer": {
+        "script": [
+            "$TCDir = $(appdir totalcommander $global)",
+            "",
+            "if ($TCDir -and (Test-Path \"$TCDir\\current\")) {",
+            "    Write-Host \"Found Total Commander, integrating plugin...\" -ForegroundColor Cyan",
+            "    ",
+            "    $PluginDir = \"$TCDir\\current\\plugins\\Wlx\\uLister\"",
+            "    if (!(Test-Path \"$PluginDir\")) { New-Item \"$PluginDir\" -ItemType Directory -Force | Out-Null }",
+            "    ",
+            "    Copy-Item \"$dir\\*\" \"$PluginDir\" -Recurse -Force -Exclude \"uLister.ini\", \"PlugInst.inf\"",
+            "    Write-Host \"uLister plugin installed to: $PluginDir\" -ForegroundColor Green",
+            "} else {",
+            "    Write-Host \"Total Commander (Scoop) not found. Installing as standalone application only.\" -ForegroundColor Yellow",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/evgen0xb/uLister/releases/download/$version/wlx-ulister.cab"
+            }
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "version": "3.2.0.0",
+    "description": "A local TCP message routing service built on Qt5.",
+    "homepage": "https://github.com/KnotLink-Protocol/KnotLinkService",
+    "license": "LGPL-3.0-only",
+    "url": "https://github.com/KnotLink-Protocol/KnotLinkService/releases/download/v3.2.0.0/KnotLinkService-3.2.0.0-windows-x86-Installer.exe#/dl.7z",
+    "hash": "968fffb74af12aa9b4c186f456b4594521d21c18faeaa57a8b5227cd9670bb12",
+    "post_install": [
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\uninst.exe\" -Recurse -Force -ErrorAction SilentlyContinue",
+        "$appPathKey = 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\KnotLinkService.exe'",
+        "if (!(Test-Path $appPathKey)) { New-Item -Path $appPathKey -Force | Out-Null }",
+        "Set-ItemProperty -Path $appPathKey -Name '(Default)' -Value \"$dir\\KnotLinkService.exe\" -Force",
+        "Set-ItemProperty -Path $appPathKey -Name 'Path' -Value \"$dir\" -Force"
+    ],
+    "pre_uninstall": [
+        "$appPathKey = 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\KnotLinkService.exe'",
+        "if (Test-Path $appPathKey) { Remove-Item -Path $appPathKey -Recurse -Force -ErrorAction SilentlyContinue }"
+    ],
+    "bin": "KnotLinkService.exe",
+    "shortcuts": [
+        [
+            "KnotLinkService.exe",
+            "KnotLinkService"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/KnotLink-Protocol/KnotLinkService/releases/download/v$version/KnotLinkService-$version-windows-x86-Installer.exe#/dl.7z"
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "version": "1.8.6.3",
+    "description": "Lister plugin for Total Commander, based on ATSynEdit",
+    "homepage": "https://github.com/Alexey-T/CudaLister",
+    "license": "MPL 2.0",
+    "depends": "extras/totalcommander",
+    "notes": "CudaLister is a Lister plugin for Total Commander, NOT a standalone application. It cannot be executed directly and is intended to be used within Total Commander.",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Alexey-T/CudaLister/releases/download/1.8.6.3/wlx_cudalister_1.8.6.3.zip",
+            "hash": "7783e685765c5f14b20f0c49911a00fdf854e796e535f4b0a745c1c9b698f0d5"
+        },
+        "32bit": {
+            "url": "https://github.com/Alexey-T/CudaLister/releases/download/1.8.6.3/wlx_cudalister_1.8.6.3.zip",
+            "hash": "7783e685765c5f14b20f0c49911a00fdf854e796e535f4b0a745c1c9b698f0d5"
+        }
+    },
+    "pre_install": [
+        "$tc_procs = Get-Process -Name \"totalcmd\", \"totalcmd64\" -ErrorAction SilentlyContinue",
+        "if ($tc_procs) {",
+        "    Write-Host \"[Error] Total Commander is currently running!\" -ForegroundColor Red",
+        "    Write-Host \"Installation aborted to protect directory structure. Please close Total Commander and try again.\" -ForegroundColor Yellow",
+        "    exit 1",
+        "}"
+    ],
+    "installer": {
+        "script": [
+            "$TCDir = $(appdir totalcommander $global)",
+            "if (Test-Path \"$TCDir\\current\") {",
+            "    $PluginDir = \"$TCDir\\current\\plugins\\Wlx\\CudaLister\"",
+            "    if (!(Test-Path \"$PluginDir\")) { New-Item \"$PluginDir\" -ItemType Directory -Force | Out-Null }",
+            "    Copy-Item \"$dir\\*\" \"$PluginDir\" -Recurse -Force -Exclude \"plugInst.inf\"",
+            "    Write-Host \"CudaLister plugin copied to Total Commander ($PluginDir)\"",
+            "} else {",
+            "    Write-Warning \"Total Commander (scoop) not found. Skipped plugin installation.\"",
+            "}"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Alexey-T/CudaLister/releases/download/$version/wlx_cudalister_$version.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/Alexey-T/CudaLister/releases/download/$version/wlx_cudalister_$version.zip"
+            }
+        }
+    }
+}

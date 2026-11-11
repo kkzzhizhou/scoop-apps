@@ -1,0 +1,28 @@
+{
+    "version": "6.5.0",
+    "description": "连接 JADX AI MCP 插件的 Python MCP 服务端",
+    "homepage": "https://github.com/zinja-coder/jadx-mcp-server",
+    "license": "Apache-2.0",
+    "depends": "main/uv",
+    "url": "https://github.com/zinja-coder/jadx-ai-mcp/releases/download/v6.5.0/jadx-mcp-server-6.5.0.zip",
+    "hash": "835d9e7386f9cb57bffb56adb2553a4fa334856b1a6e0a8fe1854112a4a5ffa4",
+    "extract_dir": "jadx-mcp-server",
+    "pre_install": "New-Item -ItemType Directory -Path \"$persist_dir\\.venv\" -Force | Out-Null",
+    "persist": ".venv",
+    "post_install": [
+        "if (!(Test-Path \"$persist_dir\\.venv\\Scripts\\python.exe\")) {",
+        "    uv venv --python '>=3.10' \"$persist_dir\\.venv\"",
+        "    if ($LASTEXITCODE -ne 0) { throw 'Failed to create the Python virtual environment.' }",
+        "}",
+        "uv pip install --python \"$persist_dir\\.venv\\Scripts\\python.exe\" -r \"$dir\\requirements.txt\"",
+        "if ($LASTEXITCODE -ne 0) { throw 'Failed to install Python dependencies.' }"
+    ],
+    "checkver": {
+        "url": "https://api.github.com/repos/zinja-coder/jadx-ai-mcp/releases/latest",
+        "jsonpath": "$.tag_name",
+        "regex": "^v([\\d.]+)$"
+    },
+    "autoupdate": {
+        "url": "https://github.com/zinja-coder/jadx-ai-mcp/releases/download/v$version/jadx-mcp-server-$version.zip"
+    }
+}

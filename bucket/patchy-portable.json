@@ -1,0 +1,60 @@
+{
+    "version": "1.32",
+    "description": "Open-source image editor focused on PSD compatibility and workflows familiar to Adobe Photoshop users.",
+    "homepage": "https://github.com/SethRobinson/Patchy",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/SethRobinson/Patchy#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/SethRobinson/Patchy/releases/download/v1.32/PatchyWindowsNoInstaller.zip",
+            "hash": "137a30e6964d1afdb6e7d94acd9e2a772fc6a332c5b56284aff0ef0a8b3edb37"
+        },
+        "arm64": {
+            "url": "https://github.com/SethRobinson/Patchy/releases/download/v1.32/PatchyWindowsArm64NoInstaller.zip",
+            "hash": "991ace41bc653a4b68cade0c0edf97256a142754ea7002669ff2349569ff93e9"
+        }
+    },
+    "extract_dir": "Patchy",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\RTsoft\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\RTsoft\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "patchy.exe",
+    "shortcuts": [
+        [
+            "patchy.exe",
+            "Patchy"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/SethRobinson/Patchy/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/SethRobinson/Patchy/releases/download/v$version/PatchyWindowsNoInstaller.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/SethRobinson/Patchy/releases/download/v$version/PatchyWindowsArm64NoInstaller.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

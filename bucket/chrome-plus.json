@@ -1,0 +1,100 @@
+{
+    "version": "1.20.0",
+    "description": "A DLL hijack implements Chrome full portability as well as tab enhancements.",
+    "homepage": "https://github.com/Bush2021/chrome_plus",
+    "license": "GPL-3.0-only",
+    "notes": [
+        "This package provides the portable host environment and enhancements for Google Chrome.",
+        "Install 'chrome-core' to inject the official Chrome binaries.",
+        "To register Chrome in Windows App Paths for application discovery, run:",
+        "  reg import \"$dir\\install-reg.reg\"",
+        "To remove the registration:",
+        "  reg import \"$dir\\uninstall-reg.reg\""
+    ],
+    "suggest": {
+        "Google Chrome Binaries": "rojem/chrome-core"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Bush2021/chrome_plus/releases/download/1.20.0/Chrome++_v1.20.0_x86_x64_arm64.7z",
+            "hash": "483e0c78e99e4ae57556623445c01f69c9c872e549baf86750b0feb080388400",
+            "installer": {
+                "script": [
+                    "Remove-Item \"$dir\\x86\", \"$dir\\arm64\" -Recurse -Force",
+                    "Rename-Item \"$dir\\x64\" \"$dir\\_temp\"",
+                    "if (-not (Test-Path \"$dir\\App\")) { New-Item \"$dir\\App\" -ItemType Directory -Force | Out-Null }",
+                    "New-Item \"$dir\\App\\chrome.exe\" -ItemType File -Force | Out-Null"
+                ]
+            }
+        },
+        "32bit": {
+            "url": "https://github.com/Bush2021/chrome_plus/releases/download/1.20.0/Chrome++_v1.20.0_x86_x64_arm64.7z",
+            "hash": "483e0c78e99e4ae57556623445c01f69c9c872e549baf86750b0feb080388400",
+            "installer": {
+                "script": [
+                    "Remove-Item \"$dir\\x64\", \"$dir\\arm64\" -Recurse -Force",
+                    "Rename-Item \"$dir\\x86\" \"$dir\\_temp\"",
+                    "if (-not (Test-Path \"$dir\\App\")) { New-Item \"$dir\\App\" -ItemType Directory -Force | Out-Null }",
+                    "New-Item \"$dir\\App\\chrome.exe\" -ItemType File -Force | Out-Null"
+                ]
+            }
+        },
+        "arm64": {
+            "url": "https://github.com/Bush2021/chrome_plus/releases/download/1.20.0/Chrome++_v1.20.0_x86_x64_arm64.7z",
+            "hash": "483e0c78e99e4ae57556623445c01f69c9c872e549baf86750b0feb080388400",
+            "installer": {
+                "script": [
+                    "Remove-Item \"$dir\\x64\", \"$dir\\x86\" -Recurse -Force",
+                    "Rename-Item \"$dir\\arm64\" \"$dir\\_temp\"",
+                    "if (-not (Test-Path \"$dir\\App\")) { New-Item \"$dir\\App\" -ItemType Directory -Force | Out-Null }",
+                    "New-Item \"$dir\\App\\chrome.exe\" -ItemType File -Force | Out-Null"
+                ]
+            }
+        }
+    },
+    "persist": [
+        "App",
+        "Cache",
+        "Data"
+    ],
+    "post_install": [
+        "Write-Host \"Merging new version files into persisted App folder...\" -ForegroundColor Cyan",
+        "Copy-Item \"$dir\\_temp\\App\\version.dll\" \"$dir\\App\" -Force",
+        "if (-not (Test-Path \"$dir\\App\\chrome++.ini\")) { Copy-Item \"$dir\\_temp\\App\\chrome++.ini\" \"$dir\\App\" }",
+        "if (Test-Path \"$dir\\_temp\\Data\") { Copy-Item \"$dir\\_temp\\Data\" \"$dir\" -Recurse -ErrorAction SilentlyContinue }",
+        "if (Test-Path \"$dir\\_temp\\Cache\") { Copy-Item \"$dir\\_temp\\Cache\" \"$dir\" -Recurse -ErrorAction SilentlyContinue }",
+        "Remove-Item \"$dir\\_temp\" -Recurse -Force",
+        "Write-Host 'Generating registry scripts for App Paths...' -ForegroundColor Cyan",
+        "$dirpath = \"$dir\\App\".Replace('\\', '\\\\')",
+        "$exepath = \"$dir\\App\\chrome.exe\".Replace('\\', '\\\\')",
+        "$regDir = (Resolve-Path \"$bucketsdir\\*\\scripts\\chrome-plus\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if ($regDir) {",
+        "  'install-reg', 'uninstall-reg' | ForEach-Object {",
+        "    $content = Get-Content \"$regDir\\$_.reg\"",
+        "    $content = $content.Replace('$chromedir', $dirpath)",
+        "    $content = $content.Replace('$chrome', $exepath)",
+        "    if ($global) { $content = $content.Replace('HKEY_CURRENT_USER', 'HKEY_LOCAL_MACHINE') }",
+        "    $content | Set-Content -Path \"$dir\\$_.reg\"",
+        "  }",
+        "}"
+    ],
+    "uninstaller": {
+        "script": "if ($cmd -eq 'uninstall' -and (Test-Path \"$dir\\uninstall-reg.reg\")) { reg import \"$dir\\uninstall-reg.reg\" }"
+    },
+    "bin": [
+        [
+            "App\\chrome.exe",
+            "chrome"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "App\\chrome.exe",
+            "Google Chrome (Portable)"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/Bush2021/chrome_plus/releases/download/$version/Chrome++_v$version_x86_x64_arm64.7z"
+    }
+}
