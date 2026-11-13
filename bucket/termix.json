@@ -24,8 +24,9 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/Termix-SSH/Termix/releases?per_page=100",
+        "github": "https://api.github.com/repos/Termix-SSH/Termix/releases?per_page=100",
         "script": [
+            "if (-not $page) { Write-Warning 'Termix: GitHub returned no release data.'; return }",
             "$candidates = foreach ($release in ($page | ConvertFrom-Json)) {",
             "    if ($release.draft -or $release.prerelease -or $release.tag_name -cnotmatch '^(?:v(?<modern>\\d+\\.\\d+\\.\\d+)|release-(?<legacy>\\d+\\.\\d+\\.\\d+)-tag)$') { continue }",
             "    $v = if ($Matches.modern) { $Matches.modern } else { $Matches.legacy }",

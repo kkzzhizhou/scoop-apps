@@ -1,36 +1,51 @@
 {
     "version": "0.2.2-rc.2",
-    "description": "DeepSeek Harness desktop application with a bundled DSH runtime and external plugins.",
-    "homepage": "https://www.deepseek.com/",
+    "description": "DeepSeek Harness desktop app for agent tasks and plugins",
+    "homepage": "https://www.deepseek.com/harness/",
     "license": "MIT",
-    "architecture": {
-        "64bit": {
-            "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.2-rc.2-win-x64.exe#/dl.7z",
-            "hash": "sha512:e6b440915aee2a49b82842c06d3a95f1916b3304a8de81129f35dbf5e6e42563c231ee96b8739141947adee63e06a01ceac05dc81b7049e96c08687493535c24"
-        }
-    },
-    "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null",
+    "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
+    "hash": "7e25286518ce520b5c0943e178c52cdba1cc9ec3680bc7da181b79879e080c32",
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+        "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall DeepSeek Harness.exe\" -Force -Recurse"
+    ],
     "shortcuts": [
         [
             "DeepSeek Harness.exe",
             "DeepSeek Harness"
         ]
     ],
-    "persist": "AppData",
     "checkver": {
-        "url": "https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml",
-        "regex": "version:\\s*(?<version>\\S+)"
+        "script": [
+            "$url = 'https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe'",
+            "$request = [System.Net.HttpWebRequest]::Create($url)",
+            "$request.AddRange(0, 2097151)",
+            "$request.Timeout = 30000",
+            "$request.ReadWriteTimeout = 30000",
+            "$response = $null",
+            "$tempFile = $null",
+            "try {",
+            "    $response = $request.GetResponse()",
+            "    if ([int]$response.StatusCode -ne 206) { throw \"Expected a partial download (HTTP 206), received $([int]$response.StatusCode)\" }",
+            "    if ($response.ContentLength -gt 2097152) { throw \"Version probe exceeded 2 MiB: $($response.ContentLength)\" }",
+            "    $tempFile = [System.IO.Path]::GetTempFileName()",
+            "    $output = [System.IO.File]::OpenWrite($tempFile)",
+            "    try { $response.GetResponseStream().CopyTo($output) } finally { $output.Dispose() }",
+            "    if ((Get-Item $tempFile).Length -gt 2097152) { throw 'Version probe exceeded 2 MiB' }",
+            "    $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($tempFile).ProductVersion",
+            "    if ($version -notmatch '^[\\d.]+(?:-[\\w.]+)?$') { throw \"Unexpected installer ProductVersion: $version\" }",
+            "    Write-Output $version",
+            "} finally {",
+            "    if ($response) { $response.Close() }",
+            "    if ($tempFile -and (Test-Path $tempFile)) { Remove-Item $tempFile -Force }",
+            "}"
+        ],
+        "regex": "(?<version>[\\d.]+(?:-[\\w.]+)?)"
     },
     "autoupdate": {
-        "architecture": {
-            "64bit": {
-                "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-$version-win-x64.exe#/dl.7z"
-            }
-        },
+        "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
         "hash": {
-            "url": "https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml",
-            "regex": "(?m)^sha512:\\s*>-\\s*\\r?\\n\\s*$base64"
+            "mode": "download"
         }
     }
 }

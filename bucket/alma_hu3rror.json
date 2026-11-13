@@ -1,0 +1,70 @@
+{
+    "version": "0.4.578",
+    "description": "GUI client for herdr: Claude Code, Codex and pi agent sessions as clean chats.",
+    "homepage": "https://alma.now",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/yetone/alma-releases/releases/download/v0.4.578/alma-0.4.578-win-x64.exe#/dl.7z",
+            "hash": "sha512:e7c05859d523500754ffb6ac006b78a95d1917a45bff2c75e51d3eaee7f6a14fc7c60103bc4cf861cddd4b098891ad4cba382c31d51ec14bbfbdc9b6251db3f4",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\Uninst*\" -Recurse"
+            ]
+        }
+    },
+    "persist_external": [
+        [
+            "$env:AppData\\alma",
+            "data",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.config\\alma",
+            "config",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.alma",
+            "activity",
+            "directory"
+        ],
+        [
+            "$env:USERPROFILE\\.cache\\alma",
+            "cache",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalUninstall"
+    ],
+    "shortcuts": [
+        [
+            "Alma.exe",
+            "Alma"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/yetone/alma-releases"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/yetone/alma-releases/releases/download/v$version/alma-$version-win-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "$basename\\s+sha512:\\s+$base64"
+        }
+    }
+}
