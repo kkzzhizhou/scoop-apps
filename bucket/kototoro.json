@@ -1,19 +1,50 @@
 {
-    "version": "2.4.4",
+    "version": "2.4.5",
     "description": "Manga, Novel, and Video reader for Android",
     "homepage": "https://github.com/Kototoro-app/Kototoro",
-    "license": "Apache-2.0",
-    "url": "https://github.com/Kototoro-app/Kototoro/releases/download/v2.4.4/Kototoro-2.4.4-windows-x64-release.zip",
-    "hash": "8ef0c72fd65ce33e2bb8c34883e5f81e3a088f8097f600ab2ce5718b456bfaab",
-    "extract_dir": "Kototoro",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/Kototoro-app/Kototoro#Apache-2.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Kototoro-app/Kototoro/releases/download/v2.4.5/Kototoro-2.4.5-windows-x64-release.msi",
+            "hash": "2ec2c15f96bdab47cd07ed4f7ed4c302e2478aba85d906be45032f17e49f4411"
+        }
+    },
+    "extract_dir": "Kototoro-App",
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Kototoro\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Kototoro\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "Kototoro.exe",
     "shortcuts": [
         [
             "Kototoro.exe",
             "Kototoro"
         ]
     ],
-    "checkver": "github",
+    "checkver": {
+        "github": "https://api.github.com/repos/Kototoro-app/Kototoro/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
     "autoupdate": {
-        "url": "https://github.com/Kototoro-app/Kototoro/releases/download/v$version/Kototoro-$version-windows-x64-release.zip"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Kototoro-app/Kototoro/releases/download/v$version/Kototoro-$version-windows-x64-release.msi"
+            }
+        }
     }
 }

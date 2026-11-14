@@ -1,16 +1,37 @@
 {
-    "homepage": "https://ytdn.netlify.app",
     "version": "4.1.0",
-    "description": "A modern GUI App for downloading Videos and Audios from hundreds of sites",
-    "license": "GPL-3",
-    "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v4.1.0/YTDownloader_Win.zip",
-    "hash": "a3d4b83986a77933579ecde3505a712dd733972840e31cf1169ee93c36a7541e",
-    "bin": [
-        [
-            "YTDownloader.exe",
-            "ytdownloader"
+    "description": "Desktop App for downloading Videos and Audios from hundreds of sites",
+    "homepage": "https://aandrew-me.github.io/ytDownloader/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/aandrew-me/ytDownloader#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v4.1.0/YTDownloader_Win.exe#/dl.7z",
+            "hash": "sha512:2924419593c492bc735804ccc8426c562b307af19e93cb0dd2ce83d6b5d6ef42146d83a7d952f2d8dbc0a6b64461b006f3a9ec4918470605d85cf9148db1bee7",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\ytdownloader\"",
+            "Remove-Module -Name AppsUtils"
         ]
-    ],
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\ytdownloader\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "YTDownloader.exe",
     "shortcuts": [
         [
             "YTDownloader.exe",
@@ -18,12 +39,19 @@
         ]
     ],
     "checkver": {
-        "github": "https://github.com/aandrew-me/ytDownloader"
+        "github": "https://api.github.com/repos/aandrew-me/ytDownloader/releases",
+        "jp": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\d.]+)/YTDownloader_Win"
     },
     "autoupdate": {
-        "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v$version/YTDownloader_Win.zip",
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/aandrew-me/ytDownloader/releases/download/v$version/YTDownloader_Win.exe#/dl.7z"
+            }
+        },
         "hash": {
-            "url": "$url.sha256"
+            "url": "$baseurl/latest.yml",
+            "regex": "sha512:\\s+$base64"
         }
     }
 }

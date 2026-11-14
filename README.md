@@ -128,9 +128,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - babo4d/scoop-xrtools
 - jfut/scoop-jfut
 - cc713/ownscoop
+- Toddli468/Pentest-Scoop-Bucket
 - maboloshi/scoop-private
 - AkariiinMKII/Scoop4kariiin
-- Toddli468/Pentest-Scoop-Bucket
 - LaelLuo/scoop
 - AntonOks/scoop-aoks
 - 404NetworkError/scoop-bucket
@@ -140,9 +140,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - typst-community/scoop-bucket
 - p8rdev/scoop-portableapps
 - Myraxion/Rojem-Scoop
-- HUMORCE/nuke
 - littleli/Scoop-littleli
 - bright-angel/scoop-bucket
+- HUMORCE/nuke
 - Dicklesworthstone/scoop-bucket
 - Rinkerbel/scooped
 - Deide/deide-bucket
