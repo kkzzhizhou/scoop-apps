@@ -1,0 +1,53 @@
+{
+    "version": "0.3.11",
+    "description": "SnipLite轻便截图工具-支持ocr-二维码识别",
+    "homepage": "https://github.com/GxDongV/SnipLite",
+    "license": {
+        "identifier": "MIT license",
+        "url": "https://github.com/GxDongV/SnipLite#MIT-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/GxDongV/SnipLite/releases/download/v0.3.11/SnipLite-0.3.11-win-x64-setup.exe",
+            "hash": "1ad0ecd329737c846524b0267d6be0b4b182050b4a85203105c6e5c311fa203f"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\SnipLite\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\SnipLite\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "SnipLite.exe",
+    "shortcuts": [
+        [
+            "SnipLite.exe",
+            "SnipLite"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/GxDongV/SnipLite/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/GxDongV/SnipLite/releases/download/v$version/SnipLite-$version-win-x64-setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

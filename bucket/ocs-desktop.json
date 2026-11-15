@@ -1,0 +1,61 @@
+{
+    "version": "3.9.1",
+    "description": "OCS桌面端 用户脚本一键启动器，用户管理器/开发者一键开启以及重新启用 electron + vue3 + typescript",
+    "homepage": "https://docs.ocsjs.com/docs/app",
+    "license": {
+        "identifier": "Unknown"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ocsjs/ocs-desktop/releases/download/v3.9.1/ocs-3.9.1-setup-win-x64.exe#/dl.7z",
+            "hash": "sha512:e242f976ab4f450802a5df4b5ea62d05083d432b2b423a660b8bc7fbf7511789d3fa1e3042ee525ca5d6a7fb309a5b14b514d2523d9efb12d6937c3a1a1ef609",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\" -Force -Recurse"
+            ]
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\OCS Desktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\OCS Desktop\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "OCS Desktop.exe",
+            "OCS-Desktop"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "OCS Desktop.exe",
+            "OCS Desktop"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/ocsjs/ocs-desktop/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ocsjs/ocs-desktop/releases/download/v$version/ocs-$version-setup-win-x64.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/latest.yml",
+            "regex": "(?sm)$basename.*?sha512:\\s+$base64"
+        }
+    }
+}

@@ -35,6 +35,16 @@
         "       New-item \"$persist_dir\\xemu.toml\" -ItemType File | Out-Null",
         "       New-item \"$persist_dir\\shader_cache_list\" -ItemType File | Out-Null",
         "   }",
+        "}",
+        "foreach ($file in @('xemu.toml', 'shader_cache_list')) {",
+        "   $path = Join-Path \"$persist_dir\" $file",
+        "   if (Test-Path $path -PathType Container) {",
+        "       if ((Get-ChildItem -Force $path | Measure-Object).Count -gt 0) {",
+        "           throw \"Cannot create persisted file at '$path' because a directory with that name contains data. Move its contents elsewhere, then retry.\"",
+        "       }",
+        "       Remove-Item -Path $path",
+        "   }",
+        "   if (!(Test-Path $path)) { New-Item -Path $path -ItemType File | Out-Null }",
         "}"
     ],
     "post_install": [

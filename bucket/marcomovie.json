@@ -1,0 +1,58 @@
+{
+    "version": "0.5.20",
+    "description": "由 Pilipala 开发的 Android 电视播放器。仅提供工具，不含影视资源；内容和配置由用户自行合法获取。",
+    "homepage": "https://github.com/Pilipala9919/MarcoMovie",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/Pilipala9919/MarcoMovie#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Pilipala9919/MarcoMovie/releases/download/windows-v0.5.20/MarcoMovie-0.5.20-windows-x64-setup.exe",
+            "hash": "758dbf183ec228a3660cc60f6fa1ab40928163f1361705b9d033f6509b5adbc8"
+        }
+    },
+    "innosetup": true,
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.example\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "marco_movie.exe",
+            "MarcoMovie"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "marco_movie.exe",
+            "MarcoMovie"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Pilipala9919/MarcoMovie/releases",
+        "jp": "$[*].tag_name",
+        "regex": "windows-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Pilipala9919/MarcoMovie/releases/download/windows-v$version/MarcoMovie-$version-windows-x64-setup.exe"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/$basename.sha256"
+        }
+    }
+}
