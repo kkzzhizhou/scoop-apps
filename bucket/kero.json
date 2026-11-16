@@ -1,7 +1,7 @@
 {
     "version": "2.1.35",
-    "description": "A terminal for coding agents with persistent sessions and a scriptable CLI.",
-    "homepage": "https://kero.sh/",
+    "description": "A cross-platform native terminal app optimized for agents",
+    "homepage": "https://kero.sh",
     "license": "MIT",
     "architecture": {
         "64bit": {
@@ -14,12 +14,26 @@
         }
     },
     "bin": "Kero.exe",
+    "persist_external": "$env:AppData\\kero",
+    "post_install": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalUninstall"
+    ],
     "shortcuts": [
         [
             "Kero.exe",
             "Kero"
         ]
     ],
+    "notes": "Install the command line tool from Kero's menu: Kero > Install Command Line Tool...",
     "checkver": {
         "github": "https://github.com/egoist/kero"
     },
@@ -31,6 +45,9 @@
             "arm64": {
                 "url": "https://github.com/egoist/kero/releases/download/v$version/kero-$version-windows-arm64.tar.gz"
             }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS"
         }
     }
 }

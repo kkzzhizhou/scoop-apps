@@ -1,0 +1,56 @@
+{
+    "homepage": "https://github.com/tgeorgiadis/quiver-launcher",
+    "version": "3.5.1",
+    "description": "A modern launcher for downloading, installing, and running apps from GitHub and GitLab releases. With a personal library, community catalog subscriptions, and flexible filtering.",
+    "license": {
+        "identifier": "BSL-1.1",
+        "url": "https://github.com/tgeorgiadis/quiver-launcher/blob/main/LICENSE"
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/apps.json File '{\"apps\": []}'",
+        "create $dir/settings.json File '{}'"
+    ],
+    "persist": [
+        "Backups",
+        "Cache",
+        "Apps"
+    ],
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/tgeorgiadis/quiver-launcher/releases/download/v3.5.1/QuiverLauncher-win-Portable.zip",
+            "hash": "a19bf3abcfa044acea7bbea80088da02cfe2453c3dd6f8da038912d7a7ede6ef",
+            "bin": [
+                "QuiverLauncher.exe"
+            ],
+            "shortcuts": [
+                [
+                    "QuiverLauncher.exe",
+                    "Quiver Launcher"
+                ]
+            ]
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/tgeorgiadis/quiver-launcher/releases/latest",
+        "jsonpath": {
+            "version": "$.tag_name",
+            "download": "$.assets[?(@.name =~ /QuiverLauncher-win-Portable.+\\.zip/i)].browser_download_url",
+            "hash": "$.assets[?(@.name =~ /QuiverLauncher-win-Portable/i)].digest"
+        },
+        "regex": "v([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload",
+                "hash": "$matchHash"
+            }
+        }
+    }
+}

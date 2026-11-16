@@ -1,0 +1,53 @@
+{
+    "homepage": "https://github.com/soldatreloaded/soldatreloaded",
+    "version": "0.30.2",
+    "description": "A rewrite and refactor of Soldat Reloaded in Odin.",
+    "license": {
+        "identifier": "MIT",
+        "url": "https://github.com/soldatreloaded/soldatreloaded/blob/main/license.md"
+    },
+    "pre_install": [
+        "function create($path, $type, $content) {",
+        "   if (-not (Test-Path \"$path\")) {",
+        "       New-Item \"$path\" -ItemType $type -Value $content | Out-Null",
+        "       Write-Output \"Creating $path...\"",
+        "   }",
+        "}",
+        "create $dir/client.config.mjson File"
+    ],
+    "persist": "client.config.mjson",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/soldatreloaded/soldatreloaded/releases/download/v0.30.2/soldatreloaded-windows.zip",
+            "hash": "76b2aa942df144935c980afbd71307fdf5843345fedc9bb9c6d1f185371b8f7a",
+            "extract_dir": "Soldat Reloaded",
+            "bin": [
+                "soldatreloaded.exe"
+            ],
+            "shortcuts": [
+                [
+                    "soldatreloaded.exe",
+                    "Soldat Reloaded"
+                ]
+            ]
+        }
+    },
+    "checkver": {
+        "url": "https://api.github.com/repos/soldatreloaded/soldatreloaded/releases/latest",
+        "jsonpath": {
+            "version": "$.tag_name",
+            "download": "$.assets[?(@.name =~ /soldatreloaded-windows.+\\.zip/i)].browser_download_url",
+            "hash": "$.assets[?(@.name =~ /soldatreloaded-windows/i)].digest"
+        },
+        "regex": "v([\\d\\.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "$matchDownload",
+                "hash": "$matchHash",
+                "extract_dir": "Soldat Reloaded"
+            }
+        }
+    }
+}

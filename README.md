@@ -113,8 +113,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aliesbelik/poldi
 - batkiz/backit
 - asimov-platform/scoop-bucket
-- SayCV/scoop-cvp
 - Velgus/Scoop-Portapps
+- SayCV/scoop-cvp
 - Weidows-projects/scoop-3rd
 - Darkatse/Scoop-Darkatse
 - mo-san/scoop-bucket
@@ -130,8 +130,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - 404NetworkError/scoop-bucket
 - cc713/ownscoop
 - Toddli468/Pentest-Scoop-Bucket
-- maboloshi/scoop-private
 - AkariiinMKII/Scoop4kariiin
+- maboloshi/scoop-private
 - LaelLuo/scoop
 - AntonOks/scoop-aoks
 - natecohen/scoop-av
@@ -156,8 +156,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zeldrisho/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
-- wanstarge/scoopx
 - plutotree/scoop-bucket
+- wanstarge/scoopx
 - younger-1/scoop-it
 - The-Simples/scoop-minecraft
 - jcwillox/scoop-python

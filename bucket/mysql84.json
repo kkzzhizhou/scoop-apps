@@ -1,0 +1,62 @@
+{
+    "homepage": "https://dev.mysql.com/downloads/mysql/",
+    "description": "The world's most popular open-source database (Long Term Support)",
+    "license": "GPL-2.0-only",
+    "version": "8.4.13",
+    "notes": [
+        "Run following command as administrator to register MySQL as a service. See: https://dev.mysql.com/doc/refman/en/windows-start-service.html",
+        "",
+        "\"$dir\\bin\\mysqld.exe\" --install MySQL84",
+        "",
+        "To stop and/or delete the Service run 'sc stop MySQL84' and 'sc delete MySQL84'."
+    ],
+    "suggest": {
+        "vcredist": "extras/vcredist2022"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://dev.mysql.com/get/Downloads/MySQL-8.4/mysql-8.4.13-winx64.zip",
+            "hash": "md5:7b94489d5524dea9b27097068bea25a8",
+            "extract_dir": "mysql-8.4.13-winx64"
+        }
+    },
+    "pre_install": [
+        "$ini = \"$dir\\my.ini\"",
+        "if (!(Test-Path \"$ini\")) {",
+        "   # Using $dir instead of $persist_dir, causes this error:",
+        "   # [ERROR] [MY-010187] [Server] Could not open file '~/scoop/apps/mysql/current/data/host.err' for error logging: Permission denied",
+        "   Add-Content -Path \"$ini\" -Value \"[mysqld]`ndatadir=$($persist_dir -replace '\\\\', '/')/data\" -Encoding Ascii",
+        "   # Set username so it's not required when connecting",
+        "   Add-Content -Path \"$ini\" -Value \"[client]`nuser=root\" -Encoding Ascii",
+        "}"
+    ],
+    "post_install": [
+        "if (!(Test-Path \"$dir\\data\\auto.cnf\")) {",
+        "    warn 'Initializing data directory ...'",
+        "    warn 'Initialization may fail if vcredist2022 is missing.'",
+        "    $succ = Invoke-ExternalCommand -FilePath \"$dir\\bin\\mysqld.exe\" -ArgumentList '--initialize-insecure'",
+        "    if ($succ) {",
+        "        warn 'Database has been initialized (username: root, password: <blank>)'",
+        "    } else {",
+        "        error 'Failed to initialize database.'",
+        "    }",
+        "}"
+    ],
+    "persist": [
+        "data",
+        "my.ini"
+    ],
+    "checkver": ">(8\\.4\\.[\\d.]+) LTS<",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://dev.mysql.com/get/Downloads/MySQL-$majorVersion.$minorVersion/mysql-$version-winx64.zip",
+                "extract_dir": "mysql-$version-winx64"
+            }
+        },
+        "hash": {
+            "url": "https://dev.mysql.com/downloads/mysql/?os=3&version=$majorVersion.$minorVersion",
+            "regex": "(?s)$basename.*?$md5"
+        }
+    }
+}

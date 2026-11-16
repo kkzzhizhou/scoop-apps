@@ -1,0 +1,76 @@
+{
+    "version": "20261114.1",
+    "description": "Native client for Sheprd (formerly Herdr UI) on macOS, Linux, and Windows, built with Rust and GPUI. View terminal sessions, workspaces, Git worktrees, and agent activity through your local daemon.",
+    "homepage": "https://sheprd.org",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/sheprd-labs/sheprd/releases/download/v20261114.1/Sheprd-20261114.1-x86_64-pc-windows-msvc.zip",
+            "hash": "c087d1f1107221886ff9cdd6b7d13ac402f1faffc4e1ea66b998b57ce0848ccc",
+            "extract_dir": "Sheprd-20261114.1-x86_64-pc-windows-msvc"
+        },
+        "arm64": {
+            "url": "https://github.com/sheprd-labs/sheprd/releases/download/v20261114.1/Sheprd-20261114.1-aarch64-pc-windows-msvc.zip",
+            "hash": "e6e33a6ad510ff79739da81ef6ece6cb04d3742527011a2035455a58f622c9e8",
+            "extract_dir": "Sheprd-20261114.1-aarch64-pc-windows-msvc"
+        }
+    },
+    "bin": [
+        "sheprd.exe",
+        [
+            "herdr-gpui.exe",
+            "herdr-gpui"
+        ]
+    ],
+    "persist_external": [
+        [
+            "$env:LocalAppData\\herdr\\gpui",
+            "gpui-state",
+            "directory"
+        ]
+    ],
+    "post_install": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalInstall"
+    ],
+    "pre_uninstall": [
+        "$helper = (Resolve-Path \"$bucketsdir/*/scripts/persist-external.ps1\" -ErrorAction SilentlyContinue | Select-Object -First 1).Path",
+        "if (!$helper) { throw 'persist_external: persist-external.ps1 not found under scripts/ in any bucket' }",
+        ". $helper",
+        "Invoke-PersistExternalUninstall"
+    ],
+    "shortcuts": [
+        [
+            "sheprd-launcher.exe",
+            "Sheprd Beta"
+        ]
+    ],
+    "notes": "Beta channel: prerelease builds. sheprd and sheprd-beta share %APPDATA%\\herdr and the persisted %LOCALAPPDATA%\\herdr\\gpui, so install only one of them at a time",
+    "checkver": {
+        "url": "https://api.github.com/repos/sheprd-labs/sheprd/releases?per_page=10",
+        "jsonpath": "$.[?(@.prerelease==true)].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/sheprd-labs/sheprd/releases/download/v$version/Sheprd-$version-x86_64-pc-windows-msvc.zip",
+                "extract_dir": "Sheprd-$version-x86_64-pc-windows-msvc",
+                "hash": {
+                    "url": "https://api.github.com/repos/sheprd-labs/sheprd/releases/tags/v$version",
+                    "jsonpath": "$.assets[?(@.name=='Sheprd-$version-x86_64-pc-windows-msvc.zip')].digest"
+                }
+            },
+            "arm64": {
+                "url": "https://github.com/sheprd-labs/sheprd/releases/download/v$version/Sheprd-$version-aarch64-pc-windows-msvc.zip",
+                "extract_dir": "Sheprd-$version-aarch64-pc-windows-msvc",
+                "hash": {
+                    "url": "https://api.github.com/repos/sheprd-labs/sheprd/releases/tags/v$version",
+                    "jsonpath": "$.assets[?(@.name=='Sheprd-$version-aarch64-pc-windows-msvc.zip')].digest"
+                }
+            }
+        }
+    }
+}
