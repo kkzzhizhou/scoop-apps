@@ -99,9 +99,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zhoujin7/tomato
 - wzv5/ScoopBucket
 - TheRandomLabs/Scoop-Python
+- naderi/scoop-bucket
 - amorphobia/siku
 - jonz94/scoop-sarasa-nerd-fonts
-- naderi/scoop-bucket
 - NyaMisty/scoop_bucket_misty
 - WinApps-share/WinApps-bucket
 - brian6932/dank-scoop
@@ -140,9 +140,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - typst-community/scoop-bucket
 - p8rdev/scoop-portableapps
 - Myraxion/Rojem-Scoop
-- HUMORCE/nuke
 - littleli/Scoop-littleli
 - bright-angel/scoop-bucket
+- HUMORCE/nuke
 - Dicklesworthstone/scoop-bucket
 - Rinkerbel/scooped
 - Deide/deide-bucket
@@ -156,8 +156,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zeldrisho/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
-- plutotree/scoop-bucket
 - wanstarge/scoopx
+- plutotree/scoop-bucket
 - younger-1/scoop-it
 - The-Simples/scoop-minecraft
 - jcwillox/scoop-python

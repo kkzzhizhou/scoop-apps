@@ -1,5 +1,5 @@
 {
-    "version": "1.35.7",
+    "version": "1.35.8",
     "description": "A fast, minimal browser that protects your privacy",
     "homepage": "https://minbrowser.org/",
     "license": {
@@ -8,23 +8,29 @@
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/minbrowser/min/releases/download/v1.35.7/Min-v1.35.7-windows.zip",
-            "hash": "6659766134e4d45bd75ac385390b02cea8284a58b37a9f60af2e193a9e04b3d5"
+            "url": "https://github.com/minbrowser/min/releases/download/v1.35.8/Min-v1.35.8-windows.zip",
+            "hash": "9964b1832ec4a3cea08cea16073f02a15e4c206f18cdea053bbcfa28d375be22"
         },
-        "32bit": {
-            "url": "https://github.com/minbrowser/min/releases/download/v1.35.7/Min-v1.35.7-windows-ia32.zip",
-            "hash": "006cc08184f1d5582268804a87e81e811792270c51e68a37aef8123dd9f1cde3"
+        "arm64": {
+            "url": "https://github.com/minbrowser/min/releases/download/v1.35.8/Min-v1.35.8-windows-arm64.zip",
+            "hash": "2a4baf370ddde32fd2941a77ed50e35a23a37de7cdab90f6296c8537719e131c"
         }
     },
-    "extract_dir": "Min-v1.35.7",
+    "extract_dir": "Min-v1.35.8",
     "installer": {
         "script": [
-            "ensure \"$persist_dir\" | Out-Null",
-            "New-Item \"$env:APPDATA\\Min\" -ItemType Junction -Target \"$persist_dir\" | Out-Null"
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Min\"",
+            "Remove-Module -Name AppsUtils"
         ]
     },
     "uninstaller": {
-        "script": "Remove-Item \"$env:APPDATA\\Min\" -Recurse -Force -ErrorAction 'SilentlyContinue'"
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Min\"",
+            "Remove-Module -Name AppsUtils"
+        ]
     },
     "bin": "Min.exe",
     "shortcuts": [
@@ -43,8 +49,8 @@
             "64bit": {
                 "url": "https://github.com/minbrowser/min/releases/download/v$version/Min-v$version-windows.zip"
             },
-            "32bit": {
-                "url": "https://github.com/minbrowser/min/releases/download/v$version/Min-v$version-windows-ia32.zip"
+            "arm64": {
+                "url": "https://github.com/minbrowser/min/releases/download/v$version/Min-v$version-windows-arm64.zip"
             }
         },
         "extract_dir": "Min-v$version"

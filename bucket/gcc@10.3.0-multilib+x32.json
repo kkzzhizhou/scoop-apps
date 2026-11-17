@@ -69,10 +69,16 @@
 	"pre_install": [
 		"$extractFn = Get-Command extract_7zip -ErrorAction SilentlyContinue",
 		"if (-not $extractFn) { $extractFn = Get-Command Expand-7zipArchive -ErrorAction SilentlyContinue }",
+		"# ToDO: add check/panic for missing extractFn # if (-not $extractFn) { ... }",
 		"Get-Item \"$dir\\`$PLUGINSDIR\\*.tar.xz\",\"$dir\\`$PLUGINSDIR\\*.lzma\" |% { $n = $_.name ; $d = \"$dir\\`$PLUGINSDIR\\$n\"; Write-Host -NoNewLine \"extracting `\"$n`\"...\"; & $extractFn \"$d\" \"$dir\" ; Write-Host 'done' ; }"
 	],
 	"post_install": [
-		"Get-Item \"$dir\\`$_19_\",\"$dir\\`$PLUGINSDIR\" |% { $n = $_.name ; Write-Host -NoNewLine \"removing `\"$n`\"...\"; Remove-Item $_ -Recurse ; Write-Host 'done' ; }"
+		"Get-Item \"$dir\\`$_19_\",\"$dir\\`$PLUGINSDIR\" |% { $n = $_.name ; Write-Host -NoNewLine \"removing `\"$n`\"...\"; Remove-Item $_ -Recurse ; Write-Host 'done' ; }",
+		"# NOTE: 'libgcc_eh.a' is missing in x86_64 tooling, though the symbols exist in 'libgcc.a'",
+		"# HACK: create the expected (though empty) 'libgcc_eh.a' library files",
+		"#   ... to verify fix, use `x86_64-w64-mingw32-gcc.exe -print-file-name=libgcc_eh.a` and `x86_64-w64-mingw32-gcc.exe -m32 -print-file-name=libgcc_eh.a`",
+		"& ar rcs \"$dir\\lib\\gcc\\x86_64-w64-mingw32\\10.3.0\\libgcc_eh.a\"",
+		"& ar rcs \"$dir\\lib\\gcc\\x86_64-w64-mingw32\\10.3.0\\32\\libgcc_eh.a\""
 	],
 	"env_add_path": ["bin", "mingw32/bin"], "#": "note: order is important (MinGW64 ['bin'] must precede MinGW32 ['mingw32/bin'] in PATH for correct compiling/linking)",
 	"#notes": "The 64bit version is built with Structured Exception Handling (SEH), the 32bit is built with DWARF. Both 64bit and 32bit support the POSIX threading model."

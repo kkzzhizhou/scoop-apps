@@ -1,0 +1,25 @@
+{
+    "version": "0.9.3",
+    "description": "Batch manga and image upscaling from the command line with TensorRT, TensorRT-RTX or DirectML; MangaJaNai GUI's upscaling backend",
+    "homepage": "https://github.com/the-database/MangaJaNaiCLI",
+    "license": "GPL-3.0-only",
+    "url": "https://github.com/the-database/MangaJaNaiCLI/releases/download/v0.9.3/mangajanai-windows-x64.zip",
+    "hash": "c1c5396945557fdea0263510a693ed3e976602a7c93ea66a33491463dc747ae5",
+    "bin": [
+        [
+            "mangajanai-store.cmd",
+            "mangajanai"
+        ]
+    ],
+    "pre_install": "Set-Content -Path \"$dir\\mangajanai-store.cmd\" -Value '@set \"AJI_RUNTIME_STORE=%~dp0store\"','@\"%~dp0mangajanai.exe\" %*' -Encoding ascii",
+    "persist": "store",
+    "post_install": [
+        "Write-Host 'Downloading the GPU runtime and models into the persisted store' -ForegroundColor Yellow",
+        "& \"$dir\\mangajanai-store.cmd\" setup --store --app-id mangajanai --app-path \"$dir\\mangajanai.exe\"",
+        "if ($LASTEXITCODE -ne 0) { error \"mangajanai setup failed; to retry, run: mangajanai setup --store --app-id mangajanai --app-path $dir\\mangajanai.exe\" }"
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/the-database/MangaJaNaiCLI/releases/download/v$version/mangajanai-windows-x64.zip"
+    }
+}
