@@ -1,5 +1,5 @@
 {
-    "version": "0.8.139-17-g6f797b9c88",
+    "version": "0.8.139-19-g711b416840",
     "description": "Original Xbox Emulator (development version)",
     "homepage": "https://xemu.app",
     "license": {
@@ -16,12 +16,12 @@
     ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/xemu-project/xemu/releases/download/pre-release/xemu-0.8.139-17-g6f797b9c88-windows-x86_64.zip",
-            "hash": "0fa494261217bcf7c7d1b77e9324842b16dc940c129637941c47f5ab233c8aba"
+            "url": "https://github.com/xemu-project/xemu/releases/download/pre-release/xemu-0.8.139-19-g711b416840-windows-x86_64.zip",
+            "hash": "f1e20af568f21671c7174be93d74f185c2be7948916794d87a2c8772b9be1a86"
         },
         "arm64": {
-            "url": "https://github.com/xemu-project/xemu/releases/download/pre-release/xemu-0.8.139-17-g6f797b9c88-windows-arm64.zip",
-            "hash": "8adca9295771e839c31bdf5b4ff78d924484c6766b75a85be8fe47d853908bea"
+            "url": "https://github.com/xemu-project/xemu/releases/download/pre-release/xemu-0.8.139-19-g711b416840-windows-arm64.zip",
+            "hash": "33f9d125dd578d4cacb5cfb5f6a38643fed1dcad5f8a4aaea01d0fd68cc83140"
         }
     },
     "pre_install": [
@@ -35,6 +35,16 @@
         "       New-item \"$persist_dir\\xemu.toml\" -ItemType File | Out-Null",
         "       New-item \"$persist_dir\\shader_cache_list\" -ItemType File | Out-Null",
         "   }",
+        "}",
+        "foreach ($file in @('xemu.toml', 'shader_cache_list')) {",
+        "   $path = Join-Path \"$persist_dir\" $file",
+        "   if (Test-Path $path -PathType Container) {",
+        "       if ((Get-ChildItem -Force $path | Measure-Object).Count -gt 0) {",
+        "           throw \"Cannot create persisted file at '$path' because a directory with that name contains data. Move its contents elsewhere, then retry.\"",
+        "       }",
+        "       Remove-Item -Path $path",
+        "   }",
+        "   if (!(Test-Path $path)) { New-Item -Path $path -ItemType File | Out-Null }",
         "}"
     ],
     "post_install": [
@@ -54,7 +64,7 @@
     "shortcuts": [
         [
             "xemu.exe",
-            "xemu (Development)"
+            "Microsoft Xbox [xbx][xemu] (dev)"
         ]
     ],
     "persist": [

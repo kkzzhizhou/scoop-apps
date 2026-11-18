@@ -1,17 +1,17 @@
 {
-    "version": "1.2.9+6",
+    "version": "1.2.9+8",
     "description": "A cross-platform Bilibili client focused on video, live streaming and offline playback.",
     "homepage": "https://github.com/CKopoer/BiliSail",
     "license": "Unknown",
     "notes": "Microsoft Edge WebView2 Runtime is required for web login and verification.",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/CKopoer/BiliSail/releases/download/v1.2.9+6/BiliSail-1.2.9+6-windows-x64.msi",
-            "hash": "4828196fe485ec4fcba02f7642a8bf516d2f5d932c83fbd556aca594d5efd3bf"
+            "url": "https://github.com/CKopoer/BiliSail/releases/download/v1.2.9+8/BiliSail-1.2.9+8-windows-x64.msi",
+            "hash": "cde837e1543564f9aee7a6f2d0a512cecfda9e19955e30e735c4fc361bcee4e0"
         },
         "arm64": {
-            "url": "https://github.com/CKopoer/BiliSail/releases/download/v1.2.9+6/BiliSail-1.2.9+6-windows-arm64.msi",
-            "hash": "6d0602f018db7ffd637ae190ca3e68fb4e75fc899845bab413c691969a72be03"
+            "url": "https://github.com/CKopoer/BiliSail/releases/download/v1.2.9+8/BiliSail-1.2.9+8-windows-arm64.msi",
+            "hash": "cad5d655797a26845a45d22b6ccd30eb871a4d96f95498046a178c5be7230b4f"
         }
     },
     "extract_dir": "PFiles64\\BiliSail",
@@ -22,8 +22,22 @@
         ]
     ],
     "checkver": {
-        "url": "https://api.github.com/repos/CKopoer/BiliSail/releases/latest",
-        "jsonpath": "$.tag_name",
+        "url": "https://api.github.com/repos/CKopoer/BiliSail/releases?per_page=100",
+        "script": [
+            "$releases = $page | ConvertFrom-Json",
+            "$release = $releases | Where-Object {",
+            "    if ($_.draft -or $_.prerelease -or $_.tag_name -notmatch '^v[\\d.]+(?:\\+\\d+)?$') { return $false }",
+            "    $version = $_.tag_name.Substring(1)",
+            "    $assets = $_.assets | Where-Object { $_.state -eq 'uploaded' -and $_.size -gt 0 }",
+            "    foreach ($arch in 'x64', 'arm64') {",
+            "        $name = \"BiliSail-$version-windows-$arch.msi\"",
+            "        if (!($assets | Where-Object { $_.name -eq $name -and $_.size -gt 1024 }) -or $assets.name -notcontains \"$name.sha256\") { return $false }",
+            "    }",
+            "    return $true",
+            "} | Sort-Object published_at -Descending | Select-Object -First 1",
+            "if (!$release) { throw 'No stable BiliSail release with complete Windows MSI assets found.' }",
+            "$release.tag_name"
+        ],
         "regex": "^v([\\d.]+(?:\\+\\d+)?)$"
     },
     "autoupdate": {
@@ -36,7 +50,8 @@
             }
         },
         "hash": {
-            "url": "$url.sha256"
+            "url": "$url.sha256",
+            "regex": "^([a-fA-F0-9]{64})\\s"
         }
     }
 }

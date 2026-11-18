@@ -104,8 +104,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - jonz94/scoop-sarasa-nerd-fonts
 - NyaMisty/scoop_bucket_misty
 - WinApps-share/WinApps-bucket
-- brian6932/dank-scoop
 - Scoopforge/Extras-Plus
+- brian6932/dank-scoop
 - Small-Ku/turbo-bucket
 - kengwang/scoop-ctftools-bucket
 - ygguorun/scoop-bucket
