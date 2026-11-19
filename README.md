@@ -80,12 +80,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - ScoopInstaller/PHP
 - echoiron/echo-scoop
-- dodorz/scoop
 - ScoopInstaller/Sysinternals
+- dodorz/scoop
 - hermanjustnu/scoop-emulators
 - couleur-tweak-tips/utils
-- kiennq/scoop-misc
 - borger/scoop-emulators
+- kiennq/scoop-misc
 - ViCrack/scoop-bucket
 - akirco/aki-apps
 - cmontage/scoopbucket-third
@@ -131,9 +131,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - cc713/ownscoop
 - Toddli468/Pentest-Scoop-Bucket
 - AkariiinMKII/Scoop4kariiin
+- KnotUntied/scoop-fonts
 - maboloshi/scoop-private
-- LaelLuo/scoop
 - AntonOks/scoop-aoks
+- LaelLuo/scoop
 - natecohen/scoop-av
 - aoisummer/scoop-bucket
 - rivy/scoop-bucket
@@ -147,7 +148,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - Rinkerbel/scooped
 - Deide/deide-bucket
 - littleli/Scoop-AtariEmulators
-- KnotUntied/scoop-fonts
 - Darkatse/Scoop-KanColle
 - BenjaminMichaelis/Config
 - beer-psi/scoop-bucket

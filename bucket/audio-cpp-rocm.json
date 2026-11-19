@@ -1,0 +1,29 @@
+{
+	"version": "0.9.5",
+	"description": "Pure C++ audio inference engine with ROCm 10.0.0 HIP and CPU backends.",
+	"homepage": "https://github.com/0xShug0/audio.cpp",
+	"license": "Apache-2.0",
+	"architecture": {
+		"64bit": {
+			"url": "https://github.com/0xShug0/audio.cpp/releases/download/v0.9.5/audio-v0.9.5-bin-windows-x64-rocm10.0.0-test.zip",
+			"hash": "3edb1f7cb9892c1e471c414a641a17a7fb3657d58f424f3a6f4ca51bb32b96d3"
+		}
+	},
+	"bin": ["audiocpp_cli.exe", "audiocpp_server.exe", "audiocpp_gguf.exe"],
+	"notes": "Upstream labels this ROCm package experimental. Matching ROCm 10.0.0 runtime and GPU-specific libraries must be installed separately. See https://github.com/0xShug0/audio.cpp/blob/main/scripts/ci/hip_release_README.md",
+	"checkver": {
+		"script": [
+			"$releases = Invoke-RestMethod -Uri \"https://api.github.com/repos/0xShug0/audio.cpp/releases?per_page=100\"",
+			"$candidate = $releases | Where-Object { $tag = $_.tag_name; $tag -match \"^v\\d+\\.\\d+\\.\\d+$\" -and @($_.assets | Where-Object { $_.name -eq (\"audio-\" + $tag + \"-bin-windows-x64-rocm10.0.0-test.zip\") }).Count -gt 0 } | Select-Object -First 1",
+			"if ($candidate) { $candidate.tag_name }"
+		],
+		"regex": "v([\\d.]+)"
+	},
+	"autoupdate": {
+		"architecture": {
+			"64bit": {
+				"url": "https://github.com/0xShug0/audio.cpp/releases/download/v$version/audio-v$version-bin-windows-x64-rocm10.0.0-test.zip"
+			}
+		}
+	}
+}
