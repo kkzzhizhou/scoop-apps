@@ -1,0 +1,85 @@
+{
+    "version": "0.1.21",
+    "description": "Persistent terminal runtime for coding agents that powers the Herdr App.",
+    "homepage": "https://herdr.dev/core/",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://releases.herdr.dev/core/0.1.21/herdr-core-windows-x86_64.zip",
+            "hash": "a8984634c35b58ba82d0aec078d5a5e6004da01d5a25b3daf822ab5e31c7312b"
+        }
+    },
+    "bin": [
+        "herdr-core.exe",
+        [
+            "herdr-core.exe",
+            "hc"
+        ]
+    ],
+    "post_install": [
+        "$scriptContent = @'",
+        "<#",
+        ".SYNOPSIS",
+        "    管理 LocalAppData 下的 herdr-core Junction 链接。",
+        "#>",
+        "param([switch]$Remove)",
+        "$target = \"$env:LOCALAPPDATA\\Programs\\herdr-core\"",
+        "$source = Join-Path (Split-Path $PSScriptRoot) 'current'",
+        "if ($Remove) {",
+        "    if (Test-Path $target) {",
+        "        $item = Get-Item $target -Force -ErrorAction SilentlyContinue",
+        "        if ($item.LinkType -eq 'Junction') {",
+        "            Remove-Item $target -Force",
+        "        }",
+        "    }",
+        "    return",
+        "}",
+        "$parent = Split-Path $target",
+        "if (-not (Test-Path $parent)) { New-Item -Path $parent -ItemType Directory -Force | Out-Null }",
+        "if (Test-Path $target) {",
+        "    $item = Get-Item $target -Force -ErrorAction SilentlyContinue",
+        "    if ($item.LinkType -eq 'Junction') {",
+        "        Remove-Item $target -Force",
+        "    } else {",
+        "        Write-Error \"Target path already exists and is not a junction: $target\"",
+        "        exit 1",
+        "    }",
+        "}",
+        "New-Item -Path $target -ItemType Junction -Value $source -Force | Out-Null",
+        "'@",
+        "Set-Content -Path \"$dir\\link-localappdata.ps1\" -Value $scriptContent -Encoding UTF8"
+    ],
+    "pre_uninstall": [
+        "if ($cmd -eq 'uninstall') {",
+        "    $target = \"$env:LOCALAPPDATA\\Programs\\herdr-core\"",
+        "    $source = Join-Path (Split-Path $dir) 'current'",
+        "    if (Test-Path $target) {",
+        "        $item = Get-Item $target -Force -ErrorAction SilentlyContinue",
+        "        if ($item.LinkType -eq 'Junction' -and ($item.Target -contains $source)) {",
+        "            Remove-Item $target -Force",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "notes": [
+        "To link the hardcoded LocalAppData path to Scoop's current directory, run:",
+        "  & \"$dir\\link-localappdata.ps1\"",
+        "To remove the junction later, run:",
+        "  & \"$dir\\link-localappdata.ps1\" -Remove"
+    ],
+    "checkver": {
+        "url": "https://releases.herdr.dev/core/latest.json",
+        "jsonpath": "$.version"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://releases.herdr.dev/core/$version/herdr-core-windows-x86_64.zip",
+                "hash": {
+                    "url": "https://releases.herdr.dev/core/latest.json",
+                    "jsonpath": "$.targets.windows-x86_64.sha256"
+                }
+            }
+        }
+    }
+}

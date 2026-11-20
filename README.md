@@ -156,8 +156,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - zeldrisho/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
-- wanstarge/scoopx
 - plutotree/scoop-bucket
+- wanstarge/scoopx
 - younger-1/scoop-it
 - The-Simples/scoop-minecraft
 - jcwillox/scoop-python
