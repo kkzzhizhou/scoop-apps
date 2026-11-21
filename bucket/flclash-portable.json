@@ -1,26 +1,19 @@
 {
-    "version": "0.9.3",
+    "version": "0.9.4",
     "description": "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
     "homepage": "https://github.com/chen08209/FlClash",
     "license": {
         "identifier": "GPL-3.0 license",
         "url": "https://github.com/chen08209/FlClash#GPL-3.0-1-ov-file"
     },
-    "notes": [
-        "Once you set up TUN mode successfully, the older versions of FlClash may be hard to remove by running 'scoop cleanup flclash'.",
-        "In that case, try running the following command with privilege.",
-        "sc.exe config FlClashHelperService binPath=\"$dir\\FlClashHelperService.exe\"",
-        "This command will modify the FlClashHelperService with a flexible path to the executable.",
-        "Also, FlClash may be hard to uninstall due the running FlClashHelperService, just kill it with Task Manager or run 'sc.exe stop FlClashHelperService' with privilege."
-    ],
     "architecture": {
         "64bit": {
-            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.3/FlClash-0.9.3-windows-amd64.zip",
-            "hash": "e3c3c839784c50bbe406f2946f4f52147d418b3c28842ae8eb40404929490216"
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.4/FlClash-0.9.4-windows-amd64-portable.zip",
+            "hash": "8fab8ab4edead33a6c6d4f249fd90a287acbf66a99cc5bd207fcfc034f3b1224"
         },
         "arm64": {
-            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.3/FlClash-0.9.3-windows-arm64.zip",
-            "hash": "5f4c772e5f546a80a818ad0f78ea1e97c76958994d5e0d2a0ed3822dda08816a"
+            "url": "https://github.com/chen08209/FlClash/releases/download/v0.9.4/FlClash-0.9.4-windows-arm64-portable.zip",
+            "hash": "146796803c160ce50f915ed73cd52b35a0b75a4c8cbf15e8fb68ec98e514d4b5"
         }
     },
     "installer": {
@@ -33,6 +26,10 @@
     },
     "uninstaller": {
         "script": [
+            "if (-not (Get-Service -Name \"FlClashHelperService\" -ErrorAction SilentlyContinue)) { return }",
+            "Write-Host \"`nInstallation of `'FlClashHelperService`' detected, it may suspend scoop uninstallation or cleanup process.\" -ForegroundColor DarkYellow",
+            "Write-Host \"In this case, open the updated app before cleanup or run following command with administrator privilege:\" -ForegroundColor DarkYellow",
+            "Write-Host \"sc.exe stop FlClashHelperService | Out-Null; sc.exe delete FlClashHelperService | Out-Null\" -ForegroundColor DarkYellow",
             "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
             "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\com.follow\"",
             "Remove-Module -Name AppsUtils"
@@ -53,14 +50,14 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-amd64.zip"
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-amd64-portable.zip"
             },
             "arm64": {
-                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-arm64.zip"
+                "url": "https://github.com/chen08209/FlClash/releases/download/v$version/FlClash-$version-windows-arm64-portable.zip"
             }
         },
         "hash": {
-            "url": "$baseurl/SHA256SUMS"
+            "url": "$baseurl/FlClash-$version-SHA256SUMS"
         }
     }
 }

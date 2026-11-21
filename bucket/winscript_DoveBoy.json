@@ -1,0 +1,50 @@
+{
+    "version": "2.29.0",
+    "description": "Open-source tool to build your Windows script from scratch. It includes debloat, privacy, performance & app installing scripts.",
+    "homepage": "https://winscript.cc/",
+    "license": {
+        "identifier": "GPL-3.0 license",
+        "url": "https://github.com/flick9000/winscript#GPL-3.0-1-ov-file"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/flick9000/winscript/releases/download/v2.29.0/winscript-installer.exe#/dl.7z",
+            "hash": "146e71de16edaeb5c6c6caa3ac0ee93758e660d4a6d485241b16ba77485bb5da",
+            "pre_install": "Remove-Item \"$dir\\`$*\", \"$dir\\uninst*\" -Force -Recurse"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\flick.winscript.dev\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\flick.winscript.dev\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "WinScript.exe",
+    "shortcuts": [
+        [
+            "WinScript.exe",
+            "WinScript"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/flick9000/winscript/releases",
+        "jp": "$[0].tag_name",
+        "regex": "v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/flick9000/winscript/releases/download/v$version/winscript-installer.exe#/dl.7z"
+            }
+        }
+    }
+}
