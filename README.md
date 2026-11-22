@@ -141,9 +141,9 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - typst-community/scoop-bucket
 - p8rdev/scoop-portableapps
 - Myraxion/Rojem-Scoop
+- HUMORCE/nuke
 - littleli/Scoop-littleli
 - bright-angel/scoop-bucket
-- HUMORCE/nuke
 - Dicklesworthstone/scoop-bucket
 - Rinkerbel/scooped
 - Deide/deide-bucket

@@ -1,46 +1,54 @@
 {
-    "version": "7.25.6",
-    "description": "v2rayN (WPF-based version) is a GUI client for V2Ray, with support for Xray, sing-box, and other compatible cores.",
+    "version": "8.0.0",
+    "description": "A V2Ray client for Windows, support Xray & v2fly core",
     "homepage": "https://github.com/2dust/v2rayN",
     "license": "GPL-3.0-only",
-    "notes": [
-        "Since v7.17.0, v2rayN is self-contained and no longer requires the .NET 8.0 Desktop Runtime.",
-        "For more information, see: https://github.com/2dust/v2rayN/releases/tag/7.17.0",
-        "",
-        "Different variants of v2rayN are available:",
-        "- versions/v2rayn-desktop       : Avalonia-UI-based version"
-    ],
     "suggest": {
-        "v2fly-core": "v2ray",
-        "v2rayN-desktop": "versions/v2rayn-desktop"
+        ".NET Desktop Runtime": "windowsdesktop-runtime-lts",
+        "v2fly-core": "v2ray"
     },
     "architecture": {
         "64bit": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.25.6/v2rayN-windows-64.zip",
-            "hash": "9b94718c2a214a246b04dec84b9a27f1f0ced8489c2dd25eb80a0fbb806bd13f",
+            "url": "https://github.com/2dust/v2rayN/releases/download/8.0.0/v2rayN-windows-64.zip",
+            "hash": "e308fb016f2e356a9fb9eb25a6691e5e9d8d9a2d8b27e65636d8a6bbcb2ca418",
             "extract_dir": "v2rayN-windows-64"
         },
         "arm64": {
-            "url": "https://github.com/2dust/v2rayN/releases/download/7.25.6/v2rayN-windows-arm64.zip",
-            "hash": "4f01badc9bb3a1fd805104192d54f06d69b0d122ffbff884f521242619ad42f3",
+            "url": "https://github.com/2dust/v2rayN/releases/download/8.0.0/v2rayN-windows-arm64.zip",
+            "hash": "f0fed67769952c0d68224b0791ad3d79e87efa3e966023a38bf246db8bfde05e",
             "extract_dir": "v2rayN-windows-arm64"
         }
     },
+    "pre_install": [
+        "foreach ($form in @('*.exe', '*.dat')) {",
+        "    foreach ($_ in Get-ChildItem \"$(appdir xray $global)\\current\" -File) {",
+        "        $name = $_.Name",
+        "        if ($name -Like $form) {",
+        "            Write-Host \"Creating hardlink for $name\"",
+        "            New-Item -ItemType HardLink -Path \"$dir\\bin\\Xray\" -Name $name -Target \"$(appdir xray $global)\\current\\$name\" | Out-Null",
+        "        }",
+        "    }",
+        "}"
+    ],
+    "bin": "v2rayN.exe",
     "shortcuts": [
         [
             "v2rayN.exe",
             "v2rayN"
         ]
     ],
-    "persist": [
-        "guiConfigs",
-        "bin",
-        "binConfigs",
-        "guiFonts",
-        "guiLogs",
-        "guiTemps"
-    ],
-    "checkver": "github",
+    "persist": "guiConfigs",
+    "uninstaller": {
+        "script": [
+            "if (Test-Path \"$dir\\guiConfigs\\config.json\") {",
+            "    Copy-Item \"$dir\\guiConfigs\\config.json\" \"$persist_dir\\guiConfigs\\config.json\" | Out-Null",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://api.github.com/repos/2dust/v2rayN/releases?per_page=1",
+        "jsonpath": "$[0].tag_name"
+    },
     "autoupdate": {
         "architecture": {
             "64bit": {
