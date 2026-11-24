@@ -140,6 +140,7 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - rivy/scoop-bucket
 - typst-community/scoop-bucket
 - p8rdev/scoop-portableapps
+- zeldrisho/scoop-bucket
 - Myraxion/Rojem-Scoop
 - littleli/Scoop-littleli
 - bright-angel/scoop-bucket
@@ -153,7 +154,6 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - beer-psi/scoop-bucket
 - ChinLong/scoop-customize
 - windedge/ladle-bucket
-- zeldrisho/scoop-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
 - plutotree/scoop-bucket
