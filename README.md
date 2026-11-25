@@ -114,10 +114,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - aliesbelik/poldi
 - batkiz/backit
 - asimov-platform/scoop-bucket
+- Darkatse/Scoop-Darkatse
 - mo-san/scoop-bucket
 - SayCV/scoop-cvp
 - Weidows-projects/scoop-3rd
-- Darkatse/Scoop-Darkatse
 - ocodo/wezterm-alt-windows-icon-builds
 - TianXiaTech/scoop-txt
 - starise/Scoop-Confetti
@@ -156,8 +156,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - windedge/ladle-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
-- plutotree/scoop-bucket
 - wanstarge/scoopx
+- plutotree/scoop-bucket
 - younger-1/scoop-it
 - The-Simples/scoop-minecraft
 - jcwillox/scoop-python

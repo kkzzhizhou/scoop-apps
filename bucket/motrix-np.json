@@ -6,22 +6,21 @@
     "architecture": {
         "64bit": {
             "url": "https://github.com/agalwood/Motrix/releases/download/v2.4.5/Motrix-Setup-2.4.5.exe#/dl.7z",
-            "hash": "sha512:3715e411a040f516a824e58e7be5f394ed0242f87ffb93ffb40cd01b9edde8821bfda0d5c5b6ac42301dcb6dc8baf750ab54f05c0abbc3157e7c1c1696c2b986"
+            "hash": "5804188a016f000c807d7777da0de70971de6e3f512de0a868cf3ca76819bf2f"
         },
-        "32bit": {
-            "url": "https://github.com/agalwood/Motrix/releases/download/v2.4.5/Motrix-Setup-2.4.5.exe#/dl.7z",
-            "hash": "sha512:3715e411a040f516a824e58e7be5f394ed0242f87ffb93ffb40cd01b9edde8821bfda0d5c5b6ac42301dcb6dc8baf750ab54f05c0abbc3157e7c1c1696c2b986"
+        "arm64": {
+            "url": "https://github.com/agalwood/Motrix/releases/download/v2.4.5/Motrix-Setup-2.4.5-arm64.exe#/dl.7z",
+            "hash": "86e655d4490b3ffca03d465e205a39ba44f74617698fd52ae6b69285a276d9d1"
         }
     },
     "installer": {
         "script": [
-            "if ([Environment]::Is64BitOperatingSystem) {",
-            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-            "    Remove-Item \"$dir\\`$*\" -Force -Recurse",
-            "} else {",
-            "    Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-32.7z\" \"$dir\"",
-            "    Remove-Item \"$dir\\`$*\" -Force -Recurse",
-            "}"
+            "$archives = @(Get-ChildItem -LiteralPath \"$dir\\`$PLUGINSDIR\" -Filter 'app-*.7z' -File)",
+            "if ($archives.Count -ne 1) {",
+            "    throw \"Expected exactly one app-*.7z archive in `$PLUGINSDIR, found $($archives.Count).\"",
+            "}",
+            "Expand-7zipArchive $archives[0].FullName \"$dir\"",
+            "Remove-Item \"$dir\\`$*\" -Force -Recurse"
         ]
     },
     "shortcuts": [
@@ -38,13 +37,13 @@
             "64bit": {
                 "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-Setup-$version.exe#/dl.7z"
             },
-            "32bit": {
-                "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-Setup-$version.exe#/dl.7z"
+            "arm64": {
+                "url": "https://github.com/agalwood/Motrix/releases/download/v$version/Motrix-Setup-$version-arm64.exe#/dl.7z"
             }
         },
         "hash": {
-            "url": "$baseurl/latest.yml",
-            "regex": "sha512:\\s+($base64)"
+            "url": "https://api.github.com/repos/agalwood/Motrix/releases/latest",
+            "jsonpath": "$.assets[?(@.name == '$basename')].digest"
         }
     }
 }

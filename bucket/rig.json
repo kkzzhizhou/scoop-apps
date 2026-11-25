@@ -3,29 +3,63 @@
     "description": "The R installation manager: Install, remove, configure R versions.",
     "homepage": "https://github.com/r-lib/rig",
     "license": "MIT",
-    "url": "https://github.com/r-lib/rig/releases/download/v0.11.1/rig-windows-0.11.1.exe",
-    "hash": "695a6c34357635ce2436efcc3ea5ff7264825294578c62ac3683efd6c106ab68",
-    "bin": "rig.exe",
-    "innosetup": true,
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/r-lib/rig/releases/download/v0.11.1/rig-windows-x86_64-0.11.1.zip",
+            "hash": "a0ce65f2afb2f016488523818d14c4596080c61f32d0dab4c123c7f5e1db8910"
+        },
+        "arm64": {
+            "url": "https://github.com/r-lib/rig/releases/download/v0.11.1/rig-windows-arm64-0.11.1.zip",
+            "hash": "fd052a46c0cca85a5d125a437d576b6e578d985387a699d7271c7ac35c982af0"
+        }
+    },
+    "bin": "bin\\rig.exe",
     "post_install": [
-        "$binDir=\"C:\\Program Files\\R\\bin\"",
-        "$curPath = [System.Environment]::GetEnvironmentVariable(\"Path\",\"User\")",
-        "$curPathArray=($curPath) -split ';' | ForEach-Object { $_.TrimEnd('\\') }",
-        "if(-Not($curPathArray -Contains \"$binDir\")) {",
-        "    Write-Host -ForegroundColor Yellow \"Adding $binDir to User Path\"",
-        "    $newPath = \"$curPath;$binDir\" -replace ';+', ';'",
-        "    [System.Environment]::SetEnvironmentVariable(\"Path\",$newPath,\"User\")",
+        "try {",
+        "    $rigDirs = & \"$dir\\bin\\rig.exe\" system dirs --json 2>$null | Out-String | ConvertFrom-Json",
+        "} catch {",
+        "    $rigDirs = $null",
+        "}",
+        "if ($rigDirs.mode -eq 'admin' -and $rigDirs.binary_dir) {",
+        "    Add-Path -Path $rigDirs.binary_dir",
         "}"
     ],
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/r-lib/rig/releases/download/v$version/rig-windows-$version.exe"
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/r-lib/rig/releases/download/v$version/rig-windows-x86_64-$version.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/r-lib/rig/releases/download/v$version/rig-windows-arm64-$version.zip"
+            }
+        }
     },
     "notes": [
-        "Usage: Add the following to the end of your PowerShell $profile to get autocompletion:",
+        "rig defaults to admin mode, which installs R system-wide under 'C:\\Program Files\\R' and needs UAC.",
+        "To keep R in your user profile instead (no admin rights needed), finish the setup with:",
         "",
-        "# Scoop  - rig autocompletion",
-        "$rig_ac=$(try { Join-Path -Path $(scoop prefix rig) -ChildPath _rig.ps1 } catch { '' })",
-        "if (Test-Path -Path $rig_ac)  { & $rig_ac }"
+        "    rig system user-mode",
+        "    rig add release",
+        "",
+        "In user mode rig adds '%USERPROFILE%\\.local\\bin' (the R/Rscript quick links) to your user PATH;",
+        "open a new terminal afterwards. On an existing admin-mode setup 'rig system user-mode' migrates",
+        "your R versions; see 'rig system user-mode --help'.",
+        "",
+        "While rig is in admin mode, installing or updating rig adds 'C:\\Program Files\\R\\bin' to your",
+        "user PATH. After switching to user mode, remove that entry so it cannot shadow the user-mode links.",
+        "",
+        "Update rig with 'scoop update rig'; 'rig self update' does not work for Scoop installs.",
+        "",
+        "If you ran 'rig system script-assoc' before rig.exe moved to the 'bin' folder, run it again",
+        "so that .R files open with the new path.",
+        "",
+        "For PowerShell tab-completion, add these lines to your $PROFILE:",
+        "",
+        "$rigCompletion = '$dir\\share\\rig\\_rig.ps1'",
+        "if (Test-Path $rigCompletion) { . $rigCompletion }",
+        "",
+        "If your $PROFILE has the older rig completion snippet (it loads '_rig.ps1' from the rig",
+        "root folder), replace it: the script has moved to 'share\\rig\\_rig.ps1'."
     ]
 }

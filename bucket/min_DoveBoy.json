@@ -1,0 +1,61 @@
+{
+    "version": "1.35.8",
+    "description": "A fast, minimal browser that protects your privacy",
+    "homepage": "https://minbrowser.org/",
+    "license": {
+        "identifier": "Apache-2.0 license",
+        "url": "https://github.com/minbrowser/min/blob/master/LICENSE.txt"
+    },
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/minbrowser/min/releases/download/v1.35.8/min-1.35.8-setup.exe#/dl.7z",
+            "hash": "bb4dfa34a3c288907b20d17d59abafd4ab867987604c085b468ea289826c17fe"
+        },
+        "arm64": {
+            "url": "https://github.com/minbrowser/min/releases/download/v1.35.8/min-1.35.8-arm64-setup.exe#/dl.7z",
+            "hash": "96fa3bce7056b3dba7efd24785caf662800bc66cb61f7c579dfef67610bb4acb"
+        }
+    },
+    "pre_install": [
+        "Expand-7zipArchive \"$dir\\min-$version-full.nupkg\" \"$dir\\tmp\" -Removal",
+        "Move-Item \"$dir\\tmp\\lib\\net45\\*\" \"$dir\"",
+        "Remove-Item \"$dir\\tmp\" -Recurse -Force -ErrorAction SilentlyContinue"
+    ],
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:APPDATA\\Min\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:APPDATA\\Min\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": "min.exe",
+    "shortcuts": [
+        [
+            "min.exe",
+            "Min"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/minbrowser/min/releases",
+        "jsonpath": "$[0].assets[*].browser_download_url",
+        "regex": "/releases/download/v([\\w.-]+)/min-([\\w.-]+)-setup\\.exe"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/minbrowser/min/releases/download/v$version/min-$version-setup.exe#/dl.7z"
+            },
+            "arm64": {
+                "url": "https://github.com/minbrowser/min/releases/download/v$version/min-$version-arm64-setup.exe#/dl.7z"
+            }
+        }
+    }
+}

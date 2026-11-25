@@ -1,44 +1,46 @@
 {
     "version": "8.7.16",
-    "homepage": "https://feishu.cn/",
-    "description": "AI 时代先进生产力平台",
+    "description": "Connect with teammates anytime and anywhere",
+    "homepage": "https://www.feishu.cn/",
     "license": {
         "identifier": "EULA",
-        "url": "https://feishu.cn/en/terms"
+        "url": "https://www.feishu.cn/en/terms"
     },
-    "notes": "Runtime data are stored in '%APPDATA%\\LarkShell', and are not persisted by Scoop.",
     "architecture": {
         "64bit": {
-            "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/cbb969d9/Feishu-win32_x64-8.7.16-signed.exe#/dl.7z",
+            "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/cbb969d9/Feishu-win32_x64-8.7.16-signed.exe#/feishu-8.7.16.7z",
             "hash": "md5:fa4457a44236a2442f753dfaeb04a805"
+        },
+        "32bit": {
+            "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/326a2b01/Feishu-win32_ia32-8.7.16-signed.exe#/feishu-8.7.16.7z",
+            "hash": "md5:57a86c2c9c02bac7b59f0af6a9d47009"
         }
     },
     "extract_to": "app",
     "shortcuts": [
         [
             "app/Feishu.exe",
-            "飞书"
+            "Feishu"
         ]
     ],
     "checkver": {
-        "url": "https://feishu.cn/api/downloads",
-        "script": [
-            "$release = $page | ConvertFrom-Json",
-            "$version = $release.versions.Windows.version_number -replace 'Windows@', ''",
-            "$id_list = @($release.versions.Windows.download_link, $release.versions.Windows_x64.download_link) | ForEach-Object {",
-            "    if ($_ -match '(?<=/)\\w+(?=/Feishu-win32)') { $Matches[0] } ",
-            "}",
-            "Write-Output \"$version, $($id_list -join ', ')\""
-        ],
-        "regex": "V([\\d.]+), (?<id32>\\w+), (?<id64>\\w+)"
+        "url": "https://www.feishu.cn/api/downloads",
+        "regex": "(?sm)Windows.*?https://(?<path>[\\w.-/].*?)/Feishu.*?-(?<version>[\\d.]+).*?.exe.*?Windows_x64.*?https://(?<pathx>[\\w.-/].*?)/Feishu"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://sf3-cn.feishucdn.com/obj/ee-appcenter/$matchId64/Feishu-win32_x64-$version-signed.exe#/dl.7z",
+                "url": "https://$matchPathx/Feishu-win32_x64-$version-signed.exe#/feishu-$version.7z",
                 "hash": {
-                    "url": "https://feishu.cn/api/downloads",
+                    "url": "https://www.feishu.cn/api/downloads",
                     "jsonpath": "$.versions.Windows_x64.hash"
+                }
+            },
+            "32bit": {
+                "url": "https://$matchPath/Feishu-win32_ia32-$version-signed.exe#/feishu-$version.7z",
+                "hash": {
+                    "url": "https://www.feishu.cn/api/downloads",
+                    "jsonpath": "$.versions.Windows.hash"
                 }
             }
         }

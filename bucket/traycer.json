@@ -1,0 +1,57 @@
+{
+    "version": "1.5.4",
+    "description": "Desktop app for running many coding agents in isolated worktrees, with specs, tickets and reviews.",
+    "homepage": "https://traycer.ai",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/traycerai/traycer/releases/download/desktop-v1.5.4/traycer-desktop-windows-x64.exe#/dl.7z",
+            "hash": "50e1c155db508f2bd6c741fc47ab5d8183647ca830b6e7af3365bdb51d313abd",
+            "pre_install": [
+                "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
+                "Remove-Item \"$dir\\`$*\", \"$dir\\*.nsi\" -Recurse -ErrorAction SilentlyContinue"
+            ]
+        }
+    },
+    "shortcuts": [
+        [
+            "Traycer.exe",
+            "Traycer"
+        ]
+    ],
+    "notes": [
+        "这是 Traycer Desktop 的官方 Windows 安装包。同一仓库还有 Traycer Host 发行通道，本清单只收录桌面端。",
+        "版本号对应 GitHub 标签 desktop-vX.Y.Z，不要和 host-v 标签混淆。",
+        "请用 scoop update traycer 更新。",
+        "便携化会把 ~/.traycer 和 Electron userData（%APPDATA%\\Traycer）映射到 Scoop persist；~/.traycer-bootstrap 的 location.json 是数据位置指针，请自行管理并不要指向映射目录。"
+    ],
+    "checkver": {
+        "url": "https://github.com/traycerai/traycer/releases",
+        "regex": "/traycerai/traycer/releases/tag/desktop-v(?<version>\\d+\\.\\d+\\.\\d+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/traycerai/traycer/releases/download/desktop-v$version/traycer-desktop-windows-x64.exe#/dl.7z"
+            }
+        }
+    },
+    "portableProfile": {
+        "mappings": [
+            {
+                "label": "home-data",
+                "source": "UserProfile/.traycer",
+                "target": "$persist_dir/home/data",
+                "strategy": "symlink",
+                "ensureTarget": true
+            },
+            {
+                "label": "roaming",
+                "source": "AppData/Traycer",
+                "target": "$persist_dir/roaming",
+                "strategy": "symlink",
+                "ensureTarget": true
+            }
+        ]
+    }
+}
