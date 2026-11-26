@@ -1,36 +1,42 @@
 {
-    "version": "0.2.3-alpha.2",
-    "description": "DeepSeek Harness desktop application with a bundled DSH runtime and external plugins.",
-    "homepage": "https://www.deepseek.com/",
+    "version": "0.2.3",
+    "description": "DeepSeek official desktop client for the Harness agent runtime, supporting background tasks, local file access and plugin management.",
+    "homepage": "https://www.deepseek.com/download",
     "license": "MIT",
+    "notes": [
+        "DeepSeek Harness official desktop app (Electron NSIS installer, 64-bit).",
+        "Two-layer extraction: Scoop 7z-extracts the NSIS installer, then the inner $PLUGINSDIR\\app-64.7z is expanded, which contains 'DeepSeek Harness.exe'.",
+        "The Windows download URL is versionless (dsh-latest-windows-x64.exe); Scoop autoupdate recomputes the SHA-256 by downloading the new installer, so updates may take a while.",
+        "Version is sourced from the deepseek-ai/deepseek-harness GitHub releases, which mirror the desktop client releases."
+    ],
     "architecture": {
         "64bit": {
-            "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-0.2.3-alpha.2-win-x64.exe#/dl.7z",
-            "hash": "sha512:caa673445b306fbf50b9825492ad9d546593523bab71a6d80eebbecc6bce50d5f83cd2a13cd304aa3ea2b0cb8168d093381d88741d934d1fa409463ba2086141"
+            "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z",
+            "hash": "013e28bc8c714749331308386d814108336851914d243aa6bcfd14de1ab30923",
+            "installer": {
+                "script": [
+                    "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\" -Removal",
+                    "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall DeepSeek Harness.exe\" -Recurse -Force -ErrorAction SilentlyContinue"
+                ]
+            }
         }
     },
-    "pre_install": "Expand-7zipArchive \"$dir\\`$PLUGINSDIR\\app-64.7z\" \"$dir\"",
-    "post_install": "Remove-Item \"$dir\\`$PLUGINSDIR\", \"$dir\\Uninstall*\" -Force -Recurse -ErrorAction SilentlyContinue | Out-Null",
+    "bin": "DeepSeek Harness.exe",
     "shortcuts": [
         [
             "DeepSeek Harness.exe",
             "DeepSeek Harness"
         ]
     ],
-    "persist": "AppData",
     "checkver": {
-        "url": "https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml",
-        "regex": "version:\\s*(?<version>\\S+)"
+        "url": "https://github.com/deepseek-ai/deepseek-harness/releases",
+        "regex": "/releases/tag/dsh-v([\\d.]+(?:-rc\\.[\\d]+)?)"
     },
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://download.deepseek.com/dsh-desk/bin/win-x64/deepseek-harness-$version-win-x64.exe#/dl.7z"
+                "url": "https://download.deepseek.com/desktop/dsh-latest-windows-x64.exe#/dl.7z"
             }
-        },
-        "hash": {
-            "url": "https://download.deepseek.com/dsh-desk/feeds/win-x64/nightly.yml",
-            "regex": "(?m)^sha512:\\s*>-\\s*\\r?\\n\\s*$base64"
         }
     }
 }

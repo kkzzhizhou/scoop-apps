@@ -80,8 +80,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - KNOXDEV/wsl
 - ScoopInstaller/PHP
 - echoiron/echo-scoop
-- ScoopInstaller/Sysinternals
 - dodorz/scoop
+- ScoopInstaller/Sysinternals
 - hermanjustnu/scoop-emulators
 - couleur-tweak-tips/utils
 - borger/scoop-emulators
@@ -127,11 +127,12 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - 42wim/scoop-bucket
 - babo4d/scoop-xrtools
 - jfut/scoop-jfut
-- LaelLuo/scoop
 - 404NetworkError/scoop-bucket
 - cc713/ownscoop
 - Toddli468/Pentest-Scoop-Bucket
 - AkariiinMKII/Scoop4kariiin
+- LaelLuo/scoop
+- zeldrisho/scoop-bucket
 - KnotUntied/scoop-fonts
 - maboloshi/scoop-private
 - AntonOks/scoop-aoks
@@ -140,11 +141,10 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - rivy/scoop-bucket
 - typst-community/scoop-bucket
 - p8rdev/scoop-portableapps
-- zeldrisho/scoop-bucket
 - Myraxion/Rojem-Scoop
+- HUMORCE/nuke
 - littleli/Scoop-littleli
 - bright-angel/scoop-bucket
-- HUMORCE/nuke
 - Dicklesworthstone/scoop-bucket
 - Rinkerbel/scooped
 - Deide/deide-bucket
@@ -156,8 +156,8 @@ scoop bucket add apps https://github.com/kkzzhizhou/scoop-apps
 - windedge/ladle-bucket
 - ShuguangSun/sgs-scoop-bucket
 - Locietta/sniffer
-- wanstarge/scoopx
 - plutotree/scoop-bucket
+- wanstarge/scoopx
 - younger-1/scoop-it
 - The-Simples/scoop-minecraft
 - jcwillox/scoop-python
