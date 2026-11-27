@@ -1,0 +1,59 @@
+{
+    "version": "17.14.45",
+    "description": "Visual Studio 2022 Build Tools installer with MSVC and Windows 11 SDK",
+    "homepage": "https://visualstudio.microsoft.com/visual-cpp-build-tools/",
+    "license": {
+        "identifier": "Proprietary",
+        "url": "https://visualstudio.microsoft.com/license-terms/"
+    },
+    "depends": "vswhere",
+    "architecture": {
+        "64bit": {
+            "url": "https://download.visualstudio.microsoft.com/download/pr/95995f57-8355-4ff5-8d90-a7e1669fb3b3/8aaf70d164808d313ee6226af5d1e3b2db43c60be551bfeb2b70ce139d792c37/vs_BuildTools.exe",
+            "hash": "8aaf70d164808d313ee6226af5d1e3b2db43c60be551bfeb2b70ce139d792c37"
+        },
+        "arm64": {
+            "url": "https://download.visualstudio.microsoft.com/download/pr/95995f57-8355-4ff5-8d90-a7e1669fb3b3/8aaf70d164808d313ee6226af5d1e3b2db43c60be551bfeb2b70ce139d792c37/vs_BuildTools.exe",
+            "hash": "8aaf70d164808d313ee6226af5d1e3b2db43c60be551bfeb2b70ce139d792c37"
+        }
+    },
+    "installer": {
+        "script": [
+            "$toolComponent = if ($architecture -eq 'arm64') { 'Microsoft.VisualStudio.Component.VC.Tools.ARM64' } else { 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' }",
+            "$sdkComponent = 'Microsoft.VisualStudio.Component.Windows11SDK.26100'",
+            "$existing = & vswhere.exe -latest -products '*' -version '[17.0,18.0)' -requires $toolComponent $sdkComponent -property installationPath",
+            "if ($LASTEXITCODE -ne 0) { throw 'Failed to query existing Visual Studio installations.' }",
+            "if ($existing) {",
+            "    Write-Host \"Using existing Visual Studio 2022 components at $existing\"",
+            "    return",
+            "}",
+            "$buildToolsPath = & vswhere.exe -latest -products Microsoft.VisualStudio.Product.BuildTools -version '[17.0,18.0)' -property installationPath",
+            "if ($LASTEXITCODE -ne 0) { throw 'Failed to query existing Build Tools installations.' }",
+            "$arguments = @('--wait', '--passive', '--norestart', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--add', $toolComponent, '--add', $sdkComponent)",
+            "if ($buildToolsPath) { $arguments = @('modify', '--installPath', $buildToolsPath) + $arguments }",
+            "$exitCodes = @{ 3010 = 'Build Tools installed successfully. Restart Windows before using them.' }",
+            "if (!(Invoke-ExternalCommand -FilePath \"$dir\\vs_BuildTools.exe\" -ArgumentList $arguments -RunAs -ContinueExitCodes $exitCodes)) {",
+            "    throw 'Visual Studio Build Tools installation failed. See the dd_* logs in your TEMP directory.'",
+            "}"
+        ]
+    },
+    "notes": [
+        "Installs system-wide MSVC tools for the selected architecture and Windows SDK 10.0.26100. Requires administrator approval, an internet connection and several GB of disk space.",
+        "An existing Visual Studio 2022 installation containing the selected MSVC tools and Windows SDK 10.0.26100 is reused.",
+        "Update or uninstall the system components using Visual Studio Installer. Scoop manages only this installer; 'scoop uninstall vs-buildtools2022' leaves the system components installed."
+    ],
+    "checkver": {
+        "url": "https://aka.ms/vs/17/release/channel",
+        "jsonpath": "$.info.productDisplayVersion"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://aka.ms/vs/17/release/vs_BuildTools.exe"
+            },
+            "arm64": {
+                "url": "https://aka.ms/vs/17/release/vs_BuildTools.exe"
+            }
+        }
+    }
+}
