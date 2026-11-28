@@ -1,0 +1,68 @@
+{
+    "version": "5.1.1",
+    "description": "Wow. Yet another Pixiv client!",
+    "homepage": "https://github.com/Pixeval/Pixeval",
+    "license": "GPL-3.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.1.1/Pixeval-win-x64-Portable.zip",
+            "hash": "af415416503b149eeee7f5eaa1de10bf295f63cde728383722bd6084de74de1e"
+        },
+        "32bit": {
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.1.1/Pixeval-win-x86-Portable.zip",
+            "hash": "882edd5c605d3efd1bf97a0719a998c3b686e48bb3b1552976e559f7d490effb"
+        },
+        "arm64": {
+            "url": "https://github.com/Pixeval/Pixeval/releases/download/5.1.1/Pixeval-win-arm64-Portable.zip",
+            "hash": "2319db1ff4d0158bf49fa59f3ed77919b3c5f445e53a8e91351907a2cd311b7b"
+        }
+    },
+    "installer": {
+        "script": [
+            "# handle runtime cache",
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Mount-ExternalRuntimeData -Source \"$persist_dir\\appdata\" -Target \"$env:LOCALAPPDATA\\Pixeval\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "uninstaller": {
+        "script": [
+            "Import-Module $(Join-Path $(Find-BucketDirectory -Root -Name apps) scripts/AppsUtils.psm1)",
+            "Dismount-ExternalRuntimeData -Target \"$env:LOCALAPPDATA\\Pixeval\"",
+            "Remove-Module -Name AppsUtils"
+        ]
+    },
+    "bin": [
+        [
+            "Pixeval.exe",
+            "Pixeval"
+        ]
+    ],
+    "shortcuts": [
+        [
+            "Pixeval.exe",
+            "Pixeval"
+        ]
+    ],
+    "checkver": {
+        "github": "https://api.github.com/repos/Pixeval/Pixeval/releases/latest",
+        "jp": "$.tag_name",
+        "regex": "([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-x64-Portable.zip"
+            },
+            "32bit": {
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-x86-Portable.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/Pixeval/Pixeval/releases/download/$version/Pixeval-win-arm64-Portable.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

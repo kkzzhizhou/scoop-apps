@@ -1,0 +1,40 @@
+{
+    "version": "0.1.18",
+    "description": "An offline-first desktop suite for documents, spreadsheets, presentations, PDFs, email, Git and Markdown.",
+    "homepage": "https://github.com/ELY-Open-Source/ElyOffice",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/ELY-Open-Source/ElyOffice/releases/download/v0.1.18/ElyOffice-0.1.18-windows-x86_64-setup.exe",
+            "hash": "ca923097ce4aa12a40d8a31cdffbc2f072bd75c1adf3ff1e0ec7cefb86460967"
+        }
+    },
+    "pre_install": [
+        "$key = 'HKCU:\\Software\\Ely Office'",
+        "if ((Get-ItemProperty -LiteralPath $key -ErrorAction SilentlyContinue).Root -or (Get-ChildItem -LiteralPath $key -ErrorAction SilentlyContinue | Where-Object { $_.GetValue('InstallDir') })) {",
+        "    throw 'Uninstall the existing Ely Office installation before installing with Scoop.'",
+        "}"
+    ],
+    "installer": {
+        "args": [
+            "/S",
+            "/D=$dir"
+        ]
+    },
+    "pre_uninstall": "Copy-Item -LiteralPath \"$dir\\uninstall.exe\" -Destination \"$dir\\scoop-uninstall.exe\" -Force",
+    "uninstaller": {
+        "file": "scoop-uninstall.exe",
+        "args": [
+            "/S",
+            "_?=$dir"
+        ]
+    },
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/ELY-Open-Source/ElyOffice/releases/download/v$version/ElyOffice-$version-windows-x86_64-setup.exe"
+            }
+        }
+    }
+}

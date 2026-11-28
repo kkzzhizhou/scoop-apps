@@ -1,0 +1,41 @@
+{
+    "version": "0.27.2",
+    "description": "A local-first workspace for creating prototypes, presentations and visual assets with AI design agents.",
+    "homepage": "https://github.com/nexu-io/open-design",
+    "license": "Apache-2.0",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/nexu-io/open-design/releases/download/open-design-v0.27.2/open-design-0.27.2-win-x64-setup.exe#/dl.7z",
+            "hash": "b2e742ac802cee9a04f4577cb4756e22e7c06fe5c6959ed2373167edaaa5176b"
+        }
+    },
+    "pre_install": [
+        "$plugins = Join-Path $dir '$PLUGINSDIR'",
+        "Expand-7zipArchive \"$plugins\\payload-base.7z\" $dir",
+        "Expand-7zipArchive \"$plugins\\payload-overlay.7z\" $dir -Overwrite All",
+        "Remove-Item -LiteralPath $plugins -Recurse -Force",
+        "Remove-Item -LiteralPath \"$dir\\Uninstall Open Design.exe\" -Force",
+        "Set-Content -LiteralPath \"$dir\\od.cmd\" -Encoding Ascii -Value '@echo off', 'setlocal', 'set \"ELECTRON_RUN_AS_NODE=1\"', '\"%~dp0Open Design.exe\" \"%~dp0resources\\app\\prebundled\\daemon\\daemon-cli.mjs\" %*'"
+    ],
+    "bin": "od.cmd",
+    "shortcuts": [
+        [
+            "Open Design.exe",
+            "Open Design"
+        ]
+    ],
+    "checkver": {
+        "github": "https://github.com/nexu-io/open-design",
+        "regex": "/releases/tag/open-design-v([\\d.]+)"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/nexu-io/open-design/releases/download/open-design-v$version/open-design-$version-win-x64-setup.exe#/dl.7z"
+            }
+        },
+        "hash": {
+            "url": "$url.sha256"
+        }
+    }
+}
